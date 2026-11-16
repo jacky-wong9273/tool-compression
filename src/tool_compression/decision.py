@@ -1,5 +1,10 @@
 """Week 1 go / narrow-to-local / stop rules.
 
+This module records the historical Week 1 gate. Evaluation Protocol v1.1 does
+not treat an inactive-contrast stop as an end to implementation, evaluation,
+and reporting. The packet rendered from these rules stays the historical record.
+Paid inference stays unauthorized either way.
+
 The utility aim is never marked established here. A local counter cannot meet
 the provider-token target. Structural failure stops. An incomplete or
 boundary-incompatible E check narrows to the local arms and is not called a go.

@@ -4,7 +4,11 @@
 **Author:** Jacky Wong · **UID:** 3035687479  
 **Email:** obwong.jacky@connect.hku.hk  
 **Programme:** HKU MSc Computer Science, The University of Hong Kong  
-**Companion:** `Controlled_Tool_Description_Compression_Proposal.tex`
+**Companion:** `Controlled_Tool_Description_Compression_Proposal.tex`  
+**Evaluation protocol:** `EVALUATION-PROTOCOL-v1.1.md`  
+**Operational note:** `OPERATIONAL-NOTE-v1.1.md`
+
+**Status on 16 November 2026:** The Week 1 historical handoff was followed. The stop packet on pull request #1 remains the historical record. Evaluation Protocol v1.1 continues unpaid implementation, evaluation scaffolding, and reporting when contrast is inactive. The current handoff below governs that work. Paid inference is not authorized. The preface immediately below is the plan as first written.
 
 This is a self-contained plan for proposed work, not an implemented package or a completed audit. No full selected-category audit, selected-mode TSCG implementation audit, provider experiment, or accuracy result is claimed. Preserve existing deliverables. This plan does not authorize paid inference or public release; both require the explicit decisions below.
 
@@ -12,7 +16,23 @@ This is a self-contained plan for proposed work, not an implemented package or a
 
 ### Initial instruction to the coding agent
 
+#### Week 1 historical handoff
+
+This instruction was followed. It produced the stop packet recorded on pull request #1. It remains here as history. It is not a current instruction to end implementation, evaluation, and reporting when contrast is inactive.
+
 > Start with the Week 1 audit/prototype, not the finished package. Pin original BFCL `multiple`, `simple_python`, and `irrelevance` inputs and their official conversion/evaluation code. Keep labels outside method development. Build the smallest deterministic P/I/C prototype that produces the intended description-only outputs after the shared conversion; prepare and count actual complete requests for every selected original input. In parallel with that work, inspect and try the selected TSCG `compressDescriptions` mode within the bounded effort below. It is the planned core external comparator, not a late optional extra. Measure short-original versus protection limitations, achieved savings, unchanged/pass-through rates, natural neighbours, and actual C/I request differences. Check structural invariants and the baseline's feasibility. Return a go/narrow/stop evidence packet, including the active fraction, practical-target assessment, comparator decision, unresolved counting limitations, and estimated workload. Then STOP for review before package hardening or any paid inference. Do not force activity, tune on labels, modify benchmark membership, repair the external algorithm, or invent results. Later work requires the recorded scope decision; paid execution additionally requires a frozen protocol, separate authorization, and a spending ceiling.
+
+#### Current handoff (Evaluation Protocol v1.1)
+
+The revised proposal studies zero contrast activity through its causes and its relationship to the observed tradeoffs. That characterization accompanies implementation and official evaluation. Identical complete requests share one response, including when all arms coincide. `EVALUATION-PROTOCOL-v1.1.md` is the scientific protocol. `OPERATIONAL-NOTE-v1.1.md` covers launch and authorization.
+
+Build the modest unpaid package on the Week 1 prototype. Keep the description-only adapter and structural validation. Keep separate implementation traces for P, I, and C. Where those complete requests coincide, report the shared request as L, the reporting label defined by the protocol. Leave the three selectors as they are.
+
+The reference comparison remains C versus U at `r=0.75`. Where the local requests coincide, C is represented by L. Report E versus U separately at E's pinned operating point. An E–U result cannot pass the C–U target. Keep the full denominators: `multiple` 200, `simple_python` 400, and `irrelevance` 240. The 36 other-change cases stay a descriptive split inside that primary denominator.
+
+Scaffold exact-request grouping and provider-usage accounting now. Exact matching requests across U, L, and E share one response within the same case and replicate. Reused outcomes stay linked to that request group. The 10% provider-input target and the 2 percentage-point observed accuracy margin stay as stated. A local token estimate leaves the provider target unresolved. Keep `r`, lambda, the protection cues, and the neighbour limits at the audited values. Paid inference, model selection for execution, replicate count, a spending ceiling, and any rate card require a separate later authorization.
+
+Inspect the information the handler float suffix carries after conversion. Handler-generated text is neither automatically harmless nor automatically necessary. Add no suffix-control arm. Start no second compressor.
 
 ### Research questions and estimands
 
@@ -140,9 +160,13 @@ Assess the 10% actual provider-total-input target at `r=0.75` before fees. If co
 
 Do not spend merely to test token saving already established as unattainable with matched accounting; do not silently lower the target. **Stop and return this packet for review before hardening.** Any approved revision needs reasons, a new configuration/version, and refreshed affected audit outputs. No paid run is authorized by passing this gate.
 
+That stop was the Week 1 gate, and it was followed. The packet on pull request #1 records it and stays unchanged. Under Evaluation Protocol v1.1, inactive contrast is a reported finding. Unpaid implementation, evaluation scaffolding, and reporting continue under the current handoff. Paid inference remains unauthorized.
+
 ### Phase 2 — Week 2: harden only the approved minimal library
 
 **Inputs:** reviewed Phase 1 decision, prototype outputs, short versioned specification, approved E decision.
+
+Evaluation Protocol v1.1 is the scope decision for the unpaid package: the description-only adapter and structural validation, interchangeable local implementations with separate P/I/C traces, exact-request grouping, provider-usage accounting hooks, and reproducible evaluation scaffolding. The protocol leaves `r`, lambda, protections, neighbour limits, and the 10% target at their audited values. It authorizes no paid inference and no second compressor.
 
 **Work:** make the pure transformation reusable and deterministic; finish adapter guards, tracing, token checks, and the minimal external wrapper. Use handcrafted fixtures, not benchmark-answer examples. Preserve prototype outputs under hardening; substantive algorithm changes require a label-blind re-audit and versioned decision.
 

@@ -10,10 +10,12 @@ import sys
 from tool_compression.characterize import characterize_study, file_sha256
 from tool_compression.config import DEFAULT_CONFIG
 from tool_compression.count import study_counters
+from tool_compression.evaluation import evaluation_manifest, summarize_hash_rows
 from tool_compression.external import public_report, run_arm_e
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
 from tool_compression.packet import shared_request_groups, write_packet
 from tool_compression.publish import dump_jsonl, dump_public
+from tool_compression.suffix import float_suffix_report
 
 BFCL_REPOSITORY = "https://github.com/ShishirPatil/gorilla"
 TSCG_REPOSITORY = "https://github.com/SKZL-AI/tscg"
@@ -50,6 +52,13 @@ def main(argv: list[str] | None = None) -> int:
     packet.add_argument("--arm-e", required=True, type=Path)
     packet.add_argument("--out", required=True, type=Path)
 
+    sub.add_parser("manifest")
+    sub.add_parser("inspect-suffix")
+    groups = sub.add_parser("groups")
+    groups.add_argument("--local", type=Path)
+    groups.add_argument("--arm-e", type=Path)
+    groups.add_argument("--out", type=Path)
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -57,6 +66,12 @@ def main(argv: list[str] | None = None) -> int:
         return _arm_e(args)
     if args.command == "packet":
         return _packet(args)
+    if args.command == "manifest":
+        return _manifest()
+    if args.command == "inspect-suffix":
+        return _inspect_suffix()
+    if args.command == "groups":
+        return _groups(args)
     return 2
 
 
@@ -103,6 +118,29 @@ def _packet(args) -> int:
         dump_public(args.arm_e, arm_e)
     write_packet(args.out, characterization, arm_e)
     print(f"wrote {args.out}")
+    return 0
+
+
+def _manifest() -> int:
+    print(json.dumps(evaluation_manifest(), indent=2, sort_keys=True))
+    return 0
+
+
+def _inspect_suffix() -> int:
+    print(json.dumps(float_suffix_report(), indent=2, sort_keys=True))
+    return 0
+
+
+def _groups(args) -> int:
+    root = _repo_root()
+    local_path = args.local or root / "evidence" / "week1_request_hashes.jsonl"
+    arm_path = args.arm_e or root / "evidence" / "week1_arm_e_hashes.jsonl"
+    summary = summarize_hash_rows(_read_jsonl(local_path), _read_jsonl(arm_path))
+    if args.out:
+        dump_public(args.out, summary)
+        print(f"wrote {args.out}")
+    else:
+        print(json.dumps(summary, indent=2, sort_keys=True))
     return 0
 
 

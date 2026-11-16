@@ -32,6 +32,27 @@ def request_hash(request: dict) -> str:
     return hashlib.sha256(dump_request(request).encode("utf-8")).hexdigest()
 
 
+def identity_components(request: dict) -> dict:
+    """Model, messages, catalogue, and the remaining provider options.
+
+    The Week 1 hash is the serialization of the whole request, so these parts
+    are already inside ``request_hash``. The model stays ``UNSELECTED`` until a
+    later execution record selects one. Recheck the hash after that selection.
+    """
+    options = {
+        key: value
+        for key, value in request.items()
+        if key not in {"messages", "model", "tools"}
+    }
+    return {
+        "model": request.get("model"),
+        "messages": request.get("messages"),
+        "catalogue": request.get("tools", []),
+        "provider_options": options,
+        "provisional": request.get("model") == PLACEHOLDER_MODEL,
+    }
+
+
 def cohort_ratio(baseline: list[int], variant: list[int]) -> dict:
     """(mean baseline - mean variant) / mean baseline, the proposal's S form.
 

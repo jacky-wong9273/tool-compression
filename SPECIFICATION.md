@@ -53,3 +53,7 @@ Arm E calls TSCG `compressDescriptions` with no options at the pinned commit. It
 ## What this specification does not do
 
 No second ratio, no second model, no paid call, no official score, and no cache. The utility target remains a target. Week 1 stops at the evidence packet.
+
+## Evaluation protocol v1.1
+
+`week1.0` remains the reference configuration. Evaluation Protocol v1.1 does not retune `r`, the neighbour rule, lambda, or the protection cues. The unpaid scaffold adds exact-request grouping, provider-usage accounting hooks, and an execution record that stays unauthorized. Paid inference is not part of this specification. The handler float-suffix inspection is `FLOAT_SUFFIX_INSPECTION.md`. No preparation output was regenerated, because the audited conversion and selectors were left unchanged.
