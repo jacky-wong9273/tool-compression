@@ -103,6 +103,12 @@ def test_package_version_and_reference_manifest_keep_the_audited_settings():
     assert manifest["preparation_outputs_regenerated"] is False
     assert manifest["second_compressor"] is False
     assert manifest["e_versus_u_can_satisfy_reference_target"] is False
+    assert manifest["l_is_reporting_label_only"] is True
+    assert manifest["representing_c_by_l_tests_contrast"] is False
+    assert manifest["week1_primary_active_fraction_f"] == "0/200"
+    assert manifest["contrast_term_tested"] is False
+    assert manifest["official_accuracy_in_scope"] is False
+    assert manifest["provider_usage_measurement_in_scope"] is False
     assert set(reference_implementations()) == {"U", "P", "I", "C"}
 
 
@@ -266,6 +272,12 @@ def test_packet_hashes_reproduce_the_provisional_group_counts():
         "irrelevance": 0,
     }
     assert summary["c_represented_by"] == "L"
+    assert summary["l_is_reporting_label_only"] is True
+    assert summary["representing_c_by_l_tests_contrast"] is False
+    assert summary["primary_active_fraction_f"] == {"numerator": 0, "denominator": 200}
+    assert summary["contrast_term_tested"] is False
+    assert summary["official_accuracy_in_scope"] is False
+    assert summary["provider_usage_measurement_in_scope"] is False
     assert summary["reporting_label_covers"] == ["P", "I", "C"]
     assert summary["label_is_compressor"] is False
     assert summary["logical_condition_assignments"] == (200 + 400 + 240) * 3
@@ -486,6 +498,12 @@ def test_commands_and_protocol_files_stay_offline():
     assert "Week 1 historical handoff" in plan
     assert "Current handoff (Evaluation Protocol v1.1)" in plan
     assert "Then STOP for review before package hardening" in plan
+    assert "later authorization for continuing unpaid implementation" in plan
+    assert "L is a reporting label only" in plan
+    assert "not evidence that the contrast term was tested" in plan
+    assert "`f` is still 0" in plan
+    assert "separate authorization and a spending ceiling" in plan
+    assert "It is not a current instruction" not in plan
     assert "format" in inspection
     assert "200" in inspection
     assert "**stop**" in packet

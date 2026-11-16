@@ -1,9 +1,9 @@
 """Week 1 go / narrow-to-local / stop rules.
 
-This module records the historical Week 1 gate. Evaluation Protocol v1.1 does
-not treat an inactive-contrast stop as an end to implementation, evaluation,
-and reporting. The packet rendered from these rules stays the historical record.
-Paid inference stays unauthorized either way.
+``recommend`` returns the historical Week 1 decision. An inactive primary
+contrast still stops. Evaluation Protocol v1.1 is a later authorization for
+unpaid implementation. It does not change the decision this module returns,
+and it does not authorize official accuracy or provider-usage measurement.
 
 The utility aim is never marked established here. A local counter cannot meet
 the provider-token target. Structural failure stops. An incomplete or

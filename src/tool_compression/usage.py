@@ -1,8 +1,10 @@
 """Provider-usage accounting hooks. Nothing here contacts a provider.
 
-Missing totals stay missing. The cohort saving is a ratio of means. The 10%
-target is fixed. Logical response usage and physical attempt billing are
-separate ledgers. A local token estimate cannot set the target.
+These hooks do not measure provider usage or official accuracy. That work stays
+out of scope until a separate authorization and a spending ceiling. Missing
+totals stay missing. The cohort saving is a ratio of means. The 10% target is
+fixed. Logical response usage and physical attempt billing are separate
+ledgers. A local token estimate cannot set the target.
 """
 
 from dataclasses import dataclass

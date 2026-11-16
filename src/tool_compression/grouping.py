@@ -1,8 +1,10 @@
 """Exact-request groups within one case and one replicate.
 
 P, I, and C keep their own hashes. When those hashes coincide, the comparison
-condition is the reporting label L. U and E join that group when their request
-hashes match. The same hash in another case or replicate is a different group.
+condition is the reporting label L. L is a reporting label only. Using it where
+requests coincide is not evidence that the contrast term was tested. U and E
+join that group when their request hashes match. The same hash in another case
+or replicate is a different group.
 """
 
 from dataclasses import dataclass

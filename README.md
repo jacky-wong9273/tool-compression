@@ -6,9 +6,9 @@ The revised proposal, `Controlled_Tool_Description_Compression_Proposal_Revised.
 
 `evidence/WEEK1_EVIDENCE_PACKET.md` is the historical Week 1 record, including the stop recommendation. This package does not rewrite it. Paid inference is not included and is not authorized.
 
-The reference configuration stays at `r=0.75`, Jaccard neighbours of at least 1/5, at most two neighbours, and `lambda=1/2`. P, I, and C keep separate implementation traces. Where their complete requests coincide, the reporting label is L. E is TSCG `compressDescriptions` at its own pinned operating point. The reference comparison is C versus U, with C represented by L where those requests coincide. E versus U is a separate report and cannot pass the C–U target. The denominators stay `multiple` 200, `simple_python` 400, and `irrelevance` 240.
+The reference configuration stays at `r=0.75`, Jaccard neighbours of at least 1/5, at most two neighbours, and `lambda=1/2`. P, I, and C keep separate implementation traces. L is a reporting label only. Where their complete requests coincide, those requests are reported as L. E is TSCG `compressDescriptions` at its own pinned operating point. The reference comparison is C versus U at `r=0.75`, with C represented by L where those requests coincide. That representation is not evidence that the contrast term was tested: primary `f` is still 0. E versus U is a separate report and cannot pass the C–U target. The denominators stay `multiple` 200, `simple_python` 400, and `irrelevance` 240.
 
-The 10% mean provider-input target is unresolved until provider usage is measured. Local token counts do not establish it, and the target is unchanged.
+Official accuracy and provider-usage measurement stay out of scope until a separate authorization and a spending ceiling. The 10% mean provider-input target is unchanged and unresolved. Local token counts do not establish it.
 
 This repository does not vendor BFCL or TSCG. Check out the commits named in `evidence/WEEK1_EVIDENCE_PACKET.md`, then run:
 

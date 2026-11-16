@@ -2,8 +2,10 @@
 
 The execution record has slots for the model, options, replicate count, failure
 policy, and analysis configuration. Those slots stay empty, and inference is
-refused. Preparation uses the reference implementations and the description
-boundary. Group counts from the Week 1 hashes are provisional.
+refused. Official accuracy and provider-usage measurement stay out of scope.
+L is a reporting label only. Representing C by L does not test the contrast term.
+Preparation uses the reference implementations and the description boundary.
+Group counts from the Week 1 hashes are provisional.
 """
 
 from collections import Counter
@@ -62,6 +64,12 @@ def evaluation_manifest() -> dict:
         "other_change_cases_not_a_denominator": OTHER_CHANGE_CASES,
         "reference_comparison": "C-U",
         "reference_represented_by": "L where P, I, and C requests coincide",
+        "l_is_reporting_label_only": True,
+        "representing_c_by_l_tests_contrast": False,
+        "week1_primary_active_fraction_f": "0/200",
+        "contrast_term_tested": False,
+        "official_accuracy_in_scope": False,
+        "provider_usage_measurement_in_scope": False,
         "external_comparison": "E-U at the pinned TSCG operating point",
         "e_versus_u_can_satisfy_reference_target": False,
         "target_provider_input_reduction": "1/10",
@@ -238,6 +246,7 @@ def summarize_hash_rows(local_rows: list[dict], arm_rows: list[dict]) -> dict:
     histogram = {name: {} for name in DENOMINATORS}
     labelled = {name: 0 for name in DENOMINATORS}
     unlabelled = {name: 0 for name in DENOMINATORS}
+    contrast_active = {name: 0 for name in DENOMINATORS}
     failures = {name: 0 for name in DENOMINATORS}
     group_counts = {name: 0 for name in DENOMINATORS}
     logical = 0
@@ -253,11 +262,14 @@ def summarize_hash_rows(local_rows: list[dict], arm_rows: list[dict]) -> dict:
             continue
         e_row = arm.get(key)
         e_hash = e_row.get("hash") if e_row and e_row.get("ok") and e_row.get("hash") else None
-        label = local_reporting_label(row["hashes"])
+        hashes = row["hashes"]
+        label = local_reporting_label(hashes)
         if label["coincide"]:
             labelled[category] += 1
         else:
             unlabelled[category] += 1
+        if hashes.get("C") != hashes.get("I"):
+            contrast_active[category] += 1
         conditions = comparison_condition_hashes(row["hashes"], e_hash)
         groups = group_exact_requests(category, str(row["id"]), 0, conditions)
         group_counts[category] += len(groups)
@@ -286,6 +298,15 @@ def summarize_hash_rows(local_rows: list[dict], arm_rows: list[dict]) -> dict:
         "label_is_compressor": False,
         "label_is_selected_winner": False,
         "c_represented_by": "L" if sum(unlabelled.values()) == 0 else "mixed",
+        "l_is_reporting_label_only": True,
+        "representing_c_by_l_tests_contrast": False,
+        "primary_active_fraction_f": {
+            "numerator": contrast_active["multiple"],
+            "denominator": DENOMINATORS["multiple"],
+        },
+        "contrast_term_tested": contrast_active["multiple"] > 0,
+        "official_accuracy_in_scope": False,
+        "provider_usage_measurement_in_scope": False,
         "size_histogram": histogram,
         "provisional_unique_request_groups_per_replicate": per_replicate,
         "logical_condition_assignments": logical,
