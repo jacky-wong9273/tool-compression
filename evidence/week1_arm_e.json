@@ -1,0 +1,155 @@
+{
+  "boundary_compatible": true,
+  "catalogues": 840,
+  "categories": {
+    "irrelevance": {
+      "boundary_failures": 0,
+      "changed_records": 116,
+      "local_cohort_ratio_vs_U": {
+        "cl100k_base": {
+          "mean_of_per_case_ratios": 0.004761,
+          "n": 240,
+          "ratio_of_means": 0.004346,
+          "sum_baseline": 37737,
+          "sum_variant": 37573
+        },
+        "o200k_base": {
+          "mean_of_per_case_ratios": 0.006048,
+          "n": 240,
+          "ratio_of_means": 0.005602,
+          "sum_baseline": 38560,
+          "sum_variant": 38344
+        }
+      },
+      "records": 240,
+      "records_distinct_from_U": 116,
+      "runtime_failures": 0
+    },
+    "multiple": {
+      "boundary_failures": 0,
+      "changed_records": 149,
+      "local_cohort_ratio_vs_U": {
+        "cl100k_base": {
+          "mean_of_per_case_ratios": 0.003232,
+          "n": 200,
+          "ratio_of_means": 0.003408,
+          "sum_baseline": 71297,
+          "sum_variant": 71054
+        },
+        "o200k_base": {
+          "mean_of_per_case_ratios": 0.004637,
+          "n": 200,
+          "ratio_of_means": 0.004713,
+          "sum_baseline": 72135,
+          "sum_variant": 71795
+        }
+      },
+      "records": 200,
+      "records_distinct_from_U": 149,
+      "runtime_failures": 0
+    },
+    "simple_python": {
+      "boundary_failures": 0,
+      "changed_records": 154,
+      "local_cohort_ratio_vs_U": {
+        "cl100k_base": {
+          "mean_of_per_case_ratios": 0.004254,
+          "n": 400,
+          "ratio_of_means": 0.00401,
+          "sum_baseline": 65335,
+          "sum_variant": 65073
+        },
+        "o200k_base": {
+          "mean_of_per_case_ratios": 0.005026,
+          "n": 400,
+          "ratio_of_means": 0.00473,
+          "sum_baseline": 66596,
+          "sum_variant": 66281
+        }
+      },
+      "records": 400,
+      "records_distinct_from_U": 154,
+      "runtime_failures": 0
+    }
+  },
+  "check_completed": true,
+  "description_change_classes": {
+    "case_or_punctuation_only": 505,
+    "substantive": 292,
+    "unchanged": 3807
+  },
+  "description_change_classes_scope": "catalogues_with_no_runtime_or_boundary_failure",
+  "description_fields_compared": 4604,
+  "documented_policy": "SDM stripFiller on OpenAI function and top-level parameter descriptions",
+  "entrypoint": "compressDescriptions",
+  "local_cap_applied": false,
+  "options": null,
+  "output_repaired": false,
+  "preprocessing_seconds": 0.506,
+  "principles": {
+    "SDM": 840
+  },
+  "provenance": {
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "bfcl_repository": "https://github.com/ShishirPatil/gorilla",
+    "categories": [
+      "multiple",
+      "simple_python",
+      "irrelevance"
+    ],
+    "conversion": "convert_to_tool(..., GORILLA_TO_OPENAPI, OPENAI_COMPLETIONS)",
+    "data_files": {
+      "BFCL_v4_irrelevance.json": "2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6",
+      "BFCL_v4_multiple.json": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+      "BFCL_v4_simple_python.json": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991"
+    },
+    "handler": "OpenAICompletionsHandler._query_FC",
+    "source_files": {
+      "bfcl_eval/__main__.py": "c70b49a7541abeaa399d193dd0d94d535f83ce415bfbbf7aa217c2370d14fcb6",
+      "bfcl_eval/constants/category_mapping.py": "ef31291f17c1ac0504b246345bd56e6bac44fec4239741e158f9fcf2c819cb35",
+      "bfcl_eval/constants/type_mappings.py": "1702fb67afbe2c492608e58e2b7d02e46381f50166b47f3c952f76e34c7cd3bd",
+      "bfcl_eval/eval_checker/ast_eval/ast_checker.py": "2aae7a68461a8f76c0be3894c8901b66b56967a1989d3ab066051e3fb97f1538",
+      "bfcl_eval/eval_checker/eval_runner.py": "b1033684908819ccb312d4d0e2c563359d69247412f00206013b2292b0e3ce81",
+      "bfcl_eval/model_handler/api_inference/openai_completion.py": "f0bc8734a3173df79e52fa6d757ac6b2585f7582e2f19ac7cddf5170269dd3f7",
+      "bfcl_eval/model_handler/base_handler.py": "5ac4bdd139a7fe15cb9ee6cd75735ec27f9b25478ff3d82d2ea5208d832969e4",
+      "bfcl_eval/model_handler/utils.py": "f78fd3edce603b333dc9a88ee2c041dc547d51f71aa449ffebc044c4b1e353f3"
+    },
+    "version_prefix": "BFCL_v4"
+  },
+  "runtime_failures": 0,
+  "shared_request_groups": {
+    "irrelevance": {
+      "1": 75,
+      "2": 129,
+      "3": 36
+    },
+    "multiple": {
+      "1": 28,
+      "2": 106,
+      "3": 66
+    },
+    "simple_python": {
+      "1": 186,
+      "2": 194,
+      "3": 20
+    }
+  },
+  "source_documents": {
+    "agent_plan_present": true,
+    "agent_plan_sha256": "6eaa17cd4c87327e1090f1e41db7fcac3d8ff56904300291e6e19cca59494bee",
+    "conflict_rule": "The plan names Controlled_Tool_Description_Compression_Proposal.tex. The revised proposal is the source of truth.",
+    "revised_proposal_present": true,
+    "revised_proposal_sha256": "d6f42a872d850b979fee7a3264c77c69e6d47bbedab38cb5cc07c7d033ebd3fd",
+    "unrevised_proposal_named_by_plan_present": false
+  },
+  "tscg": {
+    "commit": "dfcba63d6190285c45a7c412268dbcc757664ab2",
+    "entrypoint": "packages/core/src/index.ts compressDescriptions",
+    "options": null,
+    "package": "@tscg/core",
+    "repository": "https://github.com/SKZL-AI/tscg",
+    "version": "1.4.3"
+  },
+  "tscg_estimate_tokens_used_as_provider_usage": false,
+  "violation_shapes": {}
+}

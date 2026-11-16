@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tool-compression"
+version = "0.2.0"
+description = "Description-only tool compression and the unpaid Evaluation Protocol v1.1 scaffold."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Jacky Wong" }]
+dependencies = ["tiktoken==0.14.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.scripts]
+tool-compression = "tool_compression.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
