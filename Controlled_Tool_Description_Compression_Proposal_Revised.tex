@@ -1,0 +1,142 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\urlstyle{same}
+\title{A Controlled Study of Tool-Description Compression for Native Function Calling}
+\author{\IEEEauthorblockN{Jacky Wong}
+\IEEEauthorblockA{UID: 3035687479\\
+\href{mailto:obwong.jacky@connect.hku.hk}{obwong.jacky@connect.hku.hk}\\
+The University of Hong Kong}}
+\begin{document}
+\maketitle
+\begin{abstract}
+Tool-description compression offers a localized way to reduce native function-calling input tokens, although short descriptions and conservative retention may limit its effect. This project will develop a modest reusable package and conduct a controlled empirical study on original public benchmark inputs. Uncompressed descriptions, three local extractive conditions, and a planned external native description-only comparator will be compared using unchanged official evaluation. Initial label-blind characterization of actual prepared requests will inform implementation and interpretation throughout the study. The analysis will consider accuracy, achieved total input tokens, preprocessing overhead, coverage, and uncertainty together. A neighbour-relative lexical feature provides a secondary ablation; broader method tradeoffs provide the evidence about practical utility. Positive, negligible, and adverse effects will contribute to understanding the limits of this intervention.
+\end{abstract}
+
+\section{Project Goal}
+\subsection{Motivation and Research Questions}
+Native function-calling requests combine a user's task with tool names, structured parameter schemas, and explanatory prose. Shortening that prose may save tokens while removing restrictions, units, defaults, or distinctions absent from structured fields. Preserving schemas therefore provides structural consistency rather than a guarantee of semantic fidelity.
+
+This project will investigate three questions:
+\begin{enumerate}
+\item \textbf{Compression opportunity:} How much compression is achieved on original native requests, and how do short descriptions and the protection policy shape that opportunity?
+\item \textbf{Practical tradeoffs:} What accuracy--token--overhead tradeoffs emerge across simple local methods and an existing native description-only compressor?
+\item \textbf{Incremental feature effect:} What changes when neighbour-relative lexical distinctiveness is added to an otherwise independent selector?
+\end{enumerate}
+The main contribution is empirical evidence supported by a reusable, modest package. A distinctive phrase can be irrelevant, while lexically dissimilar tools can still compete; the neighbour feature is a cheap heuristic to investigate rather than a new theory. Its ablation complements, rather than replaces, the wider comparison.
+
+\subsection{Research Outcomes and Practical Reference}
+The research outputs will comprise a full selected-input characterization, a deterministic description-only package, an official-evaluator comparison, and reproducible analyses of tradeoffs and uncertainty. Engineering results, practical utility, and any incremental feature advantage are distinct outcomes; a new compression family or a positive result is not the premise of the contribution.
+
+The prespecified practical-utility reference is contrast-augmented extraction (C) versus uncompressed input (U), at the provisional local retained cap $r=0.75$ on the primary category. The observed target is at least 10\% reduction in mean actual provider total input tokens with no more than two percentage points of official accuracy loss. For the same complete paired cohort,
+\begin{equation}
+S_{CU}=\frac{\bar{T}_U-\bar{T}_C}{\bar{T}_U},
+\qquad
+\widehat{\Delta}_{CU}=\widehat{A}_C-\widehat{A}_U,
+\end{equation}
+where $T$ is provider-reported total input tokens and $A$ is official accuracy. The reference target is $S_{CU}\geq0.10$ and $\widehat{\Delta}_{CU}\geq-0.02$. This ratio of cohort means differs from an average of per-case percentage savings. Full-category attainment will be assessed with complete paired outcomes and actual U/C usage; partial-coverage estimates will carry their coverage limitations, with missing usage left missing.
+
+C is a named reference configuration, not a presumed winner. All local conditions and the external comparator contribute substantive evidence about competitiveness. Observed tradeoff frontiers will be descriptive rather than an accuracy-selected replacement for this reference. Meeting the observed accuracy margin is distinct from establishing statistical non-inferiority, and target attainment is distinct from the overall research contribution.
+
+\subsection{Scope and Related Work}
+The local methods will be query-agnostic, deterministic, stateless, CPU-based, and extractive. Their input is the current converted tool catalogue. Training, retrieval, query-aware selection, new frameworks or serializations, and compression of history, memory, or tool results lie outside this description-only scope. The benchmark's original tools and candidate sets provide the study setting, without synthetic distractors or a new benchmark.
+
+Description-only compression has established precedents. Xu et al. study description summaries while checking that other fields remain unchanged \cite{xu}. TSCG documents the native interface \texttt{compressDescriptions} \cite{tscgcode}; its headline alternative-format results provide evidence about a different intervention rather than the performance of that native mode \cite{tscgpaper}. LLMLingua offers related compression and selective-retention mechanisms \cite{llmlingua}. EasyTool processes tool documentation and identifies neglected inter-tool dependencies as a limitation, rather than demonstrating a rival-aware compressor \cite{easytool}.
+
+Sp\"{a}rck Jones links term rarity with retrieval discrimination \cite{specificity}. MMR balances query relevance against diversity relative to already selected documents or passages \cite{mmr}. Here, lexical distinctiveness is measured against fixed natural neighbours in the current catalogue: it is neither query relevance nor an iterative selected-set diversity penalty. These historical connections motivate a modest feature ablation. Corpus-wide headroom, comparator implementation compatibility, and model outcomes remain empirical questions for this project.
+
+\section{Potential Solutions}
+\subsection{A Common Native Description Boundary}
+Every condition will start after the same pinned official/provider conversion of each original case. An adapter will identify exact allowlisted paths for genuine function and parameter-schema description strings. Candidate count and order, function and property names, non-description schema content, constraints, defaults, messages, provider options, and every other non-description value will remain immutable. Embedded examples, default-value objects, and unknown metadata retain their original roles and values.
+
+Type- and order-sensitive validation will compare all content outside the allowlisted strings. Unsupported forms will pass through unchanged and remain in the original denominators. Preparation or structural-validation failures will be recorded separately from validated requests supplied to inference. The adapter profile will reflect the actual benchmark/provider representations rather than a general-purpose schema parser. This boundary isolates the description intervention while leaving semantic effects to evaluation.
+
+\subsection{Shared Extraction and the Local Conditions}
+The local conditions are U, protected-prefix extraction (P), independent extraction (I), and contrast-augmented extraction (C). P/I/C will share conservative sentence/newline segmentation, protection, field budgets, and rendering. Ambiguous text can remain a single span. Retained spans will preserve original wording and order, with documented joining whitespace; unchanged fields will retain their original form.
+
+The shared protection policy will retain the first span and spans containing recognizable restrictions, negation, conditions, units, or defaults. A protected single-span description consequently remains unchanged while other fields may compress. Protection is a fallible lexical heuristic, not a semantic guarantee. Its retained content and effects on compression will be characterized explicitly.
+
+P will take optional spans in source order until the next span exceeds the field budget. I will rank optional spans using position and frequency features computed from that tool's own original descriptions. C will add a neighbour-relative score:
+\begin{equation}
+s_C(u)=s_I(u)+\lambda q_i(u),
+\end{equation}
+where $q_i(u)$ expresses the lexical rarity of span $u$ relative to tool $i$'s fixed neighbours. A provisional setup uses unigram/bigram features and Jaccard neighbours derived from original descriptions and function/property names, with similarity at least $0.2$, at most two neighbours, and $\lambda=0.5$.
+
+I/C will share deterministic score-per-token ranking, tie-breaking, and whole-span selection, skipping optional spans that exceed the rendered field's budget. Features come from the originals; zero contrast weight or absent neighbours therefore reproduces I's decisions. A nonzero contrast score can still leave both selected text and the complete request unchanged. These settings are starting choices to characterize, not established findings.
+
+\subsection{Per-Field Budgets and Achieved Tokens}
+For field $j$, let $d_j$ be its original token count and $p_j$ the token count of its protected-only rendering. With nominal cap $\lfloor r d_j\rfloor$, the effective cap is
+\begin{equation}
+b_j(r)=\max\{\lfloor r d_j\rfloor,p_j\},\quad p_j\leq d_j.
+\end{equation}
+When $p_j>d_j$, the field will retain its original form to avoid expansion. Otherwise, selection proceeds within $b_j(r)$, with actual token recounting of each complete candidate rendering. Budgets stay local to each field. Protection-floor uplift, the frozen-field exception, and achieved retention will be reported separately.
+
+The nominal ratio specifies a cap rather than an exact retained fraction. Protection can lift retention above that nominal cap, while whole-span selection can leave it below the cap. Thus $r=0.75$ does not imply exactly 25\% description-token saving. Shared caps also need not produce equal achieved tokens across P/I/C.
+
+Complete prepared requests will be recounted alongside individual fields. Standalone description-token sums are diagnostics rather than additive components of provider request totals. Protected-only renderings characterize this policy's retained content, not a global compression optimum. Local complete-request counts will be identified as estimates unless their correspondence to provider accounting is established; the practical target concerns actual provider usage.
+
+\subsection{The Planned External Comparator}
+An existing native description-only compressor (E) is a core planned condition, prioritizing TSCG's documented \texttt{compressDescriptions} interface. Early implementation work will test the selected entry point, invoked transformations, dependencies, outputs, and compliance with the same native boundary. The documented interface provides a starting point; runnable compatibility has yet to be established.
+
+E will retain its own documented protection and compression policy at a pinned version, configuration, and operating point. A transparent runtime bridge can connect it to the evaluation pipeline while preserving its algorithm. Initialization, preprocessing, resource use, requested settings, and achieved tokens will be reported. Local protection rules are specific to P/I/C; equal requested ratios across methods would not imply equal policies or costs. Incompatible outputs will be recorded as integration findings rather than repaired variants attributed to the original method.
+
+Comparator integration will occupy a bounded part of the project, with LLMLingua2 as a fallback candidate where its native-interface and resource needs fit that effort. An unavailable compatible external implementation will leave an explicit evidence gap: the local comparison can characterize feasibility and feature effects, but the planned external comparison would remain unanswered. Local ablation results alone provide insufficient evidence of practical competitiveness with established compressors.
+
+\section{Experimental Plan}
+\subsection{Benchmark and Comparison Design}
+The complete original BFCL \texttt{multiple} category will be primary, with complete \texttt{simple\_python} and \texttt{irrelevance} categories as controls \cite{bfclrepo,bfclmapping}. Original tasks, candidates, order, labels, and official scoring will be preserved. The original category denominators include unchanged and unsupported pass-through cases, so measured effects represent the selected corpus rather than a compressed-only subset.
+
+The core design uses one native function-calling model, uncompressed U, P/I/C at the primary local cap, and E at its own pinned operating point. The model/provider remains to be selected and recorded before accuracy scoring. C--U at $r=0.75$ is the prespecified reference utility configuration; C--I is the secondary feature ablation. P--U, I--U, and E--U are substantive tradeoff comparisons alongside C--U. Additional local ratios of $0.50$ and $0.25$, balanced repetitions, or a second model are possible exploratory extensions within the remaining time and measured workload. Results will describe this intervention on named categories rather than a full BFCL leaderboard evaluation.
+
+\subsection{Prepared-Input Characterization}
+The first phase will pin the dataset, category mapping, conversion, and evaluator, and separate labels from input preparation. A minimal P/I/C prototype will generate actual intended outputs across all three complete categories. Early external-mode integration will accompany this work. The resulting characterization will inform the reusable implementation and subsequent analysis.
+
+Measurements will cover optional spans, protection reasons and floor uplift, unsupported forms, natural neighbours, actual selected text, and complete-request changes. Short or single-unit originals will be distinguished from optional material retained by protection, with overlapping causes reported as such. Complete-request token estimates, provider-accounting uncertainties, baseline context feasibility, and implementation compatibility will inform the expected workload and runtime. No corpus-wide headroom or request count is assumed in advance.
+
+For the primary category of $N$ cases, define the fraction of distinct C/I requests as
+\begin{equation}
+f=\frac{\#\{c:R_{cC}\ne R_{cI}\}}{N},
+\end{equation}
+where $R$ denotes the complete request, including model and provider configuration. With same-case, same-replicate response sharing and complete scoring, the observed correctness difference satisfies $|\widehat{\Delta}_{CI}|\leq f$. This is an interpretation bound: only cases with distinct requests can contribute a paired correctness difference. Small $f$ alone does not bound the magnitude of mean token differences, which also depends on the size of request changes.
+
+At $f=0$, C and I represent the same intervention under that setting. Low headroom, protective retention, and absent contrast activity will be studied through their causes and their relationship to the observed tradeoffs. Positive $f$ describes activity rather than statistical power. The characterization will accompany implementation and official evaluation, including baseline outcomes where compression leaves requests unchanged.
+
+\subsection{Input Diagnostics and Reproducible Configuration}
+Function-name overlap, schema overlap, natural neighbours, and repeated tool signatures will serve as input-derived proxies. They describe lexical or structural similarities rather than establish that names suffice or prose is necessary. An optional small review of original/compressed pairs will be blinded to outcomes and method identity where feasible, include an uncertain category, and use sample selection and review questions specified before scores. It remains diagnostic, with the original evaluation denominator intact.
+
+Development will use handcrafted fixtures and label-blind inputs rather than an assumed official development split. A versioned configuration recorded before accuracy scoring will capture segmentation, protections, lexical features, tie-breaking, arms, model/options, counting methods, comparator settings, failure handling, and the analysis plan. Input-informed refinements will have documented methodological reasons; observed activity itself is not the tuning objective. Outcome-informed investigations will be identified as exploratory.
+
+The pre-scoring uncertainty plan will examine duplicate inputs and shared original tool signatures as dependence proxies. A paired component bootstrap is a feasible approach when the resulting component structure supports meaningful resampling. Few components or dominant components will limit inferential precision; proxy grouping also leaves uncertainty about residual dependence. The analysis will report fixed-corpus paired effects first, rather than assume independent cases or automatic generalization.
+
+\subsection{Model Execution and Official Outcomes}
+Identical complete requests will be grouped within each case and replicate, with one response shared across their logical arms. Request identity includes the model, messages, catalogue, and provider options. Different cases and replicates remain separate groups. When all arms coincide, a single response supplies the official baseline and per-arm outcomes with zero intervention contrast; sharing it across arms creates no additional independent observations.
+
+A counterbalanced execution order, fixed provider settings and concurrency, and recorded caching conditions will support comparison. A bounded retry policy will address transient transport failures; incorrect answers and malformed generated calls retain their observed outcomes. Logs will include every physical attempt, model/backend changes, missing outputs, and potentially billed timeouts. Estimates of time and cost will derive from the prepared distinct-request workload, verified provider rates, expected outputs, comparator preprocessing, and retry allowance. Logical per-arm token use will be reported separately from physical experiment spending, where each shared call and actual retry is counted once.
+
+The study will use unchanged official AST correctness and category aggregation \cite{bfcladapter,bfclast,bfclrunner}. For \texttt{irrelevance}, valid no-call responses and parse/decode failures will also be distinguished diagnostically, since the inspected evaluation path may treat malformed calls as abstention. Technical missingness remains separate from valid no-call outcomes. Missing outputs needed by official scoring will be reflected in incomplete official status. An additional all-case operational summary can assign technical missingness zero while remaining explicitly distinct from the official score; paired-complete sensitivities will show the effect of available coverage.
+
+\subsection{Measurements and Interpretation}
+Each arm's original denominator will accompany prepared, supported, unchanged, pass-through, attempted, received, and scorer-accepted counts. Measurements will distinguish description tokens, local complete-request estimates, actual provider total input/cached/output usage, preprocessing time, request latency, retries, and cost. Usage coverage will be reported directly. Initialization and repeated or cached compressor operation will be separated; token savings need not translate proportionally into billing or latency savings.
+
+Paired accuracy differences and gain/loss counts will accompany achieved token use and overhead across U/P/I/C/E. Sparse discordance, missing outcomes, or weakly supported dependence assumptions can make uncertainty estimates uninformative. Nonsignificance or a degenerate interval does not establish equivalence or true non-inferiority. The two-point observed target and broader generalization therefore remain separate interpretations.
+
+Shared local caps can produce different retention: a C--I gain may accompany C retaining more text. The ablation estimates the effect of adding the feature, including its selection consequences, rather than a token-independent semantic effect. Achieved-cost strata and observed frontiers will be descriptive. Negative or negligible tradeoffs will be interpreted alongside protection, input composition, comparator availability, and the limits of the chosen model/provider.
+
+\begin{thebibliography}{99}
+\bibitem{bfclrepo} S. Patil et al., ``Berkeley Function Calling Leaderboard,'' official repository. \url{https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard}.
+\bibitem{bfclmapping} BFCL, category mapping, source file. \url{https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/constants/category_mapping.py}.
+\bibitem{bfcladapter} BFCL, native OpenAI completion adapter, source file. \url{https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/model_handler/api_inference/openai_completion.py}.
+\bibitem{bfclast} BFCL, AST evaluator, source file. \url{https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/eval_checker/ast_eval/ast_checker.py}.
+\bibitem{bfclrunner} BFCL, evaluation runner, source file. \url{https://github.com/ShishirPatil/gorilla/blob/main/berkeley-function-call-leaderboard/bfcl_eval/eval_checker/eval_runner.py}.
+\bibitem{xu} Y. Xu et al., ``Concise and Precise Context Compression for Tool-Using Language Models,'' Appendix A.2, arXiv:2407.02043. \url{https://arxiv.org/html/2407.02043}.
+\bibitem{tscgcode} SKZL-AI, ``TSCG,'' README, Description-Only Mode. \url{https://github.com/SKZL-AI/tscg}.
+\bibitem{tscgpaper} F. Sakizli, ``TSCG: Deterministic Tool-Schema Compilation for Agentic LLM Deployments,'' arXiv:2605.04107, 2026. \url{https://arxiv.org/abs/2605.04107}.
+\bibitem{llmlingua} Microsoft, ``LLMLingua,'' project documentation and implementation. \url{https://github.com/microsoft/LLMLingua}.
+\bibitem{easytool} ``EasyTool,'' Sections 4.1--4.2 and Limitations, arXiv:2401.06201v3. \url{https://arxiv.org/html/2401.06201v3}.
+\bibitem{specificity} K. Sp\"{a}rck Jones, ``A statistical interpretation of term specificity and its application in retrieval,'' \emph{Journal of Documentation}, vol. 28, no. 1, pp. 11--21, 1972, section ``Weighting by specificity,'' doi: 10.1108/eb026526. \url{https://www.cl.cam.ac.uk/archive/ksj21/ksjdigipapers/jdoc72.pdf}.
+\bibitem{mmr} J. Carbonell and J. Goldstein, ``The use of MMR, diversity-based reranking for reordering documents and producing summaries,'' in \emph{Proc. SIGIR}, 1998, Sec. 2, doi: 10.1145/290941.291025. \url{https://www.cs.cmu.edu/~./jgc/publication/MMR_DiversityBased_Reranking_SIGIR_1998.pdf}.
+\end{thebibliography}
+\end{document}
