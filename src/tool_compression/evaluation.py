@@ -1,17 +1,19 @@
-"""Reproducible evaluation scaffold for protocol v1.1. No model is called.
+"""Reproducible evaluation scaffold for protocol v1.1.
 
-The execution record has slots for the model, options, replicate count, failure
-policy, and analysis configuration. Those slots stay empty, and inference is
-refused. Official accuracy and provider-usage measurement stay out of scope.
-L is a reporting label only. Representing C by L does not test the contrast term.
-Preparation uses the reference implementations and the description boundary.
-Group counts from the Week 1 hashes are provisional.
+The default execution record stays empty and unpaid. A frozen validation-flight
+record can authorize the DeepSeek client; an incomplete record cannot. Official
+accuracy and the 10% provider target are not settled from an unfilled or unrun
+record. L is a reporting label only. Representing C by L does not test the
+contrast term. Preparation uses the reference implementations and the
+description boundary. Group counts from the Week 1 hashes are provisional
+under model UNSELECTED.
 """
 
 from collections import Counter
 from copy import deepcopy
 
 from tool_compression.config import DEFAULT_CONFIG, PLACEHOLDER_MODEL, SPEC_VERSION, Config
+from tool_compression.flight_spec import flight_record_gaps
 from tool_compression.grouping import (
     comparison_condition_hashes,
     group_exact_requests,
@@ -51,7 +53,7 @@ REQUIRED_BEFORE_INFERENCE = (
 
 
 class PaidInferenceRefused(RuntimeError):
-    """This package has no provider client and no paid-inference authorization."""
+    """The execution record does not permit a provider call."""
 
 
 def evaluation_manifest() -> dict:
@@ -76,7 +78,8 @@ def evaluation_manifest() -> dict:
         "observed_accuracy_loss_limit": "1/50",
         "accuracy_limit_is_non_inferiority": False,
         "paid_inference_authorized": False,
-        "paid_inference_implemented": False,
+        "paid_inference_implemented": True,
+        "paid_inference_scope": "validation-and-prep flight only; the default record stays unauthorized",
         "second_compressor": False,
         "implementation_corrections": [],
         "preparation_outputs_regenerated": False,
@@ -103,19 +106,34 @@ def execution_record_gaps(record: dict) -> list[str]:
     gaps = [key for key in REQUIRED_BEFORE_INFERENCE if record.get(key) is None]
     if not record.get("paid_inference_authorized"):
         gaps.append("paid_inference_authorized")
+    for name in flight_record_gaps(record):
+        if name not in gaps:
+            gaps.append(name)
     return gaps
 
 
 def assert_inference_allowed(record: dict) -> None:
+    """Allow only a complete, authorized, frozen validation record.
+
+    The empty template is refused. Thinking must be disabled and the ceiling
+    must be the locked ¥50 before any provider call.
+    """
     gaps = execution_record_gaps(record)
     if gaps:
         raise PaidInferenceRefused(
-            "Paid inference is not authorized. Missing execution-record fields: "
+            "Paid inference is refused. Incomplete or unauthorized execution record: "
             + ", ".join(gaps)
         )
-    raise PaidInferenceRefused(
-        "Paid inference is not implemented in this package."
-    )
+
+
+def freeze_execution_record(record: dict) -> dict:
+    """Return a frozen copy. Refuses a record that would still be incomplete."""
+    candidate = deepcopy(record)
+    candidate["frozen"] = True
+    gaps = execution_record_gaps(candidate)
+    if gaps:
+        raise ValueError("cannot freeze an incomplete execution record: " + ", ".join(gaps))
+    return candidate
 
 
 def study_target_status(record: dict, token: dict | None = None, accuracy: dict | None = None) -> dict:
@@ -228,6 +246,7 @@ def prepare_case(
         "label_is_selected_winner": False,
         "traces": traces,
         "groups": [group.as_dict() for group in groups],
+        "catalogues": {name: deepcopy(result["catalogue"]) for name, result in outputs.items()},
         "identity_provisional": model == PLACEHOLDER_MODEL,
         "structural_violations": [],
     }

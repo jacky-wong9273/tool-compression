@@ -1,16 +1,39 @@
-"""Week 1 commands. Preparation only: no model calls and no scoring."""
+"""Week 1 preparation commands, plus an opt-in validation flight.
+
+The preparation commands do not call a model. ``validate-flight`` calls
+DeepSeek only when ``--no-api`` is absent. The key is read from the
+environment variable ``DEEPSEEK_API_KEY`` and is never a flag or a file.
+"""
 
 from pathlib import Path
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 
 from tool_compression.characterize import characterize_study, file_sha256
 from tool_compression.config import DEFAULT_CONFIG
 from tool_compression.count import study_counters
-from tool_compression.evaluation import evaluation_manifest, summarize_hash_rows
+from tool_compression.evaluation import (
+    PaidInferenceRefused,
+    assert_inference_allowed,
+    evaluation_manifest,
+    freeze_execution_record,
+    summarize_hash_rows,
+)
+from tool_compression.flight_spec import validation_flight_record
+from tool_compression.provider import MissingApiKey, scrub
+from tool_compression.runner import (
+    attach_provisional,
+    load_cases_file,
+    prepare_study_cases,
+    read_hash_rows,
+    run_validation_flight,
+    select_prepared_sample,
+    select_validation_sample,
+)
 from tool_compression.external import public_report, run_arm_e
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
 from tool_compression.packet import shared_request_groups, write_packet
@@ -59,6 +82,29 @@ def main(argv: list[str] | None = None) -> int:
     groups.add_argument("--arm-e", type=Path)
     groups.add_argument("--out", type=Path)
 
+    freeze = sub.add_parser(
+        "freeze-record",
+        help="Write the frozen validation-flight execution record. Does not call a provider.",
+    )
+    freeze.add_argument("--out", required=True, type=Path)
+
+    flight = sub.add_parser(
+        "validate-flight",
+        help=(
+            "Run the validation-and-prep flight. Stage B starts only after stage A validates. "
+            "This is not an official settlement. Pass --no-api to avoid the network."
+        ),
+    )
+    flight.add_argument("--record", required=True, type=Path)
+    flight.add_argument("--out", required=True, type=Path)
+    flight.add_argument("--bfcl-root", type=Path)
+    flight.add_argument("--tscg-root", type=Path)
+    flight.add_argument("--cases", type=Path, help="Prepared cases for a --no-api harness run.")
+    flight.add_argument("--local-hashes", type=Path)
+    flight.add_argument("--arm-e-hashes", type=Path)
+    flight.add_argument("--no-api", action="store_true", help="Do not call DeepSeek and do not read an API key.")
+    flight.add_argument("--stage", choices=("all", "a", "b"), default="all")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -72,6 +118,10 @@ def main(argv: list[str] | None = None) -> int:
         return _inspect_suffix()
     if args.command == "groups":
         return _groups(args)
+    if args.command == "freeze-record":
+        return _freeze_record(args)
+    if args.command == "validate-flight":
+        return _validate_flight(args)
     return 2
 
 
@@ -129,6 +179,100 @@ def _manifest() -> int:
 def _inspect_suffix() -> int:
     print(json.dumps(float_suffix_report(), indent=2, sort_keys=True))
     return 0
+
+
+def _freeze_record(args) -> int:
+    record = freeze_execution_record(validation_flight_record())
+    from tool_compression.runner import _write_json
+
+    _write_json(args.out, record, None)
+    print(f"wrote {args.out}")
+    return 0
+
+
+def _validate_flight(args) -> int:
+    live = not args.no_api
+    if args.cases and live:
+        print("A --cases file is only for --no-api harness runs.", file=sys.stderr)
+        return 2
+    if args.cases is None and (args.bfcl_root is None or args.tscg_root is None):
+        print("A flight needs --bfcl-root and --tscg-root, or --no-api --cases.", file=sys.stderr)
+        return 2
+    try:
+        record = json.loads(args.record.read_text(encoding="utf-8"))
+        assert_inference_allowed(record)
+    except (OSError, json.JSONDecodeError, PaidInferenceRefused) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    try:
+        if args.cases is not None:
+            return _flight_from_cases(args, record, live)
+        return _flight_from_study(args, record, live)
+    except MissingApiKey as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    except PaidInferenceRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    except Exception as exc:
+        secret = os.environ.get("DEEPSEEK_API_KEY")
+        if not secret or not secret.strip():
+            secret = None
+        print(scrub(str(exc), secret)[:400], file=sys.stderr)
+        return 2
+
+
+def _flight_from_cases(args, record, live: bool) -> int:
+    cases = load_cases_file(args.cases)
+    if args.stage == "b":
+        result = run_validation_flight(record, args.out, cases_b=cases, live=live, stage="b")
+        return _flight_status(result)
+    sample = select_prepared_sample(cases)
+    result = run_validation_flight(record, args.out, cases_a=sample, live=live, stage="a")
+    if args.stage == "a" or not result.get("stage_a_validated"):
+        return _flight_status(result)
+    result = run_validation_flight(record, args.out, cases_b=cases, live=live, stage="b")
+    return _flight_status(result)
+
+
+def _flight_from_study(args, record, live: bool) -> int:
+    from tool_compression.load import load_study
+
+    root = _repo_root()
+    local_path = args.local_hashes or root / "evidence" / "week1_request_hashes.jsonl"
+    arm_path = args.arm_e_hashes or root / "evidence" / "week1_arm_e_hashes.jsonl"
+    local_rows = read_hash_rows(local_path)
+    arm_rows = read_hash_rows(arm_path)
+    script = _default_script()
+    study = load_study(args.bfcl_root)
+    if args.stage == "b":
+        cases = prepare_study_cases(study, args.tscg_root, script, timeout=1800)
+        attach_provisional(cases, local_rows, arm_rows)
+        result = run_validation_flight(record, args.out, cases_b=cases, live=live, stage="b")
+        return _flight_status(result)
+    sample = select_validation_sample(local_rows, arm_rows)
+    ids = [(item["category"], item["id"]) for item in sample]
+    cases_a = prepare_study_cases(study, args.tscg_root, script, ids=ids, timeout=300)
+    attach_provisional(cases_a, local_rows, arm_rows)
+    result = run_validation_flight(record, args.out, cases_a=cases_a, live=live, stage="a")
+    if args.stage == "a" or not result.get("stage_a_validated"):
+        return _flight_status(result)
+    cases_b = prepare_study_cases(study, args.tscg_root, script, timeout=1800)
+    attach_provisional(cases_b, local_rows, arm_rows)
+    result = run_validation_flight(record, args.out, cases_b=cases_b, live=live, stage="b")
+    return _flight_status(result)
+
+
+def _flight_status(result: dict) -> int:
+    print(
+        "purpose=validation-and-prep "
+        f"stage_a_validated={result.get('stage_a_validated')} "
+        f"stage_b_started={result.get('stage_b_started')} "
+        f"stage_b_completed={result.get('stage_b_completed')} "
+        f"stop_reason={result.get('stop_reason')} "
+        f"target_reached={result.get('target_reached')}"
+    )
+    return 0 if result.get("ok") else 2
 
 
 def _groups(args) -> int:

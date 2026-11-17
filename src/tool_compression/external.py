@@ -192,7 +192,24 @@ def attach_distinct(report: dict) -> dict:
     return report
 
 
-def _invoke(tscg_root: Path, script_path: Path, catalogs: list) -> dict:
+def compress_external_catalogues(catalogues: list, tscg_root: Path, script_path: Path, *, timeout: int = 300) -> list:
+    """Run pinned TSCG ``compressDescriptions`` on already converted catalogues.
+
+    The returned catalogues are JSON-canonicalized the same way arm E compares
+    them. This does not call a model.
+    """
+    invoked = _invoke(Path(tscg_root), Path(script_path), catalogues, timeout=timeout)
+    if not invoked["ok"]:
+        failure = invoked.get("failure") or {}
+        kind = failure.get("kind", "failed")
+        raise RuntimeError(f"external comparator failed ({kind})")
+    produced = invoked["catalogs"]
+    if len(produced) != len(catalogues):
+        raise RuntimeError("external comparator returned a different number of catalogues")
+    return [_json_numbers(item) for item in produced]
+
+
+def _invoke(tscg_root: Path, script_path: Path, catalogs: list, timeout: int = 300) -> dict:
     with tempfile.TemporaryDirectory(prefix="tscg-e-") as directory:
         in_path = Path(directory) / "in.json"
         out_path = Path(directory) / "out.json"
@@ -203,7 +220,7 @@ def _invoke(tscg_root: Path, script_path: Path, catalogs: list) -> dict:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=timeout,
                 cwd=directory,
             )
         except subprocess.TimeoutExpired:
