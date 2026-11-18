@@ -16,6 +16,7 @@ from tool_compression.evaluation import (
     evaluation_manifest,
     execution_record_gaps,
     execution_record_template,
+    freeze_execution_record,
     prepare_case,
     prepare_reference_case,
     primary_accuracy_change,
@@ -24,6 +25,7 @@ from tool_compression.evaluation import (
     study_target_status,
     summarize_hash_rows,
 )
+from tool_compression.flight_spec import validation_flight_record
 from tool_compression.grouping import group_exact_requests
 from tool_compression.implementations import ExternalSnapshot, LocalMethod, reference_implementations
 from tool_compression.prepare import assemble_request, identity_components, request_hash
@@ -98,7 +100,10 @@ def test_package_version_and_reference_manifest_keep_the_audited_settings():
     assert manifest["other_change_cases_not_a_denominator"] == 36
     assert manifest["target_provider_input_reduction"] == "1/10"
     assert manifest["paid_inference_authorized"] is False
-    assert manifest["paid_inference_implemented"] is False
+    assert manifest["paid_inference_implemented"] is True
+    assert manifest["execution_record"]["model"] is None
+    assert manifest["execution_record"]["paid_inference_authorized"] is False
+    assert manifest["execution_record"]["frozen"] is False
     assert manifest["implementation_corrections"] == []
     assert manifest["preparation_outputs_regenerated"] is False
     assert manifest["second_compressor"] is False
@@ -400,6 +405,8 @@ def test_usage_ledger_separates_shared_responses_from_physical_attempts():
 
 def test_inference_is_refused_when_the_execution_record_is_empty_or_filled():
     template = execution_record_template()
+    assert template["paid_inference_authorized"] is False
+    assert template["frozen"] is False
     assert "model" in execution_record_gaps(template)
     assert study_target_status(template)["target_reached"] is None
     with pytest.raises(PaidInferenceRefused):
@@ -414,9 +421,17 @@ def test_inference_is_refused_when_the_execution_record_is_empty_or_filled():
         "spending_ceiling": "separate-authorization",
         "frozen": True,
     }
-    assert execution_record_gaps(filled) == []
+    gaps = execution_record_gaps(filled)
+    assert gaps
+    assert "thinking_disabled" in gaps
+    assert "spending_ceiling" in gaps
     with pytest.raises(PaidInferenceRefused):
         assert_inference_allowed(filled)
+    frozen = freeze_execution_record(validation_flight_record())
+    assert execution_record_gaps(frozen) == []
+    assert_inference_allowed(frozen)
+    assert study_target_status(frozen)["attainment"] == "unresolved"
+    assert study_target_status(frozen)["target_reached"] is None
 
 
 def test_float_suffix_information_after_conversion():

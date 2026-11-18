@@ -31,3 +31,41 @@ python -m tool_compression groups
 ```
 
 `manifest` prints the reference pins, denominators, and the unset execution record. `inspect-suffix` reports what the handler float sentence carries after conversion. `groups` counts provisional exact-request groups for U, L, and E. None of these commands calls a model. `FLOAT_SUFFIX_INSPECTION.md` records the suffix inspection. No preparation output was regenerated: the `week1.0` implementation was checked against the pinned OpenAI completions conversion and left unchanged.
+
+## Validation flight
+
+Paid inference is not the default. The unset execution record still refuses a provider call. A separate validation-and-prep flight can be frozen and run by an operator who has `DEEPSEEK_API_KEY` in the environment. That flight is not an official accuracy settlement and does not decide the 10% provider-input target. It does not authorize thinking-on, a ceiling above ¥50, or a second compressor. Week 1 request hashes used model `UNSELECTED`; the flight recomputes identity after substituting `deepseek-flash` and the options actually sent. Those provisional hashes are only a way to choose the stage A sample.
+
+The locked flight is DeepSeek `deepseek-flash` (DeepSeek-V4.1-Flash-1017) at `https://api.deepseek.com/chat/completions`. Thinking is pinned off with `thinking: {"type": "disabled"}` in the frozen record and in every request body, because DeepSeek enables thinking when the field is omitted. BFCL defaults stay on the body: temperature `0.001`, `store: false`, and tools when the catalogue is non-empty. The off-peak card is ¥0.02 cache hit, ¥1 cache miss, and ¥4 output per million tokens. The hard ceiling is ¥50. A call is not started when spend plus a documented worst-case reserve would pass that ceiling. Weekday 09:00–12:00 and 14:00–18:00 Asia/Shanghai are peak; the runner stops instead of entering those windows. The key is read only from `DEEPSEEK_API_KEY`. There is no key flag and the value is not written into the record or the artifacts.
+
+Check out the same pins as Week 1 before a live or `--no-api` study run. BFCL / gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. TSCG `dfcba63d6190285c45a7c412268dbcc757664ab2`, with Node available for the existing `npx tsx` bridge. Do not put the API key in the shell history of a committed file; export it in the operator environment.
+
+```bash
+pip install -e ".[test]"
+python -m tool_compression freeze-record \
+  --out artifacts/validation-flight/execution_record.json
+python -m tool_compression validate-flight \
+  --record artifacts/validation-flight/execution_record.json \
+  --bfcl-root PATH_TO_GORILLA \
+  --tscg-root PATH_TO_TSCG \
+  --out artifacts/validation-flight
+```
+
+`validate-flight` runs stage A, then starts stage B only when that sample validates. On the committed Week 1 hashes the sample is `multiple_8`, `simple_python_38`, `irrelevance_6` (distinct U, L, and E groups) and `multiple_3` (U and L coincide, E differs). Those hashes only choose the cases. Request identity is recomputed after the model and the sent options are substituted. Stage B is one thinking-off all-category replicate under the same ceiling, still tagged validation-and-prep. If the sample fails, the command stops and does not call the provider for the replicate. `--stage a` stops after the sample even when it validates. Add `--no-api` to exercise the harness without a key and without the network. A dry run is not a live validation, and it cannot be continued as a live stage B. `flight_summary.json` records the cumulative CNY across both stages. Each stage ledger's `stage_cny` is that stage only.
+
+Artifacts:
+
+- `artifacts/validation-flight/execution_record.json`
+- `artifacts/validation-flight/identity_recheck.json`
+- `artifacts/validation-flight/flight_summary.json`
+- `artifacts/validation-flight/stage_a/summary.json`
+- `artifacts/validation-flight/stage_a/requests.jsonl`
+- `artifacts/validation-flight/stage_a/responses.jsonl`
+- `artifacts/validation-flight/stage_a/parsed.jsonl`
+- `artifacts/validation-flight/stage_a/usage_ledger.json`
+- `artifacts/validation-flight/stage_a/logical_ledger.json`
+- `artifacts/validation-flight/stage_a/spend_ledger.json`
+- `artifacts/validation-flight/stage_b/` with the same layout, only after stage A validates
+- `artifacts/validation-flight/official_evaluator/README.txt` for later official-evaluator output
+
+`store: false` is included because it is a BFCL default. The published chat-completions schema does not list that field. This package does not drop it without a live rejection to record.

@@ -1,10 +1,11 @@
 """Provider-usage accounting hooks. Nothing here contacts a provider.
 
-These hooks do not measure provider usage or official accuracy. That work stays
-out of scope until a separate authorization and a spending ceiling. Missing
-totals stay missing. The cohort saving is a ratio of means. The 10% target is
-fixed. Logical response usage and physical attempt billing are separate
-ledgers. A local token estimate cannot set the target.
+Missing totals stay missing. A cached figure is stored only when the payload
+carries one; this hook does not turn a missing cache field into zero. The
+cohort saving is a ratio of means. The 10% target is fixed. Logical response
+usage and physical attempt billing are separate ledgers. A local token
+estimate cannot set the target. A validation flight may pass provider payloads
+into these hooks; doing so is not an official settlement.
 """
 
 from dataclasses import dataclass

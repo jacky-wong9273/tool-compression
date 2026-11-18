@@ -101,7 +101,7 @@ def run_arm_e(study, tscg_root: Path, script_path: Path, budget_counter, sensiti
         principle_sets["+".join(str(part) for part in principles) or "(none)"] = (
             principle_sets.get("+".join(str(part) for part in principles) or "(none)", 0) + 1
         )
-        produced = item.get("tools")
+        produced = _tools_from_tscg_result(item)
         # JSON has one number type. Integral floats such as 1.0 round-trip as ints.
         # This is bridge canonicalization, not a repair of description text.
         left = _json_numbers(original)
@@ -192,7 +192,57 @@ def attach_distinct(report: dict) -> dict:
     return report
 
 
-def _invoke(tscg_root: Path, script_path: Path, catalogs: list) -> dict:
+def compress_external_catalogues(catalogues: list, tscg_root: Path, script_path: Path, *, timeout: int = 300) -> list:
+    """Run pinned TSCG ``compressDescriptions`` on already converted catalogues.
+
+    The bridge returns one ``{ok, tools, principles}`` wrapper per catalogue.
+    Arm E uses the ``tools`` list only when the result is ok and that field is
+    a list, then JSON-canonicalizes numbers before ``catalogue_violations``.
+    This returns those canonicalized tools lists. A result that is not ok, or
+    whose ``tools`` field is missing or not a list, fails instead of being
+    passed through as a catalogue. This does not call a model.
+    """
+    invoked = _invoke(Path(tscg_root), Path(script_path), catalogues, timeout=timeout)
+    if not invoked["ok"]:
+        failure = invoked.get("failure") or {}
+        kind = failure.get("kind", "failed")
+        raise RuntimeError(f"external comparator failed ({kind})")
+    produced = invoked["catalogs"]
+    if len(produced) != len(catalogues):
+        raise RuntimeError("external comparator returned a different number of catalogues")
+    unwrapped = []
+    for index, item in enumerate(produced):
+        tools = _tools_from_tscg_result(item)
+        if tools is None:
+            raise RuntimeError(_tscg_result_failure(index, item))
+        unwrapped.append(_json_numbers(tools))
+    return unwrapped
+
+
+def _tools_from_tscg_result(item):
+    """Tools list from one ``compressDescriptions`` result, matching arm E.
+
+    The result is a catalogue only when it is ok and ``tools`` is a list.
+    The wrapper object is not a catalogue.
+    """
+    if not isinstance(item, dict) or not item.get("ok"):
+        return None
+    tools = item.get("tools")
+    if not isinstance(tools, list):
+        return None
+    return tools
+
+
+def _tscg_result_failure(index: int, item) -> str:
+    if not isinstance(item, dict):
+        return f"external comparator result {index} is not a TSCG result"
+    if not item.get("ok"):
+        name = str(item.get("error_name") or "Error")[:40]
+        return f"external comparator result {index} is not ok ({name})"
+    return f"external comparator result {index} tools field is missing or not a list"
+
+
+def _invoke(tscg_root: Path, script_path: Path, catalogs: list, timeout: int = 300) -> dict:
     with tempfile.TemporaryDirectory(prefix="tscg-e-") as directory:
         in_path = Path(directory) / "in.json"
         out_path = Path(directory) / "out.json"
@@ -203,7 +253,7 @@ def _invoke(tscg_root: Path, script_path: Path, catalogs: list) -> dict:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=timeout,
                 cwd=directory,
             )
         except subprocess.TimeoutExpired:
