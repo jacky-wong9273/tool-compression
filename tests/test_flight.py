@@ -454,6 +454,15 @@ def test_cli_freezes_the_record_and_dry_run_does_not_need_a_key(tmp_path, monkey
     cases_path = tmp_path / "cases.json"
     cases_path.write_text(json.dumps(sample_cases()), encoding="utf-8")
     out = tmp_path / "flight"
+
+    # The CLI reads the wall clock. Sunday morning in Shanghai is off-peak,
+    # so this dry run does not stop for the weekday peak window.
+    class _OffPeak(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return datetime(2026, 11, 22, 10, 0, tzinfo=SHANGHAI)
+
+    monkeypatch.setattr("tool_compression.runner.datetime", _OffPeak)
     status = main(
         [
             "validate-flight",
