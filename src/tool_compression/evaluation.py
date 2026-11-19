@@ -1,11 +1,11 @@
 """Reproducible evaluation scaffold for protocol v1.1. No model is called.
 
-The execution record has slots for the model, options, replicate count, failure
-policy, and analysis configuration. Those slots stay empty, and inference is
-refused. Official accuracy and provider-usage measurement stay out of scope.
-L is a reporting label only. Representing C by L does not test the contrast term.
-Preparation uses the reference implementations and the description boundary.
-Group counts from the Week 1 hashes are provisional.
+The default execution record stays empty, and inference is refused. The
+18–19 November 2026 replicate is recorded under ``official/`` and can be
+recomputed from saved outputs. L is a reporting label only. Representing C by
+L does not test the contrast term. Preparation uses the reference
+implementations and the description boundary. Group counts from the Week 1
+hashes are provisional.
 """
 
 from collections import Counter
@@ -68,8 +68,23 @@ def evaluation_manifest() -> dict:
         "representing_c_by_l_tests_contrast": False,
         "week1_primary_active_fraction_f": "0/200",
         "contrast_term_tested": False,
-        "official_accuracy_in_scope": False,
-        "provider_usage_measurement_in_scope": False,
+        "official_accuracy_in_scope": True,
+        "official_accuracy_source": "recorded 19 November 2026 scores from saved outputs",
+        "provider_usage_measurement_in_scope": True,
+        "provider_usage_source": "recorded billed-basis prompt_tokens from the 18 November flight",
+        "scoring_handler_alias": "DeepSeek-V3.2-Exp-FC",
+        "scoring_alias_registry_model_name": "deepseek-chat",
+        "scoring_alias_may_generate": False,
+        "recorded_replicate": {
+            "collected": "2026-11-18",
+            "scored": "2026-11-19",
+            "model": "deepseek-flash",
+            "thinking": {"type": "disabled"},
+            "target_reached": False,
+            "target_lowered": False,
+            "settlement": "official/settlement/official_settlement.json",
+            "account": "official/RESULTS.md",
+        },
         "external_comparison": "E-U at the pinned TSCG operating point",
         "e_versus_u_can_satisfy_reference_target": False,
         "target_provider_input_reduction": "1/10",

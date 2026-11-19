@@ -1,0 +1,74 @@
+{
+  "source": "Week 1 characterization supplies the class sizes. The 19 November paired diagnosis supplies the class-conditional official counts, the primary provider-token split, the classed disagreement list, and the irrelevance decode split. Per-case flight token rows are not in this repository. The class token split is a recorded diagnosis aggregate.",
+  "categories": {
+    "multiple": {
+      "classes": {
+        "unchanged": {"n": 111, "correct_U": 101, "correct_L": 101},
+        "suffix_only": {"n": 53, "correct_U": 51, "correct_L": 52},
+        "other_change": {"n": 36, "correct_U": 34, "correct_L": 32}
+      }
+    },
+    "simple_python": {
+      "classes": {
+        "unchanged": {"n": 320, "correct_U": 304, "correct_L": 304},
+        "suffix_only": {"n": 35, "correct_U": 32, "correct_L": 30},
+        "other_change": {"n": 45, "correct_U": 43, "correct_L": 39}
+      }
+    },
+    "irrelevance": {
+      "classes": {
+        "unchanged": {"n": 155, "correct_U": 118, "correct_L": 118},
+        "suffix_only": {"n": 57, "correct_U": 45, "correct_L": 48},
+        "other_change": {"n": 28, "correct_U": 21, "correct_L": 21}
+      }
+    }
+  },
+  "primary_provider_input_removed_by_class": {
+    "unchanged": 0,
+    "suffix_only": 850,
+    "other_change": 548,
+    "sum": 1398,
+    "cases_suffix_only": 53,
+    "cases_other_change": 36,
+    "note": "Recorded primary diagnosis aggregate. 850 + 548 = 1398, the official S_LU numerator. Not recomputed from flight JSONL in this checkout."
+  },
+  "classed_disagreements": [
+    {"category": "multiple", "case_id": "multiple_132", "pair": "L_vs_U", "direction": "gain", "change_class": "suffix_only"},
+    {"category": "multiple", "case_id": "multiple_45", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "multiple", "case_id": "multiple_186", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "simple_python", "case_id": "simple_python_36", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "simple_python", "case_id": "simple_python_93", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "simple_python", "case_id": "simple_python_137", "pair": "L_vs_U", "direction": "loss", "change_class": "suffix_only"},
+    {"category": "simple_python", "case_id": "simple_python_152", "pair": "L_vs_U", "direction": "loss", "change_class": "suffix_only"},
+    {"category": "simple_python", "case_id": "simple_python_225", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "simple_python", "case_id": "simple_python_285", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"},
+    {"category": "irrelevance", "case_id": "irrelevance_14", "pair": "L_vs_U", "direction": "gain", "change_class": "suffix_only"},
+    {"category": "irrelevance", "case_id": "irrelevance_16", "pair": "L_vs_U", "direction": "gain", "change_class": "suffix_only"},
+    {"category": "irrelevance", "case_id": "irrelevance_108", "pair": "L_vs_U", "direction": "gain", "change_class": "suffix_only"},
+    {"category": "irrelevance", "case_id": "irrelevance_191", "pair": "L_vs_U", "direction": "gain", "change_class": "other_change"},
+    {"category": "irrelevance", "case_id": "irrelevance_106", "pair": "L_vs_U", "direction": "loss", "change_class": "other_change"}
+  ],
+  "irrelevance_decode_split": {
+    "U": {
+      "official_correct": 184,
+      "true_text_no_call": 184,
+      "parse_or_decode_failure_counted_as_correct": 0,
+      "official_incorrect": 56,
+      "decoded_function_call": 56
+    },
+    "L": {
+      "official_correct": 187,
+      "true_text_no_call": 187,
+      "parse_or_decode_failure_counted_as_correct": 0,
+      "official_incorrect": 53,
+      "decoded_function_call": 53
+    },
+    "E": {
+      "official_correct": 186,
+      "true_text_no_call": 186,
+      "parse_or_decode_failure_counted_as_correct": 0,
+      "official_incorrect": 54,
+      "decoded_function_call": 54
+    }
+  }
+}

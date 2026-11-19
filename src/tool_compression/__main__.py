@@ -1,4 +1,4 @@
-"""Week 1 commands. Preparation only: no model calls and no scoring."""
+"""Preparation commands and official scoring from saved outputs. No model calls."""
 
 from pathlib import Path
 import argparse
@@ -7,12 +7,24 @@ import json
 import subprocess
 import sys
 
+from tool_compression.accounting import contrast_usage_accounting, locked_usage_issues
+from tool_compression.analysis import class_join_issues, join_cases, load_recorded_join, uncertainty_analysis
+from tool_compression.artifacts import verify_manifest, write_manifest
 from tool_compression.characterize import characterize_study, file_sha256
 from tool_compression.config import DEFAULT_CONFIG
 from tool_compression.count import study_counters
 from tool_compression.evaluation import evaluation_manifest, summarize_hash_rows
 from tool_compression.external import public_report, run_arm_e
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
+from tool_compression.official_score import (
+    ScoringAliasGenerateRefused,
+    build_bfcl_argv,
+    guard_bfcl_argv,
+    locked_settlement_issues,
+    map_saved_outputs,
+    settle_from_saved,
+)
+from tool_compression.overhead import exercise_record
 from tool_compression.packet import shared_request_groups, write_packet
 from tool_compression.publish import dump_jsonl, dump_public
 from tool_compression.suffix import float_suffix_report
@@ -59,6 +71,40 @@ def main(argv: list[str] | None = None) -> int:
     groups.add_argument("--arm-e", type=Path)
     groups.add_argument("--out", type=Path)
 
+    official_map = sub.add_parser("official-map")
+    official_map.add_argument("--stage-b", required=True, type=Path)
+    official_map.add_argument("--out", required=True, type=Path)
+    official_map.add_argument("--expected-groups", type=int)
+
+    official_settle = sub.add_parser("official-settle")
+    official_settle.add_argument("--score-root", required=True, type=Path)
+    official_settle.add_argument("--mapping", required=True, type=Path)
+    official_settle.add_argument("--out", required=True, type=Path)
+    official_settle.add_argument("--execution-record", type=Path)
+
+    official_guard = sub.add_parser("official-guard")
+    official_guard.add_argument("--action", required=True, choices=("evaluate", "generate"))
+    official_guard.add_argument("--model", required=True)
+    official_guard.add_argument("--test-category", default="simple_python,multiple,irrelevance")
+    official_guard.add_argument("--result-dir", default="result_u")
+    official_guard.add_argument("--score-dir", default="score_u")
+    official_guard.add_argument("--bfcl", default="bfcl")
+
+    sub.add_parser("official-check")
+
+    artifact = sub.add_parser("artifact-manifest")
+    artifact.add_argument("--out", type=Path)
+    artifact.add_argument("--check", type=Path)
+
+    timing = sub.add_parser("time-preprocessing")
+    timing.add_argument("--out", type=Path)
+    timing.add_argument("--repeats", type=int, default=5)
+    timing.add_argument("--catalogues", type=int, default=48)
+
+    join = sub.add_parser("join-outcomes")
+    join.add_argument("--rows", required=True, type=Path)
+    join.add_argument("--out", type=Path)
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -72,6 +118,20 @@ def main(argv: list[str] | None = None) -> int:
         return _inspect_suffix()
     if args.command == "groups":
         return _groups(args)
+    if args.command == "official-map":
+        return _official_map(args)
+    if args.command == "official-settle":
+        return _official_settle(args)
+    if args.command == "official-guard":
+        return _official_guard(args)
+    if args.command == "official-check":
+        return _official_check()
+    if args.command == "artifact-manifest":
+        return _artifact_manifest(args)
+    if args.command == "time-preprocessing":
+        return _time_preprocessing(args)
+    if args.command == "join-outcomes":
+        return _join_outcomes(args)
     return 2
 
 
@@ -129,6 +189,110 @@ def _manifest() -> int:
 def _inspect_suffix() -> int:
     print(json.dumps(float_suffix_report(), indent=2, sort_keys=True))
     return 0
+
+
+def _official_map(args) -> int:
+    summary = map_saved_outputs(
+        args.stage_b,
+        args.out,
+        expected_groups=args.expected_groups,
+    )
+    print(json.dumps({"ok": summary["ok"], "mapping": summary["mapping"]}, indent=2))
+    return 0
+
+
+def _official_settle(args) -> int:
+    record = None
+    if args.execution_record is not None:
+        record = json.loads(args.execution_record.read_text(encoding="utf-8"))
+    payload = settle_from_saved(args.score_root, args.mapping, execution_record=record)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    print(f"wrote {args.out}")
+    return 0
+
+
+def _official_guard(args) -> int:
+    try:
+        if args.action == "generate":
+            guard_bfcl_argv(["bfcl", "generate", "--model", args.model])
+        argv = build_bfcl_argv(
+            args.action,
+            model=args.model,
+            test_category=args.test_category,
+            result_dir=args.result_dir,
+            score_dir=args.score_dir,
+            bfcl=args.bfcl,
+        )
+    except ScoringAliasGenerateRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps({"allowed": True, "argv": argv}))
+    return 0
+
+
+def _official_check() -> int:
+    root = _repo_root()
+    settlement = json.loads((root / "official" / "settlement" / "official_settlement.json").read_text(encoding="utf-8"))
+    usage = json.loads((root / "official" / "tables" / "usage_accounting.json").read_text(encoding="utf-8"))
+    recorded = load_recorded_join(root / "official" / "tables" / "change_class_join.json")
+    characterization = json.loads((root / "evidence" / "week1_characterization.json").read_text(encoding="utf-8"))
+    manifest_path = root / "official" / "artifact_manifest.json"
+    issues = []
+    issues.extend(f"settlement: {item}" for item in locked_settlement_issues(settlement))
+    issues.extend(f"usage: {item}" for item in locked_usage_issues(usage))
+    issues.extend(f"join: {item}" for item in class_join_issues(characterization, settlement, recorded))
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        issues.extend(f"manifest: {item}" for item in verify_manifest(manifest, root))
+    else:
+        issues.append("manifest: artifact_manifest.json is missing")
+    uncertainty = uncertainty_analysis(settlement)
+    payload = {
+        "ok": not issues,
+        "issues": issues,
+        "primary_target_reached": settlement["reference_target_L_represents_C"]["combine_targets"]["target_reached"],
+        "statistical_non_inferiority": uncertainty["statistical_non_inferiority"],
+        "price_weighted_is_study_statistic": contrast_usage_accounting(usage)["price_weighted_input_is_study_statistic"],
+    }
+    print(json.dumps(payload, indent=2))
+    return 0 if not issues else 1
+
+
+def _artifact_manifest(args) -> int:
+    root = _repo_root()
+    if args.check is not None:
+        manifest = json.loads(args.check.read_text(encoding="utf-8"))
+        issues = verify_manifest(manifest, root)
+        print(json.dumps({"ok": not issues, "issues": issues}, indent=2))
+        return 0 if not issues else 1
+    destination = args.out or root / "official" / "artifact_manifest.json"
+    write_manifest(destination, root)
+    print(f"wrote {destination}")
+    return 0
+
+
+def _time_preprocessing(args) -> int:
+    counter, _sensitivity = study_counters()
+    payload = exercise_record(counter, n=args.catalogues, repeats=args.repeats)
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {args.out}")
+    else:
+        print(json.dumps(payload, indent=2))
+    return 0
+
+
+def _join_outcomes(args) -> int:
+    rows = [json.loads(line) for line in args.rows.read_text(encoding="utf-8").splitlines() if line.strip()]
+    payload = join_cases(rows)
+    if args.out is not None:
+        args.out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {args.out}")
+    else:
+        print(json.dumps(payload, indent=2))
+    return 0 if not payload["issues"] else 1
 
 
 def _groups(args) -> int:

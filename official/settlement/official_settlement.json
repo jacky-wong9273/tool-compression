@@ -1,0 +1,826 @@
+{
+  "protocol": "1.1",
+  "ready_to_report": true,
+  "official_accuracy": true,
+  "official_settlement": true,
+  "invented_scores": false,
+  "paid_provider_called": false,
+  "prs_changed": false,
+  "r_or_lambda_retuned": false,
+  "validation_artifacts_left_intact": true,
+  "flight": {
+    "model": "deepseek-flash",
+    "model_version": "DeepSeek-V4.1-Flash-1017",
+    "thinking": "disabled",
+    "replicate": 0,
+    "date_collected": "2026-11-18",
+    "source": "/workspace/tool-compression-flash-2026-11-18/artifacts/validation-flight/stage_b",
+    "execution_record": "/workspace/tool-compression-flash-2026-11-18/artifacts/validation-flight/execution_record.json",
+    "execution_record_frozen": true
+  },
+  "evaluator": {
+    "package": "bfcl_eval / berkeley-function-call-leaderboard",
+    "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "command": "bfcl evaluate --model DeepSeek-V3.2-Exp-FC --test-category simple_python,multiple,irrelevance --result-dir result_{u|l|e} --score-dir score_{u|l|e}",
+    "handler_alias": "DeepSeek-V3.2-Exp-FC",
+    "handler_alias_is_the_flight_model": false,
+    "partial_eval": false
+  },
+  "reference_comparison": "C-U, represented by L where P, I, and C requests coincide",
+  "l_is_reporting_label_only": true,
+  "e_versus_u_can_satisfy_reference_target": false,
+  "target": {
+    "provider_input_reduction": "1/10",
+    "observed_accuracy_loss_limit": "1/50",
+    "accuracy_limit_is_non_inferiority": false,
+    "target_lowered": false,
+    "denominator": 200,
+    "primary_category": "multiple"
+  },
+  "primary_request_groups": {
+    "logical_arm_assignments": 600,
+    "independent_observations": 438,
+    "reused_members": 162,
+    "note": "Reused members share the official outcome and the provider usage of the originating request group; they are not extra independent observations."
+  },
+  "categories": {
+    "multiple": {
+      "category": "multiple",
+      "denominator": 200,
+      "is_primary": true,
+      "accuracy": {
+        "U": {
+          "correct": 186,
+          "denominator": 200,
+          "accuracy": 0.93,
+          "official_header": {
+            "accuracy": 0.93,
+            "correct_count": 186,
+            "total_count": 200
+          },
+          "failed_ids": [
+            "multiple_7",
+            "multiple_10",
+            "multiple_13",
+            "multiple_24",
+            "multiple_26",
+            "multiple_53",
+            "multiple_54",
+            "multiple_74",
+            "multiple_76",
+            "multiple_123",
+            "multiple_132",
+            "multiple_136",
+            "multiple_151",
+            "multiple_193"
+          ]
+        },
+        "L": {
+          "correct": 185,
+          "denominator": 200,
+          "accuracy": 0.925,
+          "official_header": {
+            "accuracy": 0.925,
+            "correct_count": 185,
+            "total_count": 200
+          },
+          "failed_ids": [
+            "multiple_7",
+            "multiple_10",
+            "multiple_13",
+            "multiple_24",
+            "multiple_26",
+            "multiple_45",
+            "multiple_53",
+            "multiple_54",
+            "multiple_74",
+            "multiple_76",
+            "multiple_123",
+            "multiple_136",
+            "multiple_151",
+            "multiple_186",
+            "multiple_193"
+          ]
+        },
+        "E": {
+          "correct": 186,
+          "denominator": 200,
+          "accuracy": 0.93,
+          "official_header": {
+            "accuracy": 0.93,
+            "correct_count": 186,
+            "total_count": 200
+          },
+          "failed_ids": [
+            "multiple_7",
+            "multiple_10",
+            "multiple_13",
+            "multiple_24",
+            "multiple_25",
+            "multiple_26",
+            "multiple_53",
+            "multiple_54",
+            "multiple_74",
+            "multiple_76",
+            "multiple_123",
+            "multiple_136",
+            "multiple_151",
+            "multiple_193"
+          ]
+        }
+      },
+      "provider_total_input": {
+        "U": {
+          "n": 200,
+          "sum": 121018,
+          "mean": 605.09,
+          "min": 384,
+          "max": 984
+        },
+        "L": {
+          "n": 200,
+          "sum": 119620,
+          "mean": 598.1,
+          "min": 384,
+          "max": 973
+        },
+        "E": {
+          "n": 200,
+          "sum": 120707,
+          "mean": 603.535,
+          "min": 384,
+          "max": 977
+        }
+      },
+      "S_LU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 1398,
+        "ratio_denominator": 121018,
+        "ratio_of_means": 0.011552000528846949,
+        "mean_of_per_case_ratios": 0.010713914615263895,
+        "n": 200,
+        "denominator": 200,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "S_EU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 311,
+        "ratio_denominator": 121018,
+        "ratio_of_means": 0.002569865639822175,
+        "mean_of_per_case_ratios": 0.0025160016016512517,
+        "n": 200,
+        "denominator": 200,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "paired_accuracy_L_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 1,
+        "losses": 2,
+        "delta_numerator": -1,
+        "delta_denominator": 200,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 200
+      },
+      "paired_accuracy_E_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 1,
+        "losses": 1,
+        "delta_numerator": 0,
+        "delta_denominator": 200,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 200
+      },
+      "disagreements_L_vs_U": {
+        "gains": [
+          "multiple_132"
+        ],
+        "losses": [
+          "multiple_45",
+          "multiple_186"
+        ],
+        "n_gains": 1,
+        "n_losses": 2
+      },
+      "disagreements_E_vs_U": {
+        "gains": [
+          "multiple_132"
+        ],
+        "losses": [
+          "multiple_25"
+        ],
+        "n_gains": 1,
+        "n_losses": 1
+      }
+    },
+    "simple_python": {
+      "category": "simple_python",
+      "denominator": 400,
+      "is_primary": false,
+      "accuracy": {
+        "U": {
+          "correct": 379,
+          "denominator": 400,
+          "accuracy": 0.9475,
+          "official_header": {
+            "accuracy": 0.9475,
+            "correct_count": 379,
+            "total_count": 400
+          },
+          "failed_ids": [
+            "simple_python_13",
+            "simple_python_51",
+            "simple_python_55",
+            "simple_python_58",
+            "simple_python_82",
+            "simple_python_87",
+            "simple_python_103",
+            "simple_python_112",
+            "simple_python_116",
+            "simple_python_130",
+            "simple_python_150",
+            "simple_python_202",
+            "simple_python_224",
+            "simple_python_234",
+            "simple_python_269",
+            "simple_python_292",
+            "simple_python_367",
+            "simple_python_370",
+            "simple_python_379",
+            "simple_python_394",
+            "simple_python_395"
+          ]
+        },
+        "L": {
+          "correct": 373,
+          "denominator": 400,
+          "accuracy": 0.9325,
+          "official_header": {
+            "accuracy": 0.9325,
+            "correct_count": 373,
+            "total_count": 400
+          },
+          "failed_ids": [
+            "simple_python_13",
+            "simple_python_36",
+            "simple_python_51",
+            "simple_python_55",
+            "simple_python_58",
+            "simple_python_82",
+            "simple_python_87",
+            "simple_python_93",
+            "simple_python_103",
+            "simple_python_112",
+            "simple_python_116",
+            "simple_python_130",
+            "simple_python_137",
+            "simple_python_150",
+            "simple_python_152",
+            "simple_python_202",
+            "simple_python_224",
+            "simple_python_225",
+            "simple_python_234",
+            "simple_python_269",
+            "simple_python_285",
+            "simple_python_292",
+            "simple_python_367",
+            "simple_python_370",
+            "simple_python_379",
+            "simple_python_394",
+            "simple_python_395"
+          ]
+        },
+        "E": {
+          "correct": 377,
+          "denominator": 400,
+          "accuracy": 0.9425,
+          "official_header": {
+            "accuracy": 0.9425,
+            "correct_count": 377,
+            "total_count": 400
+          },
+          "failed_ids": [
+            "simple_python_13",
+            "simple_python_51",
+            "simple_python_55",
+            "simple_python_58",
+            "simple_python_82",
+            "simple_python_87",
+            "simple_python_103",
+            "simple_python_112",
+            "simple_python_116",
+            "simple_python_130",
+            "simple_python_150",
+            "simple_python_202",
+            "simple_python_224",
+            "simple_python_234",
+            "simple_python_249",
+            "simple_python_269",
+            "simple_python_292",
+            "simple_python_360",
+            "simple_python_367",
+            "simple_python_370",
+            "simple_python_379",
+            "simple_python_394",
+            "simple_python_395"
+          ]
+        }
+      },
+      "provider_total_input": {
+        "U": {
+          "n": 400,
+          "sum": 149432,
+          "mean": 373.58,
+          "min": 284,
+          "max": 524
+        },
+        "L": {
+          "n": 400,
+          "sum": 148730,
+          "mean": 371.825,
+          "min": 284,
+          "max": 509
+        },
+        "E": {
+          "n": 400,
+          "sum": 149154,
+          "mean": 372.885,
+          "min": 284,
+          "max": 524
+        }
+      },
+      "S_LU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 702,
+        "ratio_denominator": 149432,
+        "ratio_of_means": 0.004697788960865142,
+        "mean_of_per_case_ratios": 0.00442694305318093,
+        "n": 400,
+        "denominator": 400,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "S_EU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 278,
+        "ratio_denominator": 149432,
+        "ratio_of_means": 0.0018603779645591306,
+        "mean_of_per_case_ratios": 0.0019062293380271028,
+        "n": 400,
+        "denominator": 400,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "paired_accuracy_L_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 0,
+        "losses": 6,
+        "delta_numerator": -6,
+        "delta_denominator": 400,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 400
+      },
+      "paired_accuracy_E_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 0,
+        "losses": 2,
+        "delta_numerator": -2,
+        "delta_denominator": 400,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 400
+      },
+      "disagreements_L_vs_U": {
+        "gains": [],
+        "losses": [
+          "simple_python_36",
+          "simple_python_93",
+          "simple_python_137",
+          "simple_python_152",
+          "simple_python_225",
+          "simple_python_285"
+        ],
+        "n_gains": 0,
+        "n_losses": 6
+      },
+      "disagreements_E_vs_U": {
+        "gains": [],
+        "losses": [
+          "simple_python_249",
+          "simple_python_360"
+        ],
+        "n_gains": 0,
+        "n_losses": 2
+      }
+    },
+    "irrelevance": {
+      "category": "irrelevance",
+      "denominator": 240,
+      "is_primary": false,
+      "accuracy": {
+        "U": {
+          "correct": 184,
+          "denominator": 240,
+          "accuracy": 0.7666666666666667,
+          "official_header": {
+            "accuracy": 0.7666666666666667,
+            "correct_count": 184,
+            "total_count": 240
+          },
+          "failed_ids": [
+            "irrelevance_1",
+            "irrelevance_4",
+            "irrelevance_10",
+            "irrelevance_14",
+            "irrelevance_16",
+            "irrelevance_26",
+            "irrelevance_27",
+            "irrelevance_29",
+            "irrelevance_32",
+            "irrelevance_33",
+            "irrelevance_44",
+            "irrelevance_49",
+            "irrelevance_63",
+            "irrelevance_65",
+            "irrelevance_68",
+            "irrelevance_71",
+            "irrelevance_72",
+            "irrelevance_73",
+            "irrelevance_74",
+            "irrelevance_86",
+            "irrelevance_91",
+            "irrelevance_99",
+            "irrelevance_101",
+            "irrelevance_108",
+            "irrelevance_109",
+            "irrelevance_111",
+            "irrelevance_113",
+            "irrelevance_115",
+            "irrelevance_118",
+            "irrelevance_121",
+            "irrelevance_124",
+            "irrelevance_126",
+            "irrelevance_127",
+            "irrelevance_145",
+            "irrelevance_148",
+            "irrelevance_157",
+            "irrelevance_159",
+            "irrelevance_164",
+            "irrelevance_165",
+            "irrelevance_174",
+            "irrelevance_180",
+            "irrelevance_182",
+            "irrelevance_185",
+            "irrelevance_188",
+            "irrelevance_191",
+            "irrelevance_193",
+            "irrelevance_199",
+            "irrelevance_203",
+            "irrelevance_212",
+            "irrelevance_213",
+            "irrelevance_223",
+            "irrelevance_226",
+            "irrelevance_228",
+            "irrelevance_234",
+            "irrelevance_236",
+            "irrelevance_239"
+          ]
+        },
+        "L": {
+          "correct": 187,
+          "denominator": 240,
+          "accuracy": 0.7791666666666667,
+          "official_header": {
+            "accuracy": 0.7791666666666667,
+            "correct_count": 187,
+            "total_count": 240
+          },
+          "failed_ids": [
+            "irrelevance_1",
+            "irrelevance_4",
+            "irrelevance_10",
+            "irrelevance_26",
+            "irrelevance_27",
+            "irrelevance_29",
+            "irrelevance_32",
+            "irrelevance_33",
+            "irrelevance_44",
+            "irrelevance_49",
+            "irrelevance_63",
+            "irrelevance_65",
+            "irrelevance_68",
+            "irrelevance_71",
+            "irrelevance_72",
+            "irrelevance_73",
+            "irrelevance_74",
+            "irrelevance_86",
+            "irrelevance_91",
+            "irrelevance_99",
+            "irrelevance_101",
+            "irrelevance_106",
+            "irrelevance_109",
+            "irrelevance_111",
+            "irrelevance_113",
+            "irrelevance_115",
+            "irrelevance_118",
+            "irrelevance_121",
+            "irrelevance_124",
+            "irrelevance_126",
+            "irrelevance_127",
+            "irrelevance_145",
+            "irrelevance_148",
+            "irrelevance_157",
+            "irrelevance_159",
+            "irrelevance_164",
+            "irrelevance_165",
+            "irrelevance_174",
+            "irrelevance_180",
+            "irrelevance_182",
+            "irrelevance_185",
+            "irrelevance_188",
+            "irrelevance_193",
+            "irrelevance_199",
+            "irrelevance_203",
+            "irrelevance_212",
+            "irrelevance_213",
+            "irrelevance_223",
+            "irrelevance_226",
+            "irrelevance_228",
+            "irrelevance_234",
+            "irrelevance_236",
+            "irrelevance_239"
+          ]
+        },
+        "E": {
+          "correct": 186,
+          "denominator": 240,
+          "accuracy": 0.775,
+          "official_header": {
+            "accuracy": 0.775,
+            "correct_count": 186,
+            "total_count": 240
+          },
+          "failed_ids": [
+            "irrelevance_1",
+            "irrelevance_4",
+            "irrelevance_10",
+            "irrelevance_14",
+            "irrelevance_16",
+            "irrelevance_26",
+            "irrelevance_27",
+            "irrelevance_29",
+            "irrelevance_33",
+            "irrelevance_44",
+            "irrelevance_49",
+            "irrelevance_60",
+            "irrelevance_63",
+            "irrelevance_65",
+            "irrelevance_68",
+            "irrelevance_71",
+            "irrelevance_72",
+            "irrelevance_74",
+            "irrelevance_86",
+            "irrelevance_91",
+            "irrelevance_101",
+            "irrelevance_108",
+            "irrelevance_109",
+            "irrelevance_111",
+            "irrelevance_113",
+            "irrelevance_115",
+            "irrelevance_118",
+            "irrelevance_121",
+            "irrelevance_124",
+            "irrelevance_126",
+            "irrelevance_127",
+            "irrelevance_145",
+            "irrelevance_148",
+            "irrelevance_159",
+            "irrelevance_160",
+            "irrelevance_164",
+            "irrelevance_165",
+            "irrelevance_174",
+            "irrelevance_180",
+            "irrelevance_182",
+            "irrelevance_185",
+            "irrelevance_188",
+            "irrelevance_193",
+            "irrelevance_199",
+            "irrelevance_203",
+            "irrelevance_212",
+            "irrelevance_213",
+            "irrelevance_222",
+            "irrelevance_223",
+            "irrelevance_226",
+            "irrelevance_228",
+            "irrelevance_234",
+            "irrelevance_236",
+            "irrelevance_239"
+          ]
+        }
+      },
+      "provider_total_input": {
+        "U": {
+          "n": 240,
+          "sum": 88495,
+          "mean": 368.7291666666667,
+          "min": 290,
+          "max": 504
+        },
+        "L": {
+          "n": 240,
+          "sum": 87536,
+          "mean": 364.73333333333335,
+          "min": 290,
+          "max": 504
+        },
+        "E": {
+          "n": 240,
+          "sum": 88299,
+          "mean": 367.9125,
+          "min": 290,
+          "max": 504
+        }
+      },
+      "S_LU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 959,
+        "ratio_denominator": 88495,
+        "ratio_of_means": 0.010836770439007853,
+        "mean_of_per_case_ratios": 0.010197495298582606,
+        "n": 240,
+        "denominator": 240,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "S_EU": {
+        "attainment": "resolved",
+        "reason": "complete_provider_usage",
+        "target": "1/10",
+        "target_reached": false,
+        "target_lowered": false,
+        "ratio_numerator": 196,
+        "ratio_denominator": 88495,
+        "ratio_of_means": 0.002214814396293576,
+        "mean_of_per_case_ratios": 0.002302429217378191,
+        "n": 240,
+        "denominator": 240,
+        "statistical_non_inferiority": "not_tested"
+      },
+      "paired_accuracy_L_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 4,
+        "losses": 1,
+        "delta_numerator": 3,
+        "delta_denominator": 240,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 240
+      },
+      "paired_accuracy_E_vs_U": {
+        "attainment": "resolved",
+        "reason": "supplied_outcomes",
+        "gains": 5,
+        "losses": 3,
+        "delta_numerator": 2,
+        "delta_denominator": 240,
+        "within_observed_limit": true,
+        "limit": "1/50",
+        "non_inferiority_tested": false,
+        "denominator": 240
+      },
+      "disagreements_L_vs_U": {
+        "gains": [
+          "irrelevance_14",
+          "irrelevance_16",
+          "irrelevance_108",
+          "irrelevance_191"
+        ],
+        "losses": [
+          "irrelevance_106"
+        ],
+        "n_gains": 4,
+        "n_losses": 1
+      },
+      "disagreements_E_vs_U": {
+        "gains": [
+          "irrelevance_32",
+          "irrelevance_73",
+          "irrelevance_99",
+          "irrelevance_157",
+          "irrelevance_191"
+        ],
+        "losses": [
+          "irrelevance_60",
+          "irrelevance_160",
+          "irrelevance_222"
+        ],
+        "n_gains": 5,
+        "n_losses": 3
+      }
+    }
+  },
+  "reference_target_L_represents_C": {
+    "S_LU": {
+      "attainment": "resolved",
+      "reason": "complete_provider_usage",
+      "target": "1/10",
+      "target_reached": false,
+      "target_lowered": false,
+      "ratio_numerator": 1398,
+      "ratio_denominator": 121018,
+      "ratio_of_means": 0.011552000528846949,
+      "mean_of_per_case_ratios": 0.010713914615263895,
+      "n": 200,
+      "denominator": 200,
+      "statistical_non_inferiority": "not_tested"
+    },
+    "paired_accuracy_L_vs_U": {
+      "attainment": "resolved",
+      "reason": "supplied_outcomes",
+      "gains": 1,
+      "losses": 2,
+      "delta_numerator": -1,
+      "delta_denominator": 200,
+      "within_observed_limit": true,
+      "limit": "1/50",
+      "non_inferiority_tested": false,
+      "denominator": 200
+    },
+    "combine_targets": {
+      "attainment": "resolved",
+      "target_reached": false,
+      "target_lowered": false,
+      "reference_comparison": "C-U",
+      "statistical_non_inferiority": "not_tested"
+    },
+    "study_target_status": {
+      "attainment": "resolved",
+      "target_reached": false,
+      "target_lowered": false,
+      "reference_comparison": "C-U",
+      "statistical_non_inferiority": "not_tested"
+    }
+  },
+  "E_versus_U_reported_separately": {
+    "S_EU": {
+      "attainment": "resolved",
+      "reason": "complete_provider_usage",
+      "target": "1/10",
+      "target_reached": false,
+      "target_lowered": false,
+      "ratio_numerator": 311,
+      "ratio_denominator": 121018,
+      "ratio_of_means": 0.002569865639822175,
+      "mean_of_per_case_ratios": 0.0025160016016512517,
+      "n": 200,
+      "denominator": 200,
+      "statistical_non_inferiority": "not_tested"
+    },
+    "paired_accuracy_E_vs_U": {
+      "attainment": "resolved",
+      "reason": "supplied_outcomes",
+      "gains": 1,
+      "losses": 1,
+      "delta_numerator": 0,
+      "delta_denominator": 200,
+      "within_observed_limit": true,
+      "limit": "1/50",
+      "non_inferiority_tested": false,
+      "denominator": 200
+    },
+    "reference_target_from_external": {
+      "comparison": "E-U",
+      "can_satisfy_c_u_target": false,
+      "reference_comparison": "C-U"
+    }
+  }
+}

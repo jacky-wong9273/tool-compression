@@ -32,6 +32,16 @@ The reference comparison remains C versus U at `r=0.75`. Where the local request
 
 The unpaid package stays on the Week 1 prototype: the description-only adapter and structural validation, the existing local implementations, exact-request grouping, and the float-suffix inspection. Exact matching requests across U, L, and E share one response within the same case and replicate. Keep `r` and lambda at the audited values. Add no suffix-control arm. Start no second compressor. Official accuracy and provider-usage measurement stay out of scope until a separate authorization and a spending ceiling.
 
+#### Current handoff (recorded 18–19 November 2026 result)
+
+The 18–19 November 2026 thinking-off replicate is the measured result recorded in this package. Official accuracy and billed-basis provider input for that replicate are under `official/`. `official/RESULTS.md` is the account. `official/COMMANDS.md` reproduces preparation and official scoring from saved outputs. The Week 1 packet and the protocol handoff above stay in place.
+
+In this single thinking-off replicate, the shared local intervention produced small provider-input savings and remained within the prespecified observed primary accuracy-loss margin. The combined utility target was not reached. These results do not establish statistical non-inferiority or general quality preservation.
+
+L−U is −0.5 percentage points; the observed accuracy loss is +0.5 points.
+
+Primary billed-basis saving is 1,398 of 121,018 provider input tokens. The combined utility target was not reached, and the target was not lowered. `r` and lambda stay at the audited values. This package adds no compressor and starts no same-setting replicate. The scoring alias `DeepSeek-V3.2-Exp-FC` evaluates saved outputs. Its registry `model_name` is `deepseek-chat`, so the package refuses `bfcl generate` under that alias. Paid inference remains unimplemented.
+
 ### Research questions and estimands
 
 The primary contribution is a **controlled empirical study plus a reusable description-only package**. It is not new theory or a new compression family. Novelty is optional.
