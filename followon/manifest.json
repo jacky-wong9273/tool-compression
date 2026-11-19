@@ -1,0 +1,145 @@
+{
+  "artifacts": [
+    {
+      "path": "FOLLOWON-SPECIFICATION.md",
+      "present": true,
+      "sha256": "9bd15a670a32a4b394ff658f1f01936067aef3e521eaf94df61e29f3b69161c0"
+    },
+    {
+      "path": "followon/audit_summary.json",
+      "present": true,
+      "sha256": "41aee1483409e9742be8d457748a7f83f1558d2498c71aef12e4361b7135a68b"
+    },
+    {
+      "path": "followon/case_hashes.jsonl",
+      "present": true,
+      "sha256": "8d7a7214663615aa7be48b4dbd539c7fa927d6dda0b1a916b586f19a3077552e"
+    },
+    {
+      "path": "followon/field_traces.jsonl",
+      "present": true,
+      "sha256": "d959027540749ba72a1ed567e1e18b58f68c654558e32cbeae65dcd02c72b029"
+    },
+    {
+      "path": "followon/reporting_shell.json",
+      "present": true,
+      "sha256": "a75fbedb43bd7dc93c922eb740971f639d1d02ee8569f7ddfb30f8a7972b0a86"
+    },
+    {
+      "path": "followon/HANDOVER.md",
+      "present": true,
+      "sha256": "3106f18fd0855de7912c572f6680cb0528d429ee3e92c0f4ab30b0a4ec3c13b4"
+    },
+    {
+      "path": "followon/REPORTING.md",
+      "present": true,
+      "sha256": "71f8dccd5455ca8bf305daf269fe1768258005793711b7816d08220ba0ddd4e2"
+    },
+    {
+      "path": "src/tool_compression/phrase.py",
+      "present": true,
+      "sha256": "9d09c94f678acfde067de3f37294b531bbc5e93d083124d062944512d5291f24"
+    },
+    {
+      "path": "src/tool_compression/phrase_select.py",
+      "present": true,
+      "sha256": "16eee7fb0ce378779c244cd9edd9759931f821f26af7c3d42b26e94c28531eb1"
+    },
+    {
+      "path": "src/tool_compression/phrase_compress.py",
+      "present": true,
+      "sha256": "cf42e7c02fed5a838852b349c95b7930b2d9ea948b0258c71f8ddcd023689495"
+    },
+    {
+      "path": "src/tool_compression/followon_config.py",
+      "present": true,
+      "sha256": "dd6bc7ab8f363a4283ab507312193b6d2ece9903b2c2a7d78316f3e5035af46d"
+    },
+    {
+      "path": "src/tool_compression/followon_audit.py",
+      "present": true,
+      "sha256": "ff7239fadbae5ad274d930cdbdbab194a271d48c7c5c06d4d144186a449c4d7a"
+    },
+    {
+      "path": "src/tool_compression/followon_report.py",
+      "present": true,
+      "sha256": "336249e6c36ef987a7fbf4ee218114ef21e74244e956cb3019e953d6f0952bef"
+    },
+    {
+      "path": "src/tool_compression/followon_bind.py",
+      "present": true,
+      "sha256": "211692ae2eacd03d63f171d6de8ac9566c22c41be79e37a921c6dfdf5d88bc98"
+    },
+    {
+      "path": "tests/test_followon.py",
+      "present": true,
+      "sha256": "8b9e90d1c875de2569dd9fbc4ef35017aad4e45c0ff468080cfc31ea60a13419"
+    }
+  ],
+  "base_commit": "3a02e64888c5359f48d2b417ac659161cd3eadae",
+  "base_pull_request": "https://github.com/jacky-wong9273/tool-compression/pull/4",
+  "closed_target_preserved": true,
+  "converter": "tool_compression.convert.to_openai_completions_tools",
+  "input_sha256": {
+    "BFCL_v4_irrelevance.json": "2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6",
+    "BFCL_v4_multiple.json": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+    "BFCL_v4_simple_python.json": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991"
+  },
+  "official_artifacts_unchanged": true,
+  "official_manifest_issues": [],
+  "pins": {
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "bfcl_repository": "https://github.com/ShishirPatil/gorilla",
+    "conversion": "convert_to_tool(..., GORILLA_TO_OPENAPI, OPENAI_COMPLETIONS)",
+    "handler": "OpenAICompletionsHandler._query_FC",
+    "tscg_commit": "dfcba63d6190285c45a7c412268dbcc757664ab2",
+    "tscg_package": "@tscg/core",
+    "tscg_repository": "https://github.com/SKZL-AI/tscg",
+    "tscg_version": "1.4.3"
+  },
+  "provider_called": false,
+  "q": "tool_compression.lexical.contrast_q",
+  "ready_for_evaluation": true,
+  "run_identity": "followon.1 offline audit; no measurement flight; model UNSELECTED",
+  "schema": "tool-compression.followon-manifest.v1",
+  "spec_version": "followon.1",
+  "t1": {
+    "cap": "max(floor(0.75 \u00d7 d), p)",
+    "closed_target_is_reset_test": false,
+    "condition": "T1",
+    "contrast_weight": "0/1",
+    "jaccard_min": "1/5",
+    "local_budget_tokenizer": "o200k_base",
+    "max_neighbours": 2,
+    "neighbour_source": "full original uncompressed catalogue of this request",
+    "neighbour_tie": "higher Jaccard, then earlier catalogue index",
+    "new_trial_settings": true,
+    "own_score": "|terms(piece) \u2229 terms(own identifiers)| / |terms(piece)|",
+    "q": "tool_compression.lexical.contrast_q",
+    "retention": "3/4",
+    "retunes_closed_official_run": false,
+    "retunes_week1": false,
+    "spec_version": "followon.1",
+    "tuned_on_labels_or_funnel": false
+  },
+  "t2": {
+    "cap": "max(floor(0.75 \u00d7 d), p)",
+    "closed_target_is_reset_test": false,
+    "condition": "T2",
+    "contrast_weight": "1/2",
+    "jaccard_min": "1/5",
+    "local_budget_tokenizer": "o200k_base",
+    "max_neighbours": 2,
+    "neighbour_source": "full original uncompressed catalogue of this request",
+    "neighbour_tie": "higher Jaccard, then earlier catalogue index",
+    "new_trial_settings": true,
+    "own_score": "|terms(piece) \u2229 terms(own identifiers)| / |terms(piece)|",
+    "q": "tool_compression.lexical.contrast_q",
+    "retention": "3/4",
+    "retunes_closed_official_run": false,
+    "retunes_week1": false,
+    "spec_version": "followon.1",
+    "tuned_on_labels_or_funnel": false
+  },
+  "tokenizer": "o200k_base"
+}
