@@ -85,7 +85,7 @@ def float_node(case, path_end):
 
 
 def test_package_version_and_reference_manifest_keep_the_audited_settings():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.3.0"
     manifest = evaluation_manifest()
     settings = manifest["settings"]
     assert settings["spec_version"] == "week1.0"
@@ -107,8 +107,12 @@ def test_package_version_and_reference_manifest_keep_the_audited_settings():
     assert manifest["representing_c_by_l_tests_contrast"] is False
     assert manifest["week1_primary_active_fraction_f"] == "0/200"
     assert manifest["contrast_term_tested"] is False
-    assert manifest["official_accuracy_in_scope"] is False
-    assert manifest["provider_usage_measurement_in_scope"] is False
+    assert manifest["official_accuracy_in_scope"] is True
+    assert manifest["provider_usage_measurement_in_scope"] is True
+    assert manifest["scoring_alias_may_generate"] is False
+    assert manifest["scoring_alias_registry_model_name"] == "deepseek-chat"
+    assert manifest["recorded_replicate"]["target_reached"] is False
+    assert manifest["recorded_replicate"]["target_lowered"] is False
     assert set(reference_implementations()) == {"U", "P", "I", "C"}
 
 

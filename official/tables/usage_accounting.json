@@ -1,0 +1,175 @@
+{
+  "definition": "billed-basis total input means actual provider-reported input-token counts (prompt_tokens / total_input_tokens), including cached and uncached components where applicable, not price-weighted token equivalents, and not total minus cache.",
+  "identity": "prompt_tokens = prompt_cache_hit_tokens + prompt_cache_miss_tokens = total_input_tokens T",
+  "prompt_equals_hit_plus_miss": 1513,
+  "prompt_ne_hit_plus_miss": 0,
+  "cache_by_category_arm_logical": {
+    "multiple": {
+      "U": {
+        "sum_cache_hit": 3451,
+        "sum_total_input": 121018,
+        "sum_cache_miss": 117567,
+        "mean_cache_hit": 17.255,
+        "mean_total": 605.09,
+        "n_with_cache_hit": 23
+      },
+      "L": {
+        "sum_cache_hit": 17659,
+        "sum_total_input": 119620,
+        "sum_cache_miss": 101961,
+        "mean_cache_hit": 88.295,
+        "mean_total": 598.1,
+        "n_with_cache_hit": 81
+      },
+      "E": {
+        "sum_cache_hit": 20091,
+        "sum_total_input": 120707,
+        "sum_cache_miss": 100616,
+        "mean_cache_hit": 100.455,
+        "mean_total": 603.535,
+        "n_with_cache_hit": 102
+      }
+    },
+    "simple_python": {
+      "U": {
+        "sum_cache_hit": 9984,
+        "sum_total_input": 149432,
+        "sum_cache_miss": 139448,
+        "mean_cache_hit": 24.96,
+        "mean_total": 373.58,
+        "n_with_cache_hit": 76
+      },
+      "L": {
+        "sum_cache_hit": 16896,
+        "sum_total_input": 148730,
+        "sum_cache_miss": 131834,
+        "mean_cache_hit": 42.24,
+        "mean_total": 371.825,
+        "n_with_cache_hit": 129
+      },
+      "E": {
+        "sum_cache_hit": 16512,
+        "sum_total_input": 149154,
+        "sum_cache_miss": 132642,
+        "mean_cache_hit": 41.28,
+        "mean_total": 372.885,
+        "n_with_cache_hit": 127
+      }
+    },
+    "irrelevance": {
+      "U": {
+        "sum_cache_hit": 256,
+        "sum_total_input": 88495,
+        "sum_cache_miss": 88239,
+        "mean_cache_hit": 1.0666666666666667,
+        "mean_total": 368.7291666666667,
+        "n_with_cache_hit": 2
+      },
+      "L": {
+        "sum_cache_hit": 8448,
+        "sum_total_input": 87536,
+        "sum_cache_miss": 79088,
+        "mean_cache_hit": 35.2,
+        "mean_total": 364.73333333333335,
+        "n_with_cache_hit": 65
+      },
+      "E": {
+        "sum_cache_hit": 5504,
+        "sum_total_input": 88299,
+        "sum_cache_miss": 82795,
+        "mean_cache_hit": 22.933333333333334,
+        "mean_total": 367.9125,
+        "n_with_cache_hit": 41
+      }
+    }
+  },
+  "physical_stage_b": {
+    "n": 1513,
+    "sum_total": 669623,
+    "sum_hit": 83702,
+    "sum_miss": 585921
+  },
+  "physical_by_membership": {
+    "U+E": {
+      "n": 132,
+      "sum_total": 57640,
+      "sum_hit": 1024
+    },
+    "L": {
+      "n": 254,
+      "sum_total": 120815,
+      "sum_hit": 33408
+    },
+    "U+L+E": {
+      "n": 289,
+      "sum_total": 110657,
+      "sum_hit": 4480
+    },
+    "U+L": {
+      "n": 297,
+      "sum_total": 124414,
+      "sum_hit": 5115
+    },
+    "E": {
+      "n": 419,
+      "sum_total": 189863,
+      "sum_hit": 36603
+    },
+    "U": {
+      "n": 122,
+      "sum_total": 66234,
+      "sum_hit": 3072
+    }
+  },
+  "price_weighted_contrast_not_the_study_statistic": {
+    "multiple": {
+      "note": "NOT the study statistic. Illustrates that price-weighted input (cache-hit at 0.02x) is a different measurement from billed-basis total input token counts.",
+      "price_weighted_sum_U": 117636.01999999996,
+      "price_weighted_sum_L": 102314.17999999988,
+      "price_weighted_sum_E": 101017.81999999983,
+      "price_weighted_S_LU": 0.1302478611568131,
+      "token_S_LU": 0.011552000528846949,
+      "token_sum_U": 121018,
+      "token_sum_L": 119620
+    },
+    "simple_python": {
+      "note": "NOT the study statistic. Illustrates that price-weighted input (cache-hit at 0.02x) is a different measurement from billed-basis total input token counts.",
+      "price_weighted_sum_U": 139647.67999999988,
+      "price_weighted_sum_L": 132171.91999999978,
+      "price_weighted_sum_E": 132972.2399999998,
+      "price_weighted_S_LU": 0.05353300534602582,
+      "token_S_LU": 0.004697788960865142,
+      "token_sum_U": 149432,
+      "token_sum_L": 148730
+    },
+    "irrelevance": {
+      "note": "NOT the study statistic. Illustrates that price-weighted input (cache-hit at 0.02x) is a different measurement from billed-basis total input token counts.",
+      "price_weighted_sum_U": 88244.12,
+      "price_weighted_sum_L": 79256.95999999998,
+      "price_weighted_sum_E": 82905.07999999993,
+      "price_weighted_S_LU": 0.10184429285486692,
+      "token_S_LU": 0.010836770439007853,
+      "token_sum_U": 88495,
+      "token_sum_L": 87536
+    }
+  },
+  "spend_check": {
+    "stage_b_recomputed_cny": "1.24290304",
+    "stage_b_ledger_cny": "1.24290304",
+    "stage_b_sum_input": 669623,
+    "stage_b_sum_cache_hit": 83702,
+    "stage_b_sum_cache_miss": 585921,
+    "stage_b_sum_output": 163827,
+    "stage_b_physical": 1513,
+    "formula": "cache_hit*0.02/1e6 + cache_miss*1/1e6 + output*4/1e6",
+    "matches_ledger": true,
+    "cumulative_ledger": "1.25107640",
+    "stage_a_ledger_cny": "0.00817336"
+  },
+  "distinct_measurements": [
+    "token savings (ratio of cohort mean T)",
+    "monetary savings (rate-card CNY on cache-hit, cache-miss, and output)",
+    "preprocessing time (local, unpaid)",
+    "request latency (not used as a target)"
+  ]
+}
