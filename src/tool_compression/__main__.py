@@ -15,6 +15,8 @@ from tool_compression.config import DEFAULT_CONFIG
 from tool_compression.count import study_counters
 from tool_compression.evaluation import evaluation_manifest, summarize_hash_rows
 from tool_compression.external import public_report, run_arm_e
+from tool_compression.followon_bind import reproduce_historical_official_counts
+from tool_compression.followon_report import verify_followon_manifest, write_package
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
 from tool_compression.official_score import (
     ScoringAliasGenerateRefused,
@@ -101,6 +103,15 @@ def main(argv: list[str] | None = None) -> int:
     timing.add_argument("--repeats", type=int, default=5)
     timing.add_argument("--catalogues", type=int, default=48)
 
+    followon = sub.add_parser("followon-audit")
+    followon.add_argument("--bfcl-root", required=True, type=Path)
+    followon.add_argument("--out", type=Path)
+
+    followon_manifest = sub.add_parser("followon-manifest")
+    followon_manifest.add_argument("--check", type=Path)
+
+    sub.add_parser("followon-historical")
+
     join = sub.add_parser("join-outcomes")
     join.add_argument("--rows", required=True, type=Path)
     join.add_argument("--out", type=Path)
@@ -130,6 +141,12 @@ def main(argv: list[str] | None = None) -> int:
         return _artifact_manifest(args)
     if args.command == "time-preprocessing":
         return _time_preprocessing(args)
+    if args.command == "followon-audit":
+        return _followon_audit(args)
+    if args.command == "followon-manifest":
+        return _followon_manifest(args)
+    if args.command == "followon-historical":
+        return _followon_historical()
     if args.command == "join-outcomes":
         return _join_outcomes(args)
     return 2
@@ -282,6 +299,40 @@ def _time_preprocessing(args) -> int:
     else:
         print(json.dumps(payload, indent=2))
     return 0
+
+
+def _followon_audit(args) -> int:
+    root = _repo_root()
+    destination = args.out or root / "followon"
+    summary = write_package(root, args.bfcl_root, destination)
+    print(
+        json.dumps(
+            {
+                "ready_for_evaluation": summary["ready_for_evaluation"],
+                "measured": summary["measured"],
+                "defects": summary["implementation_defects"],
+                "primary_f_new": summary["categories"]["multiple"]["f_new"],
+                "out": str(destination),
+            },
+            indent=2,
+        )
+    )
+    return 0 if summary["ready_for_evaluation"] else 1
+
+
+def _followon_manifest(args) -> int:
+    root = _repo_root()
+    path = args.check or root / "followon" / "manifest.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    issues = verify_followon_manifest(manifest, root)
+    print(json.dumps({"ok": not issues, "issues": issues}, indent=2))
+    return 0 if not issues else 1
+
+
+def _followon_historical() -> int:
+    payload = reproduce_historical_official_counts(_repo_root())
+    print(json.dumps({"ok": payload["ok"], "target_reached": payload["target_reached"], "network_used": False, "categories": payload["categories"]}, indent=2))
+    return 0 if payload["ok"] else 1
 
 
 def _join_outcomes(args) -> int:

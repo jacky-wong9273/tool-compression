@@ -43,3 +43,9 @@ python -m tool_compression artifact-manifest --check official/artifact_manifest.
 ```
 
 `manifest` prints the reference pins, denominators, and the execution-record slots. `inspect-suffix` reports what the handler float sentence carries after conversion. `groups` counts provisional exact-request groups for U, L, and E. `FLOAT_SUFFIX_INSPECTION.md` records the suffix inspection.
+
+## Post-result T1 and T2
+
+`FOLLOWON-SPECIFICATION.md` freezes one phrase-level extractive compressor in two configurations. T1 uses the tool's own identifier overlap. T2 adds one half of the pinned neighbour score `q` on the same optional pieces. The cap and the weight are new-trial settings. They do not retune the closed run, and the 10% C-versus-U target is not a reset test.
+
+The offline package is `followon/`. It is ready for a separately authorized evaluation and is not a measured result. `followon/HANDOVER.md` separates the submitted baseline, the saved-output package, and these two conditions. No provider call is implemented for T1 or T2.
