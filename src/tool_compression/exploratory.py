@@ -1,0 +1,306 @@
+"""Frozen exploratory retention caps on the official P/I/C compressor.
+
+H50 is r=0.50 and H25 is r=0.25. Lambda stays 1/2, Jaccard stays at least
+1/5, and the neighbour cap stays at two. The official r=0.75 configuration is
+not retuned. This module does not call a provider.
+"""
+
+from decimal import Decimal
+import sys
+
+from tool_compression.config import (
+    DEFAULT_CONFIG,
+    JACCARD_DENOMINATOR,
+    JACCARD_NUMERATOR,
+    LAMBDA_DENOMINATOR,
+    LAMBDA_NUMERATOR,
+    LOCAL_TOKENIZER,
+    MAX_NEIGHBOURS,
+    Config,
+)
+from tool_compression.usage import usage_from_mapping
+
+BASE_COMMIT = "8619d2fd58dee5babc511970a8d88fb975037149"
+H50_LABEL = "H50"
+H25_LABEL = "H25"
+EXPLORATORY_LABELS = (H50_LABEL, H25_LABEL)
+H50_SPEC_VERSION = "exploratory.h50.2026-11-20"
+H25_SPEC_VERSION = "exploratory.h25.2026-11-20"
+GENERATION_MODEL = "deepseek-flash"
+GENERATION_MODEL_VERSION = "DeepSeek-V4.1-Flash-1017"
+# Pinned BFCL decoder for evaluate-from-saved-outputs. Generation under this
+# alias is refused: it selects deepseek-chat, not deepseek-flash.
+EVALUATE_DECODER_ALIAS = "DeepSeek-V3.2-Exp-FC"
+REFUSED_GENERATION_ALIASES = frozenset(
+    {
+        "DeepSeek-V3.2-Exp-FC",
+        "DeepSeek-V3.2-Exp",
+        "DeepSeek-V3.2-Exp-thinking",
+        "deepseek-chat",
+        "deepseek-reasoner",
+    }
+)
+NOT_REFLOWN = ("U", "E", "L")
+ARM_NAMES = ("P", "I", "C")
+CLOSED_OFFICIAL_RESULT = {
+    "label": "L",
+    "retention_r": "3/4",
+    "lambda": "1/2",
+    "thinking": "disabled",
+    "model": GENERATION_MODEL,
+    "model_version": GENERATION_MODEL_VERSION,
+    "primary_accuracy": {"U": "186/200", "L": "185/200", "E": "186/200"},
+    "S_LU": "1398/121018",
+    "S_LU_approximation": "1.155%",
+    "primary_U_provider_prompt_tokens": 121018,
+    "target_provider_input_reduction": "1/10",
+    "target_lowered": False,
+    "retuned_by_this_package": False,
+}
+
+
+class ExploratoryFlightRefused(RuntimeError):
+    """The exploratory flight must not start."""
+
+
+def frozen_config(label: str) -> Config:
+    """The versioned H50 or H25 config. Only the retention fraction changes."""
+    if label == H50_LABEL:
+        config = Config(spec_version=H50_SPEC_VERSION, retention_numerator=1, retention_denominator=2)
+    elif label == H25_LABEL:
+        config = Config(spec_version=H25_SPEC_VERSION, retention_numerator=1, retention_denominator=4)
+    else:
+        raise ValueError(f"unknown exploratory setting {label}")
+    assert_frozen(label, config)
+    return config
+
+
+def assert_frozen(label: str, config: Config) -> None:
+    """Refuse a retune of lambda, neighbours, Jaccard, or the official cap."""
+    if label == H50_LABEL:
+        retention = (1, 2)
+        spec = H50_SPEC_VERSION
+    elif label == H25_LABEL:
+        retention = (1, 4)
+        spec = H25_SPEC_VERSION
+    else:
+        raise ValueError(f"unknown exploratory setting {label}")
+    if config.spec_version != spec:
+        raise ValueError("exploratory spec_version is not the frozen value")
+    if (config.retention_numerator, config.retention_denominator) != retention:
+        raise ValueError("exploratory retention is not the frozen cap")
+    if (config.retention_numerator, config.retention_denominator) == (3, 4):
+        raise ValueError("official r=0.75 is not an exploratory setting")
+    if (config.lambda_numerator, config.lambda_denominator) != (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR):
+        raise ValueError("lambda stays 1/2")
+    if (config.jaccard_numerator, config.jaccard_denominator) != (JACCARD_NUMERATOR, JACCARD_DENOMINATOR):
+        raise ValueError("Jaccard stays at least 1/5")
+    if config.max_neighbours != MAX_NEIGHBOURS:
+        raise ValueError("the neighbour cap stays at two")
+    if config.tokenizer_name != LOCAL_TOKENIZER:
+        raise ValueError("the local tokenizer stays o200k_base")
+    if DEFAULT_CONFIG.retention_numerator != 3 or DEFAULT_CONFIG.retention_denominator != 4:
+        raise ValueError("the official r=0.75 config was changed")
+
+
+def classify_case(hashes: dict, official_hashes: dict | None) -> dict:
+    """Identity of one prepared case against U and official L at r=0.75."""
+    for name in ("U", *ARM_NAMES):
+        if name not in hashes:
+            raise ValueError("case hashes are incomplete")
+    coincide = hashes["P"] == hashes["I"] == hashes["C"]
+    official_l = None
+    official_u = None
+    official_coincide = None
+    if official_hashes and all(name in official_hashes for name in ("U", *ARM_NAMES)):
+        official_u = official_hashes["U"]
+        official_coincide = official_hashes["P"] == official_hashes["I"] == official_hashes["C"]
+        if official_coincide:
+            official_l = official_hashes["P"]
+    identical_to_u = all(hashes[name] == hashes["U"] for name in ARM_NAMES)
+    identical_to_official_l = official_l is not None and all(hashes[name] == official_l for name in ARM_NAMES)
+    new_arms = []
+    for name in ARM_NAMES:
+        if hashes[name] == hashes["U"]:
+            continue
+        if official_l is None or hashes[name] == official_l:
+            continue
+        new_arms.append(name)
+    return {
+        "p_i_c_coincide": coincide,
+        "identical_to_u": identical_to_u,
+        "identical_to_official_l": identical_to_official_l,
+        "official_l_hash": official_l,
+        "official_u_hash": official_u,
+        "u_matches_official_u": official_u is not None and hashes["U"] == official_u,
+        "official_p_i_c_coincide": official_coincide,
+        "new_arms": new_arms,
+        "new_request": bool(new_arms),
+    }
+
+
+def flight_groups(label: str, hashes: dict, official_l_hash: str | None) -> list[tuple[str, ...]]:
+    """Members to send. U, E, and official L are never members."""
+    if label not in EXPLORATORY_LABELS:
+        raise ValueError(label)
+    classified = classify_case(
+        hashes,
+        None
+        if official_l_hash is None
+        else {"U": hashes["U"], "P": official_l_hash, "I": official_l_hash, "C": official_l_hash},
+    )
+    # classify_case treats a supplied official hash as L only when P=I=C on that
+    # official trio. The caller passes the already-resolved official L hash.
+    if official_l_hash is None or not classified["new_request"]:
+        groups: list[tuple[str, ...]] = []
+    elif classified["p_i_c_coincide"]:
+        groups = [(label,)]
+    else:
+        order = []
+        buckets: dict[str, list[str]] = {}
+        for name in classified["new_arms"]:
+            digest = hashes[name]
+            if digest not in buckets:
+                buckets[digest] = []
+                order.append(digest)
+            buckets[digest].append(name)
+        groups = [tuple(buckets[digest]) for digest in order]
+    for members in groups:
+        assert_flight_members(members)
+    return groups
+
+
+def assert_flight_members(members: tuple[str, ...] | list[str]) -> None:
+    if not members:
+        raise ExploratoryFlightRefused("empty flight group")
+    allowed = set(EXPLORATORY_LABELS) | set(ARM_NAMES)
+    for name in members:
+        if name in NOT_REFLOWN:
+            raise ExploratoryFlightRefused("U, E, and official L are not re-flown")
+        if name in REFUSED_GENERATION_ALIASES:
+            raise ExploratoryFlightRefused("refusing generation under the handler alias " + name)
+        if name not in allowed:
+            raise ExploratoryFlightRefused("unknown flight member " + str(name))
+
+
+def setting_flyability(
+    cases: list[dict],
+    *,
+    coverage_complete: bool,
+    hash_reproduction_matched: bool,
+) -> dict:
+    """A setting is flyable only when some complete request differs from U and from official L."""
+    prepared = [case for case in cases if not case.get("preparation_failure")]
+    identical_to_u = bool(prepared) and all(case["identical_to_u"] for case in prepared)
+    identical_to_official_l = bool(prepared) and all(case["identical_to_official_l"] for case in prepared)
+    new_cases = sum(1 for case in prepared if case.get("new_request"))
+    if not hash_reproduction_matched:
+        reason = "official_r075_hash_reproduction_failed"
+        flyable = False
+    elif not coverage_complete:
+        reason = "incomplete_coverage"
+        flyable = False
+    elif identical_to_official_l and identical_to_u:
+        reason = "complete_requests_identical_to_official_L_and_U"
+        flyable = False
+    elif identical_to_official_l:
+        reason = "complete_requests_identical_to_official_L"
+        flyable = False
+    elif identical_to_u:
+        reason = "complete_requests_identical_to_U"
+        flyable = False
+    elif new_cases == 0:
+        reason = "no_request_different_from_U_and_official_L"
+        flyable = False
+    else:
+        reason = "complete_requests_differ_from_U_and_official_L"
+        flyable = True
+    return {
+        "flyable": flyable,
+        "reason": reason,
+        "identical_to_u": identical_to_u,
+        "identical_to_official_l": identical_to_official_l,
+        "cases_with_new_request": new_cases,
+        "prepared_cases": len(prepared),
+    }
+
+
+def accept_ceiling(value) -> Decimal:
+    """The operator supplies the ceiling. There is no default and no raise."""
+    if value is None or isinstance(value, bool):
+        raise ExploratoryFlightRefused("a financial ceiling is required at run time")
+    if isinstance(value, float):
+        raise ExploratoryFlightRefused("ceiling must be an exact decimal, not a binary float")
+    text = value if isinstance(value, str) else str(value)
+    if isinstance(value, Decimal):
+        amount = value
+    else:
+        stripped = text.strip()
+        if stripped == "" or stripped.lower() in {"none", "null"}:
+            raise ExploratoryFlightRefused("a financial ceiling is required at run time")
+        try:
+            amount = Decimal(stripped)
+        except Exception as exc:
+            raise ExploratoryFlightRefused("ceiling is not a decimal amount") from exc
+    if not amount.is_finite() or amount <= 0:
+        raise ExploratoryFlightRefused("ceiling must be a positive amount")
+    return amount
+
+
+def assert_ceiling_not_raised(supplied: Decimal, recorded: Decimal) -> None:
+    if recorded != supplied or recorded > supplied:
+        raise ExploratoryFlightRefused("refusing a ceiling that was raised or replaced")
+
+
+def refuse_generation_alias(name: str) -> None:
+    if name in REFUSED_GENERATION_ALIASES:
+        raise ExploratoryFlightRefused("refusing generation under the handler alias " + name)
+
+
+def assert_generation_body(body: dict) -> None:
+    model = body.get("model")
+    refuse_generation_alias(str(model))
+    if model != GENERATION_MODEL:
+        raise ExploratoryFlightRefused("generation model must be deepseek-flash")
+    if body.get("thinking") != {"type": "disabled"}:
+        raise ExploratoryFlightRefused("thinking must be disabled")
+    if "reasoning_effort" in body:
+        raise ExploratoryFlightRefused("refusing reasoning_effort")
+
+
+def billed_basis_t(payload: dict) -> dict:
+    """Provider total input. Cache hits are not subtracted and prices are not applied."""
+    usage = usage_from_mapping(payload)
+    return {
+        "T": usage.total_input_tokens,
+        "basis": "provider_prompt_tokens",
+        "price_weighted": False,
+        "cache_subtracted": False,
+    }
+
+
+def official_evaluate_argv(result_dir, score_dir) -> list[str]:
+    """Pinned ``bfcl evaluate`` on saved outputs. This is not ``bfcl generate``."""
+    argv = [
+        sys.executable,
+        "-m",
+        "bfcl_eval",
+        "evaluate",
+        "--model",
+        EVALUATE_DECODER_ALIAS,
+        "--test-category",
+        "multiple,simple_python,irrelevance",
+        "--result-dir",
+        str(result_dir),
+        "--score-dir",
+        str(score_dir),
+    ]
+    assert_evaluate_command(argv)
+    return argv
+
+
+def assert_evaluate_command(argv: list[str]) -> None:
+    if "generate" in argv or "openfunctions_evaluation" in argv:
+        raise ExploratoryFlightRefused("refusing generation; scoring reads saved outputs")
+    if "evaluate" not in argv:
+        raise ExploratoryFlightRefused("scoring command is bfcl evaluate")

@@ -34,6 +34,15 @@ from tool_compression.runner import (
     select_prepared_sample,
     select_validation_sample,
 )
+from tool_compression.exploratory import ExploratoryFlightRefused, accept_ceiling
+from tool_compression.exploratory_audit import load_hash_rows, write_audit
+from tool_compression.exploratory_flight import (
+    execute_exploratory_flight,
+    exploratory_record,
+    live_client,
+    prepare_exploratory_flight,
+    score_live_outputs,
+)
 from tool_compression.external import public_report, run_arm_e
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
 from tool_compression.packet import shared_request_groups, write_packet
@@ -105,6 +114,33 @@ def main(argv: list[str] | None = None) -> int:
     flight.add_argument("--no-api", action="store_true", help="Do not call DeepSeek and do not read an API key.")
     flight.add_argument("--stage", choices=("all", "a", "b"), default="all")
 
+    audit = sub.add_parser(
+        "exploratory-audit",
+        help="Audit H50 and H25 offline. Does not call a provider.",
+    )
+    audit.add_argument("--bfcl-root", required=True, type=Path)
+    audit.add_argument("--out", required=True, type=Path)
+    audit.add_argument("--official-hashes", type=Path)
+    audit.add_argument("--arm-e-hashes", type=Path)
+
+    exploratory = sub.add_parser(
+        "exploratory-flight",
+        help=(
+            "Plan a later H50 or H25 flight. Does not call DeepSeek unless --live is set. "
+            "The ceiling has no default. U, E, and official L are not sent."
+        ),
+    )
+    exploratory.add_argument("--setting", required=True, choices=("H50", "H25"))
+    exploratory.add_argument(
+        "--ceiling-cny",
+        help="Runtime CNY ceiling. Required for a plan or a live flight. There is no default.",
+    )
+    exploratory.add_argument("--audit", type=Path)
+    exploratory.add_argument("--bfcl-root", required=True, type=Path)
+    exploratory.add_argument("--out", required=True, type=Path)
+    exploratory.add_argument("--live", action="store_true", help="Start the provider flight. Omit this to plan only.")
+    exploratory.add_argument("--score", action="store_true", help="After a live flight, run bfcl evaluate on saved outputs.")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -122,6 +158,10 @@ def main(argv: list[str] | None = None) -> int:
         return _freeze_record(args)
     if args.command == "validate-flight":
         return _validate_flight(args)
+    if args.command == "exploratory-audit":
+        return _exploratory_audit(args)
+    if args.command == "exploratory-flight":
+        return _exploratory_flight(args)
     return 2
 
 
@@ -384,6 +424,101 @@ def _repo_root() -> Path:
 
 def _default_script() -> Path:
     return _repo_root() / "scripts" / "tscg_compress_descriptions.mjs"
+
+
+def _exploratory_audit(args) -> int:
+    from tool_compression.count import study_counters
+    from tool_compression.load import load_study
+
+    root = _repo_root()
+    official_path = args.official_hashes or root / "evidence" / "week1_request_hashes.jsonl"
+    arm_path = args.arm_e_hashes or root / "evidence" / "week1_arm_e_hashes.jsonl"
+    budget, sensitivity = study_counters()
+    study = load_study(args.bfcl_root)
+    payload = write_audit(
+        study,
+        load_hash_rows(official_path),
+        load_hash_rows(arm_path),
+        args.out,
+        budget,
+        sensitivity,
+        bfcl_root=args.bfcl_root,
+    )
+    for label, setting in payload["settings"].items():
+        print(
+            f"{label} flyable={setting['flyable']} reason={setting['flyable_reason']} "
+            f"coverage_complete={setting['coverage_complete']} "
+            f"p_i_c_coincide={setting['p_i_c_coincide']} "
+            f"cases_with_new_request={setting['cases_with_new_request']} "
+            f"provider_called={setting['provider_called']} network_used={setting['network_used']}"
+        )
+    pinned = payload["official_hash_reproduction"]["matched"] and payload["data_pin"]["matched"]
+    return 0 if pinned else 1
+
+
+def _score_saved_outputs(args) -> int:
+    summary_path = Path(args.out) / "flight_summary.json"
+    try:
+        summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"saved flight summary is unreadable: {exc}", file=sys.stderr)
+        return 1
+    try:
+        score_live_outputs(summary, args.bfcl_root, args.out)
+    except ExploratoryFlightRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    print("command=evaluate generation_started=false")
+    return 0
+
+
+def _exploratory_flight(args) -> int:
+    from tool_compression.count import study_counters
+    from tool_compression.load import load_study
+
+    if args.score and not args.live:
+        return _score_saved_outputs(args)
+    try:
+        ceiling = accept_ceiling(args.ceiling_cny)
+    except ExploratoryFlightRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    root = _repo_root()
+    audit_path = args.audit or root / "evidence" / "exploratory" / "audit.json"
+    try:
+        audit = json.loads(Path(audit_path).read_text(encoding="utf-8"))
+        setting = audit["settings"][args.setting]
+    except (OSError, json.JSONDecodeError, KeyError) as exc:
+        print(f"exploratory audit is unreadable: {exc}", file=sys.stderr)
+        return 1
+    try:
+        counter = study_counters()[0]
+        study = load_study(args.bfcl_root)
+        summary, plans = prepare_exploratory_flight(
+            study, args.setting, ceiling, setting, args.out, counter
+        )
+        if not args.live:
+            print(
+                f"setting={args.setting} started=false provider_called=false "
+                f"network_used=false groups_planned={summary['groups_planned']} stop_reason=not_started"
+            )
+            return 0
+        record = exploratory_record(args.setting, ceiling)
+        client = live_client(record)
+        summary = execute_exploratory_flight(
+            record, plans, ceiling, args.out, client=client, live=True
+        )
+        if args.score:
+            summary = score_live_outputs(summary, args.bfcl_root, args.out)
+        print(
+            f"setting={args.setting} provider_called={summary['provider_called']} "
+            f"network_used={summary['network_used']} stop_reason={summary['stop_reason']} "
+            f"ok={summary.get('ok')}"
+        )
+        return 0 if summary.get("ok") else 2
+    except (ExploratoryFlightRefused, MissingApiKey) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
