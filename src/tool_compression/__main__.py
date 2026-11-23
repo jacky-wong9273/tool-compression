@@ -1,9 +1,16 @@
-"""Preparation commands and official scoring from saved outputs. No model calls."""
+"""Preparation commands and official scoring from saved outputs.
 
+``followon-flight --live`` is the only generation entry. It is not used by the
+tests, and it still requires a supplied ceiling. Every other command stays offline.
+"""
+
+from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 import argparse
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 
@@ -16,6 +23,20 @@ from tool_compression.count import study_counters
 from tool_compression.evaluation import evaluation_manifest, summarize_hash_rows
 from tool_compression.external import public_report, run_arm_e
 from tool_compression.followon_bind import reproduce_historical_official_counts
+from tool_compression.followon_flight import (
+    ARMS,
+    FollowOnFlightRefused,
+    catalogue_plan,
+    comparison_versus_official_u,
+    is_peak,
+    official_evaluate_argv,
+    pre_call_reserve_cny,
+    reconfirm_committed_identity,
+    remaining_allows_call,
+    resolve_ceiling,
+    write_flight_readiness,
+    write_plan,
+)
 from tool_compression.followon_report import verify_followon_manifest, write_package
 from tool_compression.load import STUDY_CATEGORIES, VERSION_PREFIX, load_study, resolve_data_dir
 from tool_compression.official_score import (
@@ -112,6 +133,27 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("followon-historical")
 
+    followon_flight = sub.add_parser("followon-flight")
+    followon_flight.add_argument("--arm", required=True, choices=("T1", "T2", "both"))
+    followon_flight.add_argument("--bfcl-root", required=True, type=Path)
+    followon_flight.add_argument("--out", required=True, type=Path)
+    followon_flight.add_argument("--ceiling-cny", default=None)
+    followon_flight.add_argument("--live", action="store_true")
+    followon_flight.add_argument("--sequential", action="store_true")
+
+    followon_reconfirm = sub.add_parser("followon-reconfirm")
+    followon_reconfirm.add_argument("--bfcl-root", type=Path)
+    followon_reconfirm.add_argument("--out", type=Path)
+
+    followon_score = sub.add_parser("followon-score")
+    followon_score.add_argument("--bfcl", required=True)
+    followon_score.add_argument("--project-root", required=True, type=Path)
+    followon_score.add_argument("--arm", required=True, choices=("T1", "T2"))
+
+    followon_compare = sub.add_parser("followon-compare")
+    followon_compare.add_argument("--usage", type=Path)
+    followon_compare.add_argument("--out", required=True, type=Path)
+
     join = sub.add_parser("join-outcomes")
     join.add_argument("--rows", required=True, type=Path)
     join.add_argument("--out", type=Path)
@@ -147,6 +189,14 @@ def main(argv: list[str] | None = None) -> int:
         return _followon_manifest(args)
     if args.command == "followon-historical":
         return _followon_historical()
+    if args.command == "followon-flight":
+        return _followon_flight(args)
+    if args.command == "followon-reconfirm":
+        return _followon_reconfirm(args)
+    if args.command == "followon-score":
+        return _followon_score(args)
+    if args.command == "followon-compare":
+        return _followon_compare(args)
     if args.command == "join-outcomes":
         return _join_outcomes(args)
     return 2
@@ -327,6 +377,150 @@ def _followon_manifest(args) -> int:
     issues = verify_followon_manifest(manifest, root)
     print(json.dumps({"ok": not issues, "issues": issues}, indent=2))
     return 0 if not issues else 1
+
+
+def _followon_flight(args) -> int:
+    """Plan T1 and/or T2. ``--live`` is the only path that builds a provider client."""
+    try:
+        ceiling = resolve_ceiling(args.ceiling_cny)
+    except FollowOnFlightRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    if args.live and args.arm == "both" and not args.sequential:
+        print(
+            "Fly T1 and T2 with separate --arm commands, or pass --arm both --sequential.",
+            file=sys.stderr,
+        )
+        return 2
+    if args.live:
+        return _followon_live(args, ceiling)
+    from tool_compression.count import study_counters
+    from tool_compression.load import load_study
+
+    try:
+        study = load_study(args.bfcl_root)
+        counter, _sensitivity = study_counters()
+        rows = catalogue_plan(study, counter)
+    except FollowOnFlightRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    arms = ARMS if args.arm == "both" else (args.arm,)
+    sequential = bool(args.sequential and args.arm == "both")
+    if args.arm == "both" and not args.sequential:
+        written = []
+        for arm in ARMS:
+            summary = write_plan(args.out / arm, rows, ceiling, (arm,), sequential=False)
+            written.append({"arm": arm, "cases": summary["arms"][arm]["cases"], "out": str(args.out / arm)})
+        print(json.dumps({"started": False, "provider_called": False, "live": False, "plans": written}, indent=2))
+        return 0
+    summary = write_plan(args.out, rows, ceiling, arms, sequential=sequential)
+    print(
+        json.dumps(
+            {
+                "started": summary["started"],
+                "provider_called": summary["provider_called"],
+                "live": False,
+                "cases": {arm: summary["arms"][arm]["cases"] for arm in arms},
+                "same_request_redraw_of_u": summary["same_request_redraw_of_u"],
+                "out": str(args.out),
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
+def _followon_live(args, ceiling) -> int:
+    """Import the client only after --live, a supplied ceiling, and the peak check."""
+    if is_peak(datetime.now(timezone.utc)):
+        print("refusing to start inside a peak window", file=sys.stderr)
+        return 2
+    if not remaining_allows_call(Decimal("0"), ceiling, pre_call_reserve_cny()):
+        print("supplied ceiling cannot hold the pre-call reserve", file=sys.stderr)
+        return 2
+    from tool_compression.count import study_counters
+    from tool_compression.followon_live import MissingApiKey, execute_plans, live_client, plans_from_study
+    from tool_compression.load import load_study
+
+    try:
+        study = load_study(args.bfcl_root)
+        counter, _sensitivity = study_counters()
+        arms = ARMS if args.arm == "both" else (args.arm,)
+        sequential = bool(args.sequential and args.arm == "both")
+        rows = catalogue_plan(study, counter)
+        write_plan(args.out, rows, ceiling, arms, sequential=sequential)
+        plans = plans_from_study(study, counter, arms, sequential=sequential)
+        client = live_client(ceiling)
+        summary = execute_plans(plans, ceiling=ceiling, client=client, out=args.out)
+    except (FollowOnFlightRefused, MissingApiKey) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps({"started": summary["started"], "provider_called": summary["provider_called"], "stop_reason": summary["stop_reason"]}, indent=2))
+    return 0 if summary["ok"] else 1
+
+
+def _followon_reconfirm(args) -> int:
+    root = _repo_root()
+    destination = args.out or root / "followon" / "flight_readiness.json"
+    payload = write_flight_readiness(root, args.bfcl_root, destination)
+    print(
+        json.dumps(
+            {
+                "ready_for_later_flight": payload["ready_for_later_flight"],
+                "identity_holds": payload["identity_holds"],
+                "same_request_redraw_of_u": payload["same_request_redraw_of_u"],
+                "provider_called": payload["provider_called"],
+                "measured": payload["measured"],
+                "out": str(destination),
+            },
+            indent=2,
+        )
+    )
+    return 0 if payload["identity_holds"] else 1
+
+
+def _followon_score(args) -> int:
+    """Run official bfcl evaluate on saved outputs. Generate is refused."""
+    argv = official_evaluate_argv(Path("bfcl_result"), Path("bfcl_score"), bfcl=args.bfcl)
+    if "generate" in argv:
+        print("refusing generate", file=sys.stderr)
+        return 2
+    env = os.environ.copy()
+    env["BFCL_PROJECT_ROOT"] = str(args.project_root)
+    env["OPENAI_API_KEY"] = "UNUSED_OFFICIAL_EVAL_NO_PROVIDER_CALL"
+    env["DEEPSEEK_API_KEY"] = "UNUSED_OFFICIAL_EVAL_NO_PROVIDER_CALL"
+    for name in (
+        "ANTHROPIC_API_KEY",
+        "GOOGLE_API_KEY",
+        "MISTRAL_API_KEY",
+        "COHERE_API_KEY",
+        "WANDB_API_KEY",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+    ):
+        env.pop(name, None)
+    completed = subprocess.run(argv, cwd=args.project_root, env=env, check=False)
+    print(json.dumps({"invoked": True, "generate": False, "returncode": completed.returncode, "arm": args.arm, "argv": argv}, indent=2))
+    return completed.returncode
+
+
+def _followon_compare(args) -> int:
+    root = _repo_root()
+    usage = None
+    if args.usage is not None:
+        loaded = json.loads(args.usage.read_text(encoding="utf-8"))
+        usage = loaded.get("arms", loaded) if isinstance(loaded, dict) else None
+    identity = reconfirm_committed_identity(root)
+    before = (root / "official" / "settlement" / "official_settlement.json").read_bytes()
+    payload = comparison_versus_official_u(root, usage, identity)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    args.out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    after = (root / "official" / "settlement" / "official_settlement.json").read_bytes()
+    if before != after:
+        print("official settlement was modified", file=sys.stderr)
+        return 1
+    print(json.dumps({"out": str(args.out), "provider_T_invented": payload["provider_T_invented"], "revises_official_c_versus_u": False}, indent=2))
+    return 0
 
 
 def _followon_historical() -> int:
