@@ -1,0 +1,113 @@
+{
+  "invented": true,
+  "in_pilot_denominator": false,
+  "label": "Invented sales pair. Not a BFCL case and not one of the 12 selected catalogues.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "record_completed_sale",
+        "description": "Records a completed retail sale for one stock-keeping unit. The amount is in US dollars, and the stored result is a completed sale.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "description": "Stock-keeping unit of the product sold."
+            },
+            "amount": {
+              "type": "number",
+              "description": "Completed-sale amount in US dollars."
+            }
+          },
+          "required": [
+            "sku",
+            "amount"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "prepare_price_quote",
+        "description": "Prepares a price quote for one stock-keeping unit. The amount is in US dollars, and the stored result is a quote rather than a completed sale.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sku": {
+              "type": "string",
+              "description": "Stock-keeping unit of the product being quoted."
+            },
+            "amount": {
+              "type": "number",
+              "description": "Quoted amount in US dollars."
+            }
+          },
+          "required": [
+            "sku",
+            "amount"
+          ]
+        }
+      }
+    }
+  ],
+  "fields": [
+    {
+      "tool_index": 0,
+      "pointer": "/function/description",
+      "original": "Records a completed retail sale for one stock-keeping unit. The amount is in US dollars, and the stored result is a completed sale.",
+      "replacement": "Record a completed sale of one stock-keeping unit, in US dollars."
+    },
+    {
+      "tool_index": 0,
+      "pointer": "/function/parameters/properties/sku/description",
+      "original": "Stock-keeping unit of the product sold.",
+      "replacement": "Stock-keeping unit sold."
+    },
+    {
+      "tool_index": 0,
+      "pointer": "/function/parameters/properties/amount/description",
+      "original": "Completed-sale amount in US dollars.",
+      "replacement": "Completed-sale amount in US dollars."
+    },
+    {
+      "tool_index": 1,
+      "pointer": "/function/description",
+      "original": "Prepares a price quote for one stock-keeping unit. The amount is in US dollars, and the stored result is a quote rather than a completed sale.",
+      "replacement": "Prepare a price quote for one stock-keeping unit, in US dollars, stored as a quote rather than a completed sale."
+    },
+    {
+      "tool_index": 1,
+      "pointer": "/function/parameters/properties/sku/description",
+      "original": "Stock-keeping unit of the product being quoted.",
+      "replacement": "Stock-keeping unit quoted."
+    },
+    {
+      "tool_index": 1,
+      "pointer": "/function/parameters/properties/amount/description",
+      "original": "Quoted amount in US dollars.",
+      "replacement": "Quoted amount in US dollars."
+    }
+  ],
+  "cues": [
+    {
+      "tool_index": 0,
+      "pointer": "/function/description",
+      "cue": "Unlike prepare_price_quote, which prepares a price quote and stores a quote rather than a completed sale, this records a completed sale and stores that completed sale."
+    },
+    {
+      "tool_index": 1,
+      "pointer": "/function/description",
+      "cue": "Unlike record_completed_sale, which records a completed sale and stores that completed sale, this prepares a price quote and stores a quote rather than a completed sale."
+    }
+  ],
+  "field_tokens_o200k_base": {
+    "U": 92,
+    "S": 65,
+    "X": 154,
+    "SX": 127
+  },
+  "rejected_cue": "Only record_completed_sale uses US dollars.",
+  "rejected_reason": "Both original descriptions state that the amount is in US dollars. A shared fact is not a contrast, and neither tool's silence is treated as an exclusion."
+}

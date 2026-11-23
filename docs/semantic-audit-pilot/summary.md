@@ -1,0 +1,9 @@
+# Summary
+
+On this 12-catalogue pilot, semantic compression shortens local description tokens by 142/1,051 (13.51%) and local prepared-request tokens by 142/3,363 (4.22%). Explicit contrast does the opposite: it adds 586 description tokens and 583 request tokens. Using both, SX, stays longer than the unmodified control because the cues are longer than the words S removes. None of these figures is a provider saving or an official score.
+
+The compression is uneven. 72 of 95 allowlisted fields were already a short claim, a unit, a literal, a prose default the schema does not carry, or an unresolved float sentence, and they stay verbatim. The 23 edits are 22 condensations and one removed illustration (`eg. Bankruptcy`). The ledger counts 201 preserved claims, 0 lost claims, 0 unsupported additions, 17 uncertain claims retained, and 22 duplicate or illustration omissions. A duplicate omission is not a lost fact. The same editor rechecked the before/after pairs in the same sitting; that is not an independent review.
+
+A justified contrast cue exists on 6 of the 8 `multiple` catalogues (15 tools). `multiple_153` and `multiple_100` have no pair that plausibly answers a similar need, so they receive no cue. The four one-tool controls also receive none. The three retailer tools are one repeated parameter schema and one cue family, not three trials. Including function names, the 24 tools are 24 schema signatures, beside the 8 / 2 / 2 case totals.
+
+Two limits dominate the reading. First, no model saw these catalogues, so a claim that tool choice and arguments survive is unchecked; the results name the spots where a miss is most plausible. Second, the 2 + 2 controls, and the 6/8 cue count, describe this sample only. A full 200 / 400 / 240 evaluation, and any official scoring, would be a separate agreement. The historical 10% provider-input target is unchanged.

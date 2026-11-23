@@ -59,6 +59,8 @@ def main(argv: list[str] | None = None) -> int:
     groups.add_argument("--arm-e", type=Path)
     groups.add_argument("--out", type=Path)
 
+    sub.add_parser("semantic-audit")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -72,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         return _inspect_suffix()
     if args.command == "groups":
         return _groups(args)
+    if args.command == "semantic-audit":
+        return _semantic_audit()
     return 2
 
 
@@ -141,6 +145,13 @@ def _groups(args) -> int:
         print(f"wrote {args.out}")
     else:
         print(json.dumps(summary, indent=2, sort_keys=True))
+    return 0
+
+
+def _semantic_audit() -> int:
+    from tool_compression.semantic_audit import verify_package
+
+    print(json.dumps(verify_package(), indent=2, sort_keys=True))
     return 0
 
 

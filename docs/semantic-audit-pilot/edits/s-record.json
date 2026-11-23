@@ -1,0 +1,4543 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "record": "S",
+  "editor": "single pilot editor",
+  "reviewer": "same editor, masked before/after self-review",
+  "independent_review": false,
+  "blinding": "Questions were not written into the edit packets. Each S packet contained one converted tool. Sibling tools were opened only in a later index round, after that round's decisions were saved. No S wording names a sibling.",
+  "self_review": {
+    "method": "Before/after strings were reread with the decision notes hidden.",
+    "revisions_before_seal": [
+      "The species parameter keeps the verb calculated.",
+      "The music function description keeps 'in a key, with a tempo and duration'."
+    ]
+  },
+  "rejected_edits": [
+    "Drop the handler float sentence because format is float.",
+    "Drop 'standard' and 'reduced' from the LCM method.",
+    "Replace prose 'number' with schema 'integer'.",
+    "Replace calculated with assessed on the ecological species parameter.",
+    "Drop the Denver, CO example.",
+    "Drop Safeway, Whole Foods, or Walmart from a function description.",
+    "Add schema defaults that the prose never stated, including timeframe 5, precision 2, and exploration type urban."
+  ],
+  "cases": [
+    {
+      "case_id": "multiple_35",
+      "fields": [
+        {
+          "case_id": "multiple_35",
+          "tool_index": 0,
+          "function_name": "calculate_lcm",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the least common multiple (lcm) between two integers.",
+          "replacement": "Calculate the least common multiple (lcm) between two integers.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_35/t0/function/descriptiona",
+              "excerpt": "Calculate the least common multiple (lcm) between two integers.",
+              "span": [
+                0,
+                63
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the least common multiple (lcm) between two integers."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 0,
+          "function_name": "calculate_lcm",
+          "pointer": "/function/parameters/properties/num1/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Prose says number. Schema type is integer. Left as written. The field is otherwise unchanged.",
+          "original": "First number to calculate lcm for.",
+          "replacement": "First number to calculate lcm for.",
+          "conflicts": [
+            "Prose says number. Schema type is integer. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_35/t0/function/parameters/properties/num1/descriptiona",
+              "excerpt": "First number to calculate lcm for.",
+              "span": [
+                0,
+                34
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "First number to calculate lcm for."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 0,
+          "function_name": "calculate_lcm",
+          "pointer": "/function/parameters/properties/num2/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Prose says number. Schema type is integer. Left as written. The field is otherwise unchanged.",
+          "original": "Second number to calculate lcm for.",
+          "replacement": "Second number to calculate lcm for.",
+          "conflicts": [
+            "Prose says number. Schema type is integer. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_35/t0/function/parameters/properties/num2/descriptiona",
+              "excerpt": "Second number to calculate lcm for.",
+              "span": [
+                0,
+                35
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Second number to calculate lcm for."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 0,
+          "function_name": "calculate_lcm",
+          "pointer": "/function/parameters/properties/method/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The purpose clause shortens. The supported literals and the default stay in prose because the schema has neither an enum nor a default.",
+          "original": "The specific method to use in the calculation. Supported values: 'standard', 'reduced'. Default 'standard'",
+          "replacement": "Calculation method. Supported values: 'standard', 'reduced'. Default 'standard'.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_35/t0/function/parameters/properties/method/descriptiona",
+              "excerpt": "The specific method to use in the calculation.",
+              "span": [
+                0,
+                46
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Paraphrase of the method used in the calculation.",
+              "after": "Calculation method."
+            },
+            {
+              "id": "multiple_35/t0/function/parameters/properties/method/descriptionb",
+              "excerpt": "Supported values: 'standard', 'reduced'",
+              "span": [
+                47,
+                86
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "literal",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rejected alternative: dropping these literals. They are not in the schema.",
+              "after": "Supported values: 'standard', 'reduced'"
+            },
+            {
+              "id": "multiple_35/t0/function/parameters/properties/method/descriptionc",
+              "excerpt": "Default 'standard'",
+              "span": [
+                88,
+                106
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "No schema default.",
+              "after": "Default 'standard'"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 1,
+          "function_name": "calculate_gcd",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the greatest common divisor (gcd) between two integers.",
+          "replacement": "Calculate the greatest common divisor (gcd) between two integers.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_35/t1/function/descriptiona",
+              "excerpt": "Calculate the greatest common divisor (gcd) between two integers.",
+              "span": [
+                0,
+                65
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the greatest common divisor (gcd) between two integers."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 1,
+          "function_name": "calculate_gcd",
+          "pointer": "/function/parameters/properties/num1/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Prose says number. Schema type is integer. Left as written. The field is otherwise unchanged.",
+          "original": "First number to calculate gcd for.",
+          "replacement": "First number to calculate gcd for.",
+          "conflicts": [
+            "Prose says number. Schema type is integer. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_35/t1/function/parameters/properties/num1/descriptiona",
+              "excerpt": "First number to calculate gcd for.",
+              "span": [
+                0,
+                34
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "First number to calculate gcd for."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 1,
+          "function_name": "calculate_gcd",
+          "pointer": "/function/parameters/properties/num2/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Prose says number. Schema type is integer. Left as written. The field is otherwise unchanged.",
+          "original": "Second number to calculate gcd for.",
+          "replacement": "Second number to calculate gcd for.",
+          "conflicts": [
+            "Prose says number. Schema type is integer. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_35/t1/function/parameters/properties/num2/descriptiona",
+              "excerpt": "Second number to calculate gcd for.",
+              "span": [
+                0,
+                35
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Second number to calculate gcd for."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_35",
+          "tool_index": 1,
+          "function_name": "calculate_gcd",
+          "pointer": "/function/parameters/properties/algorithm/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The supported values duplicate the schema enum. The default euclidean is not a schema default, so it stays in prose.",
+          "original": "The specific algorithm to use in the calculation. Supported values: 'euclidean', 'binary'. Default 'euclidean'",
+          "replacement": "Calculation algorithm. Default 'euclidean'.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_35/t1/function/parameters/properties/algorithm/descriptiona",
+              "excerpt": "The specific algorithm to use in the calculation.",
+              "span": [
+                0,
+                49
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Calculation algorithm."
+            },
+            {
+              "id": "multiple_35/t1/function/parameters/properties/algorithm/descriptionb",
+              "excerpt": "Supported values: 'euclidean', 'binary'",
+              "span": [
+                50,
+                89
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-enum",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/algorithm/enum",
+              "schema_equals": [
+                "euclidean",
+                "binary"
+              ]
+            },
+            {
+              "id": "multiple_35/t1/function/parameters/properties/algorithm/descriptionc",
+              "excerpt": "Default 'euclidean'",
+              "span": [
+                91,
+                110
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rejected alternative: dropping the default because the enum exists. The enum does not state a default.",
+              "after": "Default 'euclidean'."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_0",
+      "fields": [
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Same retrieval, the same examples, the triangle, and the three-side condition.",
+          "original": "Retrieve the dimensions, such as area and perimeter, of a triangle if lengths of three sides are given.",
+          "replacement": "Retrieve a triangle's dimensions, such as area and perimeter, given three side lengths.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/descriptiona",
+              "excerpt": "Retrieve the dimensions",
+              "span": [
+                0,
+                23
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "action",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Retrieve a triangle's dimensions"
+            },
+            {
+              "id": "multiple_0/t0/function/descriptionb",
+              "excerpt": "such as area and perimeter",
+              "span": [
+                25,
+                51
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "returns",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Examples stay examples. Angles are not added from the parameter list.",
+              "after": "such as area and perimeter"
+            },
+            {
+              "id": "multiple_0/t0/function/descriptionc",
+              "excerpt": "of a triangle",
+              "span": [
+                53,
+                66
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "triangle"
+            },
+            {
+              "id": "multiple_0/t0/function/descriptiond",
+              "excerpt": "if lengths of three sides are given",
+              "span": [
+                67,
+                102
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "condition",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "given three side lengths."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/side1/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Length and ordinal stay. The triangle scope remains in the function description.",
+          "original": "The length of first side of the triangle.",
+          "replacement": "Length of the first side.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side1/descriptiona",
+              "excerpt": "The length of first side",
+              "span": [
+                0,
+                24
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Length of the first side."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side1/descriptionb",
+              "excerpt": "of the triangle",
+              "span": [
+                25,
+                40
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "Not a lost fact. The function description still names the triangle.",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/side2/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Length and ordinal stay. The triangle scope remains in the function description.",
+          "original": "The length of second side of the triangle.",
+          "replacement": "Length of the second side.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side2/descriptiona",
+              "excerpt": "The length of second side",
+              "span": [
+                0,
+                25
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Length of the second side."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side2/descriptionb",
+              "excerpt": "of the triangle",
+              "span": [
+                26,
+                41
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/side3/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Length and ordinal stay. The triangle scope remains in the function description.",
+          "original": "The length of third side of the triangle.",
+          "replacement": "Length of the third side.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side3/descriptiona",
+              "excerpt": "The length of third side",
+              "span": [
+                0,
+                24
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Length of the third side."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/side3/descriptionb",
+              "excerpt": "of the triangle",
+              "span": [
+                25,
+                40
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/get_area/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The area choice stays. The default and the boolean flag are schema facts. The triangle scope remains on the function.",
+          "original": "A flag to determine whether to calculate the area of triangle. Default is true.",
+          "replacement": "Whether to calculate the area.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_area/descriptiona",
+              "excerpt": "whether to calculate the area",
+              "span": [
+                20,
+                49
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Whether to calculate the area."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_area/descriptionb",
+              "excerpt": "of triangle",
+              "span": [
+                50,
+                61
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_area/descriptionc",
+              "excerpt": "A flag",
+              "span": [
+                0,
+                6
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-type",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/get_area/type",
+              "schema_equals": "boolean"
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_area/descriptiond",
+              "excerpt": "Default is true.",
+              "span": [
+                63,
+                79
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "A prose-only reader would miss this default. Under the rubric it remains at the schema path.",
+              "schema_path": "/function/parameters/properties/get_area/default",
+              "schema_equals": true
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/get_perimeter/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The perimeter choice stays. The default is the schema default.",
+          "original": "A flag to determine whether to calculate the perimeter of triangle. Default is true.",
+          "replacement": "Whether to calculate the perimeter.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_perimeter/descriptiona",
+              "excerpt": "whether to calculate the perimeter",
+              "span": [
+                20,
+                54
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Whether to calculate the perimeter."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_perimeter/descriptionb",
+              "excerpt": "of triangle",
+              "span": [
+                55,
+                66
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_perimeter/descriptionc",
+              "excerpt": "Default is true.",
+              "span": [
+                68,
+                84
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/get_perimeter/default",
+              "schema_equals": true
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/parameters/properties/get_angles/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Internal angles stay. That phrase is more specific than the parameter name. The default is the schema default.",
+          "original": "A flag to determine whether to calculate the internal angles of triangle. Default is true.",
+          "replacement": "Whether to calculate the internal angles.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_angles/descriptiona",
+              "excerpt": "whether to calculate the internal angles",
+              "span": [
+                20,
+                60
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rejected alternative: shortening further to angles.",
+              "after": "Whether to calculate the internal angles."
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_angles/descriptionb",
+              "excerpt": "of triangle",
+              "span": [
+                61,
+                72
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "triangle"
+            },
+            {
+              "id": "multiple_0/t0/function/parameters/properties/get_angles/descriptionc",
+              "excerpt": "Default is true.",
+              "span": [
+                74,
+                90
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/get_angles/default",
+              "schema_equals": true
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 1,
+          "function_name": "circle_properties_get",
+          "pointer": "/function/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Same retrieval, the same examples, the circle, and the radius condition. Edited from this description alone.",
+          "original": "Retrieve the dimensions, such as area and circumference, of a circle if radius is given.",
+          "replacement": "Retrieve a circle's dimensions, such as area and circumference, given its radius.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t1/function/descriptiona",
+              "excerpt": "Retrieve the dimensions",
+              "span": [
+                0,
+                23
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "action",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Retrieve a circle's dimensions"
+            },
+            {
+              "id": "multiple_0/t1/function/descriptionb",
+              "excerpt": "such as area and circumference",
+              "span": [
+                25,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "returns",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "such as area and circumference"
+            },
+            {
+              "id": "multiple_0/t1/function/descriptionc",
+              "excerpt": "of a circle",
+              "span": [
+                57,
+                68
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "circle"
+            },
+            {
+              "id": "multiple_0/t1/function/descriptiond",
+              "excerpt": "if radius is given",
+              "span": [
+                69,
+                87
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "condition",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "given its radius."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 1,
+          "function_name": "circle_properties_get",
+          "pointer": "/function/parameters/properties/radius/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The length of radius of the circle. This is a float type value.",
+          "replacement": "The length of radius of the circle. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t1/function/parameters/properties/radius/descriptiona",
+              "excerpt": "The length of radius of the circle.",
+              "span": [
+                0,
+                35
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The length of radius of the circle."
+            },
+            {
+              "id": "multiple_0/t1/function/parameters/properties/radius/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                35,
+                63
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 1,
+          "function_name": "circle_properties_get",
+          "pointer": "/function/parameters/properties/get_area/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The area choice stays. The default is the schema default. The circle scope remains on the function.",
+          "original": "A flag to determine whether to calculate the area of circle. Default is true.",
+          "replacement": "Whether to calculate the area.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_area/descriptiona",
+              "excerpt": "whether to calculate the area",
+              "span": [
+                20,
+                49
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Whether to calculate the area."
+            },
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_area/descriptionb",
+              "excerpt": "of circle",
+              "span": [
+                50,
+                59
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "circle"
+            },
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_area/descriptionc",
+              "excerpt": "Default is true.",
+              "span": [
+                61,
+                77
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/get_area/default",
+              "schema_equals": true
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_0",
+          "tool_index": 1,
+          "function_name": "circle_properties_get",
+          "pointer": "/function/parameters/properties/get_circumference/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Circumference stays. The default is the schema default.",
+          "original": "A flag to determine whether to calculate the circumference of circle. Default is true.",
+          "replacement": "Whether to calculate the circumference.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_circumference/descriptiona",
+              "excerpt": "whether to calculate the circumference",
+              "span": [
+                20,
+                58
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Whether to calculate the circumference."
+            },
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_circumference/descriptionb",
+              "excerpt": "of circle",
+              "span": [
+                59,
+                68
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "circle"
+            },
+            {
+              "id": "multiple_0/t1/function/parameters/properties/get_circumference/descriptionc",
+              "excerpt": "Default is true.",
+              "span": [
+                70,
+                86
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/get_circumference/default",
+              "schema_equals": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_11",
+      "fields": [
+        {
+          "case_id": "multiple_11",
+          "tool_index": 0,
+          "function_name": "math_roots_quadratic",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the roots of a quadratic equation.",
+          "replacement": "Calculate the roots of a quadratic equation.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t0/function/descriptiona",
+              "excerpt": "Calculate the roots of a quadratic equation.",
+              "span": [
+                0,
+                44
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the roots of a quadratic equation."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 0,
+          "function_name": "math_roots_quadratic",
+          "pointer": "/function/parameters/properties/a/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Coefficient of the second-degree term.",
+          "replacement": "Coefficient of the second-degree term.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t0/function/parameters/properties/a/descriptiona",
+              "excerpt": "Coefficient of the second-degree term.",
+              "span": [
+                0,
+                38
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Coefficient of the second-degree term."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 0,
+          "function_name": "math_roots_quadratic",
+          "pointer": "/function/parameters/properties/b/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Coefficient of the first-degree term.",
+          "replacement": "Coefficient of the first-degree term.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t0/function/parameters/properties/b/descriptiona",
+              "excerpt": "Coefficient of the first-degree term.",
+              "span": [
+                0,
+                37
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Coefficient of the first-degree term."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 0,
+          "function_name": "math_roots_quadratic",
+          "pointer": "/function/parameters/properties/c/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Constant term.",
+          "replacement": "Constant term.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t0/function/parameters/properties/c/descriptiona",
+              "excerpt": "Constant term.",
+              "span": [
+                0,
+                14
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Constant term."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the roots of a cubic equation.",
+          "replacement": "Calculate the roots of a cubic equation.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t1/function/descriptiona",
+              "excerpt": "Calculate the roots of a cubic equation.",
+              "span": [
+                0,
+                40
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the roots of a cubic equation."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/parameters/properties/a/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Coefficient of the third-degree term. This is a float type value.",
+          "replacement": "Coefficient of the third-degree term. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t1/function/parameters/properties/a/descriptiona",
+              "excerpt": "Coefficient of the third-degree term.",
+              "span": [
+                0,
+                37
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Coefficient of the third-degree term."
+            },
+            {
+              "id": "multiple_11/t1/function/parameters/properties/a/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                37,
+                65
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/parameters/properties/b/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Coefficient of the second-degree term. This is a float type value.",
+          "replacement": "Coefficient of the second-degree term. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t1/function/parameters/properties/b/descriptiona",
+              "excerpt": "Coefficient of the second-degree term.",
+              "span": [
+                0,
+                38
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Coefficient of the second-degree term."
+            },
+            {
+              "id": "multiple_11/t1/function/parameters/properties/b/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                38,
+                66
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/parameters/properties/c/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Coefficient of the first-degree term. This is a float type value.",
+          "replacement": "Coefficient of the first-degree term. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t1/function/parameters/properties/c/descriptiona",
+              "excerpt": "Coefficient of the first-degree term.",
+              "span": [
+                0,
+                37
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Coefficient of the first-degree term."
+            },
+            {
+              "id": "multiple_11/t1/function/parameters/properties/c/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                37,
+                65
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/parameters/properties/d/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Constant term. This is a float type value.",
+          "replacement": "Constant term. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t1/function/parameters/properties/d/descriptiona",
+              "excerpt": "Constant term.",
+              "span": [
+                0,
+                14
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Constant term."
+            },
+            {
+              "id": "multiple_11/t1/function/parameters/properties/d/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                14,
+                42
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 2,
+          "function_name": "math_roots_polynomial",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the roots of a polynomial equation.",
+          "replacement": "Calculate the roots of a polynomial equation.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t2/function/descriptiona",
+              "excerpt": "Calculate the roots of a polynomial equation.",
+              "span": [
+                0,
+                45
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the roots of a polynomial equation."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 2,
+          "function_name": "math_roots_polynomial",
+          "pointer": "/function/parameters/properties/coefficients/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The highest-degree-first order stays. Array duplicates the schema type. The polynomial equation is the function description.",
+          "original": "Array of coefficients of the polynomial equation starting from highest degree term.",
+          "replacement": "Coefficients, starting from the highest-degree term.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t2/function/parameters/properties/coefficients/descriptiona",
+              "excerpt": "coefficients",
+              "span": [
+                9,
+                21
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Coefficients"
+            },
+            {
+              "id": "multiple_11/t2/function/parameters/properties/coefficients/descriptionb",
+              "excerpt": "Array of",
+              "span": [
+                0,
+                8
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-type",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/coefficients/type",
+              "schema_equals": "array"
+            },
+            {
+              "id": "multiple_11/t2/function/parameters/properties/coefficients/descriptionc",
+              "excerpt": "of the polynomial equation",
+              "span": [
+                22,
+                48
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-scope",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "polynomial equation"
+            },
+            {
+              "id": "multiple_11/t2/function/parameters/properties/coefficients/descriptiond",
+              "excerpt": "starting from highest degree term",
+              "span": [
+                49,
+                82
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "order",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "starting from the highest-degree term."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_11",
+          "tool_index": 2,
+          "function_name": "math_roots_polynomial",
+          "pointer": "/function/parameters/properties/degree/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The prose default is not a schema default, so it stays. The rest of the field is already short.",
+          "original": "Degree of the polynomial equation. Default 0",
+          "replacement": "Degree of the polynomial equation. Default 0",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_11/t2/function/parameters/properties/degree/descriptiona",
+              "excerpt": "Degree of the polynomial equation.",
+              "span": [
+                0,
+                34
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Degree of the polynomial equation."
+            },
+            {
+              "id": "multiple_11/t2/function/parameters/properties/degree/descriptionb",
+              "excerpt": "Default 0",
+              "span": [
+                35,
+                44
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "No schema default.",
+              "after": "Default 0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_12",
+      "fields": [
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the year over year (YOY) growth rate for a company.",
+          "replacement": "Calculate the year over year (YOY) growth rate for a company.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/descriptiona",
+              "excerpt": "Calculate the year over year (YOY) growth rate for a company.",
+              "span": [
+                0,
+                61
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the year over year (YOY) growth rate for a company."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/parameters/properties/company_name/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The name fact stays. The YOY purpose repeats the function description, which is unchanged.",
+          "original": "The name of the company for which to calculate the YOY growth rate.",
+          "replacement": "Company name.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/parameters/properties/company_name/descriptiona",
+              "excerpt": "The name of the company",
+              "span": [
+                0,
+                23
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Company name."
+            },
+            {
+              "id": "multiple_12/t0/function/parameters/properties/company_name/descriptionb",
+              "excerpt": "for which to calculate the YOY growth rate",
+              "span": [
+                24,
+                66
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-purpose",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "YOY"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/parameters/properties/year1/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The initial year.",
+          "replacement": "The initial year.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/parameters/properties/year1/descriptiona",
+              "excerpt": "The initial year.",
+              "span": [
+                0,
+                17
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The initial year."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/parameters/properties/year1_revenue/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The revenue for the initial year.",
+          "replacement": "The revenue for the initial year.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/parameters/properties/year1_revenue/descriptiona",
+              "excerpt": "The revenue for the initial year.",
+              "span": [
+                0,
+                33
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The revenue for the initial year."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/parameters/properties/year2/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The subsequent year.",
+          "replacement": "The subsequent year.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/parameters/properties/year2/descriptiona",
+              "excerpt": "The subsequent year.",
+              "span": [
+                0,
+                20
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The subsequent year."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/parameters/properties/year2_revenue/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The revenue for the subsequent year.",
+          "replacement": "The revenue for the subsequent year.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/parameters/properties/year2_revenue/descriptiona",
+              "excerpt": "The revenue for the subsequent year.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The revenue for the subsequent year."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 1,
+          "function_name": "financial_ratios_calculate_ROE",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the return on equity (ROE) for a company.",
+          "replacement": "Calculate the return on equity (ROE) for a company.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t1/function/descriptiona",
+              "excerpt": "Calculate the return on equity (ROE) for a company.",
+              "span": [
+                0,
+                51
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the return on equity (ROE) for a company."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 1,
+          "function_name": "financial_ratios_calculate_ROE",
+          "pointer": "/function/parameters/properties/net_income/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Net income for the period. This is a float type value.",
+          "replacement": "Net income for the period. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t1/function/parameters/properties/net_income/descriptiona",
+              "excerpt": "Net income for the period.",
+              "span": [
+                0,
+                26
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Net income for the period."
+            },
+            {
+              "id": "multiple_12/t1/function/parameters/properties/net_income/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                26,
+                54
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 1,
+          "function_name": "financial_ratios_calculate_ROE",
+          "pointer": "/function/parameters/properties/shareholder_equity/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Average shareholder equity for the period. This is a float type value.",
+          "replacement": "Average shareholder equity for the period. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t1/function/parameters/properties/shareholder_equity/descriptiona",
+              "excerpt": "Average shareholder equity for the period.",
+              "span": [
+                0,
+                42
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Average shareholder equity for the period."
+            },
+            {
+              "id": "multiple_12/t1/function/parameters/properties/shareholder_equity/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                42,
+                70
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 2,
+          "function_name": "financial_ratios_calculate_ROA",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Calculate the return on assets (ROA) for a company.",
+          "replacement": "Calculate the return on assets (ROA) for a company.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t2/function/descriptiona",
+              "excerpt": "Calculate the return on assets (ROA) for a company.",
+              "span": [
+                0,
+                51
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the return on assets (ROA) for a company."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 2,
+          "function_name": "financial_ratios_calculate_ROA",
+          "pointer": "/function/parameters/properties/net_income/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Net income for the period. This is a float type value.",
+          "replacement": "Net income for the period. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t2/function/parameters/properties/net_income/descriptiona",
+              "excerpt": "Net income for the period.",
+              "span": [
+                0,
+                26
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Net income for the period."
+            },
+            {
+              "id": "multiple_12/t2/function/parameters/properties/net_income/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                26,
+                54
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_12",
+          "tool_index": 2,
+          "function_name": "financial_ratios_calculate_ROA",
+          "pointer": "/function/parameters/properties/total_assets/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "Total average assets for the period. This is a float type value.",
+          "replacement": "Total average assets for the period. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_12/t2/function/parameters/properties/total_assets/descriptiona",
+              "excerpt": "Total average assets for the period.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "Total average assets for the period."
+            },
+            {
+              "id": "multiple_12/t2/function/parameters/properties/total_assets/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                36,
+                64
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_7",
+      "fields": [
+        {
+          "case_id": "multiple_7",
+          "tool_index": 0,
+          "function_name": "wildlife_population_assess_growth",
+          "pointer": "/function/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Species, population growth, location, and period stay. specific and specified do not add a restriction.",
+          "original": "Assesses the population growth of a specific species in a specified location over a period.",
+          "replacement": "Assesses a species' population growth at a location over a period.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t0/function/descriptiona",
+              "excerpt": "Assesses the population growth",
+              "span": [
+                0,
+                30
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "action",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Assesses a species' population growth"
+            },
+            {
+              "id": "multiple_7/t0/function/descriptionb",
+              "excerpt": "of a specific species",
+              "span": [
+                31,
+                52
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "a species'"
+            },
+            {
+              "id": "multiple_7/t0/function/descriptionc",
+              "excerpt": "in a specified location",
+              "span": [
+                53,
+                76
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "at a location"
+            },
+            {
+              "id": "multiple_7/t0/function/descriptiond",
+              "excerpt": "over a period",
+              "span": [
+                77,
+                90
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "over a period"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 0,
+          "function_name": "wildlife_population_assess_growth",
+          "pointer": "/function/parameters/properties/species/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The calculated-growth role stays. The verb calculated is the parameter's own verb and was not replaced with the function's verb analyzes.",
+          "original": "The species for which the growth is to be calculated.",
+          "replacement": "Species whose growth is calculated.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t0/function/parameters/properties/species/descriptiona",
+              "excerpt": "The species for which the growth is to be calculated.",
+              "span": [
+                0,
+                53
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Masked review rejected swapping calculated for assessed.",
+              "after": "Species whose growth is calculated."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 0,
+          "function_name": "wildlife_population_assess_growth",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The area where the species is present.",
+          "replacement": "The area where the species is present.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t0/function/parameters/properties/location/descriptiona",
+              "excerpt": "The area where the species is present.",
+              "span": [
+                0,
+                38
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The area where the species is present."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 0,
+          "function_name": "wildlife_population_assess_growth",
+          "pointer": "/function/parameters/properties/duration/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Years is not in the schema, so the unit stays. The growth purpose remains on the function description.",
+          "original": "The time period for which the population growth should be calculated in years.",
+          "replacement": "Time period in years.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t0/function/parameters/properties/duration/descriptiona",
+              "excerpt": "The time period",
+              "span": [
+                0,
+                15
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Time period"
+            },
+            {
+              "id": "multiple_7/t0/function/parameters/properties/duration/descriptionb",
+              "excerpt": "in years",
+              "span": [
+                69,
+                77
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "unit",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "in years."
+            },
+            {
+              "id": "multiple_7/t0/function/parameters/properties/duration/descriptionc",
+              "excerpt": "the population growth should be calculated",
+              "span": [
+                26,
+                68
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-purpose",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "population growth"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Analyzes the impact of a species on a particular ecosystem.",
+          "replacement": "Analyzes the impact of a species on a particular ecosystem.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t1/function/descriptiona",
+              "excerpt": "Analyzes the impact of a species on a particular ecosystem.",
+              "span": [
+                0,
+                59
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Analyzes the impact of a species on a particular ecosystem."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/parameters/properties/species/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "This parameter says the impact is calculated. The function description says analyzes. Left as written. The field is otherwise unchanged.",
+          "original": "The species whose impact is to be calculated.",
+          "replacement": "The species whose impact is to be calculated.",
+          "conflicts": [
+            "This parameter says the impact is calculated. The function description says analyzes. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_7/t1/function/parameters/properties/species/descriptiona",
+              "excerpt": "The species whose impact is to be calculated.",
+              "span": [
+                0,
+                45
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The species whose impact is to be calculated."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/parameters/properties/ecosystem/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The ecosystem being affected.",
+          "replacement": "The ecosystem being affected.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t1/function/parameters/properties/ecosystem/descriptiona",
+              "excerpt": "The ecosystem being affected.",
+              "span": [
+                0,
+                29
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The ecosystem being affected."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The area where the impact is analyzed.",
+          "replacement": "The area where the impact is analyzed.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_7/t1/function/parameters/properties/location/descriptiona",
+              "excerpt": "The area where the impact is analyzed.",
+              "span": [
+                0,
+                38
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The area where the impact is analyzed."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_7",
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/parameters/properties/timeframe/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "Years is not in the schema. The impact purpose remains on the function description. The schema default 5 is not in the prose and was not added.",
+          "original": "The time period for which the impact analysis should be carried out in years.",
+          "replacement": "Time period in years.",
+          "conflicts": [
+            "Schema default is 5. The prose does not state that default, and it was not added."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_7/t1/function/parameters/properties/timeframe/descriptiona",
+              "excerpt": "The time period",
+              "span": [
+                0,
+                15
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Time period"
+            },
+            {
+              "id": "multiple_7/t1/function/parameters/properties/timeframe/descriptionb",
+              "excerpt": "in years",
+              "span": [
+                68,
+                76
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "unit",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "in years."
+            },
+            {
+              "id": "multiple_7/t1/function/parameters/properties/timeframe/descriptionc",
+              "excerpt": "the impact analysis should be carried out",
+              "span": [
+                26,
+                67
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-purpose",
+              "recovery": "other-field",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "recovery_pointer": "/function/description",
+              "recovery_excerpt": "impact"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_92",
+      "fields": [
+        {
+          "case_id": "multiple_92",
+          "tool_index": 0,
+          "function_name": "safeway_vegan_products",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The retailer name is a qualifier that still means something when the tool is read alone. The sentence is already short.",
+          "original": "Get available vegan products at specified Safeway store",
+          "replacement": "Get available vegan products at specified Safeway store",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t0/function/descriptiona",
+              "excerpt": "Get available vegan products at specified Safeway store",
+              "span": [
+                0,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Get available vegan products at specified Safeway store"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 0,
+          "function_name": "safeway_vegan_products",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "City and state stay. The Denver, CO example stays because the abbreviation form is uncertain.",
+          "original": "City and state where the Safeway store is located, e.g. Denver, CO",
+          "replacement": "City and state where the Safeway store is located, e.g. Denver, CO",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t0/function/parameters/properties/location/descriptiona",
+              "excerpt": "City and state where the Safeway store is located",
+              "span": [
+                0,
+                49
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "format",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "City and state format.",
+              "after": "City and state where the Safeway store is located"
+            },
+            {
+              "id": "multiple_92/t0/function/parameters/properties/location/descriptionb",
+              "excerpt": "e.g. Denver, CO",
+              "span": [
+                51,
+                66
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "example",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The example may only illustrate, or it may show a state-abbreviation form. It stays.",
+              "after": "e.g. Denver, CO"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 0,
+          "function_name": "safeway_vegan_products",
+          "pointer": "/function/parameters/properties/categories/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The function description says vegan products. The category enum also lists gluten-free. Left as written. The field is otherwise unchanged.",
+          "original": "Product categories to search within. Default empty array",
+          "replacement": "Product categories to search within. Default empty array",
+          "conflicts": [
+            "The function description says vegan products. The category enum also lists gluten-free. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_92/t0/function/parameters/properties/categories/descriptiona",
+              "excerpt": "Product categories to search within.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Product categories to search within."
+            },
+            {
+              "id": "multiple_92/t0/function/parameters/properties/categories/descriptionb",
+              "excerpt": "Default empty array",
+              "span": [
+                37,
+                56
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The schema has no default. The enum values are not copied into the prose.",
+              "after": "Default empty array"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 1,
+          "function_name": "wholefoods_vegan_products",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The retailer name is a qualifier that still means something when the tool is read alone. The sentence is already short.",
+          "original": "Get available vegan products at specified Whole Foods store",
+          "replacement": "Get available vegan products at specified Whole Foods store",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t1/function/descriptiona",
+              "excerpt": "Get available vegan products at specified Whole Foods store",
+              "span": [
+                0,
+                59
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Get available vegan products at specified Whole Foods store"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 1,
+          "function_name": "wholefoods_vegan_products",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "City and state stay. The Denver, CO example stays because the abbreviation form is uncertain.",
+          "original": "City and state where the Whole Foods store is located, e.g. Denver, CO",
+          "replacement": "City and state where the Whole Foods store is located, e.g. Denver, CO",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t1/function/parameters/properties/location/descriptiona",
+              "excerpt": "City and state where the Whole Foods store is located",
+              "span": [
+                0,
+                53
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "format",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "City and state format.",
+              "after": "City and state where the Whole Foods store is located"
+            },
+            {
+              "id": "multiple_92/t1/function/parameters/properties/location/descriptionb",
+              "excerpt": "e.g. Denver, CO",
+              "span": [
+                55,
+                70
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "example",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The example may only illustrate, or it may show a state-abbreviation form. It stays.",
+              "after": "e.g. Denver, CO"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 1,
+          "function_name": "wholefoods_vegan_products",
+          "pointer": "/function/parameters/properties/categories/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The function description says vegan products. The category enum also lists gluten-free. Left as written. The field is otherwise unchanged.",
+          "original": "Product categories to search within. Default empty array",
+          "replacement": "Product categories to search within. Default empty array",
+          "conflicts": [
+            "The function description says vegan products. The category enum also lists gluten-free. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_92/t1/function/parameters/properties/categories/descriptiona",
+              "excerpt": "Product categories to search within.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Product categories to search within."
+            },
+            {
+              "id": "multiple_92/t1/function/parameters/properties/categories/descriptionb",
+              "excerpt": "Default empty array",
+              "span": [
+                37,
+                56
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The schema has no default. The enum values are not copied into the prose.",
+              "after": "Default empty array"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 2,
+          "function_name": "walmart_vegan_products",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The retailer name is a qualifier that still means something when the tool is read alone. The sentence is already short.",
+          "original": "Get available vegan products at specified Walmart store",
+          "replacement": "Get available vegan products at specified Walmart store",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t2/function/descriptiona",
+              "excerpt": "Get available vegan products at specified Walmart store",
+              "span": [
+                0,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Get available vegan products at specified Walmart store"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 2,
+          "function_name": "walmart_vegan_products",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "City and state stay. The Denver, CO example stays because the abbreviation form is uncertain.",
+          "original": "City and state where the Walmart store is located, e.g. Denver, CO",
+          "replacement": "City and state where the Walmart store is located, e.g. Denver, CO",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_92/t2/function/parameters/properties/location/descriptiona",
+              "excerpt": "City and state where the Walmart store is located",
+              "span": [
+                0,
+                49
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "format",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "City and state format.",
+              "after": "City and state where the Walmart store is located"
+            },
+            {
+              "id": "multiple_92/t2/function/parameters/properties/location/descriptionb",
+              "excerpt": "e.g. Denver, CO",
+              "span": [
+                51,
+                66
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "example",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The example may only illustrate, or it may show a state-abbreviation form. It stays.",
+              "after": "e.g. Denver, CO"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_92",
+          "tool_index": 2,
+          "function_name": "walmart_vegan_products",
+          "pointer": "/function/parameters/properties/categories/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The function description says vegan products. The category enum also lists gluten-free. Left as written. The field is otherwise unchanged.",
+          "original": "Product categories to search within. Default empty array",
+          "replacement": "Product categories to search within. Default empty array",
+          "conflicts": [
+            "The function description says vegan products. The category enum also lists gluten-free. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_92/t2/function/parameters/properties/categories/descriptiona",
+              "excerpt": "Product categories to search within.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Product categories to search within."
+            },
+            {
+              "id": "multiple_92/t2/function/parameters/properties/categories/descriptionb",
+              "excerpt": "Default empty array",
+              "span": [
+                37,
+                56
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The schema has no default. The enum values are not copied into the prose.",
+              "after": "Default empty array"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_153",
+      "fields": [
+        {
+          "case_id": "multiple_153",
+          "tool_index": 0,
+          "function_name": "locate_tallest_mountains",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Find the tallest mountains within a specified radius of a location.",
+          "replacement": "Find the tallest mountains within a specified radius of a location.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t0/function/descriptiona",
+              "excerpt": "Find the tallest mountains within a specified radius of a location.",
+              "span": [
+                0,
+                67
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Find the tallest mountains within a specified radius of a location."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 0,
+          "function_name": "locate_tallest_mountains",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The city from which to calculate distance.",
+          "replacement": "The city from which to calculate distance.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t0/function/parameters/properties/location/descriptiona",
+              "excerpt": "The city from which to calculate distance.",
+              "span": [
+                0,
+                42
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The city from which to calculate distance."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 0,
+          "function_name": "locate_tallest_mountains",
+          "pointer": "/function/parameters/properties/radius/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The radius within which to find mountains, measured in kilometers. This is a float type value.",
+          "replacement": "The radius within which to find mountains, measured in kilometers. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t0/function/parameters/properties/radius/descriptiona",
+              "excerpt": "The radius within which to find mountains, measured in kilometers.",
+              "span": [
+                0,
+                66
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The radius within which to find mountains, measured in kilometers."
+            },
+            {
+              "id": "multiple_153/t0/function/parameters/properties/radius/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                66,
+                94
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 0,
+          "function_name": "locate_tallest_mountains",
+          "pointer": "/function/parameters/properties/amount/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The count and the tallest-to-smallest order stay. The order is not in the schema. Only the word listed was dropped.",
+          "original": "The number of mountains to find, listed from tallest to smallest.",
+          "replacement": "Number of mountains to find, from tallest to smallest.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t0/function/parameters/properties/amount/descriptiona",
+              "excerpt": "The number of mountains to find",
+              "span": [
+                0,
+                31
+              ],
+              "role": "use",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Number of mountains to find"
+            },
+            {
+              "id": "multiple_153/t0/function/parameters/properties/amount/descriptionb",
+              "excerpt": "from tallest to smallest",
+              "span": [
+                40,
+                64
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "order",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "from tallest to smallest"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The function description presents an isothermal and reversible process. The isothermal parameter asks whether the process is isothermal. Reversible has no parameter. Left as written. The field is otherwise unchanged.",
+          "original": "Calculate the entropy change for an isothermal and reversible process.",
+          "replacement": "Calculate the entropy change for an isothermal and reversible process.",
+          "conflicts": [
+            "The function description presents an isothermal and reversible process. The isothermal parameter asks whether the process is isothermal. Reversible has no parameter. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_153/t1/function/descriptiona",
+              "excerpt": "Calculate the entropy change for an isothermal and reversible process.",
+              "span": [
+                0,
+                70
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the entropy change for an isothermal and reversible process."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/parameters/properties/initial_temp/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The initial temperature in Kelvin. This is a float type value.",
+          "replacement": "The initial temperature in Kelvin. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t1/function/parameters/properties/initial_temp/descriptiona",
+              "excerpt": "The initial temperature in Kelvin.",
+              "span": [
+                0,
+                34
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The initial temperature in Kelvin."
+            },
+            {
+              "id": "multiple_153/t1/function/parameters/properties/initial_temp/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                34,
+                62
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/parameters/properties/final_temp/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The final temperature in Kelvin. This is a float type value.",
+          "replacement": "The final temperature in Kelvin. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t1/function/parameters/properties/final_temp/descriptiona",
+              "excerpt": "The final temperature in Kelvin.",
+              "span": [
+                0,
+                32
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The final temperature in Kelvin."
+            },
+            {
+              "id": "multiple_153/t1/function/parameters/properties/final_temp/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                32,
+                60
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/parameters/properties/heat_capacity/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The heat capacity in J/K. This is a float type value.",
+          "replacement": "The heat capacity in J/K. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t1/function/parameters/properties/heat_capacity/descriptiona",
+              "excerpt": "The heat capacity in J/K.",
+              "span": [
+                0,
+                25
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The heat capacity in J/K."
+            },
+            {
+              "id": "multiple_153/t1/function/parameters/properties/heat_capacity/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                25,
+                53
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/parameters/properties/isothermal/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The prose default is not a schema default, so it stays. The rest of the field is already short.",
+          "original": "Whether the process is isothermal. Default is True.",
+          "replacement": "Whether the process is isothermal. Default is True.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t1/function/parameters/properties/isothermal/descriptiona",
+              "excerpt": "Whether the process is isothermal.",
+              "span": [
+                0,
+                34
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Whether the process is isothermal."
+            },
+            {
+              "id": "multiple_153/t1/function/parameters/properties/isothermal/descriptionb",
+              "excerpt": "Default is True.",
+              "span": [
+                35,
+                51
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "No schema default. The literal True stays.",
+              "after": "Default is True."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 2,
+          "function_name": "get_event_date",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Retrieve the date of a historical event.",
+          "replacement": "Retrieve the date of a historical event.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t2/function/descriptiona",
+              "excerpt": "Retrieve the date of a historical event.",
+              "span": [
+                0,
+                40
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Retrieve the date of a historical event."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 2,
+          "function_name": "get_event_date",
+          "pointer": "/function/parameters/properties/event/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The name of the historical event.",
+          "replacement": "The name of the historical event.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t2/function/parameters/properties/event/descriptiona",
+              "excerpt": "The name of the historical event.",
+              "span": [
+                0,
+                33
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The name of the historical event."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_153",
+          "tool_index": 2,
+          "function_name": "get_event_date",
+          "pointer": "/function/parameters/properties/location/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The prose default is not a schema default, so it stays. The rest of the field is already short.",
+          "original": "Location where the event took place. Defaults to global if not specified",
+          "replacement": "Location where the event took place. Defaults to global if not specified",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_153/t2/function/parameters/properties/location/descriptiona",
+              "excerpt": "Location where the event took place.",
+              "span": [
+                0,
+                36
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Location where the event took place."
+            },
+            {
+              "id": "multiple_153/t2/function/parameters/properties/location/descriptionb",
+              "excerpt": "Defaults to global if not specified",
+              "span": [
+                37,
+                72
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "default",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "The literal global and its condition are not in the schema.",
+              "after": "Defaults to global if not specified"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_100",
+      "fields": [
+        {
+          "case_id": "multiple_100",
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The action and the three inputs stay, including in a key rather than a looser for a key. specific and given are not restrictions.",
+          "original": "Generate a music scale progression in a specific key with a given tempo and duration.",
+          "replacement": "Generate a music scale progression in a key, with a tempo and duration.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t0/function/descriptiona",
+              "excerpt": "Generate a music scale progression",
+              "span": [
+                0,
+                34
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "action",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Generate a music scale progression"
+            },
+            {
+              "id": "multiple_100/t0/function/descriptionb",
+              "excerpt": "in a specific key",
+              "span": [
+                35,
+                52
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "in a key"
+            },
+            {
+              "id": "multiple_100/t0/function/descriptionc",
+              "excerpt": "with a given tempo and duration",
+              "span": [
+                53,
+                84
+              ],
+              "role": "both",
+              "decision": "CONDENSE",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "with a tempo and duration"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/parameters/properties/key/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The key in which to generate the scale progression.",
+          "replacement": "The key in which to generate the scale progression.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t0/function/parameters/properties/key/descriptiona",
+              "excerpt": "The key in which to generate the scale progression.",
+              "span": [
+                0,
+                51
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The key in which to generate the scale progression."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/parameters/properties/tempo/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The tempo of the scale progression in BPM.",
+          "replacement": "The tempo of the scale progression in BPM.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t0/function/parameters/properties/tempo/descriptiona",
+              "excerpt": "The tempo of the scale progression in BPM.",
+              "span": [
+                0,
+                42
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The tempo of the scale progression in BPM."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/parameters/properties/duration/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The duration of each note in beats.",
+          "replacement": "The duration of each note in beats.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t0/function/parameters/properties/duration/descriptiona",
+              "excerpt": "The duration of each note in beats.",
+              "span": [
+                0,
+                35
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The duration of each note in beats."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/parameters/properties/scale_type/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The scale-type purpose stays. Defaults to major duplicates the schema default.",
+          "original": "The type of scale to generate. Defaults to 'major'.",
+          "replacement": "The type of scale to generate.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t0/function/parameters/properties/scale_type/descriptiona",
+              "excerpt": "The type of scale to generate.",
+              "span": [
+                0,
+                30
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "The type of scale to generate."
+            },
+            {
+              "id": "multiple_100/t0/function/parameters/properties/scale_type/descriptionb",
+              "excerpt": "Defaults to 'major'",
+              "span": [
+                31,
+                50
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "duplicate-default",
+              "recovery": "schema",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": true,
+              "illustrative": false,
+              "note": "",
+              "schema_path": "/function/parameters/properties/scale_type/default",
+              "schema_equals": "major"
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 1,
+          "function_name": "math_hcf",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Prose says numbers. Schema types are integer. Left as written. The field is otherwise unchanged.",
+          "original": "Calculate the highest common factor of two numbers.",
+          "replacement": "Calculate the highest common factor of two numbers.",
+          "conflicts": [
+            "Prose says numbers. Schema types are integer. Left as written."
+          ],
+          "propositions": [
+            {
+              "id": "multiple_100/t1/function/descriptiona",
+              "excerpt": "Calculate the highest common factor of two numbers.",
+              "span": [
+                0,
+                51
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Calculate the highest common factor of two numbers."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 1,
+          "function_name": "math_hcf",
+          "pointer": "/function/parameters/properties/number1/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "First number.",
+          "replacement": "First number.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t1/function/parameters/properties/number1/descriptiona",
+              "excerpt": "First number.",
+              "span": [
+                0,
+                13
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "First number."
+            }
+          ]
+        },
+        {
+          "case_id": "multiple_100",
+          "tool_index": 1,
+          "function_name": "math_hcf",
+          "pointer": "/function/parameters/properties/number2/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Second number.",
+          "replacement": "Second number.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "multiple_100/t1/function/parameters/properties/number2/descriptiona",
+              "excerpt": "Second number.",
+              "span": [
+                0,
+                14
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Second number."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_175",
+      "fields": [
+        {
+          "case_id": "simple_python_175",
+          "tool_index": 0,
+          "function_name": "lawyer_get_experience",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Retrieve months of experience of a Lawyer on handling certain type of law cases.",
+          "replacement": "Retrieve months of experience of a Lawyer on handling certain type of law cases.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_175/t0/function/descriptiona",
+              "excerpt": "Retrieve months of experience of a Lawyer on handling certain type of law cases.",
+              "span": [
+                0,
+                80
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Retrieve months of experience of a Lawyer on handling certain type of law cases."
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_175",
+          "tool_index": 0,
+          "function_name": "lawyer_get_experience",
+          "pointer": "/function/parameters/properties/name/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The full name of the Lawyer.",
+          "replacement": "The full name of the Lawyer.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_175/t0/function/parameters/properties/name/descriptiona",
+              "excerpt": "The full name of the Lawyer.",
+              "span": [
+                0,
+                28
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The full name of the Lawyer."
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_175",
+          "tool_index": 0,
+          "function_name": "lawyer_get_experience",
+          "pointer": "/function/parameters/properties/law_type/description",
+          "decision": "OMIT",
+          "noop": false,
+          "reason": "eg. Bankruptcy is marked as an illustration. The type of law case remains. The schema has no enum.",
+          "original": "The type of law case. eg. Bankruptcy",
+          "replacement": "The type of law case.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_175/t0/function/parameters/properties/law_type/descriptiona",
+              "excerpt": "The type of law case.",
+              "span": [
+                0,
+                21
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "purpose",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "The type of law case."
+            },
+            {
+              "id": "simple_python_175/t0/function/parameters/properties/law_type/descriptionb",
+              "excerpt": "eg. Bankruptcy",
+              "span": [
+                22,
+                36
+              ],
+              "role": "use",
+              "decision": "OMIT",
+              "kind": "illustrative-example",
+              "recovery": "omitted-illustration",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": true,
+              "note": "The example is not a closed list of accepted values."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_34",
+      "fields": [
+        {
+          "case_id": "simple_python_34",
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/description",
+          "decision": "CONDENSE",
+          "noop": false,
+          "reason": "The action and all four inputs stay, including preferred. specific is not a restriction.",
+          "original": "Generate a travel itinerary based on specific destination, duration and daily budget, with preferred exploration type.",
+          "replacement": "Generate a travel itinerary from destination, duration, daily budget, and preferred exploration type.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_34/t0/function/descriptiona",
+              "excerpt": "Generate a travel itinerary",
+              "span": [
+                0,
+                27
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "action",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "Generate a travel itinerary"
+            },
+            {
+              "id": "simple_python_34/t0/function/descriptionb",
+              "excerpt": "destination",
+              "span": [
+                46,
+                57
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "destination"
+            },
+            {
+              "id": "simple_python_34/t0/function/descriptionc",
+              "excerpt": "duration",
+              "span": [
+                59,
+                67
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "duration"
+            },
+            {
+              "id": "simple_python_34/t0/function/descriptiond",
+              "excerpt": "daily budget",
+              "span": [
+                72,
+                84
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "daily budget"
+            },
+            {
+              "id": "simple_python_34/t0/function/descriptione",
+              "excerpt": "preferred exploration type",
+              "span": [
+                91,
+                117
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "scope",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "",
+              "after": "preferred exploration type"
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_34",
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/parameters/properties/destination/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Destination city of the trip.",
+          "replacement": "Destination city of the trip.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_34/t0/function/parameters/properties/destination/descriptiona",
+              "excerpt": "Destination city of the trip.",
+              "span": [
+                0,
+                29
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Destination city of the trip."
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_34",
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/parameters/properties/days/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Number of days for the trip.",
+          "replacement": "Number of days for the trip.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_34/t0/function/parameters/properties/days/descriptiona",
+              "excerpt": "Number of days for the trip.",
+              "span": [
+                0,
+                28
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Number of days for the trip."
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_34",
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/parameters/properties/daily_budget/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The maximum daily budget for the trip.",
+          "replacement": "The maximum daily budget for the trip.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "simple_python_34/t0/function/parameters/properties/daily_budget/descriptiona",
+              "excerpt": "The maximum daily budget for the trip.",
+              "span": [
+                0,
+                38
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The maximum daily budget for the trip."
+            }
+          ]
+        },
+        {
+          "case_id": "simple_python_34",
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/parameters/properties/exploration_type/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Schema default is urban and the enum lists four types. The prose states neither, and neither was added. The field is otherwise unchanged.",
+          "original": "The preferred exploration type.",
+          "replacement": "The preferred exploration type.",
+          "conflicts": [
+            "Schema default is urban and the enum lists four types. The prose states neither, and neither was added."
+          ],
+          "propositions": [
+            {
+              "id": "simple_python_34/t0/function/parameters/properties/exploration_type/descriptiona",
+              "excerpt": "The preferred exploration type.",
+              "span": [
+                0,
+                31
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The preferred exploration type."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_59",
+      "fields": [
+        {
+          "case_id": "irrelevance_59",
+          "tool_index": 0,
+          "function_name": "linear_equation_solver",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Solve a linear equation.",
+          "replacement": "Solve a linear equation.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "irrelevance_59/t0/function/descriptiona",
+              "excerpt": "Solve a linear equation.",
+              "span": [
+                0,
+                24
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Solve a linear equation."
+            }
+          ]
+        },
+        {
+          "case_id": "irrelevance_59",
+          "tool_index": 0,
+          "function_name": "linear_equation_solver",
+          "pointer": "/function/parameters/properties/equation/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The linear equation to solve.",
+          "replacement": "The linear equation to solve.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "irrelevance_59/t0/function/parameters/properties/equation/descriptiona",
+              "excerpt": "The linear equation to solve.",
+              "span": [
+                0,
+                29
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The linear equation to solve."
+            }
+          ]
+        },
+        {
+          "case_id": "irrelevance_59",
+          "tool_index": 0,
+          "function_name": "linear_equation_solver",
+          "pointer": "/function/parameters/properties/variable/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "The variable to solve for.",
+          "replacement": "The variable to solve for.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "irrelevance_59/t0/function/parameters/properties/variable/descriptiona",
+              "excerpt": "The variable to solve for.",
+              "span": [
+                0,
+                26
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The variable to solve for."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_50",
+      "fields": [
+        {
+          "case_id": "irrelevance_50",
+          "tool_index": 0,
+          "function_name": "convert_celsius_to_fahrenheit",
+          "pointer": "/function/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Already one short claim. Cutting it further would be a grammar trim or would drop a unit, order, or qualifier.",
+          "original": "Convert a temperature from Celsius to Fahrenheit.",
+          "replacement": "Convert a temperature from Celsius to Fahrenheit.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "irrelevance_50/t0/function/descriptiona",
+              "excerpt": "Convert a temperature from Celsius to Fahrenheit.",
+              "span": [
+                0,
+                49
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "Convert a temperature from Celsius to Fahrenheit."
+            }
+          ]
+        },
+        {
+          "case_id": "irrelevance_50",
+          "tool_index": 0,
+          "function_name": "convert_celsius_to_fahrenheit",
+          "pointer": "/function/parameters/properties/celsius/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "The authored clause is already the role or the unit. The handler float sentence stays verbatim because copying format:float and dropping the sentence is unresolved.",
+          "original": "The temperature in Celsius to be converted. This is a float type value.",
+          "replacement": "The temperature in Celsius to be converted. This is a float type value.",
+          "conflicts": [],
+          "propositions": [
+            {
+              "id": "irrelevance_50/t0/function/parameters/properties/celsius/descriptiona",
+              "excerpt": "The temperature in Celsius to be converted.",
+              "span": [
+                0,
+                43
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Authored clause kept.",
+              "after": "The temperature in Celsius to be converted."
+            },
+            {
+              "id": "irrelevance_50/t0/function/parameters/properties/celsius/descriptionb",
+              "excerpt": " This is a float type value.",
+              "span": [
+                43,
+                71
+              ],
+              "role": "use",
+              "decision": "UNCERTAIN",
+              "kind": "float-sentence",
+              "recovery": "edited-text",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": true,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Schema format is float. The suffix inspection leaves that duplication unresolved, so the sentence stays character for character. Dropping it was rejected.",
+              "after": " This is a float type value."
+            }
+          ]
+        },
+        {
+          "case_id": "irrelevance_50",
+          "tool_index": 0,
+          "function_name": "convert_celsius_to_fahrenheit",
+          "pointer": "/function/parameters/properties/precision/description",
+          "decision": "KEEP",
+          "noop": true,
+          "reason": "Schema default is 2. The prose does not state that default, and the default was not copied into the prose. The field is otherwise unchanged.",
+          "original": "The decimal precision for the conversion result.",
+          "replacement": "The decimal precision for the conversion result.",
+          "conflicts": [
+            "Schema default is 2. The prose does not state that default, and the default was not copied into the prose."
+          ],
+          "propositions": [
+            {
+              "id": "irrelevance_50/t0/function/parameters/properties/precision/descriptiona",
+              "excerpt": "The decimal precision for the conversion result.",
+              "span": [
+                0,
+                48
+              ],
+              "role": "use",
+              "decision": "KEEP",
+              "kind": "statement",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Left verbatim.",
+              "after": "The decimal precision for the conversion result."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "case_id": "multiple_11",
+  "category": "multiple",
+  "condition": "SX",
+  "note": "Converted catalogue copy for this pilot. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_quadratic",
+        "description": "Calculate the roots of a quadratic equation. Unlike math_roots_cubic, which calculates the roots of a cubic equation, this calculates the roots of a quadratic equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "integer",
+              "description": "Coefficient of the second-degree term."
+            },
+            "b": {
+              "type": "integer",
+              "description": "Coefficient of the first-degree term."
+            },
+            "c": {
+              "type": "integer",
+              "description": "Constant term."
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_cubic",
+        "description": "Calculate the roots of a cubic equation. Unlike math_roots_quadratic, which calculates the roots of a quadratic equation, this calculates the roots of a cubic equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number",
+              "description": "Coefficient of the third-degree term. This is a float type value.",
+              "format": "float"
+            },
+            "b": {
+              "type": "number",
+              "description": "Coefficient of the second-degree term. This is a float type value.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "Coefficient of the first-degree term. This is a float type value.",
+              "format": "float"
+            },
+            "d": {
+              "type": "number",
+              "description": "Constant term. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_polynomial",
+        "description": "Calculate the roots of a polynomial equation. Unlike math_roots_quadratic, which calculates the roots of a quadratic equation, this calculates the roots of a polynomial equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coefficients": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Coefficients, starting from the highest-degree term."
+            },
+            "degree": {
+              "type": "integer",
+              "description": "Degree of the polynomial equation. Default 0"
+            }
+          },
+          "required": [
+            "coefficients"
+          ]
+        }
+      }
+    }
+  ]
+}
