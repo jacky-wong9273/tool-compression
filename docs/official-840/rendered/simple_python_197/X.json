@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_197",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_air_quality_index",
+        "description": "Retrieve the air quality index at a specified location and time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to get the air quality index for."
+            },
+            "time": {
+              "type": "string",
+              "description": "The specific time to check the air quality. Default is the current time."
+            }
+          },
+          "required": [
+            "location",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

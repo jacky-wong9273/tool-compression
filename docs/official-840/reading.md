@@ -175,6 +175,46 @@ Twelve two-tool catalogues were read from each tool's own description. Seven rec
 
 Five two-tool catalogues have an empty cue. `multiple_55`: a stock-price forecast and a weather forecast do not answer a similar request. `multiple_59`: renting a car and locating a lawyer do not. `multiple_74`: an artwork's auction price and a library book search do not, even though both take a title, a creator, and a platform. `multiple_78`: a museum can already be a tourist spot, so both descriptions can be true of one museum request, and a cue would be an exclusion the tourist-spot description does not state. `multiple_79`: restaurant information and museum exhibition information do not answer a similar request.
 
+## Fourth tranche
+
+142 cases were added. The first 291 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied. `simple_python_175` is one of those twelve and was skipped.
+
+130 of the new cases have one tool: `simple_python_142` through `simple_python_174`, `simple_python_176` through `simple_python_222`, and `irrelevance_112` through `irrelevance_161`. Each description slot was read. An empty cue is the one-tool rule, applied after that reading. X equals U and SX equals S.
+
+Five of those one-tool catalogues change S:
+
+| Case | Slot | Replacement |
+| --- | --- | --- |
+| `simple_python_157` | function description | "Check if an individual has any prior felony convictions based on their full name and birth date." The frame "This function" is omitted. |
+| `simple_python_163` | `include_owner` | "Include owner's name in the property record." The schema default false is omitted. |
+| `simple_python_182` | `year` | "The year in which the lawsuit case was initiated." The schema default 2023 is omitted. |
+| `simple_python_215` | function description | "Retrieve a brief about a specified movie." The frame "This function" is omitted. |
+| `simple_python_217` | function description | "Take in fMRI data to output analyzed data." The frame "This function" is omitted. |
+
+The other one-tool catalogues in this tranche are unchanged, so S equals U. Prose defaults that the schema does not state were kept. Schema defaults that the prose does not restate were not copied into S. Prose that says "list" was not rewritten to array. Conflicts that were noticed were left as written, including `simple_python_169` and `simple_python_215` (a boolean field whose schema default is the string `'false'`), `irrelevance_113` (a number field whose schema default is the string `'0.3'`), `irrelevance_122` and `irrelevance_129` (boolean fields whose schema defaults are the strings `'False'` and `'True'`), and `irrelevance_136` (the function says the president while the state parameter says a governor lookup).
+
+Twelve two-tool catalogues were read from each tool's own description. Nine receive a cue. The cue is one space on the original function description. SX uses that same string on the S base.
+
+`multiple_80`. Nearby music shops versus nearby gyms.
+
+`multiple_81`. A concert ticket versus a festival ticket.
+
+`multiple_82`. A piece of music versus an audio signal. The two are alternatives. The cue does not treat one as a subclass of the other.
+
+`multiple_84`. Top goal scorers versus top assist makers.
+
+`multiple_85`. Basketball scores versus soccer scores.
+
+`multiple_86`. A BoardGameGeek recommendation versus an Amazon Game Store recommendation.
+
+`multiple_88`. Active players versus sales figures for a video game and a year.
+
+`multiple_90`. Events suitable for groups versus restaurants suitable for groups.
+
+`multiple_91`. Restaurants versus cooking recipes.
+
+Three two-tool catalogues have an empty cue. `multiple_93`: renting a car and booking a hotel room do not answer a similar request. `multiple_95`: a unit conversion can already be read as covering a currency conversion, so a cue would be an exclusion the unit description does not state. `multiple_97`: the area of a circle and a sine-wave plot do not answer a similar request. S on `multiple_97` drops "(defaults to meters)" because the schema default is meters. That edit comes from the circle tool's own description.
+
 ## What is still open
 
-The remaining 549 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+The remaining 407 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.

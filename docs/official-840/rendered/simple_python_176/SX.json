@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_176",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_details_find",
+        "description": "Find details of lawsuits involving a specific company from a given year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "Name of the company."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Year of the lawsuit."
+            },
+            "case_type": {
+              "type": "string",
+              "description": "Type of the lawsuit, e.g., 'IPR', 'Patent', 'Commercial', etc. Default is 'all'."
+            }
+          },
+          "required": [
+            "company_name",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

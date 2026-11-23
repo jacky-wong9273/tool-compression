@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_157",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "building_information_get_data",
+        "description": "Retrieve information about a specific building or monument",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "building_name": {
+              "type": "string",
+              "description": "The name of the building or monument."
+            },
+            "info_requested": {
+              "type": "string",
+              "description": "The specific information requested about the building or monument. For example, 'height', 'architect', etc."
+            }
+          },
+          "required": [
+            "building_name",
+            "info_requested"
+          ]
+        }
+      }
+    }
+  ]
+}

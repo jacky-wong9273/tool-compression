@@ -1,0 +1,71 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_82",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "music_generate",
+        "description": "Generate a piece of music given a key, tempo, and time signature. Unlike audio_generate, which generates an audio signal, this generates a piece of music.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "The key of the piece, e.g., C Major."
+            },
+            "tempo": {
+              "type": "integer",
+              "description": "Tempo of the piece in beats per minute."
+            },
+            "time_signature": {
+              "type": "string",
+              "description": "Time signature of the piece, e.g., 4/4. Default '4/4'",
+              "optional": true
+            }
+          },
+          "required": [
+            "key",
+            "tempo"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "audio_generate",
+        "description": "Generate an audio signal given a frequency, amplitude, and duration. Unlike music_generate, which generates a piece of music, this generates an audio signal.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "type": "number",
+              "description": "Frequency of the audio signal in Hz. This is a float type value.",
+              "format": "float"
+            },
+            "amplitude": {
+              "type": "number",
+              "description": "Amplitude of the audio signal. This is a float type value.",
+              "format": "float"
+            },
+            "duration": {
+              "type": "integer",
+              "description": "Duration of the audio signal in seconds. Default 1",
+              "optional": true
+            }
+          },
+          "required": [
+            "frequency",
+            "amplitude"
+          ]
+        }
+      }
+    }
+  ]
+}

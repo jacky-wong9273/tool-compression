@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_180",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuits_search",
+        "description": "Search for lawsuits against a specific company within a specific time and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the lawsuit was filed."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year when the lawsuit was filed."
+            },
+            "case_type": {
+              "type": "string",
+              "description": "The type of the case. Options include: 'civil', 'criminal', 'small_claims', etc. Default is 'all'."
+            }
+          },
+          "required": [
+            "company_name",
+            "location",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

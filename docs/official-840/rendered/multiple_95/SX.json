@@ -1,0 +1,73 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_95",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "currency_exchange_convert",
+        "description": "Converts a value from one currency to another using the latest exchange rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "description": "The amount of money to be converted."
+            },
+            "from_currency": {
+              "type": "string",
+              "description": "The currency to convert from."
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The currency to convert to."
+            },
+            "live_conversion": {
+              "type": "boolean",
+              "description": "If true, use the latest exchange rate for conversion, else use the last known rate. Default false"
+            }
+          },
+          "required": [
+            "amount",
+            "from_currency",
+            "to_currency"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "unit_conversion_convert",
+        "description": "Converts a value from one unit to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "description": "The value to be converted."
+            },
+            "from_unit": {
+              "type": "string",
+              "description": "The unit to convert from."
+            },
+            "to_unit": {
+              "type": "string",
+              "description": "The unit to convert to."
+            }
+          },
+          "required": [
+            "value",
+            "from_unit",
+            "to_unit"
+          ]
+        }
+      }
+    }
+  ]
+}

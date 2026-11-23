@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_139",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "space_star_info",
+        "description": "Retrieve information about a particular star in the universe.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "star_name": {
+              "type": "string",
+              "description": "The name of the star."
+            },
+            "information": {
+              "type": "string",
+              "enum": [
+                "mass",
+                "radius",
+                "luminosity"
+              ],
+              "description": "The type of information needed about the star."
+            }
+          },
+          "required": [
+            "star_name",
+            "information"
+          ]
+        }
+      }
+    }
+  ]
+}

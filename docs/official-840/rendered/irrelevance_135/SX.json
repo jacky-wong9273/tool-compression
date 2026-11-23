@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_135",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "add_dates",
+        "description": "Add days to a specific date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "description": "The starting date."
+            },
+            "days_to_add": {
+              "type": "integer",
+              "description": "The number of days to add to the starting date."
+            },
+            "format": {
+              "type": "string",
+              "description": "The desired date format for the returned date.",
+              "default": "YYYY-MM-DD"
+            }
+          },
+          "required": [
+            "date",
+            "days_to_add"
+          ]
+        }
+      }
+    }
+  ]
+}

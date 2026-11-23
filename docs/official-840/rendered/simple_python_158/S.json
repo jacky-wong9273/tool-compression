@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_158",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_criminal_records",
+        "description": "Retrieve the criminal records of a specific person in a specific area during a certain time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the person."
+            },
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. New York, NY"
+            },
+            "from_year": {
+              "type": "integer",
+              "description": "The start year of the time frame."
+            },
+            "to_year": {
+              "type": "integer",
+              "description": "The end year of the time frame."
+            }
+          },
+          "required": [
+            "name",
+            "location",
+            "from_year",
+            "to_year"
+          ]
+        }
+      }
+    }
+  ]
+}

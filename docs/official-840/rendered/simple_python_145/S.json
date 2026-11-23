@@ -1,0 +1,52 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_145",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_compounded_interest",
+        "description": "Calculate the compounded interest for a given principal, interest rate, and period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "principal": {
+              "type": "integer",
+              "description": "The initial principal."
+            },
+            "interest_rate": {
+              "type": "number",
+              "description": "The annual interest rate. This is a float type value.",
+              "format": "float"
+            },
+            "period": {
+              "type": "integer",
+              "description": "The period in years."
+            },
+            "compounding_frequency": {
+              "type": "string",
+              "description": "The frequency of compounding per year. Defaults to 'Annually'.",
+              "enum": [
+                "Annually",
+                "Semiannually",
+                "Quarterly",
+                "Monthly",
+                "Daily"
+              ]
+            }
+          },
+          "required": [
+            "principal",
+            "interest_rate",
+            "period"
+          ]
+        }
+      }
+    }
+  ]
+}

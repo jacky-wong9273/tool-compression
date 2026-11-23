@@ -1,0 +1,69 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_84",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "getTopGoalScorers",
+        "description": "Returns the top goal scorers for a specific competition and team",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "competition": {
+              "type": "string",
+              "description": "The name of the competition (for example, 'UEFA Champions League')."
+            },
+            "team": {
+              "type": "string",
+              "description": "The name of the team (for example, 'Barcelona')."
+            },
+            "number": {
+              "type": "integer",
+              "description": "The number of top goal scorers to retrieve."
+            }
+          },
+          "required": [
+            "competition",
+            "team",
+            "number"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "getTopAssists",
+        "description": "Returns the top assist makers for a specific competition and team",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "competition": {
+              "type": "string",
+              "description": "The name of the competition (for example, 'UEFA Champions League')."
+            },
+            "team": {
+              "type": "string",
+              "description": "The name of the team (for example, 'Barcelona')."
+            },
+            "number": {
+              "type": "integer",
+              "description": "The number of top assist makers to retrieve."
+            }
+          },
+          "required": [
+            "competition",
+            "team",
+            "number"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_150",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "color_converter_RGB_to_Pantone",
+        "description": "Convert a color from RGB (Red, Green, Blue) format to Pantone.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "red": {
+              "type": "integer",
+              "description": "The red component of the RGB color, ranging from 0 to 255."
+            },
+            "green": {
+              "type": "integer",
+              "description": "The green component of the RGB color, ranging from 0 to 255."
+            },
+            "blue": {
+              "type": "integer",
+              "description": "The blue component of the RGB color, ranging from 0 to 255."
+            }
+          },
+          "required": [
+            "red",
+            "green",
+            "blue"
+          ]
+        }
+      }
+    }
+  ]
+}

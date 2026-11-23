@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_218",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "patient_get_mri_report",
+        "description": "Fetch the brain MRI report of the patient for a given status.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "patient_id": {
+              "type": "string",
+              "description": "The patient identifier."
+            },
+            "mri_type": {
+              "type": "string",
+              "description": "Type of the MRI. Default to be 'brain'.",
+              "enum": [
+                "brain",
+                "spinal",
+                "chest",
+                "abdominal"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "description": "Status of the report, could be 'in progress', 'concluded' or 'draft'.",
+              "enum": [
+                "in progress",
+                "concluded",
+                "draft"
+              ]
+            }
+          },
+          "required": [
+            "patient_id",
+            "status"
+          ]
+        }
+      }
+    }
+  ]
+}

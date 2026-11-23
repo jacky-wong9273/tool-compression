@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_205",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_traffic_info",
+        "description": "Retrieve current traffic conditions for a specified route.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_location": {
+              "type": "string",
+              "description": "The starting point of the route."
+            },
+            "end_location": {
+              "type": "string",
+              "description": "The destination of the route."
+            },
+            "mode": {
+              "type": "string",
+              "enum": [
+                "driving",
+                "walking",
+                "bicycling",
+                "transit"
+              ],
+              "description": "Preferred method of transportation, default to 'driving'."
+            }
+          },
+          "required": [
+            "start_location",
+            "end_location"
+          ]
+        }
+      }
+    }
+  ]
+}

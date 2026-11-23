@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_151",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "highest_grossing_banks",
+        "description": "Retrieve the highest grossing banks in a specified country and year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "The country to get the data from."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year to get the data from."
+            },
+            "top_n": {
+              "type": "integer",
+              "description": "Top n banks in terms of grossing. Default is 5"
+            }
+          },
+          "required": [
+            "country",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

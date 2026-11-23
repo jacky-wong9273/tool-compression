@@ -1,0 +1,51 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_129",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "personality_assessment_evaluate",
+        "description": "Evaluate and categorize a user's personality type based on a given array of personality trait percentages.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "traits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "trait": {
+                    "type": "string",
+                    "description": "The personality trait being evaluated."
+                  },
+                  "percentage": {
+                    "type": "integer",
+                    "description": "The percentage representation of the trait in the user's personality."
+                  }
+                },
+                "required": [
+                  "trait",
+                  "percentage"
+                ]
+              }
+            },
+            "detailed_output": {
+              "type": "boolean",
+              "description": "Determines whether the output should include a detailed explanation of the personality type. This is optional.",
+              "default": "True"
+            }
+          },
+          "required": [
+            "traits"
+          ]
+        }
+      }
+    }
+  ]
+}

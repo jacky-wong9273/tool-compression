@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_146",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "stock_price",
+        "description": "Get stock price data for a given company over a specified number of days.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company name."
+            },
+            "days": {
+              "type": "integer",
+              "description": "The number of previous days to retrieve data for."
+            },
+            "data_type": {
+              "type": "string",
+              "description": "The type of price data to retrieve (e.g., 'Open', 'Close', 'High', 'Low'). Default is 'Close'."
+            }
+          },
+          "required": [
+            "company",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}
