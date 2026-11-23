@@ -29,7 +29,7 @@ The process does not read `DEEPSEEK_API_KEY`, even when the variable is present.
 
 The committed gate is `dry-run/gate.json`. It was produced with `EXPLORATORY_CEILING_CNY=0.01` at `2026-11-23T17:25:00+08:00`, a Monday inside the 14:00–18:00 window. The schedule is peak, `stopped_for_peak` is true, spend is `"0"`, and the off-peak reserve of ¥2.572864 does not fit under 0.01. The 0.01 figure shows which value the process received. It is not Jacky's ceiling, and it does not authorize a later process to spend.
 
-The same gate records `2026-11-23T19:00:00+08:00` as an off-peak example. `live_permitted` is false there because 12 cases are still unsealed. A paid start at that clock is not feasible on this package.
+The same gate records `2026-11-23T19:00:00+08:00` as an off-peak example. `live_permitted` is true there because all 840 cases are sealed and that clock is off-peak. This dry-run did not start `--live`. A paid start still needs the ceiling Jacky supplies, and a peak minute still stops the run before a key is read.
 
 A dry-run with a larger environment value also writes spend `"0"`. The larger value is still not permission to start `--live`.
 
@@ -38,7 +38,7 @@ A dry-run with a larger environment value also writes spend `"0"`. The larger va
 CoS starts this only after three conditions hold together:
 
 1. Jacky supplies `EXPLORATORY_CEILING_CNY` for this flight. The ceiling already in use is the remaining exploratory amount. This package does not name a new one and does not lift one.
-2. `remaining-work.json` is empty and `verify_package` reports 840 sealed cases. Until then `--live` returns before it reads a key or opens a socket. There is no partial-live switch.
+2. `remaining-work.json` is empty and `verify_package` reports 840 sealed cases. That condition now holds. `--live` was not started from this package. There is no partial-live switch. A peak minute, or a ceiling below the off-peak reserve, still returns before a key is read.
 3. The Asia/Shanghai clock is off-peak. A peak minute writes `stop.json` with `stop_reason: peak_hours` and `peak_card_used: false`, including a peak minute that arrives after earlier calls have already settled. The flight does not continue on the peak card.
 
 ```bash

@@ -275,6 +275,16 @@ Sixteen catalogues receive a cue because every tool shares an action and the sou
 
 Six catalogues change S. `multiple_127` and `multiple_165` drop the frame "This function". `multiple_20`, `multiple_165`, `multiple_177`, and `multiple_187` omit a schema default. `multiple_43` states a glucose-specific default of 2800 kJ/mol while the schema default is the integer 2800. That mismatch stays.
 
+## Eighth tranche
+
+The formative twelve were added. The first 828 were not rewritten. The pilot seals were not copied. Each catalogue was read from fresh U.
+
+Four catalogues receive a cue because every tool shares an action and the sources document the difference. `multiple_0` contrasts a triangle with a circle. `multiple_12` contrasts year-over-year growth with a return, and contrasts return on equity with return on assets by the base each parameter states. `multiple_35` contrasts the least common multiple with the greatest common divisor. `multiple_92` contrasts vegan products at Safeway, Whole Foods, and Walmart. Where two rivals were the same kind of alternative, catalogue order selected the earlier tool.
+
+`multiple_0` also drops "Default is true." on five flags because each schema default is true. Those edits come from each flag's own description. The cue is a separate judgement about the shape. SX is the S text plus the cue, so U, S, X, and SX are four catalogues. `multiple_100` drops "Defaults to 'major'." because the schema default is major, and its cue stays empty.
+
+Eight catalogues have an empty cue. `multiple_11` stays empty because a quadratic and a cubic are polynomials, so a cue against that tool would read as an exclusion the polynomial description does not state. `multiple_7`, `multiple_100`, and `multiple_153` do not answer a similar request. `simple_python_34`, `simple_python_175`, `irrelevance_50`, and `irrelevance_59` have one tool, so no rival qualifies. Prose defaults that the schema does not state stay in place on `multiple_11`, `multiple_35`, `multiple_92`, and `multiple_153`.
+
 ## What is still open
 
-The remaining 12 cases are the formative twelve. They have no sealed S and no sealed X. Their pilot seals were not copied. They wait for an independent reading from U.
+Nothing in the 840 is unsealed. `flight_ready` is true. Official settlement stays false, and `--live` was not started.

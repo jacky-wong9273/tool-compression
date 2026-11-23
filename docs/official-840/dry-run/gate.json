@@ -57,17 +57,61 @@
   "u_source": "fresh conversion of the pinned BFCL records, checked equal to the stored U catalogues",
   "u_backfill": false,
   "sample_cases": 840,
-  "sealed_cases": 828,
-  "blocked_cases": 12,
-  "flight_ready": false,
+  "sealed_cases": 840,
+  "blocked_cases": 0,
+  "flight_ready": true,
   "live_requires_all_840_sealed": true,
   "partial_live_refused": true,
-  "unique_payloads_if_the_sealed_cells_were_sent": 1856,
+  "unique_payloads_if_the_sealed_cells_were_sent": 1894,
   "shared_within_cell_only": true,
   "cell": "one case id and one thinking pass",
   "cross_cell_payloads_are_not_shared": true,
   "passes": {
     "off": [
+      {
+        "case_id": "multiple_0",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_0:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": false,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": false,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "06c42732cdcca3c164bc5c45be003d01e472364981751f76aca305876fc18ab6",
+            "arms": [
+              "U"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "8eb6c1d59248ad816daeb70388bb08fcfd62616773dce8250018f891a2eb225a",
+            "arms": [
+              "S"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "bb8f5f693177bda0c94d9da6af036e893443f82743e3ff2cec9c4e0887e5ec86",
+            "arms": [
+              "X"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "baa0de82d79c37f9c77dc94351c6fe8a6b88b22a298e5ab8cb50b6a22e2d1204",
+            "arms": [
+              "SX"
+            ],
+            "shared": false
+          }
+        ]
+      },
       {
         "case_id": "multiple_1",
         "category": "multiple",
@@ -255,6 +299,32 @@
         ]
       },
       {
+        "case_id": "multiple_7",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_7:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "59f2d3b0bcad0c89d0a1b6e3d22efe1c76c09d51c9a4e580be5e5125026eb54a",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "multiple_8",
         "category": "multiple",
         "thinking": "off",
@@ -371,6 +441,64 @@
               "SX"
             ],
             "shared": false
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_11",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_11:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "eef7a0e410894968e1e26bb8344c0cbf0c9d2fb9225eebd13cb6f3940490a215",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_12",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_12:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "df7ab25825904d116bee969cfcda1cc55b4fa9f49e7f3bd75c0db2726eb4defb",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "b467d3f9b9486330efb85f53631631314fa908830d4ef33ea62331f1bd107626",
+            "arms": [
+              "X",
+              "SX"
+            ],
+            "shared": true
           }
         ]
       },
@@ -1059,6 +1187,38 @@
             "arms": [
               "U",
               "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_35",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_35:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "7dc8b5c53c7f87f76ed27ca3c088bf410c8d6efcca0535a5c12fe20abd3f3d72",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "c5bde18636a5bc51a14717f84239416ed8bef19a1310cff6df72ecbb11fed8ae",
+            "arms": [
               "X",
               "SX"
             ],
@@ -2721,6 +2881,38 @@
         ]
       },
       {
+        "case_id": "multiple_92",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_92:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "9335868ea24cb2c2011c2b81e6693542eedbc3c5870cd6b5328843813750a25d",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "656efd8ff95f1e135ee6f903453b7a55a1054fbdb55d10906ff1edb75ee81f50",
+            "arms": [
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "multiple_93",
         "category": "multiple",
         "thinking": "off",
@@ -2912,6 +3104,38 @@
           },
           {
             "request_sha256": "57a6cd131d0115d9dd7026a9146072cf7ece8bf601e766320e2c925b646e63d9",
+            "arms": [
+              "S",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_100",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_100:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": false,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": false,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "d39aa4a4285d616340fa1e9ebd223891d4469e7876d042345c971062996083da",
+            "arms": [
+              "U",
+              "X"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "f37006ebd51ce1e676476039766bc216e85f028530650d0791f6254113d6756c",
             "arms": [
               "S",
               "SX"
@@ -4274,6 +4498,32 @@
         "groups": [
           {
             "request_sha256": "6483182786e149b86bd0c0c9c265fdfb787d2f5ec29388e734a8de6af4ce0d73",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_153",
+        "category": "multiple",
+        "thinking": "off",
+        "cell": "multiple_153:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "56f72f3988983b9cc956ffd3b4ad172abc7781eb0e997ffdf7bc93e6e549d655",
             "arms": [
               "U",
               "S",
@@ -6396,6 +6646,32 @@
         "groups": [
           {
             "request_sha256": "6787e3ccccc1042da2ef8f4599a7a2ef95fa3bdca8dcba742cce3e9d43290dcf",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "simple_python_34",
+        "category": "simple_python",
+        "thinking": "off",
+        "cell": "simple_python_34:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "2e7228b0624827522ea7aed97e6eb8b131a9a98a04c31a4480b1dd68a81fce85",
             "arms": [
               "U",
               "S",
@@ -10048,6 +10324,32 @@
         "groups": [
           {
             "request_sha256": "b994d493eac7cac64338249bff4829e6e3f4f871445a26e444f246a11e696da0",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "simple_python_175",
+        "category": "simple_python",
+        "thinking": "off",
+        "cell": "simple_python_175:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "43c4fd3fe2d46a8a5053944bf08810a66ce85f38462887e411e4db50a82c9f61",
             "arms": [
               "U",
               "S",
@@ -17261,6 +17563,32 @@
         ]
       },
       {
+        "case_id": "irrelevance_50",
+        "category": "irrelevance",
+        "thinking": "off",
+        "cell": "irrelevance_50:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "10939d14a21cb1bfd1b9c10e82ccd9c4d19c8534d347451dc887d62e60c4d810",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "irrelevance_51",
         "category": "irrelevance",
         "thinking": "off",
@@ -17474,6 +17802,32 @@
             "request_sha256": "efb9c388da5723ccc5d696393709dac680ec9054d7da1428b1664ced819a6287",
             "arms": [
               "S",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "irrelevance_59",
+        "category": "irrelevance",
+        "thinking": "off",
+        "cell": "irrelevance_59:off",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "bc0e08bbe9d07c9db31be3bd37b086b6c54f6508dae1bbedd5b1d75105f1dd92",
+            "arms": [
+              "U",
+              "S",
+              "X",
               "SX"
             ],
             "shared": true
@@ -22199,6 +22553,50 @@
     ],
     "on": [
       {
+        "case_id": "multiple_0",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_0:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": false,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": false,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "c59ddcd5afbfeb0e3ab50e12fb4ad9197d267897c391b4cd971ab1a64188b6e7",
+            "arms": [
+              "U"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "bb49640e3b423c65212e767d5a4652b5dd506c4784d0dd6b53096565affb32f5",
+            "arms": [
+              "S"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "b1b7f305d7b5af11fca1d88f9e1bbb11e0f7c711773a2696385dd1102ab14fee",
+            "arms": [
+              "X"
+            ],
+            "shared": false
+          },
+          {
+            "request_sha256": "5be12eb8853414022d5cb16c476e7124e64bfde81571430d6536728be9c340cf",
+            "arms": [
+              "SX"
+            ],
+            "shared": false
+          }
+        ]
+      },
+      {
         "case_id": "multiple_1",
         "category": "multiple",
         "thinking": "on",
@@ -22385,6 +22783,32 @@
         ]
       },
       {
+        "case_id": "multiple_7",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_7:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "b4f9f0bfcde7db88cd23957cf03624718b43eaaa3910fcf671cd921a8ec7cdb9",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "multiple_8",
         "category": "multiple",
         "thinking": "on",
@@ -22501,6 +22925,64 @@
               "SX"
             ],
             "shared": false
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_11",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_11:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "116b5c19eef38800c097fb1c9aab6749c6cca84433f6358cc1395856d74f5490",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_12",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_12:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "3deed52fd2bb1911c4c77d7c2dc88f498984e2248741dadea031ea0dadbd6e4b",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "981f4ff7b17412e42f2415bee8f35f66a1c331756fafd0725c767e9c6cca89d7",
+            "arms": [
+              "X",
+              "SX"
+            ],
+            "shared": true
           }
         ]
       },
@@ -23189,6 +23671,38 @@
             "arms": [
               "U",
               "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_35",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_35:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "8577791353246a761cfe0477d3d0ca9e16c31e3d260bab7686e6633ce52b5114",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "406d2a1145e860f7fc62fa828aee96adc1676508d598149bd5b4987ff460a5af",
+            "arms": [
               "X",
               "SX"
             ],
@@ -24851,6 +25365,38 @@
         ]
       },
       {
+        "case_id": "multiple_92",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_92:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": false,
+          "SX_equals_S": false,
+          "SX_equals_X": true,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "2bd4ad420ccf05de7aa33ac5b732a4f2c9c8f8fca0fdfa6f14329f6fb789026b",
+            "arms": [
+              "U",
+              "S"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "238fa62ef0b7f77193ce299273b58ffb68030bf3f5c89f39f418982694e1e073",
+            "arms": [
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "multiple_93",
         "category": "multiple",
         "thinking": "on",
@@ -25042,6 +25588,38 @@
           },
           {
             "request_sha256": "a69a8d883ba7b8685398d4542118b573bab0a27a4d599b5fa9ad9232e67032d5",
+            "arms": [
+              "S",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_100",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_100:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": false,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": false,
+          "SX_equals_U": false
+        },
+        "groups": [
+          {
+            "request_sha256": "ad0224ddd5df0659aae0e0c6b45a7cb9af07646fe986688f3932709ccd413c9d",
+            "arms": [
+              "U",
+              "X"
+            ],
+            "shared": true
+          },
+          {
+            "request_sha256": "8db8d57eec207cc88748b7aac24fa11f7498bcf2dab0f5652a2ddce59c5d465e",
             "arms": [
               "S",
               "SX"
@@ -26404,6 +26982,32 @@
         "groups": [
           {
             "request_sha256": "2079b2adfa095e5fc5e82dcdecb50250a0eaf30ed02e5ce338ec7a2c9aeab9f8",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "multiple_153",
+        "category": "multiple",
+        "thinking": "on",
+        "cell": "multiple_153:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "ace82c6164ff8af514e1aad9b7937373e968af3cc1ee97c9740a2492eca7061e",
             "arms": [
               "U",
               "S",
@@ -28526,6 +29130,32 @@
         "groups": [
           {
             "request_sha256": "844ec452b4be266a9a8a07afef919253c4b8f015eb0a0c0d84a8c7b84880612c",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "simple_python_34",
+        "category": "simple_python",
+        "thinking": "on",
+        "cell": "simple_python_34:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "d49637a712ce897136a6c02813e80b22d7f20cc4e10c42dc6a32891e7a3f4180",
             "arms": [
               "U",
               "S",
@@ -32178,6 +32808,32 @@
         "groups": [
           {
             "request_sha256": "e118ce74f902eecf6264c6bd1bbc0939b95934de91dd0f005b4ea6c6958301e0",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "simple_python_175",
+        "category": "simple_python",
+        "thinking": "on",
+        "cell": "simple_python_175:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "a5c272bfd1654323829ca02cae5bf6eca702f2975b9ea479fd7fdd627c8fef4b",
             "arms": [
               "U",
               "S",
@@ -39391,6 +40047,32 @@
         ]
       },
       {
+        "case_id": "irrelevance_50",
+        "category": "irrelevance",
+        "thinking": "on",
+        "cell": "irrelevance_50:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "bde773924e20b0ed06e9d73c0653260e9a1853c7a2d4d37fba7a79b108b7a6e8",
+            "arms": [
+              "U",
+              "S",
+              "X",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
         "case_id": "irrelevance_51",
         "category": "irrelevance",
         "thinking": "on",
@@ -39604,6 +40286,32 @@
             "request_sha256": "f870436d21376a4bec7e85e7d8b4cf24b98eced104bf6c8ac27eb0dbf0230111",
             "arms": [
               "S",
+              "SX"
+            ],
+            "shared": true
+          }
+        ]
+      },
+      {
+        "case_id": "irrelevance_59",
+        "category": "irrelevance",
+        "thinking": "on",
+        "cell": "irrelevance_59:on",
+        "sealed": true,
+        "catalogue_identities": {
+          "S_equals_U": true,
+          "X_equals_U": true,
+          "SX_equals_S": true,
+          "SX_equals_X": true,
+          "SX_equals_U": true
+        },
+        "groups": [
+          {
+            "request_sha256": "1ecfeba2dce44cd8e14dd0998c776d8bbc81bf716580195aca9b4e6d0acf5a71",
+            "arms": [
+              "U",
+              "S",
+              "X",
               "SX"
             ],
             "shared": true
@@ -44328,80 +45036,7 @@
       }
     ]
   },
-  "blocked": [
-    {
-      "case_id": "multiple_0",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_7",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_11",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_12",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_35",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_92",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_100",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "multiple_153",
-      "category": "multiple",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "simple_python_34",
-      "category": "simple_python",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "simple_python_175",
-      "category": "simple_python",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "irrelevance_50",
-      "category": "irrelevance",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    },
-    {
-      "case_id": "irrelevance_59",
-      "category": "irrelevance",
-      "sealed": false,
-      "reason": "S and X are not sealed. This case is not part of a flyable four-way cell."
-    }
-  ],
+  "blocked": [],
   "off_peak_only": true,
   "do_not_start_or_continue_into_peak": true,
   "peak_card_used": false,
@@ -44414,15 +45049,15 @@
     "clock": "2026-11-23T17:25:00+08:00",
     "schedule": "peak",
     "blocked_by_peak": true,
-    "sealed_complete": false,
+    "sealed_complete": true,
     "live_permitted": false
   },
   "aimed_offpeak_example": {
     "clock": "2026-11-23T19:00:00+08:00",
     "schedule": "off-peak",
     "blocked_by_peak": false,
-    "sealed_complete": false,
-    "live_permitted": false
+    "sealed_complete": true,
+    "live_permitted": true
   },
   "rate_card": {
     "model": "deepseek-flash",
@@ -44634,5 +45269,5 @@
     "thinking_on_is_catalogue_change": false
   },
   "package_verified": true,
-  "verified_sealed_cases": 828
+  "verified_sealed_cases": 840
 }

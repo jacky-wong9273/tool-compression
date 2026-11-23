@@ -589,8 +589,8 @@ def _counts_document(ids, categories, catalogues, identity, x_record, s_record, 
         "coverage_is_not_efficiency": True,
         "shorter_wording_is_not_success": True,
         "official_settlement": False,
-        "flight_ready": False,
-        "note": "Identity counts are the sealed tranche. Unsealed cases are not given an S or an X judgement here.",
+        "flight_ready": len(remaining_ids) == 0,
+        "note": "Identity counts cover the sealed cases. Official settlement stays false. Unsealed cases are not given an S or an X judgement here.",
     }
 
 

@@ -126,27 +126,27 @@ def _synthetic_plans():
     return plans
 
 
-def test_package_counts_identities_and_leaves_the_pilot_unsealed():
+def test_package_counts_identities_and_seals_the_formative_twelve_from_fresh_u():
     summary = verify_package()
     counts = summary["counts"]
     assert summary["cases"] == 840
-    assert summary["sealed"] == 828
-    assert summary["remaining"] == 12
+    assert summary["sealed"] == 840
+    assert summary["remaining"] == 0
     assert summary["provider_called"] is False
     assert summary["official_settlement"] is False
     assert counts["single_tool_cases"] == 640
     assert counts["multi_tool_cases"] == 200
-    assert counts["cued_cases"] == 54
-    assert counts["uncued_cases"] == 774
-    assert counts["uncued_single_tool"] == 636
-    assert counts["uncued_multi_tool"] == 138
-    assert counts["s_equals_u"] == 787
-    assert counts["x_equals_u"] == 774
-    assert counts["sx_equals_s"] == 774
-    assert counts["sx_equals_x"] == 787
-    assert counts["sx_equals_u"] == 738
-    assert counts["four_distinct"] == 5
-    assert counts["four_distinct_ids"] == ["multiple_9", "multiple_10", "multiple_21", "multiple_30", "multiple_73"]
+    assert counts["cued_cases"] == 58
+    assert counts["uncued_cases"] == 782
+    assert counts["uncued_single_tool"] == 640
+    assert counts["uncued_multi_tool"] == 142
+    assert counts["s_equals_u"] == 797
+    assert counts["x_equals_u"] == 782
+    assert counts["sx_equals_s"] == 782
+    assert counts["sx_equals_x"] == 797
+    assert counts["sx_equals_u"] == 745
+    assert counts["four_distinct"] == 6
+    assert counts["four_distinct_ids"] == ["multiple_0", "multiple_9", "multiple_10", "multiple_21", "multiple_30", "multiple_73"]
     assert counts["x_equals_u_ids"] == counts["uncued_ids"]
     assert counts["sx_equals_s_ids"] == counts["uncued_ids"]
     assert counts["sx_equals_x_ids"] == counts["s_equals_u_ids"]
@@ -204,6 +204,8 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
         "multiple_165",
         "multiple_177",
         "multiple_187",
+        "multiple_0",
+        "multiple_100",
     }
     assert "multiple_52" in counts["uncued_ids"]
     assert "multiple_39" in counts["uncued_ids"]
@@ -222,6 +224,15 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
     assert "multiple_1" in counts["cued_ids"]
     assert "multiple_30" in counts["cued_ids"]
     assert "multiple_94" in counts["cued_ids"]
+    assert "multiple_0" in counts["cued_ids"]
+    assert "multiple_12" in counts["cued_ids"]
+    assert "multiple_35" in counts["cued_ids"]
+    assert "multiple_92" in counts["cued_ids"]
+    assert "multiple_11" in counts["uncued_ids"]
+    assert "multiple_100" in counts["uncued_ids"]
+    assert "multiple_153" in counts["uncued_ids"]
+    assert "simple_python_34" in counts["uncued_ids"]
+    assert "irrelevance_59" in counts["uncued_ids"]
     assert "multiple_3" in counts["cued_ids"]
     assert "multiple_54" in counts["cued_ids"]
     assert "multiple_76" in counts["cued_ids"]
@@ -229,18 +240,22 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
     assert "multiple_91" in counts["cued_ids"]
     assert counts["fact_counts"]["lost"] == 0
     assert counts["fact_counts"]["unsupported_additions"] == 0
-    assert counts["flight_ready"] is False
+    assert counts["flight_ready"] is True
     assert evaluation_manifest()["target_provider_input_reduction"] == "1/10"
     assert evaluation_manifest()["official_accuracy_in_scope"] is False
     pilot = load_json(pilot_package_dir() / "selection" / "manifest.json")
     sealed = set(counts["cued_ids"]) | set(counts["uncued_ids"])
+    revision = pilot_package_dir() / "cue-revision" / "rendered"
     for row in pilot["selected"]:
         case_id = row["case_id"]
-        assert case_id not in sealed
+        assert case_id in sealed
         official = load_json(u_path(case_id))["tools"]
         pilot_u = load_json(pilot_package_dir() / "rendered" / case_id / "U.json")["tools"]
         assert official == pilot_u
-        assert not (package_dir() / "rendered" / case_id).exists()
+        for arm in ("S", "X", "SX"):
+            official_bytes = (package_dir() / "rendered" / case_id / f"{arm}.json").read_bytes()
+            assert official_bytes != (pilot_package_dir() / "rendered" / case_id / f"{arm}.json").read_bytes()
+            assert official_bytes != (revision / case_id / f"{arm}.json").read_bytes()
 
 
 def test_frozen_files_and_the_closed_target_are_unchanged():
@@ -365,8 +380,12 @@ def test_off_peak_stop_has_no_continuation_switch(tmp_path, monkeypatch):
     assert mid["peak_card_used"] is False
     assert mid["schedule_at_stop"] == "peak"
     assert Decimal(mid["spend_cny"]) > 0
-    with pytest.raises(UsxFlightRefused, match="not fully sealed"):
-        run_live(Path("/tmp/not-used"), tmp_path / "package", Decimal("1000"), lambda: _moment(2026, 11, 22, 19), ScriptedClient(_payload()))
+    if (PIN / "BFCL_v4_multiple.json").is_file():
+        caller = ScriptedClient(_payload())
+        with pytest.raises(UsxFlightRefused, match="peak_hours"):
+            run_live(PIN, tmp_path / "sealed-live", Decimal("1000"), lambda: _moment(2026, 11, 23, 17, 25), caller)
+        assert caller.bodies == []
+        assert not (tmp_path / "sealed-live" / "live.json").exists()
     assert peak_blocks(_moment(2026, 11, 23, 17, 25)) is True
     assert peak_blocks(_moment(2026, 11, 23, 19, 0)) is False
     assert peak_blocks(_moment(2026, 11, 22, 10, 0)) is False
@@ -387,8 +406,17 @@ def test_cli_refuses_a_peak_switch_and_refuses_live_while_unsealed(tmp_path, mon
     monkeypatch.delenv(CEILING_ENV, raising=False)
     assert main(["usx-840", "--no-api", "--bfcl-root", str(PIN), "--out", str(tmp_path / "missing")]) == 2
     monkeypatch.setenv(CEILING_ENV, "0.01")
+    if not (PIN / "BFCL_v4_multiple.json").is_file():
+        return
+
+    class _PeakClock:
+        @staticmethod
+        def now(tz=None):
+            return _moment(2026, 11, 23, 17, 25)
+
+    monkeypatch.setattr("tool_compression.__main__.datetime", _PeakClock)
     assert main(["usx-840", "--live", "--bfcl-root", str(PIN), "--out", str(tmp_path / "live")]) == 1
-    assert "not fully sealed" in capsys.readouterr().out
+    assert "peak_hours" in capsys.readouterr().out
     assert not (tmp_path / "live" / "live.json").exists()
 
 
@@ -401,12 +429,12 @@ def test_committed_gate_is_a_no_api_peak_stop():
     assert gate["spend_cny"] == "0"
     assert gate["official_settlement"] is False
     assert gate["sample_cases"] == 840
-    assert gate["sealed_cases"] == 828
-    assert gate["blocked_cases"] == 12
-    assert gate["flight_ready"] is False
+    assert gate["sealed_cases"] == 840
+    assert gate["blocked_cases"] == 0
+    assert gate["flight_ready"] is True
     assert gate["partial_live_refused"] is True
     assert gate["live_requires_all_840_sealed"] is True
-    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 1856
+    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 1894
     assert gate["thinking_passes"] == ["off", "on"]
     assert gate["thinking_on_is_catalogue_change"] is False
     assert gate["schedule_at_gate"] == "peak"
@@ -417,7 +445,9 @@ def test_committed_gate_is_a_no_api_peak_stop():
     assert gate["peak_card_used"] is False
     assert gate["aimed_offpeak_example"]["clock"] == AIMED_CLOCK.isoformat()
     assert gate["aimed_offpeak_example"]["schedule"] == "off-peak"
-    assert gate["aimed_offpeak_example"]["live_permitted"] is False
+    assert gate["aimed_offpeak_example"]["live_permitted"] is True
+    assert gate["live_would_start"] is False
+    assert gate["official_settlement"] is False
     assert gate["pre_call_reserve_cny"] == "2.572864"
     assert gate["peak_reserve_not_used_cny"] == "5.145728"
     assert gate["reserve_fits_supplied_ceiling"] is False
@@ -463,7 +493,7 @@ def test_pin_regenerates_the_gate_and_the_fresh_u(tmp_path):
     assert question not in json.dumps(fresh_gate)
     flight = build_flight(PIN)
     sealed_n = flight["sealed_cases"]
-    assert sealed_n == 828
+    assert sealed_n == 840
     assert len(flight["plans"]) == sealed_n * 2
     assert [plan["thinking"] for plan in flight["plans"][:sealed_n]] == ["off"] * sealed_n
     assert [plan["thinking"] for plan in flight["plans"][sealed_n:]] == ["on"] * sealed_n

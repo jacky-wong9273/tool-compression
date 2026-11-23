@@ -15,12 +15,13 @@
   "success_is_not_shorter_wording": true,
   "coverage_is_not_efficiency": true,
   "coverage": {
-    "sealed_cases": 828,
-    "cued_cases": 54,
-    "uncued_cases": 774,
-    "uncued_single_tool": 636,
-    "uncued_multi_tool": 138,
+    "sealed_cases": 840,
+    "cued_cases": 58,
+    "uncued_cases": 782,
+    "uncued_single_tool": 640,
+    "uncued_multi_tool": 142,
     "cued_ids": [
+      "multiple_0",
       "multiple_1",
       "multiple_2",
       "multiple_3",
@@ -29,6 +30,7 @@
       "multiple_8",
       "multiple_9",
       "multiple_10",
+      "multiple_12",
       "multiple_13",
       "multiple_15",
       "multiple_17",
@@ -43,6 +45,7 @@
       "multiple_30",
       "multiple_32",
       "multiple_33",
+      "multiple_35",
       "multiple_36",
       "multiple_38",
       "multiple_40",
@@ -74,10 +77,13 @@
       "multiple_89",
       "multiple_90",
       "multiple_91",
+      "multiple_92",
       "multiple_94"
     ],
     "uncued_ids": [
       "multiple_6",
+      "multiple_7",
+      "multiple_11",
       "multiple_14",
       "multiple_16",
       "multiple_20",
@@ -117,6 +123,7 @@
       "multiple_97",
       "multiple_98",
       "multiple_99",
+      "multiple_100",
       "multiple_101",
       "multiple_102",
       "multiple_103",
@@ -169,6 +176,7 @@
       "multiple_150",
       "multiple_151",
       "multiple_152",
+      "multiple_153",
       "multiple_154",
       "multiple_155",
       "multiple_156",
@@ -249,6 +257,7 @@
       "simple_python_31",
       "simple_python_32",
       "simple_python_33",
+      "simple_python_34",
       "simple_python_35",
       "simple_python_36",
       "simple_python_37",
@@ -389,6 +398,7 @@
       "simple_python_172",
       "simple_python_173",
       "simple_python_174",
+      "simple_python_175",
       "simple_python_176",
       "simple_python_177",
       "simple_python_178",
@@ -663,6 +673,7 @@
       "irrelevance_47",
       "irrelevance_48",
       "irrelevance_49",
+      "irrelevance_50",
       "irrelevance_51",
       "irrelevance_52",
       "irrelevance_53",
@@ -671,6 +682,7 @@
       "irrelevance_56",
       "irrelevance_57",
       "irrelevance_58",
+      "irrelevance_59",
       "irrelevance_60",
       "irrelevance_61",
       "irrelevance_62",
@@ -887,6 +899,7 @@
       "simple_python_31",
       "simple_python_32",
       "simple_python_33",
+      "simple_python_34",
       "simple_python_35",
       "simple_python_36",
       "simple_python_37",
@@ -1027,6 +1040,7 @@
       "simple_python_172",
       "simple_python_173",
       "simple_python_174",
+      "simple_python_175",
       "simple_python_176",
       "simple_python_177",
       "simple_python_178",
@@ -1301,6 +1315,7 @@
       "irrelevance_47",
       "irrelevance_48",
       "irrelevance_49",
+      "irrelevance_50",
       "irrelevance_51",
       "irrelevance_52",
       "irrelevance_53",
@@ -1309,6 +1324,7 @@
       "irrelevance_56",
       "irrelevance_57",
       "irrelevance_58",
+      "irrelevance_59",
       "irrelevance_60",
       "irrelevance_61",
       "irrelevance_62",
@@ -1492,6 +1508,8 @@
     ],
     "uncued_multi_tool_ids": [
       "multiple_6",
+      "multiple_7",
+      "multiple_11",
       "multiple_14",
       "multiple_16",
       "multiple_20",
@@ -1531,6 +1549,7 @@
       "multiple_97",
       "multiple_98",
       "multiple_99",
+      "multiple_100",
       "multiple_101",
       "multiple_102",
       "multiple_103",
@@ -1583,6 +1602,7 @@
       "multiple_150",
       "multiple_151",
       "multiple_152",
+      "multiple_153",
       "multiple_154",
       "multiple_155",
       "multiple_156",
@@ -1630,9 +1650,159 @@
       "multiple_198",
       "multiple_199"
     ],
-    "note": "These denominators are the sealed tranche, not the 840. Coverage is not cue efficiency. Shorter wording is not the success criterion."
+    "note": "These denominators are the sealed cases. Coverage is not cue efficiency. Shorter wording is not the success criterion."
   },
   "cases": [
+    {
+      "case_id": "multiple_0",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both retrieve dimensions of a shape. One is a triangle from three sides. The other is a circle from a radius.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "triangle_properties_get",
+          "pointer": "/function/description",
+          "cue": "Unlike circle_properties_get, which retrieves the area and circumference of a circle, this retrieves the area and perimeter of a triangle.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "area and perimeter, of a triangle"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "circle_properties_get",
+            "pointer": "/function/description",
+            "excerpt": "area and circumference, of a circle",
+            "axis": "whether the dimensions are for a triangle or a circle",
+            "why_confusable": "Both retrieve dimensions that include an area. A request that only says the area can be read as either.",
+            "why_this_rival": "The other tool is the circle. There is no earlier shape tool.",
+            "rejected": [
+              "A cue that says the triangle tool excludes a circle."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names a triangle or a circle makes only one description true. A request that only says the area can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_0/t0/function/description#0",
+              "excerpt": "area and perimeter, of a triangle",
+              "span": [
+                33,
+                66
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_0/t1/function/description#1",
+              "excerpt": "area and circumference, of a circle",
+              "span": [
+                33,
+                68
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "circle_properties_get",
+          "pointer": "/function/description",
+          "cue": "Unlike triangle_properties_get, which retrieves the area and perimeter of a triangle, this retrieves the area and circumference of a circle.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "area and circumference, of a circle"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "triangle_properties_get",
+            "pointer": "/function/description",
+            "excerpt": "area and perimeter, of a triangle",
+            "axis": "whether the dimensions are for a circle or a triangle",
+            "why_confusable": "Both retrieve dimensions that include an area. A request that only says the area can be read as either.",
+            "why_this_rival": "The other tool is the triangle. There is no earlier shape tool.",
+            "rejected": [
+              "A cue that says the circle tool excludes a triangle."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names a circle or a triangle makes only one description true. A request that only says the area can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_0/t1/function/description#0",
+              "excerpt": "area and circumference, of a circle",
+              "span": [
+                33,
+                68
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_0/t0/function/description#1",
+              "excerpt": "area and perimeter, of a triangle",
+              "span": [
+                33,
+                66
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
     {
       "case_id": "multiple_1",
       "category": "multiple",
@@ -2628,6 +2798,28 @@
       ]
     },
     {
+      "case_id": "multiple_7",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "Population growth of a species and the impact of a species on an ecosystem do not answer a similar request.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "wildlife_population_assess_growth",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Assesses the population growth of a specific species in a specified location over a period. The other tool does not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "ecological_impact_analyze",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Analyzes the impact of a species on a particular ecosystem. The other tool does not document a shared action or resource with that request."
+        }
+      ]
+    },
+    {
       "case_id": "multiple_8",
       "category": "multiple",
       "cue_applied": true,
@@ -3143,6 +3335,257 @@
               "illustrative": false,
               "note": "Rival fact cited by the cue, from that tool's original description.",
               "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_11",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "A quadratic equation and a cubic equation are polynomial equations. A cue against the polynomial tool would read as an exclusion that description does not state, so the case has no cue that covers every tool.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "math_roots_quadratic",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculate the roots of a quadratic equation. The other tools do not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "math_roots_cubic",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculate the roots of a cubic equation. The other tools do not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 2,
+          "function_name": "math_roots_polynomial",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculate the roots of a polynomial equation. The other tools do not document a shared action or resource with that request."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_12",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "All three calculate a company figure. The two returns differ by the base. The growth rate is a different figure, so its rival is the earlier return.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "corporate_finance_calculate_YOY_growth_rate",
+          "pointer": "/function/description",
+          "cue": "Unlike financial_ratios_calculate_ROE, which calculates the return on equity, this calculates the year over year growth rate.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "year over year (YOY) growth rate"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "financial_ratios_calculate_ROE",
+            "pointer": "/function/description",
+            "excerpt": "return on equity (ROE)",
+            "axis": "whether the company figure is year-over-year growth or a return on equity",
+            "why_confusable": "Both calculate a company figure. A request that only says the company's rate can be read as either.",
+            "why_this_rival": "The two return tools are the same kind of alternative to a growth rate. Catalogue order selects the earlier return.",
+            "rejected": [
+              "financial_ratios_calculate_ROA is the later return tool.",
+              "Naming both return tools."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names year-over-year growth or return on equity makes only one description true. A request that only says the company's rate can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_12/t0/function/description#0",
+              "excerpt": "year over year (YOY) growth rate",
+              "span": [
+                14,
+                46
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_12/t1/function/description#1",
+              "excerpt": "return on equity (ROE)",
+              "span": [
+                14,
+                36
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "financial_ratios_calculate_ROE",
+          "pointer": "/function/description",
+          "cue": "Unlike financial_ratios_calculate_ROA, which calculates the return on assets from total average assets, this calculates the return on equity from average shareholder equity.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "return on equity (ROE)"
+          },
+          "rival": {
+            "tool_index": 2,
+            "function_name": "financial_ratios_calculate_ROA",
+            "pointer": "/function/description",
+            "excerpt": "return on assets (ROA)",
+            "axis": "whether the return uses average shareholder equity or total average assets",
+            "why_confusable": "Both calculate a return for a period. A request that only says the company's return can be read as either.",
+            "why_this_rival": "The other return uses the other base. The growth-rate tool is not a return.",
+            "rejected": [
+              "corporate_finance_calculate_YOY_growth_rate calculates a growth rate, not a return."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names equity or assets makes only one description true. A request that only says the company's return can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_12/t1/function/description#0",
+              "excerpt": "return on equity (ROE)",
+              "span": [
+                14,
+                36
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_12/t2/function/description#1",
+              "excerpt": "return on assets (ROA)",
+              "span": [
+                14,
+                36
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 2,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 2,
+          "function_name": "financial_ratios_calculate_ROA",
+          "pointer": "/function/description",
+          "cue": "Unlike financial_ratios_calculate_ROE, which calculates the return on equity from average shareholder equity, this calculates the return on assets from total average assets.",
+          "target": {
+            "tool_index": 2,
+            "pointer": "/function/description",
+            "excerpt": "return on assets (ROA)"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "financial_ratios_calculate_ROE",
+            "pointer": "/function/description",
+            "excerpt": "return on equity (ROE)",
+            "axis": "whether the return uses total average assets or average shareholder equity",
+            "why_confusable": "Both calculate a return for a period. A request that only says the company's return can be read as either.",
+            "why_this_rival": "The other return uses the other base. The growth-rate tool is not a return.",
+            "rejected": [
+              "corporate_finance_calculate_YOY_growth_rate calculates a growth rate, not a return."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names assets or equity makes only one description true. A request that only says the company's return can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_12/t2/function/description#0",
+              "excerpt": "return on assets (ROA)",
+              "span": [
+                14,
+                36
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 2,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_12/t1/function/description#1",
+              "excerpt": "return on equity (ROE)",
+              "span": [
+                14,
+                36
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
               "source_pointer": "/function/description"
             }
           ]
@@ -5978,6 +6421,156 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "Calculates the least common multiple of two numbers. The other tools do not document a shared action or resource with that request."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_35",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both calculate a shared value of two integers. One is the least common multiple. The other is the greatest common divisor.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "calculate_lcm",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_gcd, which calculates the greatest common divisor, this calculates the least common multiple.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "least common multiple (lcm)"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "calculate_gcd",
+            "pointer": "/function/description",
+            "excerpt": "greatest common divisor (gcd)",
+            "axis": "whether the shared value is the least common multiple or the greatest common divisor",
+            "why_confusable": "Both take two integers and calculate a shared value. A request that only says the common value can be read as either.",
+            "why_this_rival": "The other tool is the greatest common divisor. There is no earlier shared-value tool.",
+            "rejected": [
+              "A cue that says the least common multiple excludes a divisor."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names the least common multiple or the greatest common divisor makes only one description true. A request that only says the common value can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_35/t0/function/description#0",
+              "excerpt": "least common multiple (lcm)",
+              "span": [
+                14,
+                41
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_35/t1/function/description#1",
+              "excerpt": "greatest common divisor (gcd)",
+              "span": [
+                14,
+                43
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "calculate_gcd",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_lcm, which calculates the least common multiple, this calculates the greatest common divisor.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "greatest common divisor (gcd)"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "calculate_lcm",
+            "pointer": "/function/description",
+            "excerpt": "least common multiple (lcm)",
+            "axis": "whether the shared value is the greatest common divisor or the least common multiple",
+            "why_confusable": "Both take two integers and calculate a shared value. A request that only says the common value can be read as either.",
+            "why_this_rival": "The other tool is the least common multiple. There is no earlier shared-value tool.",
+            "rejected": [
+              "A cue that says the greatest common divisor excludes a multiple."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names the greatest common divisor or the least common multiple makes only one description true. A request that only says the common value can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_35/t1/function/description#0",
+              "excerpt": "greatest common divisor (gcd)",
+              "span": [
+                14,
+                43
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_35/t0/function/description#1",
+              "excerpt": "least common multiple (lcm)",
+              "span": [
+                14,
+                41
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
         }
       ]
     },
@@ -11735,6 +12328,230 @@
       ]
     },
     {
+      "case_id": "multiple_92",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "All three get available vegan products at a named store. The stores are Safeway, Whole Foods, and Walmart.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "safeway_vegan_products",
+          "pointer": "/function/description",
+          "cue": "Unlike wholefoods_vegan_products, which gets vegan products at a Whole Foods store, this gets vegan products at a Safeway store.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "Safeway store"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "wholefoods_vegan_products",
+            "pointer": "/function/description",
+            "excerpt": "Whole Foods store",
+            "axis": "whether the vegan products are at Safeway or Whole Foods",
+            "why_confusable": "All three get vegan products at a store. A request that only says the store can be read as any of them.",
+            "why_this_rival": "Whole Foods and Walmart are the same kind of alternative to Safeway. Catalogue order selects Whole Foods.",
+            "rejected": [
+              "Naming both other stores.",
+              "Using walmart_vegan_products, which is the later store."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names Safeway or Whole Foods makes only one description true. A request that only says vegan products at a store can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_92/t0/function/description#0",
+              "excerpt": "Safeway store",
+              "span": [
+                42,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_92/t1/function/description#1",
+              "excerpt": "Whole Foods store",
+              "span": [
+                42,
+                59
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "wholefoods_vegan_products",
+          "pointer": "/function/description",
+          "cue": "Unlike safeway_vegan_products, which gets vegan products at a Safeway store, this gets vegan products at a Whole Foods store.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "Whole Foods store"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "safeway_vegan_products",
+            "pointer": "/function/description",
+            "excerpt": "Safeway store",
+            "axis": "whether the vegan products are at Whole Foods or Safeway",
+            "why_confusable": "All three get vegan products at a store. A request that only says the store can be read as any of them.",
+            "why_this_rival": "Safeway is the earlier store. Walmart is the later store of the same kind.",
+            "rejected": [
+              "Naming both other stores.",
+              "Using walmart_vegan_products, which is the later store."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names Whole Foods or Safeway makes only one description true. A request that only says vegan products at a store can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_92/t1/function/description#0",
+              "excerpt": "Whole Foods store",
+              "span": [
+                42,
+                59
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_92/t0/function/description#1",
+              "excerpt": "Safeway store",
+              "span": [
+                42,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 2,
+          "function_name": "walmart_vegan_products",
+          "pointer": "/function/description",
+          "cue": "Unlike safeway_vegan_products, which gets vegan products at a Safeway store, this gets vegan products at a Walmart store.",
+          "target": {
+            "tool_index": 2,
+            "pointer": "/function/description",
+            "excerpt": "Walmart store"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "safeway_vegan_products",
+            "pointer": "/function/description",
+            "excerpt": "Safeway store",
+            "axis": "whether the vegan products are at Walmart or Safeway",
+            "why_confusable": "All three get vegan products at a store. A request that only says the store can be read as any of them.",
+            "why_this_rival": "Safeway and Whole Foods are the same kind of alternative to Walmart. Catalogue order selects Safeway.",
+            "rejected": [
+              "Naming both other stores.",
+              "Using wholefoods_vegan_products, which is the later store."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that names Walmart or Safeway makes only one description true. A request that only says vegan products at a store can be read as either."
+          },
+          "propositions": [
+            {
+              "id": "multiple_92/t2/function/description#0",
+              "excerpt": "Walmart store",
+              "span": [
+                42,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 2,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_92/t0/function/description#1",
+              "excerpt": "Safeway store",
+              "span": [
+                42,
+                55
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "case_id": "multiple_93",
       "category": "multiple",
       "cue_applied": false,
@@ -12107,6 +12924,28 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "Retrieves personality traits for a personality type. The other tool computes a derivative. No selection cue is written."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_100",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "A music scale progression and the highest common factor of two numbers do not answer a similar request.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "music_generator_generate_scale_progression",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Generate a music scale progression in a specific key with a given tempo and duration. The other tool does not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "math_hcf",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculate the highest common factor of two numbers. The other tool does not document a shared action or resource with that request."
         }
       ]
     },
@@ -13608,6 +14447,35 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "Retrieves the market value of a sculpture. The other tool retrieves historical events. No shared action or resource is documented."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_153",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "Tallest mountains, an entropy change, and the date of a historical event do not answer a similar request.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "locate_tallest_mountains",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Find the tallest mountains within a specified radius of a location. The other tools do not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "calculate_entropy_change",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculate the entropy change for an isothermal and reversible process. The other tools do not document a shared action or resource with that request."
+        },
+        {
+          "tool_index": 2,
+          "function_name": "get_event_date",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Retrieve the date of a historical event. The other tools do not document a shared action or resource with that request."
         }
       ]
     },
@@ -15522,6 +16390,21 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "simple_python_33 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_34",
+      "category": "simple_python",
+      "cue_applied": false,
+      "case_reason": "simple_python_34 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "travel_itinerary_generator",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "simple_python_34 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
         }
       ]
     },
@@ -17622,6 +18505,21 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "simple_python_174 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_175",
+      "category": "simple_python",
+      "cue_applied": false,
+      "case_reason": "simple_python_175 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "lawyer_get_experience",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "simple_python_175 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
         }
       ]
     },
@@ -21736,6 +22634,21 @@
       ]
     },
     {
+      "case_id": "irrelevance_50",
+      "category": "irrelevance",
+      "cue_applied": false,
+      "case_reason": "irrelevance_50 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "convert_celsius_to_fahrenheit",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "irrelevance_50 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
       "case_id": "irrelevance_51",
       "category": "irrelevance",
       "cue_applied": false,
@@ -21852,6 +22765,21 @@
           "pointer": "/function/description",
           "cue": "",
           "no_cue_reason": "irrelevance_58 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_59",
+      "category": "irrelevance",
+      "cue_applied": false,
+      "case_reason": "irrelevance_59 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "linear_equation_solver",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "irrelevance_59 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
         }
       ]
     },

@@ -15,8 +15,9 @@ Preparation only. No provider was called. `--live` was not run. No pull request 
 | Parent of the fourth tranche | `93e8adf16426099fda4013f302473a82c6235a07` |
 | Parent of the fifth tranche | `e0fa9e9505eec53c0ce1580dedb3f2fa33f015b1` |
 | Parent of the sixth tranche | `237ba7972e5e29950dbc6e2ac58d4e75d7bb3a82` |
-| Parent of this tranche | `3833000cf7a90e0165710a4b0aa3893fd5df116b` |
-| Pull-request tip | the commit that adds this seventh tranche. The pull request description quotes that tip SHA. |
+| Parent of the seventh tranche | `3833000cf7a90e0165710a4b0aa3893fd5df116b` |
+| Parent of this tranche | `f96d90d0af64f73c51ee4fe6c08029a4788a046b` |
+| Pull-request tip | the commit that adds this eighth tranche. The pull request description quotes that tip SHA. |
 
 PR #11 was not updated. The first-pilot files from `61329baeba8e40fb3ed6c62fbbc8cae71ded1ac3` are covered by `checks/frozen-integrity.json` and were not rewritten.
 
@@ -37,7 +38,7 @@ docs/official-840/
   catalogues/U/<case_id>.json          840 files
   edits/s-record.json
   edits/x-record.json
-  rendered/<case_id>/{U,S,X,SX}.json   828 cases, 3312 files
+  rendered/<case_id>/{U,S,X,SX}.json   840 cases, 3360 files
   checks/u-sha256.json
   checks/frozen-integrity.json
   checks/counts.json
@@ -51,42 +52,43 @@ src/tool_compression/official_840_tranche_d.py   fourth tranche
 src/tool_compression/official_840_tranche_e.py   fifth tranche
 src/tool_compression/official_840_tranche_f.py   sixth tranche
 src/tool_compression/official_840_tranche_g.py   seventh tranche
+src/tool_compression/official_840_tranche_h.py   eighth tranche, the formative twelve
 src/tool_compression/__main__.py       usx-840 subcommand added; usx-flight unchanged
 tests/test_official_840.py
 ```
 
 ## Counts
 
-Sample 840. Sealed 828. Remaining 12. One-tool catalogues in the sample: 640. Multi-tool: 200.
+Sample 840. Sealed 840. Remaining 0. One-tool catalogues in the sample: 640. Multi-tool: 200.
 
-By category, sealed / remaining: `multiple` 192 / 8, `simple_python` 398 / 2, `irrelevance` 238 / 2.
+By category, sealed / remaining: `multiple` 200 / 0, `simple_python` 400 / 0, `irrelevance` 240 / 0.
 
-This run added 114 cases. The first 714 were left as sealed. The formative twelve stay unsealed. The remainder is exactly those twelve.
+This run added the formative twelve. The first 828 were left as sealed. The pilot seals were not copied.
 
 Sealed cue coverage, which is not cue efficiency:
 
 | | Count |
 | --- | ---: |
-| Cued | 54 |
-| Uncued | 774 |
-| Uncued, one tool | 636 |
-| Uncued, multi-tool | 138 |
+| Cued | 58 |
+| Uncued | 782 |
+| Uncued, one tool | 640 |
+| Uncued, multi-tool | 142 |
 
-The sixteen new cues are `multiple_1`, `multiple_5`, `multiple_17`, `multiple_18`, `multiple_19`, `multiple_22`, `multiple_23`, `multiple_26`, `multiple_30`, `multiple_51`, `multiple_64`, `multiple_70`, `multiple_83`, `multiple_87`, `multiple_89`, and `multiple_94`. Ninety-eight new multi-tool catalogues are uncued. `multiple_31`, `multiple_44`, `multiple_49`, `multiple_60`, `multiple_68`, `multiple_71`, and `multiple_77` stay uncued because a cue would read as an exclusion the sources do not state. `multiple_52`, `multiple_78`, and `multiple_95` stay uncued for the same class-inclusion reason.
+The four new cues are `multiple_0`, `multiple_12`, `multiple_35`, and `multiple_92`. Eight new catalogues are uncued. `multiple_11` stays empty because a quadratic and a cubic are polynomials. `multiple_7`, `multiple_100`, and `multiple_153` do not answer a similar request. `simple_python_34`, `simple_python_175`, `irrelevance_50`, and `irrelevance_59` have one tool. `multiple_31`, `multiple_44`, `multiple_49`, `multiple_52`, `multiple_60`, `multiple_68`, `multiple_71`, `multiple_77`, `multiple_78`, and `multiple_95` stay uncued for the same class-inclusion reason.
 
 ## Identities inside the sealed set
 
 | Identity | Count | What follows |
 | --- | ---: | --- |
-| S = U | 787 | Those catalogues were left verbatim. |
-| S differs from U | 41 | The earlier thirty-five, plus frame deletions on `multiple_127` and `multiple_165`, and schema-default omissions on `multiple_20`, `multiple_30`, `multiple_165`, `multiple_177`, and `multiple_187`. |
-| X = U | 774 | The uncued ids. An empty cue leaves X equal to U. |
-| SX = S | 774 | The same uncued ids. SX is S plus an empty cue. |
-| SX = X | 787 | The same ids as S = U. |
-| SX = U | 738 | No S edit and no cue. |
-| Four distinct catalogues | 5 | `multiple_9`, `multiple_10`, `multiple_21`, `multiple_30`, `multiple_73`. |
+| S = U | 797 | Those catalogues were left verbatim. |
+| S differs from U | 43 | The earlier forty-one, plus schema-default omissions on `multiple_0` and `multiple_100`. |
+| X = U | 782 | The uncued ids. An empty cue leaves X equal to U. |
+| SX = S | 782 | The same uncued ids. SX is S plus an empty cue. |
+| SX = X | 797 | The same ids as S = U. |
+| SX = U | 745 | No S edit and no cue. |
+| Four distinct catalogues | 6 | `multiple_0`, `multiple_9`, `multiple_10`, `multiple_21`, `multiple_30`, `multiple_73`. |
 
-If the 828 sealed cells were sent, thinking off and thinking on would be 928 payloads each, 1856 in total. Identical arms inside one cell share one observation. Identical bodies in another cell, or on the other thinking pass, stay separate calls. The plan does not alter a catalogue to force a difference. `multiple_30` is the new four-distinct cell: its S edit and its cue were judged separately.
+If the 840 sealed cells were sent, thinking off and thinking on would be 947 payloads each, 1894 in total. Identical arms inside one cell share one observation. Identical bodies in another cell, or on the other thinking pass, stay separate calls. The plan does not alter a catalogue to force a difference. `multiple_0` is the new four-distinct cell: its schema-default omissions and its cue were judged separately.
 
 ## Dry-run
 
@@ -102,16 +104,16 @@ If the 828 sealed cells were sent, thinking off and thinking on would be 928 pay
 | Schedule | peak |
 | Stopped for peak | true |
 | Live would start | false |
-| Flight ready | false |
-| Sealed / blocked | 828 / 12 |
-| Aimed 19:00 HKT example | off-peak, `live_permitted` false because the set is not sealed |
+| Flight ready | true |
+| Sealed / blocked | 840 / 0 |
+| Aimed 19:00 HKT example | off-peak, `live_permitted` true. This dry-run did not start `--live`. |
 | Off-peak reserve, one call | ¥2.572864 |
 | Peak reserve | ¥5.145728, recorded and not used |
 | Ceiling in the gate | `0.01`, a proof value; the reserve does not fit |
-| Unique payloads if the sealed cells were sent | 1856 |
+| Unique payloads if the sealed cells were sent | 1894 |
 
 `pytest -q` passed, including a regeneration of this gate from the pinned BFCL files at `6ea57973`. The regenerated gate matches the committed file. Tests also cover identity sharing inside one cell, a separate call for a matching body in another cell, thinking on as a second pass over the same catalogues, the peak stop with no continuation switch, and the frozen-file hashes.
 
 ## Remaining editorial work
 
-12 cases. They are the formative twelve, and their ids are in [remaining-work.md](remaining-work.md). No S or X judgement was invented for them. `flight_ready` is false, and `--live` still refuses.
+None. [remaining-work.md](remaining-work.md) lists no ids. `flight_ready` is true. Official settlement stays false. `--live` was not started. A peak minute still stops a later run before a key is read.
