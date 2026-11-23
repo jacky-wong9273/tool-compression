@@ -52,6 +52,12 @@ Historical official counts were recomputed from `official/settlement/official_se
 
 Provider input `T`, official accuracy, name hits, and abstention counts for T1 and T2 are unmeasured. The reporting shell leaves those cells null.
 
-## What a later flight would still need
+## Later T1 and T2 flight
 
-A separate authorization would have to freeze the model, thinking-off options, cohort, scorer, grouping, order, cache metadata, retry rule, and a financial ceiling. This package does not supply a price. It does not schedule extra runs of historical L or E.
+The phrase compressor is unchanged. `followon/FLIGHT.md` is the operator path for a later thinking-off `deepseek-flash` flight of all 840 cases, scored with official `bfcl evaluate` on saved outputs. `DeepSeek-V3.2-Exp-FC` stays scoring-only.
+
+The reconfirmed audit is `followon/flight_readiness.json`. Where that file records T1, T2, and U flight bodies as identical, a later flight is a same-request re-draw of official U, not a new compressed catalogue. The plan still contains every multiple, simple_python, and irrelevance case for T1 and for T2.
+
+The command requires `EXPLORATORY_CEILING_CNY` or `--ceiling-cny`. There is no default. The remaining authorization is ¥48.74670004 of ¥50, and that figure is a cap, not a filled-in ceiling. `--live` is required before a client is built. This package does not call the provider.
+
+A comparison against official U is exploratory. It does not revise the closed C-versus-U result, and it does not invent provider `T` for an arm that has not been flown. Official L and E are not re-flown. The official-compressor robustness settings are not part of this package.

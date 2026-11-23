@@ -1,0 +1,192 @@
+{
+  "ceiling": {
+    "default": null,
+    "env": "EXPLORATORY_CEILING_CNY",
+    "hardcoded_default": false,
+    "original_authorization_cny": "50",
+    "pre_call_reserve_cny": "2.572864",
+    "remaining_authorized_cny": "48.74670004",
+    "remaining_is_not_a_default": true
+  },
+  "committed_audit": {
+    "cases": 840,
+    "f_new": {
+      "irrelevance": {
+        "cases": 240,
+        "denominator": 240,
+        "matches_expected_denominator": true,
+        "numerator": 0,
+        "text": "0/240",
+        "unknown": 0
+      },
+      "multiple": {
+        "cases": 200,
+        "denominator": 200,
+        "matches_expected_denominator": true,
+        "numerator": 0,
+        "text": "0/200",
+        "unknown": 0
+      },
+      "simple_python": {
+        "cases": 400,
+        "denominator": 400,
+        "matches_expected_denominator": true,
+        "numerator": 0,
+        "text": "0/400",
+        "unknown": 0
+      }
+    },
+    "hash_mismatches": [],
+    "identity_holds": true,
+    "measured": false,
+    "official_scores_rewritten": false,
+    "parent_tip": "3a02e64888c5359f48d2b417ac659161cd3eadae",
+    "provider_called": false,
+    "same_request_redraw_of_u": true,
+    "source": "followon/audit_summary.json and followon/case_hashes.jsonl",
+    "source_tip": "213bba84d008d69edbddf6a20f2555de1c2a374e",
+    "t1_equals_t2_equals_u": true
+  },
+  "compressor_retuned": false,
+  "configs": {
+    "T1": {
+      "cap": "max(floor(0.75 × d), p)",
+      "closed_target_is_reset_test": false,
+      "condition": "T1",
+      "contrast_weight": "0/1",
+      "jaccard_min": "1/5",
+      "local_budget_tokenizer": "o200k_base",
+      "max_neighbours": 2,
+      "neighbour_source": "full original uncompressed catalogue of this request",
+      "neighbour_tie": "higher Jaccard, then earlier catalogue index",
+      "new_trial_settings": true,
+      "own_score": "|terms(piece) ∩ terms(own identifiers)| / |terms(piece)|",
+      "q": "tool_compression.lexical.contrast_q",
+      "retention": "3/4",
+      "retunes_closed_official_run": false,
+      "retunes_week1": false,
+      "spec_version": "followon.1",
+      "tuned_on_labels_or_funnel": false
+    },
+    "T2": {
+      "cap": "max(floor(0.75 × d), p)",
+      "closed_target_is_reset_test": false,
+      "condition": "T2",
+      "contrast_weight": "1/2",
+      "jaccard_min": "1/5",
+      "local_budget_tokenizer": "o200k_base",
+      "max_neighbours": 2,
+      "neighbour_source": "full original uncompressed catalogue of this request",
+      "neighbour_tie": "higher Jaccard, then earlier catalogue index",
+      "new_trial_settings": true,
+      "own_score": "|terms(piece) ∩ terms(own identifiers)| / |terms(piece)|",
+      "q": "tool_compression.lexical.contrast_q",
+      "retention": "3/4",
+      "retunes_closed_official_run": false,
+      "retunes_week1": false,
+      "spec_version": "followon.1",
+      "tuned_on_labels_or_funnel": false
+    }
+  },
+  "evaluation_method": {
+    "billed_basis_T": "provider prompt_tokens",
+    "cache_hits_subtracted": false,
+    "categories": {
+      "irrelevance": 240,
+      "multiple": 200,
+      "simple_python": 400
+    },
+    "model": "deepseek-flash",
+    "model_version": "DeepSeek-V4.1-Flash-1017",
+    "official_U_comparator": "closed thinking-off Flash U; not re-flown",
+    "prices_applied_to_T": false,
+    "scorer": "bfcl evaluate on saved outputs",
+    "scoring_alias": "DeepSeek-V3.2-Exp-FC",
+    "scoring_alias_may_generate": false,
+    "store": false,
+    "temperature": 0.001,
+    "thinking": "disabled"
+  },
+  "excluded_official_compressor_flights": [
+    "r=0.50 lambda=1/2",
+    "r=0.75 lambda=1/4"
+  ],
+  "flight_paths": {
+    "T1": {
+      "cases": 840,
+      "dropped": 0,
+      "physical_calls_if_flown_alone": 840
+    },
+    "T2": {
+      "cases": 840,
+      "dropped": 0,
+      "physical_calls_if_flown_alone": 840
+    },
+    "sequential_T1_then_T2": {
+      "logical_assignments": 1680,
+      "official_U_answers_reused": false,
+      "physical_calls_if_requests_match_within_case": 840,
+      "share_rule": "exact flight-body identity within the same case and this replicate only"
+    }
+  },
+  "followon_pull_request": "https://github.com/jacky-wong9273/tool-compression/pull/5",
+  "identity_holds": true,
+  "later_flight_interpretation": "A later flight would be a same-request re-draw of official U, not a new compressed catalogue.",
+  "measured": false,
+  "network_generation": false,
+  "not_the_official_compressor_robustness_flights": true,
+  "official_baseline_closed": {
+    "S_LU": "1398/121018",
+    "accuracy": {
+      "E": "186/200",
+      "L": "185/200",
+      "U": "186/200"
+    },
+    "ratio": "1.155%",
+    "target": "1/10",
+    "target_lowered": false
+  },
+  "official_scores_rewritten": false,
+  "official_target_lowered": false,
+  "parent_pull_request": "https://github.com/jacky-wong9273/tool-compression/pull/4",
+  "parent_tip": "3a02e64888c5359f48d2b417ac659161cd3eadae",
+  "plan_index": "followon/flight_plan_index.jsonl",
+  "provider_T": null,
+  "provider_called": false,
+  "purpose": "phrase-contrast-followon",
+  "ready_at_is_peak": false,
+  "ready_at_local": "2026-11-23T20:00:00+08:00",
+  "ready_at_timezone": "Asia/Hong_Kong",
+  "ready_for_later_flight": true,
+  "reexecuted_against_pinned_question_files": true,
+  "reexecution": {
+    "categories": {
+      "irrelevance": {
+        "cases": 240,
+        "expected": 240,
+        "f_new_numerator": 0,
+        "identical_to_u": 240
+      },
+      "multiple": {
+        "cases": 200,
+        "expected": 200,
+        "f_new_numerator": 0,
+        "identical_to_u": 200
+      },
+      "simple_python": {
+        "cases": 400,
+        "expected": 400,
+        "f_new_numerator": 0,
+        "identical_to_u": 400
+      }
+    },
+    "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "identity_holds": true,
+    "network_used": false,
+    "provider_called": false
+  },
+  "same_request_redraw_of_u": true,
+  "schema": "tool-compression.followon-flight-readiness.v1",
+  "source_tip": "213bba84d008d69edbddf6a20f2555de1c2a374e",
+  "this_pull_request_is_t1_t2_preparation": true
+}
