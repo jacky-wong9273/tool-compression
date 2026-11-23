@@ -1,0 +1,69 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "case_id": "multiple_35",
+  "category": "multiple",
+  "condition": "X",
+  "note": "Converted catalogue copy for this pilot. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_lcm",
+        "description": "Calculate the least common multiple (lcm) between two integers. Unlike calculate_gcd, which calculates the greatest common divisor (gcd) between two integers, this calculates the least common multiple (lcm) between two integers.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "num1": {
+              "type": "integer",
+              "description": "First number to calculate lcm for."
+            },
+            "num2": {
+              "type": "integer",
+              "description": "Second number to calculate lcm for."
+            },
+            "method": {
+              "type": "string",
+              "description": "The specific method to use in the calculation. Supported values: 'standard', 'reduced'. Default 'standard'"
+            }
+          },
+          "required": [
+            "num1",
+            "num2"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_gcd",
+        "description": "Calculate the greatest common divisor (gcd) between two integers. Unlike calculate_lcm, which calculates the least common multiple (lcm) between two integers, this calculates the greatest common divisor (gcd) between two integers.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "num1": {
+              "type": "integer",
+              "description": "First number to calculate gcd for."
+            },
+            "num2": {
+              "type": "integer",
+              "description": "Second number to calculate gcd for."
+            },
+            "algorithm": {
+              "type": "string",
+              "description": "The specific algorithm to use in the calculation. Supported values: 'euclidean', 'binary'. Default 'euclidean'",
+              "enum": [
+                "euclidean",
+                "binary"
+              ]
+            }
+          },
+          "required": [
+            "num1",
+            "num2"
+          ]
+        }
+      }
+    }
+  ]
+}

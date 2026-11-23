@@ -1,0 +1,49 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "case_id": "simple_python_34",
+  "category": "simple_python",
+  "condition": "SX",
+  "note": "Converted catalogue copy for this pilot. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "travel_itinerary_generator",
+        "description": "Generate a travel itinerary from destination, duration, daily budget, and preferred exploration type.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "destination": {
+              "type": "string",
+              "description": "Destination city of the trip."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days for the trip."
+            },
+            "daily_budget": {
+              "type": "integer",
+              "description": "The maximum daily budget for the trip."
+            },
+            "exploration_type": {
+              "type": "string",
+              "enum": [
+                "nature",
+                "urban",
+                "history",
+                "culture"
+              ],
+              "description": "The preferred exploration type.",
+              "default": "urban"
+            }
+          },
+          "required": [
+            "destination",
+            "days",
+            "daily_budget"
+          ]
+        }
+      }
+    }
+  ]
+}

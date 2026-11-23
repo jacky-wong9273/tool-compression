@@ -1,0 +1,33 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "case_id": "simple_python_175",
+  "category": "simple_python",
+  "condition": "X",
+  "note": "Converted catalogue copy for this pilot. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawyer_get_experience",
+        "description": "Retrieve months of experience of a Lawyer on handling certain type of law cases.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The full name of the Lawyer."
+            },
+            "law_type": {
+              "type": "string",
+              "description": "The type of law case. eg. Bankruptcy"
+            }
+          },
+          "required": [
+            "name",
+            "law_type"
+          ]
+        }
+      }
+    }
+  ]
+}
