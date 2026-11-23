@@ -15,10 +15,11 @@ from copy import deepcopy
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+import http.client
 import json
 import os
 import socket
-import ssl
+from urllib.error import HTTPError
 
 from tool_compression.config import BFCL_DEFAULT_TEMPERATURE, BFCL_STORE
 from tool_compression.convert import to_openai_completions_tools
@@ -908,6 +909,8 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
     A directory that already has result rows is a resume. A group is skipped only when
     every arm already has a row for that thinking pass, category, and case. Spend starts
     from the calls ledger when one is present. Result rows alone do not invent a cache split.
+    A provider timeout, connection drop, or other provider failure writes stop.json and
+    leaves the ledger at the last settled call.
     """
     if sealed is not True:
         raise UsxFlightRefused("official 840 set is not fully sealed")
@@ -945,9 +948,11 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
             except UsxFlightRefused as exc:
                 _write_stop(out, spent, "off-peak", str(exc), ceiling, calls, resume)
                 raise
-            except (TimeoutError, socket.timeout, ssl.SSLError) as exc:
-                reason = "provider timed out" if _provider_timeout(exc) else "provider connection failed"
+            except Exception as exc:
+                reason = _provider_failure_reason(exc)
                 _write_stop(out, spent, "off-peak", reason, ceiling, calls, resume)
+                if reason == "crash during provider call":
+                    raise
                 raise UsxFlightRefused(reason) from None
             bill = usage_bill("off-peak", payload.get("usage") if isinstance(payload, dict) else None)
             if bill["schedule"] != "off-peak":
@@ -1007,8 +1012,22 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
     return record
 
 
-def _provider_timeout(exc: BaseException) -> bool:
+def _provider_failure_reason(exc: BaseException) -> str:
+    """Fixed stop text. The original exception text is not copied, so a key cannot ride along."""
+    if isinstance(exc, HTTPError):
+        return f"provider HTTP {exc.code}"
+    if _provider_timeout(exc):
+        return "provider timed out"
+    if isinstance(exc, (OSError, http.client.HTTPException)):
+        return "provider connection failed"
+    return "crash during provider call"
+
+
+def _provider_timeout(exc: object) -> bool:
     if isinstance(exc, (TimeoutError, socket.timeout)):
+        return True
+    reason = getattr(exc, "reason", None)
+    if reason is not None and reason is not exc and _provider_timeout(reason):
         return True
     text = str(exc).lower()
     return "timed out" in text or "timeout" in text

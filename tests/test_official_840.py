@@ -2,9 +2,19 @@
 
 from datetime import datetime
 from decimal import Decimal
+from io import BytesIO
 from pathlib import Path
+from urllib.error import HTTPError
+from urllib.request import Request
+import http.client
 import inspect
 import json
+import socket
+import ssl
+import subprocess
+import threading
+import time
+import traceback
 
 import pytest
 
@@ -34,7 +44,12 @@ from tool_compression.official_840 import (
     u_path,
     verify_package,
 )
-from tool_compression.official_840_provider import LiveClient
+from tool_compression.official_840_provider import (
+    CALL_DEADLINE_SECONDS,
+    CONNECT_TIMEOUT_SECONDS,
+    LiveClient,
+    _complete_bounded,
+)
 from tool_compression.semantic_audit import load_json, package_dir as pilot_package_dir
 from tool_compression.usx_flight import (
     EVALUATE_ALIAS,
@@ -679,3 +694,403 @@ def test_provider_timeout_is_a_refusal_and_does_not_include_the_key():
     with pytest.raises(UsxFlightRefused, match="provider timed out") as ssl_caught:
         client.complete(body)
     assert SECRET not in str(ssl_caught.value)
+    assert SECRET not in "".join(traceback.format_exception(ssl_caught.value))
+
+
+def test_provider_drops_are_refusals_and_do_not_include_the_key():
+    body = generation_body([{"role": "user", "content": "synthetic"}], [], "off")
+
+    def raise_remote(*_args, **_kwargs):
+        raise http.client.RemoteDisconnected("Remote end closed connection without response " + SECRET)
+
+    client = LiveClient(SECRET, opener=raise_remote)
+    with pytest.raises(UsxFlightRefused, match="provider connection failed") as caught:
+        client.complete(body)
+    assert str(caught.value) == "provider connection failed"
+    assert SECRET not in str(caught.value)
+    assert SECRET not in "".join(traceback.format_exception(caught.value))
+
+    def raise_reset(*_args, **_kwargs):
+        raise ConnectionResetError(SECRET)
+
+    client = LiveClient(SECRET, opener=raise_reset)
+    with pytest.raises(UsxFlightRefused, match="provider connection failed") as reset_caught:
+        client.complete(body)
+    assert SECRET not in "".join(traceback.format_exception(reset_caught.value))
+
+    def raise_incomplete(*_args, **_kwargs):
+        raise http.client.IncompleteRead(b"", 12)
+
+    client = LiveClient(SECRET, opener=raise_incomplete)
+    with pytest.raises(UsxFlightRefused, match="provider connection failed"):
+        client.complete(body)
+
+    def raise_http(*_args, **_kwargs):
+        raise HTTPError("https://example.test/?k=" + SECRET, 429, SECRET, None, BytesIO(b""))
+
+    client = LiveClient(SECRET, opener=raise_http)
+    with pytest.raises(UsxFlightRefused, match="provider HTTP 429") as http_caught:
+        client.complete(body)
+    assert str(http_caught.value) == "provider HTTP 429"
+    assert SECRET not in "".join(traceback.format_exception(http_caught.value))
+
+    class _Body:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def read(self):
+            return b'{"choices":[{"message":{"content":"ok"}}]}'
+
+    def opener(request, timeout):
+        assert timeout == CALL_DEADLINE_SECONDS
+        assert request.get_header("Authorization") == f"Bearer {SECRET}"
+        return _Body()
+
+    payload = LiveClient(SECRET, opener=opener).complete(body)
+    assert payload["choices"][0]["message"]["content"] == "ok"
+    assert CALL_DEADLINE_SECONDS == 120
+    assert CONNECT_TIMEOUT_SECONDS == 10
+
+
+def test_hung_opener_is_bounded_by_the_wall_clock():
+    body = generation_body([{"role": "user", "content": "synthetic"}], [], "off")
+    release = threading.Event()
+
+    def opener(*_args, **_kwargs):
+        release.wait(5)
+        raise AssertionError("hung opener ran past the deadline")
+
+    client = LiveClient(SECRET, opener=opener, deadline_seconds=0.3)
+    started = time.monotonic()
+    try:
+        with pytest.raises(UsxFlightRefused, match="provider timed out") as caught:
+            client.complete(body)
+        elapsed = time.monotonic() - started
+    finally:
+        release.set()
+    assert elapsed < 1.5
+    assert SECRET not in str(caught.value)
+    assert SECRET not in "".join(traceback.format_exception(caught.value))
+
+
+def test_connection_drop_and_hung_call_write_stop_and_keep_the_ledger(tmp_path):
+    before = (package_dir() / "rendered" / "multiple_0" / "U.json").read_bytes()
+    frozen = (package_dir() / "checks" / "frozen-integrity.json").read_bytes()
+    settled = {
+        "case_id": "multiple_0",
+        "cell": "multiple_0:off",
+        "thinking": "off",
+        "arms": ["U", "S", "X", "SX"],
+        "shared": True,
+        "schedule": "off-peak",
+        "bill": {"spend_cny": "0.34947080", "T": 10, "cache_hit_tokens": 4, "cache_miss_tokens_billed": 6, "output_tokens": 2},
+        "provider_called": True,
+    }
+
+    def _prepared(name):
+        out = tmp_path / name
+        out.mkdir()
+        (out / "calls-ledger.jsonl").write_text(json.dumps(settled) + "\n", encoding="utf-8")
+        return out
+
+    class DropClient:
+        def complete(self, _body):
+            raise http.client.RemoteDisconnected("Remote end closed connection without response " + SECRET)
+
+    out = _prepared("drop")
+    with pytest.raises(UsxFlightRefused, match="provider connection failed") as caught:
+        execute_plans(_synthetic_plans(), out, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), DropClient(), sealed=True)
+    stop = json.loads((out / "stop.json").read_text(encoding="utf-8"))
+    assert stop["stop_reason"] == "provider connection failed"
+    assert stop["spend_cny"] == "0.34947080"
+    assert stop["calls_already_settled"] == 1
+    assert stop["official_settlement"] is False
+    assert stop["api_key_in_record"] is False
+    assert stop["peak_card_used"] is False
+    assert not (out / "live.json").exists()
+    assert (out / "calls-ledger.jsonl").read_text(encoding="utf-8").count("\n") == 1
+    assert SECRET not in (out / "stop.json").read_text(encoding="utf-8")
+    assert SECRET not in (out / "calls-ledger.jsonl").read_text(encoding="utf-8")
+    assert SECRET not in "".join(traceback.format_exception(caught.value))
+    assert not _result_path(out, "off", "U").exists()
+
+    class ShortRead:
+        def complete(self, _body):
+            raise http.client.IncompleteRead(b"", 20)
+
+    short = _prepared("short")
+    with pytest.raises(UsxFlightRefused, match="provider connection failed"):
+        execute_plans(_synthetic_plans(), short, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), ShortRead(), sealed=True)
+    assert json.loads((short / "stop.json").read_text(encoding="utf-8"))["stop_reason"] == "provider connection failed"
+    assert (short / "calls-ledger.jsonl").read_text(encoding="utf-8").count("\n") == 1
+
+    class Boom:
+        def complete(self, _body):
+            raise RuntimeError("boom " + SECRET)
+
+    boom = _prepared("boom")
+    with pytest.raises(RuntimeError):
+        execute_plans(_synthetic_plans(), boom, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), Boom(), sealed=True)
+    boom_stop = json.loads((boom / "stop.json").read_text(encoding="utf-8"))
+    assert boom_stop["stop_reason"] == "crash during provider call"
+    assert boom_stop["calls_already_settled"] == 1
+    assert SECRET not in (boom / "stop.json").read_text(encoding="utf-8")
+
+    release = threading.Event()
+
+    def opener(*_args, **_kwargs):
+        release.wait(5)
+        raise AssertionError("hung call was not bounded")
+
+    hung = _prepared("hung")
+    client = LiveClient(SECRET, opener=opener, deadline_seconds=0.3)
+    started = time.monotonic()
+    try:
+        with pytest.raises(UsxFlightRefused, match="provider timed out"):
+            execute_plans(_synthetic_plans(), hung, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), client, sealed=True)
+        elapsed = time.monotonic() - started
+    finally:
+        release.set()
+    assert elapsed < 1.5
+    hung_stop = json.loads((hung / "stop.json").read_text(encoding="utf-8"))
+    assert hung_stop["stop_reason"] == "provider timed out"
+    assert hung_stop["spend_cny"] == "0.34947080"
+    assert hung_stop["calls_already_settled"] == 1
+    assert hung_stop["ceiling_lifted"] is False
+    assert (hung / "calls-ledger.jsonl").read_text(encoding="utf-8").count("\n") == 1
+    assert SECRET not in (hung / "stop.json").read_text(encoding="utf-8")
+    assert (package_dir() / "rendered" / "multiple_0" / "U.json").read_bytes() == before
+    assert (package_dir() / "checks" / "frozen-integrity.json").read_bytes() == frozen
+
+
+def _within(limit, fn):
+    box = {}
+
+    def run():
+        try:
+            box["value"] = fn()
+        except BaseException as exc:
+            box["error"] = exc
+
+    thread = threading.Thread(target=run, daemon=True)
+    started = time.monotonic()
+    thread.start()
+    thread.join(limit)
+    elapsed = time.monotonic() - started
+    assert not thread.is_alive()
+    return elapsed, box
+
+
+def _local_tls(tmp_path: Path):
+    cert = tmp_path / "cert.pem"
+    key = tmp_path / "key.pem"
+    subprocess.run(
+        [
+            "openssl", "req", "-x509", "-newkey", "rsa:2048",
+            "-keyout", str(key), "-out", str(cert),
+            "-days", "1", "-nodes", "-subj", "/CN=localhost",
+            "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    server_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_ctx.load_cert_chain(cert, key)
+    client_ctx = ssl.create_default_context(cafile=str(cert))
+    return server_ctx, client_ctx
+
+
+def _listen():
+    raw = socket.socket()
+    raw.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    raw.bind(("127.0.0.1", 0))
+    raw.listen(1)
+    return raw, raw.getsockname()[1]
+
+
+def test_stalled_response_is_closed_at_the_deadline(tmp_path):
+    server_ctx, client_ctx = _local_tls(tmp_path)
+    raw, port = _listen()
+    closed = threading.Event()
+
+    def serve():
+        conn, _addr = raw.accept()
+        try:
+            tls = server_ctx.wrap_socket(conn, server_side=True)
+            tls.settimeout(5)
+            data = b""
+            while b"\r\n\r\n" not in data:
+                chunk = tls.recv(4096)
+                if not chunk:
+                    closed.set()
+                    return
+                data += chunk
+            header, _, rest = data.partition(b"\r\n\r\n")
+            length = 0
+            for line in header.split(b"\r\n"):
+                if line.lower().startswith(b"content-length:"):
+                    length = int(line.split(b":", 1)[1].strip())
+            while len(rest) < length:
+                chunk = tls.recv(4096)
+                if not chunk:
+                    closed.set()
+                    return
+                rest += chunk
+            more = tls.recv(16)
+            if more == b"":
+                closed.set()
+        except OSError:
+            closed.set()
+        finally:
+            try:
+                conn.close()
+            except OSError:
+                pass
+            raw.close()
+
+    threading.Thread(target=serve, daemon=True).start()
+    request = Request(
+        f"https://127.0.0.1:{port}/chat/completions",
+        data=b"{}",
+        headers={"Authorization": f"Bearer {SECRET}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    elapsed, box = _within(2.0, lambda: _complete_bounded(request, 0.4, ssl_context=client_ctx))
+    assert elapsed < 1.5
+    assert isinstance(box["error"], UsxFlightRefused)
+    assert str(box["error"]) == "provider timed out"
+    assert SECRET not in "".join(traceback.format_exception(box["error"]))
+    assert closed.wait(1.0)
+
+
+def test_deadline_caps_a_blackholed_address_and_a_refused_address_can_fail_over(tmp_path, monkeypatch):
+    addresses = [
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("192.0.2.1", 81)),
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("192.0.2.2", 81)),
+    ]
+
+    def fake_getaddrinfo(*_args, **_kwargs):
+        return list(addresses)
+
+    monkeypatch.setattr(socket, "getaddrinfo", fake_getaddrinfo)
+    request = Request(
+        "https://192.0.2.1/chat/completions",
+        data=b"{}",
+        headers={"Authorization": f"Bearer {SECRET}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    elapsed, box = _within(2.0, lambda: _complete_bounded(request, 0.4))
+    assert elapsed < 1.5
+    assert elapsed >= 0.25
+    assert isinstance(box["error"], UsxFlightRefused)
+    assert str(box["error"]) == "provider timed out"
+    assert SECRET not in str(box["error"])
+
+    server_ctx, client_ctx = _local_tls(tmp_path)
+    raw, live_port = _listen()
+    body = b'{"choices":[{"message":{"content":"ok"}}]}'
+
+    def serve():
+        conn, _addr = raw.accept()
+        try:
+            tls = server_ctx.wrap_socket(conn, server_side=True)
+            tls.settimeout(3)
+            data = b""
+            while b"\r\n\r\n" not in data:
+                chunk = tls.recv(4096)
+                if not chunk:
+                    return
+                data += chunk
+            header = (
+                "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+                f"Content-Length: {len(body)}\r\nConnection: close\r\n\r\n"
+            )
+            tls.sendall(header.encode("ascii") + body)
+            try:
+                tls.shutdown(socket.SHUT_WR)
+            except OSError:
+                pass
+            try:
+                tls.settimeout(1)
+                tls.recv(16)
+            except OSError:
+                pass
+        finally:
+            try:
+                conn.close()
+            except OSError:
+                pass
+            raw.close()
+
+    threading.Thread(target=serve, daemon=True).start()
+    closed = socket.socket()
+    closed.bind(("127.0.0.1", 0))
+    closed_port = closed.getsockname()[1]
+    closed.close()
+    failover = [
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", closed_port)),
+        (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("127.0.0.1", live_port)),
+    ]
+
+    def failover_getaddrinfo(*_args, **_kwargs):
+        return list(failover)
+
+    monkeypatch.setattr(socket, "getaddrinfo", failover_getaddrinfo)
+    live = Request(
+        f"https://127.0.0.1:{live_port}/chat/completions",
+        data=b"{}",
+        headers={"Authorization": f"Bearer {SECRET}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    elapsed, box = _within(5.0, lambda: _complete_bounded(live, 5, ssl_context=client_ctx))
+    assert elapsed < 3.0
+    assert box["value"]["choices"][0]["message"]["content"] == "ok"
+
+
+def test_dns_hang_is_bounded_by_the_deadline(monkeypatch):
+    release = threading.Event()
+
+    def hang(*_args, **_kwargs):
+        release.wait(5)
+        raise socket.gaierror(SECRET)
+
+    monkeypatch.setattr(socket, "getaddrinfo", hang)
+    request = Request(
+        "https://api.deepseek.com/chat/completions",
+        data=b"{}",
+        headers={"Authorization": f"Bearer {SECRET}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        elapsed, box = _within(2.0, lambda: _complete_bounded(request, 0.3))
+    finally:
+        release.set()
+    assert elapsed < 1.5
+    assert isinstance(box["error"], UsxFlightRefused)
+    assert str(box["error"]) == "provider timed out"
+    assert SECRET not in "".join(traceback.format_exception(box["error"]))
+
+
+def test_peer_close_before_a_status_line_is_a_refusal():
+    raw, port = _listen()
+
+    def serve():
+        conn, _addr = raw.accept()
+        conn.close()
+        raw.close()
+
+    threading.Thread(target=serve, daemon=True).start()
+    request = Request(
+        f"https://127.0.0.1:{port}/chat/completions",
+        data=b"{}",
+        headers={"Authorization": f"Bearer {SECRET}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    elapsed, box = _within(3.0, lambda: _complete_bounded(request, 3))
+    assert elapsed < 2.0
+    assert isinstance(box["error"], UsxFlightRefused)
+    assert str(box["error"]) == "provider connection failed"
+    assert SECRET not in "".join(traceback.format_exception(box["error"]))
