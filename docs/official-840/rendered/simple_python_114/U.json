@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_114",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "prob_dist_binomial",
+        "description": "Compute the probability of having 'success' outcome from binomial distribution.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trials": {
+              "type": "integer",
+              "description": "The number of independent experiments."
+            },
+            "successes": {
+              "type": "integer",
+              "description": "The number of success events."
+            },
+            "p": {
+              "type": "number",
+              "description": "The probability of success on any given trial, defaults to 0.5 This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "trials",
+            "successes"
+          ]
+        }
+      }
+    }
+  ]
+}

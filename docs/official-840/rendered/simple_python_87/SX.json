@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_87",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "array_sort",
+        "description": "Sorts a given list in ascending or descending order.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The list of numbers to be sorted."
+            },
+            "order": {
+              "type": "string",
+              "enum": [
+                "ascending",
+                "descending"
+              ],
+              "description": "Order of sorting."
+            }
+          },
+          "required": [
+            "list",
+            "order"
+          ]
+        }
+      }
+    }
+  ]
+}

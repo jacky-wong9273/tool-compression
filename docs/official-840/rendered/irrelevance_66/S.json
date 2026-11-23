@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_66",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_standard_deviation",
+        "description": "Calculates the standard deviation of a series of numbers.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "An array of numbers."
+            },
+            "population": {
+              "type": "boolean",
+              "default": true,
+              "description": "A boolean indicating whether to calculate the population (true) or sample (false) standard deviation."
+            }
+          },
+          "required": [
+            "data"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_75",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "elephant_population_estimate",
+        "description": "Estimate future population of elephants given current population and growth rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "current_population": {
+              "type": "integer",
+              "description": "The current number of elephants."
+            },
+            "growth_rate": {
+              "type": "number",
+              "description": "The annual population growth rate of elephants. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years to project the population."
+            }
+          },
+          "required": [
+            "current_population",
+            "growth_rate",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

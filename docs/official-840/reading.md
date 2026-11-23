@@ -142,6 +142,39 @@ Sixteen two-tool catalogues were read after tool 0. Thirteen receive a cue. The 
 
 Three two-tool catalogues have an empty cue. `multiple_39`: a grocery order and a ride share a cost ceiling, not an action. `multiple_42`: mixture temperature and mass from molar mass do not answer a similar request. `multiple_52`: a unit conversion can already be read as covering a currency conversion, so a cue would be the polynomial failure, an exclusion the sources do not state.
 
+## Third tranche
+
+142 cases were added. The first 149 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied.
+
+130 of the new cases have one tool: `simple_python_62` through `simple_python_141`, and `irrelevance_62` through `irrelevance_111`. Each description slot was read. An empty cue is the one-tool rule, applied after that reading. X equals U and SX equals S.
+
+Two of those one-tool catalogues change S:
+
+| Case | Slot | Replacement |
+| --- | --- | --- |
+| `irrelevance_62` | function description | "Create a recommendation model using a given user data and an algorithm type." The frame "This function is used to" is omitted. The source wording "a given user data" stays. |
+| `irrelevance_64` | `coin_type` | "The type of the coin. Possible values are 'fair', 'double_heads', 'double_tails'." The schema default `fair` is omitted. The possible values stay. |
+
+The other one-tool catalogues in this tranche are unchanged, so S equals U. Prose defaults that the schema does not state were kept, including a prose default of 0.5 where the schema has no default. Schema defaults that the prose does not restate were not copied into S. Prose that says "list" was not rewritten to array. Conflicts that were noticed were left as written, including `simple_python_64` (the function says the homozygous dominant genotype while the parameter also lists Aa and aa), `simple_python_113` (the function says a six-sided die while `die_sides` can name another count), `irrelevance_69` (prose says a scaler object while the schema type is number and the schema default is the string `'1.2'`), `irrelevance_75` (the schema default is the string `'5 years'` on an integer period), and `irrelevance_90` (the function says a noise complaint while `complaint_type` also names other types).
+
+Twelve two-tool catalogues were read from each tool's own description. Seven receive a cue. The cue is one space on the original function description. SX uses that same string on the S base. None of these twelve change S.
+
+`multiple_54`. Historical dividend data versus stock market data for a company.
+
+`multiple_58`. A search for a doctor versus a search for a lawyer.
+
+`multiple_61`. A home renovation expert versus a landscape architect.
+
+`multiple_62`. Nearby nature parks versus nearby restaurants.
+
+`multiple_69`. The Myers-Briggs Type Indicator versus the five-factor model. The instruments are alternatives. The cue does not treat one as a subclass of the other.
+
+`multiple_72`. Historical population versus historical GDP for a U.S. state and a year. Real versus nominal stays an argument of the GDP tool.
+
+`multiple_76`. A custom painting versus a custom sculpture.
+
+Five two-tool catalogues have an empty cue. `multiple_55`: a stock-price forecast and a weather forecast do not answer a similar request. `multiple_59`: renting a car and locating a lawyer do not. `multiple_74`: an artwork's auction price and a library book search do not, even though both take a title, a creator, and a platform. `multiple_78`: a museum can already be a tourist spot, so both descriptions can be true of one museum request, and a cue would be an exclusion the tourist-spot description does not state. `multiple_79`: restaurant information and museum exhibition information do not answer a similar request.
+
 ## What is still open
 
-The remaining 691 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+The remaining 549 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.

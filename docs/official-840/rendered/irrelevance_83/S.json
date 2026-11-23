@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_83",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_mortgage_payment",
+        "description": "Calculate the monthly mortgage payment given the loan amount, annual interest rate, and number of years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "loan_amount": {
+              "type": "number",
+              "description": "The loan amount. This is a float type value.",
+              "format": "float"
+            },
+            "annual_rate": {
+              "type": "number",
+              "description": "The annual interest rate in percentage. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "Number of years the mortgage is amortized over."
+            }
+          },
+          "required": [
+            "loan_amount",
+            "annual_rate",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

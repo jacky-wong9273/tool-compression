@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_112",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_probability",
+        "description": "Calculate the probability of an event.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "total_outcomes": {
+              "type": "integer",
+              "description": "Total number of possible outcomes."
+            },
+            "favorable_outcomes": {
+              "type": "integer",
+              "description": "Number of outcomes considered as 'successful'."
+            },
+            "round_to": {
+              "type": "integer",
+              "description": "Number of decimal places to round the result to.",
+              "default": 2
+            }
+          },
+          "required": [
+            "total_outcomes",
+            "favorable_outcomes"
+          ]
+        }
+      }
+    }
+  ]
+}

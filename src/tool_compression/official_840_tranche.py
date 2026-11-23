@@ -771,11 +771,11 @@ def build_records(catalogues: dict[str, list[dict]], categories: dict[str, str])
         "independent_review": False,
         "questions_used": False,
         "siblings_hidden_while_building_s": True,
-        "blinding": "The first 18 cases were read one tool at a time, and sibling tools were opened in a later index round. The second tranche's one-tool cases have no sibling. For its 16 two-tool cases, tool 0 was read before tool 1; the only S edits in that set are frame deletions on multiple_10, taken from each tool's own description. No S replacement names a sibling or uses a sibling's wording.",
+        "blinding": "The first 18 cases were read one tool at a time, and sibling tools were opened in a later index round. Later one-tool cases have no sibling. For the added two-tool cases, each S string was taken from that tool's own description. The only S edits among them are frame deletions on multiple_10. No S replacement names a sibling or uses a sibling's wording.",
         "self_review": {
             "method": "The changed before/after strings were reread with the decision notes set aside.",
             "revisions_before_seal": [],
-            "note": "The reread did not change a replacement. The second tranche was reread the same way.",
+            "note": "The reread did not change a replacement.",
         },
         "cases": s_cases,
     }
@@ -849,3 +849,38 @@ def _merge_second_tranche():
 
 
 SEALED_IDS = _merge_second_tranche()
+
+
+def _merge_third_tranche():
+    """Add the third tranche and put every sealed id back into file order."""
+    from tool_compression.official_840_tranche_c import (
+        ADDED_CHANGES,
+        ADDED_CONFLICTS,
+        ADDED_CUES,
+        ADDED_IDS,
+        ADDED_SINGLES,
+        ADDED_UNCUE,
+    )
+
+    if set(ADDED_IDS) & set(SEALED_IDS):
+        raise ValueError("third tranche overlaps an earlier sealed id")
+    CHANGES.update(ADDED_CHANGES)
+    CONFLICTS.update(ADDED_CONFLICTS)
+    if set(ADDED_CUES) & set(CUES) or set(ADDED_UNCUE) & set(UNCUE):
+        raise ValueError("third tranche repeats a cue or no-cue case")
+    CUES.update(ADDED_CUES)
+    UNCUE.update(ADDED_UNCUE)
+    for case_id in ADDED_SINGLES:
+        if case_id in CUES or case_id in UNCUE:
+            raise ValueError(f"single-tool case already specified {case_id}")
+        UNCUE[case_id] = {"case_reason": _single(case_id), "tools": None}
+    manifest = load_json(Path(__file__).resolve().parents[2] / "docs" / "official-840" / "selection" / "manifest.json")
+    wanted = set(SEALED_IDS) | set(ADDED_IDS)
+    ordered = tuple(case_id for case_id in manifest["ids_in_file_order"] if case_id in wanted)
+    if len(ordered) != len(wanted):
+        missing = sorted(wanted - set(ordered))
+        raise ValueError(f"sealed ids missing from the manifest: {missing}")
+    return ordered
+
+
+SEALED_IDS = _merge_third_tranche()

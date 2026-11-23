@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_135",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_return_on_investment",
+        "description": "Calculate the return on investment for a given stock based on its purchase price, sale price, and any dividends received.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "purchase_price": {
+              "type": "integer",
+              "description": "The price the stock was bought at."
+            },
+            "sale_price": {
+              "type": "integer",
+              "description": "The price the stock was sold at."
+            },
+            "dividend": {
+              "type": "integer",
+              "description": "Any dividends received from the stock.",
+              "default": 0
+            }
+          },
+          "required": [
+            "purchase_price",
+            "sale_price"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_123",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hypothesis_testing_two_sample_t_test",
+        "description": "Perform a two-sample t-test to determine if there is a significant difference between the means of two independent samples.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "group1": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Sample observations from group 1."
+            },
+            "group2": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Sample observations from group 2."
+            },
+            "alpha": {
+              "type": "number",
+              "description": "Significance level for the t-test. Default is 0.05. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "group1",
+            "group2"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_82",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_average",
+        "description": "Calculates the average of a list of numbers.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "numbers": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The list of numbers to calculate the average of."
+            }
+          },
+          "required": [
+            "numbers"
+          ]
+        }
+      }
+    }
+  ]
+}

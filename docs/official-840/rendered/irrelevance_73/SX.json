@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_73",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "finance_predict_revenue",
+        "description": "Predict the revenue of a company for a specific period based on historical data and industry trends.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company."
+            },
+            "period": {
+              "type": "string",
+              "description": "The period for which revenue is to be predicted, e.g. next year."
+            },
+            "industry_trends": {
+              "type": "boolean",
+              "description": "Whether to consider industry trends in prediction. Defaults to false."
+            }
+          },
+          "required": [
+            "company_name",
+            "period"
+          ]
+        }
+      }
+    }
+  ]
+}

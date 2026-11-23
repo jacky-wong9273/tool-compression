@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_75",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "portfolio_returns",
+        "description": "Calculate the return on investment based on initial investment, ending value and the period",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_investment": {
+              "type": "number",
+              "description": "The initial amount invested or loaned This is a float type value.",
+              "format": "float"
+            },
+            "ending_value": {
+              "type": "number",
+              "description": "The final amount after specified number of time periods. This is a float type value.",
+              "format": "float"
+            },
+            "period": {
+              "type": "integer",
+              "description": "Number of time periods",
+              "optional": "true",
+              "default": "5 years"
+            }
+          },
+          "required": [
+            "initial_investment",
+            "ending_value"
+          ]
+        }
+      }
+    }
+  ]
+}

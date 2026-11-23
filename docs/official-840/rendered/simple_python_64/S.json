@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_64",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_genotype_frequency",
+        "description": "Calculate the frequency of homozygous dominant genotype based on the allele frequency using Hardy Weinberg Principle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "allele_frequency": {
+              "type": "number",
+              "description": "The frequency of the dominant allele in the population. This is a float type value.",
+              "format": "float"
+            },
+            "genotype": {
+              "type": "string",
+              "description": "The genotype which frequency is needed.",
+              "enum": [
+                "AA",
+                "Aa",
+                "aa"
+              ]
+            }
+          },
+          "required": [
+            "allele_frequency",
+            "genotype"
+          ]
+        }
+      }
+    }
+  ]
+}

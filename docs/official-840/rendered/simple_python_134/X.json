@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_134",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "investment_predictProfit",
+        "description": "Predict the profit for given investment after specified number of years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "investment_amount": {
+              "type": "integer",
+              "description": "The amount invested in dollars."
+            },
+            "annual_return": {
+              "type": "number",
+              "description": "The annual return rate of the investment. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "The time period in years for which the investment is made."
+            }
+          },
+          "required": [
+            "investment_amount",
+            "annual_return",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

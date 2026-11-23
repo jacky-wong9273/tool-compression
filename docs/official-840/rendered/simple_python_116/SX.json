@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_116",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "probabilities_calculate_single",
+        "description": "Calculate the probability of an event.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "total_outcomes": {
+              "type": "integer",
+              "description": "The total number of outcomes."
+            },
+            "event_outcomes": {
+              "type": "integer",
+              "description": "The number of outcomes where the event occurs."
+            },
+            "round": {
+              "type": "integer",
+              "description": "Round the answer to a specified number of decimal places. Defaults to 2."
+            }
+          },
+          "required": [
+            "total_outcomes",
+            "event_outcomes"
+          ]
+        }
+      }
+    }
+  ]
+}

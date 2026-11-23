@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_120",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "run_two_sample_ttest",
+        "description": "Runs a two sample t-test for two given data groups.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "group1": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "First group of data points."
+            },
+            "group2": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Second group of data points."
+            },
+            "equal_variance": {
+              "type": "boolean",
+              "description": "Assumption about whether the two samples have equal variance.",
+              "default": true
+            }
+          },
+          "required": [
+            "group1",
+            "group2"
+          ]
+        }
+      }
+    }
+  ]
+}

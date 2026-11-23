@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_127",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_NPV",
+        "description": "Calculate the NPV (Net Present Value) of an investment, considering a series of future cash flows, discount rate, and an initial investment.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cash_flows": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Series of future cash flows."
+            },
+            "discount_rate": {
+              "type": "number",
+              "description": "The discount rate to use. This is a float type value.",
+              "format": "float"
+            },
+            "initial_investment": {
+              "type": "integer",
+              "description": "The initial investment. Default is 0 if not specified."
+            }
+          },
+          "required": [
+            "cash_flows",
+            "discount_rate"
+          ]
+        }
+      }
+    }
+  ]
+}

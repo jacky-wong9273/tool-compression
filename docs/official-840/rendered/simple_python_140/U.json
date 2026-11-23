@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_140",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_cagr",
+        "description": "Calculate the Compound Annual Growth Rate (CAGR) given an initial investment value, a final investment value, and the number of years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_value": {
+              "type": "integer",
+              "description": "The initial investment value."
+            },
+            "final_value": {
+              "type": "integer",
+              "description": "The final investment value."
+            },
+            "period_in_years": {
+              "type": "integer",
+              "description": "The period of the investment in years."
+            }
+          },
+          "required": [
+            "initial_value",
+            "final_value",
+            "period_in_years"
+          ]
+        }
+      }
+    }
+  ]
+}

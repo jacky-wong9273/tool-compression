@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_77",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_find_nearby",
+        "description": "Locate nearby restaurants based on specific dietary preferences.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. Los Angeles, CA"
+            },
+            "dietary_preference": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Vegan",
+                  "Vegetarian",
+                  "Gluten-free",
+                  "Dairy-free",
+                  "Nut-free"
+                ]
+              },
+              "description": "Dietary preference. Default is empty list."
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}
