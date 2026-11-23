@@ -1,5 +1,6 @@
 """Week 1 commands. Preparation only: no model calls and no scoring."""
 
+from datetime import datetime
 from pathlib import Path
 import argparse
 import importlib.util
@@ -60,6 +61,12 @@ def main(argv: list[str] | None = None) -> int:
     groups.add_argument("--out", type=Path)
 
     sub.add_parser("semantic-audit")
+    flight = sub.add_parser("usx-flight")
+    flight.add_argument("--bfcl-root", required=True, type=Path)
+    flight.add_argument("--out", required=True, type=Path)
+    flight.add_argument("--no-api", action="store_true")
+    flight.add_argument("--live", action="store_true")
+    flight.add_argument("--authorize-peak", action="store_true")
 
     args = parser.parse_args(argv)
     if args.command == "characterize":
@@ -76,6 +83,8 @@ def main(argv: list[str] | None = None) -> int:
         return _groups(args)
     if args.command == "semantic-audit":
         return _semantic_audit()
+    if args.command == "usx-flight":
+        return _usx_flight(args)
     return 2
 
 
@@ -152,6 +161,56 @@ def _semantic_audit() -> int:
     from tool_compression.semantic_audit import public_audit_summary
 
     print(json.dumps(public_audit_summary(), indent=2, sort_keys=True))
+    return 0
+
+
+def _usx_flight(args) -> int:
+    """Stage A unless ``--live`` is set. This process does not start a paid call by default."""
+    from tool_compression.usx_flight import (
+        SHANGHAI,
+        UsxFlightRefused,
+        read_ceiling_from_env,
+        run_live,
+        run_no_api_gate,
+    )
+
+    if args.live and args.no_api:
+        print("pass only one of --live and --no-api")
+        return 2
+    try:
+        ceiling = read_ceiling_from_env()
+    except UsxFlightRefused as exc:
+        print(str(exc))
+        return 2
+    def clock():
+        return datetime.now(SHANGHAI)
+
+    if not args.live:
+        try:
+            gate = run_no_api_gate(args.bfcl_root, args.out, ceiling, clock)
+        except UsxFlightRefused as exc:
+            print(str(exc))
+            return 1
+        print(json.dumps({
+            "stage": gate["stage"],
+            "provider_called": gate["provider_called"],
+            "api_key_read": gate["api_key_read"],
+            "spend_cny": gate["spend_cny"],
+            "cases": gate["cases"],
+            "unique_payloads": gate["unique_payloads"],
+            "schedule_at_gate": gate["schedule_at_gate"],
+            "reserve_fits_supplied_ceiling": gate["reserve_fits_supplied_ceiling"],
+            "official_settlement": gate["official_settlement"],
+        }, sort_keys=True))
+        return 0
+    if not args.authorize_peak:
+        print("refusing --live without --authorize-peak")
+        return 2
+    try:
+        run_live(args.bfcl_root, args.out, ceiling, clock, client=None, authorize_peak=True)
+    except UsxFlightRefused as exc:
+        print(str(exc))
+        return 1
     return 0
 
 

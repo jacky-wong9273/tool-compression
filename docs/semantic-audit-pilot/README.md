@@ -39,3 +39,7 @@ pytest -q
 ```
 
 The check command prints counts only. It does not call a model.
+
+## Systems test
+
+The same 12 catalogues have a scored flight path: fresh U, frozen S, and the revised X/SX cues, with a Stage A gate and no provider call. It is a systems test, not v1.1 settlement. Start at [systems-test/README.md](systems-test/README.md). The sealed first-pilot files and the cue-revision hash lock are unchanged.
