@@ -12,12 +12,17 @@ from tool_compression.characterize import characterize_study, file_sha256
 from tool_compression.config import DEFAULT_CONFIG, LOCAL_TOKENIZER
 from tool_compression.evaluation import DENOMINATORS, PINS, summarize_hash_rows
 from tool_compression.exploratory import (
+    A_LABEL,
     ARM_NAMES,
+    B_LABEL,
     BASE_COMMIT,
     CLOSED_OFFICIAL_RESULT,
     EXPLORATORY_LABELS,
+    FULL_CATALOGUE_BASE_COMMIT,
+    FULL_CATALOGUE_LABELS,
     classify_case,
     frozen_config,
+    full_catalogue_plan_decision,
     setting_flyability,
 )
 from tool_compression.load import VERSION_PREFIX, resolve_data_dir
@@ -219,7 +224,7 @@ def audit_setting(
         "label": label,
         "spec_version": config.spec_version,
         "retention_r": config.as_dict()["retention_r"],
-        "retention_decimal": "0.50" if label == "H50" else "0.25",
+        "retention_decimal": f"{config.retention_numerator / config.retention_denominator:.2f}",
         "lambda": config.as_dict()["lambda"],
         "jaccard_min": config.as_dict()["jaccard_min"],
         "max_neighbours": config.max_neighbours,
@@ -525,3 +530,542 @@ def data_pin_for_root(bfcl_root: Path) -> dict:
         "files": found,
         "mismatches": mismatches,
     }
+
+
+def write_full_catalogue_audit(
+    study,
+    official_rows: list[dict],
+    h50_rows: list[dict],
+    out_dir: Path,
+    budget,
+    sensitivity,
+    *,
+    bfcl_root: Path,
+    counter,
+) -> dict:
+    """Audit settings A and B and write the plan index. No provider call."""
+    from tool_compression.exploratory_flight import build_full_catalogue_plans
+
+    data_pin = data_pin_for_root(bfcl_root)
+    reproduction = reproduce_official_hashes(study, official_rows, budget, sensitivity)
+    reproduction_ok = bool(reproduction["matched"] and data_pin.get("matched"))
+    settings = {}
+    hash_rows = {}
+    plans = {}
+    for label in FULL_CATALOGUE_LABELS:
+        report, rows = audit_setting(
+            study,
+            label,
+            official_rows,
+            budget,
+            sensitivity,
+            hash_reproduction_matched=reproduction["matched"],
+            data_pin_matched=bool(data_pin.get("matched")),
+        )
+        decision = full_catalogue_plan_decision(
+            rows,
+            coverage_complete=report["coverage_complete"],
+            hash_reproduction_matched=reproduction_ok,
+        )
+        if report.get("u_hash_mismatches") or not report["ready_for_evaluation"]:
+            decision = {
+                **decision,
+                "plan_ready": False,
+                "reason": "u_hash_does_not_match_official_u"
+                if report.get("u_hash_mismatches")
+                else decision["reason"],
+            }
+        report["identity"] = _identity_summary(report)
+        report["differing_only_would_send"] = report["flyable"]
+        report["differing_only_reason"] = report["flyable_reason"]
+        report["full_catalogue_plan_ready"] = bool(decision["plan_ready"] and report["ready_for_evaluation"])
+        report["full_catalogue_reason"] = decision["reason"]
+        report["drops_identical_to_official_l"] = False
+        report["cases_identical_to_official_l"] = decision["cases_identical_to_official_l"]
+        report["cases_planned"] = decision["cases_planned"] if report["full_catalogue_plan_ready"] else 0
+        report["paid_call_started"] = False
+        report["lambda_loosened_to_force_a_difference"] = False
+        report["protections_loosened"] = False
+        settings[label] = report
+        hash_rows[label] = rows
+        if report["full_catalogue_plan_ready"]:
+            label_plans, stats = build_full_catalogue_plans(study, label, counter)
+            if stats["preparation_failures"]:
+                raise RuntimeError("full catalogue preparation failed")
+            if stats["cases_planned"] != report["cases_planned"]:
+                raise RuntimeError("plan case count does not match the audit")
+            if stats["cases_with_new_request"] != report["cases_with_new_request"]:
+                raise RuntimeError("plan identity does not match the audit")
+            if stats["identical_to_official_l"] != report["identical_to_official_l"]:
+                raise RuntimeError("plan official-L identity does not match the audit")
+            if stats["identical_to_official_l_cases_planned"] != report["cases_identical_to_official_l"]:
+                raise RuntimeError("plan official-L count does not match the audit")
+            if stats["p_i_c_coincide"] != report["p_i_c_coincide"]:
+                raise RuntimeError("plan arm coincidence does not match the audit")
+            if report["p_i_c_coincide"] and stats["groups"] != stats["cases_planned"]:
+                raise RuntimeError("coinciding arms did not plan one request per case")
+            report["plan"] = {
+                "cases_planned": stats["cases_planned"],
+                "groups": stats["groups"],
+                "drops_identical_to_official_l": False,
+                "identical_to_official_l_cases_planned": stats["identical_to_official_l_cases_planned"],
+                "cases_with_new_request": stats["cases_with_new_request"],
+                "started": False,
+                "live": False,
+                "provider_called": False,
+                "network_used": False,
+                "paid_call_started": False,
+                "ceiling_supplied": False,
+            }
+            plans[label] = [_plan_index_row(plan) for plan in label_plans]
+        else:
+            report["plan"] = {
+                "cases_planned": 0,
+                "groups": 0,
+                "drops_identical_to_official_l": False,
+                "started": False,
+                "provider_called": False,
+                "paid_call_started": False,
+                "ceiling_supplied": False,
+            }
+            plans[label] = []
+    h50_identity = _hash_identity(hash_rows[A_LABEL], h50_rows, "setting A", "H50")
+    comparison = build_token_comparison(settings, reproduction["local_token_sums"]["by_category"])
+    payload = {
+        "base_commit": FULL_CATALOGUE_BASE_COMMIT,
+        "status": "exploratory_only",
+        "revises_official_C_versus_U": False,
+        "official_baseline_closed": True,
+        "official_target_lowered": False,
+        "official_result_rewritten": False,
+        "official_result": CLOSED_OFFICIAL_RESULT,
+        "sample_size": sum(DENOMINATORS.values()),
+        "denominators": dict(DENOMINATORS),
+        "evaluation_method": "bfcl evaluate from saved outputs",
+        "generation_model_when_flown": "deepseek-flash",
+        "thinking": "disabled",
+        "decoder_alias_is_scoring_only": True,
+        "provider_called": False,
+        "network_used": False,
+        "paid_call_started": False,
+        "lambda_or_protections_loosened_to_force_a_difference": False,
+        "official_compressor": "week1.0 P/I/C",
+        "official_hash_reproduction": reproduction,
+        "data_pin": data_pin,
+        "pins": dict(PINS),
+        "counting": {
+            "budget_tokenizer": budget.name,
+            "budget_backend": getattr(budget, "backend", budget.name),
+            "sensitivity_tokenizer_not_used_for_selection": sensitivity.name,
+            "provider_usage_measured": False,
+        },
+        "local_sums_are_not_provider_T": True,
+        "h50_reconfirmation": h50_identity,
+        "settings": settings,
+        "comparison": comparison,
+        "later_live_run": _later_live_run(),
+    }
+    if payload["provider_called"] or payload["network_used"] or payload["paid_call_started"]:
+        raise RuntimeError("full-catalogue audit must not call a provider")
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    dump_public(out_dir / "audit.json", payload)
+    for label, rows in hash_rows.items():
+        dump_jsonl(out_dir / f"{label.lower()}_request_hashes.jsonl", [_public_hash_row(row) for row in rows])
+    for label, index in plans.items():
+        dump_jsonl(out_dir / f"{label.lower()}_plan_index.jsonl", index)
+    text = render_full_catalogue_markdown(payload)
+    (out_dir / "COMPARISON.md").write_text(text, encoding="utf-8")
+    return payload
+
+
+def build_token_comparison(settings: dict, official_local_by_category: dict) -> dict:
+    """Local sums beside the closed billed baseline. Unflown provider T stays absent."""
+    official_s = CLOSED_OFFICIAL_RESULT["S_LU"]
+    official_u = CLOSED_OFFICIAL_RESULT["primary_U_provider_prompt_tokens"]
+    numerator, denominator = official_s.split("/")
+    if int(denominator) != official_u:
+        raise ValueError("official S_LU denominator is not the recorded primary U T")
+    derived_l = official_u - int(numerator)
+    categories = {}
+    totals = {"U": 0, "official_L": 0, A_LABEL: 0, B_LABEL: 0}
+    for name in DENOMINATORS:
+        official = official_local_by_category[name]
+        if len({official["P"], official["I"], official["C"]}) != 1:
+            raise ValueError("official local P/I/C sums diverge")
+        row = {"U": official["U"], "official_L": official["P"]}
+        for label in FULL_CATALOGUE_LABELS:
+            sums = settings[label]["categories"][name]["local_token_sums"]["sums"]
+            if len({sums["P"], sums["I"], sums["C"]}) != 1:
+                raise ValueError(f"{label} local P/I/C sums diverge in {name}")
+            row[label] = sums["P"]
+            if sums["U"] != official["U"]:
+                raise ValueError(f"{label} local U sum does not match the official recomputation")
+        categories[name] = row
+        for key, value in row.items():
+            totals[key] += value
+    local_kind = "local_o200k_base_sum"
+    comparison = {
+        "exploratory_only": True,
+        "revises_official_S_LU": False,
+        "revises_official_C_versus_U": False,
+        "local_tokenizer": "o200k_base",
+        "local_sums_are_not_provider_T": True,
+        "denominator_note": (
+            "Local o200k_base sums count the prepared request serialization. "
+            "Official S_LU uses provider prompt_tokens on the primary cohort. "
+            "Those denominators differ. Local savings do not revise S_LU."
+        ),
+        "official_billed": {
+            "cohort": "primary multiple 200",
+            "basis": "provider_prompt_tokens",
+            "cache_subtracted": False,
+            "price_weighted": False,
+            "U": official_u,
+            "S_LU": official_s,
+            "S_LU_approximation": CLOSED_OFFICIAL_RESULT["S_LU_approximation"],
+            "derived_L": derived_l,
+            "derived_L_note": "Subtract the closed S_LU numerator from the recorded primary U T.",
+            "all_840_provider_T": None,
+            "provider_T_A": None,
+            "provider_T_B": None,
+            "three_case_h50_provider_figures_spliced": False,
+        },
+        "local_o200k_base": {
+            "by_category": categories,
+            "all_840": totals,
+            "saving_versus_U_all_840": {
+                "official_L": _saving(totals["U"], totals["official_L"], local_kind + "_all_840"),
+                A_LABEL: _saving(totals["U"], totals[A_LABEL], local_kind + "_all_840"),
+                B_LABEL: _saving(totals["U"], totals[B_LABEL], local_kind + "_all_840"),
+            },
+            "saving_versus_official_L_all_840": {
+                A_LABEL: _saving(totals["official_L"], totals[A_LABEL], local_kind + "_official_L_all_840"),
+                B_LABEL: _saving(totals["official_L"], totals[B_LABEL], local_kind + "_official_L_all_840"),
+            },
+            "primary_saving_versus_U": {
+                "official_L": _saving(categories["multiple"]["U"], categories["multiple"]["official_L"], local_kind + "_primary"),
+                A_LABEL: _saving(categories["multiple"]["U"], categories["multiple"][A_LABEL], local_kind + "_primary"),
+                B_LABEL: _saving(categories["multiple"]["U"], categories["multiple"][B_LABEL], local_kind + "_primary"),
+            },
+        },
+        "provider_T_for_unflown_arms": {A_LABEL: None, B_LABEL: None},
+    }
+    return comparison
+
+
+def render_full_catalogue_markdown(payload: dict) -> str:
+    """Operator write-up. Numbers come from the audit payload."""
+    official = payload["official_result"]
+    comparison = payload["comparison"]
+    billed = comparison["official_billed"]
+    local = comparison["local_o200k_base"]
+    totals = local["all_840"]
+    later = payload["later_live_run"]
+    lines = [
+        "# Exploratory full-catalogue comparison",
+        "",
+        "This comparison is exploratory only. Official C versus U stays the closed result. "
+        f"Official S_LU stays {official['S_LU']} (about {official['S_LU_approximation']}). "
+        "The 10% token target stays 1/10. No provider call was made.",
+        "",
+        "Sample size is 840 cases: multiple 200, simple_python 400, irrelevance 240. "
+        "The evaluation method is official `bfcl evaluate` on saved outputs. "
+        "The handler alias `DeepSeek-V3.2-Exp-FC` is scoring-only. "
+        "A later generation stays `deepseek-flash` with thinking disabled.",
+        "",
+        "## Three measurements",
+        "",
+        "1. Baseline, already collected and not re-flown. r=0.75, λ=1/2, thinking off, "
+        f"{official['model_version']}. Primary accuracy U {official['primary_accuracy']['U']} (93.00%), "
+        f"L {official['primary_accuracy']['L']} (92.50%), E {official['primary_accuracy']['E']} (93.00%). "
+        f"S_LU = {official['S_LU']}.",
+        "2. Setting A. r=0.50, λ=1/2, all 840 cases. "
+        f"Spec `{payload['settings']['A']['spec_version']}`.",
+        "3. Setting B. r=0.75, λ=1/4, all 840 cases. "
+        f"Spec `{payload['settings']['B']['spec_version']}`. "
+        "Jaccard stays at least 1/5, the neighbour cap stays at two, and the tokenizer stays `o200k_base`.",
+        "",
+        "H25 (r=0.25, λ=1/2) stays on the #7 audit. These measurements are the closed baseline, setting A, and setting B.",
+        "",
+        "## Request identity",
+        "",
+    ]
+    for label in ("A", "B"):
+        setting = payload["settings"][label]
+        identity = setting["identity"]
+        lines.append(f"### Setting {label}")
+        lines.append("")
+        lines.append(
+            f"P, I, and C coincide on {setting['p_i_c_coincide_cases']} of {setting['cases']} cases. "
+            f"Cases identical to U: {identity['versus_u']['cases_identical']}. "
+            f"Cases identical to official L: {identity['versus_official_l']['cases_identical']}. "
+            f"Cases different from official L: {identity['versus_official_l']['cases_different']}."
+        )
+        lines.append("")
+        if setting["identical_to_official_l"]:
+            lines.append(
+                "Every request is identical to official L. "
+                "λ stays 1/4, and protections, Jaccard, the neighbour cap, and the tokenizer stay as frozen. "
+                "The full-catalogue plan still lists every case and does not start a paid call."
+            )
+        else:
+            joined = ", ".join(f"`{item}`" for item in setting["new_request_ids"])
+            lines.append(
+                f"Requests that differ from both U and official L: {joined}. "
+                "The full-catalogue plan still lists every case, including the requests identical to official L."
+            )
+        lines.append("")
+        lines.append("| Category | Cases | Identical to U | Identical to official L | Contrast f | C−I cases | C−I fields |")
+        lines.append("| --- | ---: | ---: | ---: | ---: | ---: | ---: |")
+        for name in ("multiple", "simple_python", "irrelevance"):
+            category = setting["categories"][name]
+            fraction = category["contrast_activity_f"]
+            lines.append(
+                f"| {name} | {category['n_records']} | "
+                f"{category['request_identity_versus_u']['cases_identical']} | "
+                f"{category['request_identity_versus_official_l']['cases_identical']} | "
+                f"{fraction['numerator']}/{fraction['denominator']} | "
+                f"{category['c_minus_i_cases']} | {category['c_minus_i_fields']} |"
+            )
+        lines.append("")
+    h50 = payload["h50_reconfirmation"]
+    lines.extend(
+        [
+            f"Setting A matches the #7 H50 request hashes on {h50['identical_cases']} of {h50['cases']} cases. "
+            "The flight prepared here is the full 840-case plan. It is separate from the #7 plan, which sends only the cases that differ from official L.",
+            "",
+            "## Token savings",
+            "",
+            "This table is exploratory only. It leaves official S_LU where the closed result put it.",
+            "",
+            "### Official billed basis",
+            "",
+            "Cohort: primary `multiple`, 200 cases. Basis: provider `prompt_tokens`. "
+            "Cache hits stay in T. Prices stay off T.",
+            "",
+            f"- U = {billed['U']}",
+            f"- S_LU = {billed['S_LU']} ≈ {billed['S_LU_approximation']}",
+            f"- Derived primary L = {billed['derived_L']}, from {billed['U']} minus the closed numerator {billed['S_LU'].split('/')[0]}. "
+            "That subtraction restates the closed ratio. It is not a new measurement.",
+            "- Provider T for all 840 cases is absent from the closed figures used here.",
+            "- Provider T for setting A is not measured.",
+            "- Provider T for setting B is not measured.",
+            "- The later 3-case H50 provider figures stay out of this table.",
+            "",
+            "### Local `o200k_base` sums",
+            "",
+            comparison["denominator_note"],
+            "",
+            "| Category | U | Official L | A | B |",
+            "| --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for name in ("multiple", "simple_python", "irrelevance"):
+        row = local["by_category"][name]
+        lines.append(f"| {name} | {row['U']} | {row['official_L']} | {row['A']} | {row['B']} |")
+    lines.append(
+        f"| all 840 | {totals['U']} | {totals['official_L']} | {totals['A']} | {totals['B']} |"
+    )
+    lines.append("")
+    lines.append("Local ratio of sums versus U, `(sum U − sum arm) / sum U`:")
+    lines.append("")
+    for label in ("official_L", "A", "B"):
+        saving = local["saving_versus_U_all_840"][label]
+        lines.append(
+            f"- {label}, all 840: {saving['numerator']}/{saving['denominator']} ≈ {_percent(saving['numerator'], saving['denominator'])}"
+        )
+    for label in ("official_L", "A", "B"):
+        saving = local["primary_saving_versus_U"][label]
+        lines.append(
+            f"- {label}, primary: {saving['numerator']}/{saving['denominator']} ≈ {_percent(saving['numerator'], saving['denominator'])}"
+        )
+    lines.append("")
+    versus_l = local["saving_versus_official_L_all_840"]
+    lines.append(
+        f"Local tokens versus official L, all 840: A removes {versus_l['A']['numerator']}; "
+        f"B removes {versus_l['B']['numerator']}."
+    )
+    lines.append("")
+    lines.extend(
+        [
+            "## Later live run and scoring",
+            "",
+            "The plan commands require `--ceiling-cny`. The code supplies no ceiling and does not read one from the environment. "
+            f"An operator may pass the remaining authorized amount, ¥{later['remaining_authorized_cny']} of ¥{later['authorized_total_cny']}, as that flag. "
+            "This package does not pass it.",
+            "",
+            f"The locked pre-call reserve stays ¥{later['pre_call_reserve_cny']}. "
+            f"Under the remaining authorized amount that reserve allows {later['max_calls_before_reserve_stops']} calls before the run stops. "
+            f"The plan still lists {later['cases_in_plan']} cases. "
+            "A stopped run has incomplete coverage, and its partial `prompt_tokens` sum is not a cohort T. "
+            "This package leaves the reserve unchanged.",
+            "",
+            "Plan only, no provider call. Repeat with `--setting B` and a separate `--out` directory.",
+            "",
+            "```bash",
+            "python -m tool_compression full-catalogue-flight \\",
+            "  --setting A \\",
+            "  --ceiling-cny \"$EXPLORATORY_CEILING_CNY\" \\",
+            "  --audit evidence/full-catalogue/audit.json \\",
+            "  --bfcl-root PATH_TO_GORILLA \\",
+            "  --out artifacts/full-catalogue/A",
+            "```",
+            "",
+            "A later operator adds `--live` only after exporting `DEEPSEEK_API_KEY` and supplying the ceiling. "
+            "Thinking stays disabled. Generation under `DeepSeek-V3.2-Exp-FC` is refused.",
+            "",
+            "Score a finished live run from saved outputs. This command does not generate:",
+            "",
+            "```bash",
+            "python -m tool_compression full-catalogue-flight \\",
+            "  --setting A \\",
+            "  --bfcl-root PATH_TO_GORILLA \\",
+            "  --out artifacts/full-catalogue/A \\",
+            "  --score",
+            "```",
+            "",
+            "That runs `python -m bfcl_eval evaluate` with `--model DeepSeek-V3.2-Exp-FC` and "
+            "`--test-category multiple,simple_python,irrelevance`. The alias is the decoder directory for saved outputs.",
+            "",
+            "Add billed-basis T to this same comparison from `flight_summary.json` field `billed_basis_T_prompt_tokens`, "
+            "and from each saved result row's `input_token_count`. Sum provider `prompt_tokens` on received calls. "
+            "Keep cache hits in the sum. Leave prices off the sum. "
+            "Put the figure on the arm that was flown, and name the cohort (primary 200, or all 840, only when coverage is complete). "
+            "Leave official S_LU unchanged. Leave an unflown arm blank. Leave a partial run out of the cohort ratio.",
+            "",
+            "Re-run the offline audit with:",
+            "",
+            "```bash",
+            "python -m tool_compression full-catalogue-audit \\",
+            "  --bfcl-root PATH_TO_GORILLA \\",
+            "  --out evidence/full-catalogue",
+            "```",
+            "",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _later_live_run() -> dict:
+    from decimal import Decimal
+
+    from tool_compression.flight_spec import format_cny, pre_call_reserve_cny
+
+    remaining = Decimal("48.74670004")
+    reserve = pre_call_reserve_cny()
+    return {
+        "command": "full-catalogue-flight",
+        "ceiling_flag": "--ceiling-cny",
+        "ceiling_environment_name": "EXPLORATORY_CEILING_CNY",
+        "code_reads_environment": False,
+        "default_in_code": False,
+        "this_package_starts_live": False,
+        "remaining_authorized_cny": format(remaining, "f"),
+        "authorized_total_cny": "50",
+        "pre_call_reserve_cny": format_cny(reserve),
+        "reserve_changed": False,
+        "max_calls_before_reserve_stops": int(remaining / reserve),
+        "cases_in_plan": 840,
+        "scoring": "bfcl evaluate on saved outputs",
+        "generation_model": "deepseek-flash",
+        "thinking": "disabled",
+        "decoder_alias": "DeepSeek-V3.2-Exp-FC",
+        "decoder_generates": False,
+        "billed_basis_field": "billed_basis_T_prompt_tokens",
+        "per_case_field": "input_token_count",
+        "cache_subtracted": False,
+        "price_weighted": False,
+        "splice_three_case_h50": False,
+    }
+
+
+def _identity_summary(report: dict) -> dict:
+    versus_u = {"cases_identical": 0, "cases_different": 0}
+    versus_l = {"cases_identical": 0, "cases_different": 0}
+    fractions = {}
+    c_cases = 0
+    c_fields = 0
+    for name, category in report["categories"].items():
+        versus_u["cases_identical"] += category["request_identity_versus_u"]["cases_identical"]
+        versus_u["cases_different"] += category["request_identity_versus_u"]["cases_different"]
+        versus_l["cases_identical"] += category["request_identity_versus_official_l"]["cases_identical"]
+        versus_l["cases_different"] += category["request_identity_versus_official_l"]["cases_different"]
+        fraction = category["contrast_activity_f"]
+        fractions[name] = {"numerator": fraction["numerator"], "denominator": fraction["denominator"]}
+        c_cases += category["c_minus_i_cases"]
+        c_fields += category["c_minus_i_fields"]
+    return {
+        "versus_u": versus_u,
+        "versus_official_l": versus_l,
+        "p_i_c_coincide": report["p_i_c_coincide"],
+        "p_i_c_coincide_cases": report["p_i_c_coincide_cases"],
+        "p_i_c_diverge_cases": report["p_i_c_diverge_cases"],
+        "contrast_activity_f": fractions,
+        "c_minus_i_cases": c_cases,
+        "c_minus_i_fields": c_fields,
+        "complete_requests_identical_to_official_l": report["identical_to_official_l"],
+        "complete_requests_identical_to_u": report["identical_to_u"],
+    }
+
+
+def _hash_identity(left_rows: list[dict], right_rows: list[dict], left_name: str, right_name: str) -> dict:
+    left = _index_rows(left_rows)
+    right = _index_rows(right_rows)
+    if set(left) != set(right):
+        raise ValueError(f"{left_name} and {right_name} case ids differ")
+    different = []
+    for key, row in left.items():
+        other = right[key]
+        if row.get("preparation_failure") or other.get("preparation_failure"):
+            different.append({"category": key[0], "id": key[1], "reason": "preparation_failure"})
+            continue
+        if row.get("hashes") != other.get("hashes"):
+            different.append({"category": key[0], "id": key[1]})
+    return {
+        "left": left_name,
+        "right": right_name,
+        "cases": len(left),
+        "identical_cases": len(left) - len(different),
+        "different_cases": len(different),
+        "different_ids": [f"{item['category']}/{item['id']}" for item in different],
+        "complete_requests_identical": not different and len(left) == 840,
+    }
+
+
+def _plan_index_row(plan: dict) -> dict:
+    row = {
+        "case_id": plan["case_id"],
+        "category": plan["category"],
+        "identical_to_official_l": plan["identical_to_official_l"],
+        "identical_to_u": plan["identical_to_u"],
+        "members": list(plan["members"]),
+        "new_request": plan["new_request"],
+        "request_sha256": plan["request_sha256"],
+    }
+    if "body" in row or "description" in row:
+        raise RuntimeError("plan index must not carry a request body")
+    return row
+
+
+def _saving(baseline: int, variant: int, kind: str) -> dict:
+    if baseline < 0 or variant < 0:
+        raise ValueError("token sums are non-negative")
+    return {
+        "numerator": baseline - variant,
+        "denominator": baseline,
+        "denominator_kind": kind,
+        "provider_T": False,
+        "revises_official_S_LU": False,
+    }
+
+
+def _percent(numerator: int, denominator: int) -> str:
+    from decimal import Decimal, ROUND_HALF_UP
+
+    if denominator <= 0:
+        raise ValueError("percent denominator must be positive")
+    value = (Decimal(numerator) * Decimal(100) / Decimal(denominator)).quantize(
+        Decimal("0.001"), rounding=ROUND_HALF_UP
+    )
+    return f"{value}%"

@@ -1,8 +1,10 @@
-"""Frozen exploratory retention caps on the official P/I/C compressor.
+"""Frozen exploratory settings on the official P/I/C compressor.
 
-H50 is r=0.50 and H25 is r=0.25. Lambda stays 1/2, Jaccard stays at least
-1/5, and the neighbour cap stays at two. The official r=0.75 configuration is
-not retuned. This module does not call a provider.
+H50 is r=0.50 and H25 is r=0.25, both at lambda 1/2. Setting A is the same
+r=0.50, lambda 1/2 compressor, planned as a full 840-case flight. Setting B
+is r=0.75 at lambda 1/4. Jaccard stays at least 1/5, and the neighbour cap
+stays at two. The official r=0.75, lambda 1/2 configuration is not an
+exploratory setting and is not retuned. This module does not call a provider.
 """
 
 from decimal import Decimal
@@ -23,9 +25,16 @@ from tool_compression.usage import usage_from_mapping
 BASE_COMMIT = "8619d2fd58dee5babc511970a8d88fb975037149"
 H50_LABEL = "H50"
 H25_LABEL = "H25"
+A_LABEL = "A"
+B_LABEL = "B"
 EXPLORATORY_LABELS = (H50_LABEL, H25_LABEL)
+FULL_CATALOGUE_LABELS = (A_LABEL, B_LABEL)
 H50_SPEC_VERSION = "exploratory.h50.2026-11-20"
 H25_SPEC_VERSION = "exploratory.h25.2026-11-20"
+A_SPEC_VERSION = "exploratory.a.r50.lambda12.2026-11-23"
+B_SPEC_VERSION = "exploratory.b.r75.lambda14.2026-11-23"
+FULL_CATALOGUE_BASE_COMMIT = "33f29512170f065faad08415f0e48dcbadac09d1"
+FULL_CATALOGUE_PURPOSE = "exploratory-full-catalogue"
 GENERATION_MODEL = "deepseek-flash"
 GENERATION_MODEL_VERSION = "DeepSeek-V4.1-Flash-1017"
 # Pinned BFCL decoder for evaluate-from-saved-outputs. Generation under this
@@ -63,35 +72,57 @@ class ExploratoryFlightRefused(RuntimeError):
     """The exploratory flight must not start."""
 
 
+def _setting_spec(label: str) -> tuple[str, tuple[int, int], tuple[int, int]]:
+    """Spec version, retention, and lambda for one frozen exploratory label."""
+    table = {
+        H50_LABEL: (H50_SPEC_VERSION, (1, 2), (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR)),
+        H25_LABEL: (H25_SPEC_VERSION, (1, 4), (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR)),
+        A_LABEL: (A_SPEC_VERSION, (1, 2), (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR)),
+        B_LABEL: (B_SPEC_VERSION, (3, 4), (1, 4)),
+    }
+    try:
+        return table[label]
+    except KeyError:
+        raise ValueError(f"unknown exploratory setting {label}") from None
+
+
 def frozen_config(label: str) -> Config:
-    """The versioned H50 or H25 config. Only the retention fraction changes."""
-    if label == H50_LABEL:
-        config = Config(spec_version=H50_SPEC_VERSION, retention_numerator=1, retention_denominator=2)
-    elif label == H25_LABEL:
-        config = Config(spec_version=H25_SPEC_VERSION, retention_numerator=1, retention_denominator=4)
-    else:
-        raise ValueError(f"unknown exploratory setting {label}")
+    """The versioned config for one frozen exploratory label."""
+    spec, retention, lam = _setting_spec(label)
+    config = Config(
+        spec_version=spec,
+        retention_numerator=retention[0],
+        retention_denominator=retention[1],
+        lambda_numerator=lam[0],
+        lambda_denominator=lam[1],
+    )
     assert_frozen(label, config)
     return config
 
 
 def assert_frozen(label: str, config: Config) -> None:
-    """Refuse a retune of lambda, neighbours, Jaccard, or the official cap."""
-    if label == H50_LABEL:
-        retention = (1, 2)
-        spec = H50_SPEC_VERSION
-    elif label == H25_LABEL:
-        retention = (1, 4)
-        spec = H25_SPEC_VERSION
-    else:
-        raise ValueError(f"unknown exploratory setting {label}")
+    """Refuse a retune of the frozen lambda, neighbours, Jaccard, or tokenizer.
+
+    H50, H25, and A keep lambda at 1/2. Official r=0.75 with lambda 1/2 is
+    not an exploratory setting. B is the one frozen lambda 1/4 setting, and
+    only at the official retention cap. No other lambda is accepted.
+    """
+    spec, retention, lam = _setting_spec(label)
     if config.spec_version != spec:
         raise ValueError("exploratory spec_version is not the frozen value")
+    if label != B_LABEL and (config.retention_numerator, config.retention_denominator) == (3, 4):
+        raise ValueError("official r=0.75 is not an exploratory setting")
+    if (
+        label == B_LABEL
+        and (config.retention_numerator, config.retention_denominator) == (3, 4)
+        and (config.lambda_numerator, config.lambda_denominator) == (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR)
+    ):
+        raise ValueError("official r=0.75 with lambda 1/2 is not setting B")
     if (config.retention_numerator, config.retention_denominator) != retention:
         raise ValueError("exploratory retention is not the frozen cap")
-    if (config.retention_numerator, config.retention_denominator) == (3, 4):
-        raise ValueError("official r=0.75 is not an exploratory setting")
-    if (config.lambda_numerator, config.lambda_denominator) != (LAMBDA_NUMERATOR, LAMBDA_DENOMINATOR):
+    if (config.lambda_numerator, config.lambda_denominator) != lam:
+        if label == B_LABEL:
+            raise ValueError("setting B keeps lambda at 1/4")
         raise ValueError("lambda stays 1/2")
     if (config.jaccard_numerator, config.jaccard_denominator) != (JACCARD_NUMERATOR, JACCARD_DENOMINATOR):
         raise ValueError("Jaccard stays at least 1/5")
@@ -101,6 +132,11 @@ def assert_frozen(label: str, config: Config) -> None:
         raise ValueError("the local tokenizer stays o200k_base")
     if DEFAULT_CONFIG.retention_numerator != 3 or DEFAULT_CONFIG.retention_denominator != 4:
         raise ValueError("the official r=0.75 config was changed")
+    if (DEFAULT_CONFIG.lambda_numerator, DEFAULT_CONFIG.lambda_denominator) != (
+        LAMBDA_NUMERATOR,
+        LAMBDA_DENOMINATOR,
+    ):
+        raise ValueError("the official lambda 1/2 config was changed")
 
 
 def classify_case(hashes: dict, official_hashes: dict | None) -> dict:
@@ -170,10 +206,78 @@ def flight_groups(label: str, hashes: dict, official_l_hash: str | None) -> list
     return groups
 
 
+def full_catalogue_groups(label: str, hashes: dict) -> list[tuple[str, ...]]:
+    """Every prepared case is sent, including a request identical to official L.
+
+    U, E, and the official L label are never members. When P, I, and C
+    coincide, the one request is sent under the setting label.
+    """
+    if label not in FULL_CATALOGUE_LABELS:
+        raise ValueError(label)
+    for name in ("U", *ARM_NAMES):
+        if name not in hashes:
+            raise ValueError("case hashes are incomplete")
+    if hashes["P"] == hashes["I"] == hashes["C"]:
+        groups = [(label,)]
+    else:
+        order = []
+        buckets: dict[str, list[str]] = {}
+        for name in ARM_NAMES:
+            digest = hashes[name]
+            if digest not in buckets:
+                buckets[digest] = []
+                order.append(digest)
+            buckets[digest].append(name)
+        groups = [tuple(buckets[digest]) for digest in order]
+    for members in groups:
+        assert_flight_members(members)
+    return groups
+
+
+def full_catalogue_plan_decision(
+    cases: list[dict],
+    *,
+    coverage_complete: bool,
+    hash_reproduction_matched: bool,
+) -> dict:
+    """The full catalogue is planned even when every request matches official L."""
+    prepared = [case for case in cases if not case.get("preparation_failure")]
+    identical_to_u = bool(prepared) and all(case["identical_to_u"] for case in prepared)
+    identical_to_official_l = bool(prepared) and all(case["identical_to_official_l"] for case in prepared)
+    new_cases = sum(1 for case in prepared if case.get("new_request"))
+    identical_l_cases = sum(1 for case in prepared if case.get("identical_to_official_l"))
+    if not hash_reproduction_matched:
+        reason = "official_r075_hash_reproduction_failed"
+        plan_ready = False
+    elif not coverage_complete:
+        reason = "incomplete_coverage"
+        plan_ready = False
+    elif not prepared:
+        reason = "no_prepared_cases"
+        plan_ready = False
+    elif identical_to_official_l:
+        reason = "complete_requests_identical_to_official_L"
+        plan_ready = True
+    else:
+        reason = "full_catalogue_includes_every_prepared_case"
+        plan_ready = True
+    return {
+        "plan_ready": plan_ready,
+        "reason": reason,
+        "drops_identical_to_official_l": False,
+        "identical_to_u": identical_to_u,
+        "identical_to_official_l": identical_to_official_l,
+        "cases_with_new_request": new_cases,
+        "cases_identical_to_official_l": identical_l_cases,
+        "prepared_cases": len(prepared),
+        "cases_planned": len(prepared) if plan_ready else 0,
+    }
+
+
 def assert_flight_members(members: tuple[str, ...] | list[str]) -> None:
     if not members:
         raise ExploratoryFlightRefused("empty flight group")
-    allowed = set(EXPLORATORY_LABELS) | set(ARM_NAMES)
+    allowed = set(EXPLORATORY_LABELS) | set(FULL_CATALOGUE_LABELS) | set(ARM_NAMES)
     for name in members:
         if name in NOT_REFLOWN:
             raise ExploratoryFlightRefused("U, E, and official L are not re-flown")
