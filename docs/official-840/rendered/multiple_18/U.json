@@ -1,0 +1,68 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_18",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_war_details",
+        "description": "Get details of a specific historical European war.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "war": {
+              "type": "string",
+              "description": "Name of the war"
+            }
+          },
+          "required": [
+            "war"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_leader_info",
+        "description": "Get information about a specific historical leader in European history.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "leader": {
+              "type": "string",
+              "description": "Name of the leader"
+            }
+          },
+          "required": [
+            "leader"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_battle_details",
+        "description": "Get details of a specific historical European battle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "battle": {
+              "type": "string",
+              "description": "Name of the battle"
+            }
+          },
+          "required": [
+            "battle"
+          ]
+        }
+      }
+    }
+  ]
+}

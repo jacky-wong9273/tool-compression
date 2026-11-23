@@ -1,0 +1,88 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_20",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sculptor_info_get",
+        "description": "Get information about a specific sculptor.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the sculptor."
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_price_calculate",
+        "description": "Calculate the estimated price to commission a sculpture based on the material and size.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "material": {
+              "type": "string",
+              "description": "The material used for the sculpture."
+            },
+            "size": {
+              "type": "integer",
+              "description": "The size of the sculpture in feet."
+            },
+            "complexity": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "description": "The complexity level of the sculpture. Default is 'medium'.",
+              "default": "medium"
+            }
+          },
+          "required": [
+            "material",
+            "size"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_availability_check",
+        "description": "Check the availability of a specific sculpture in the inventory.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sculpture_name": {
+              "type": "string",
+              "description": "The name of the sculpture."
+            },
+            "material": {
+              "type": "string",
+              "description": "The material of the sculpture."
+            }
+          },
+          "required": [
+            "sculpture_name",
+            "material"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_14",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "finance_property_depreciation",
+        "description": "Calculates the depreciated value of a property given its initial cost, depreciation rate, and the number of years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_cost": {
+              "type": "integer",
+              "description": "The initial cost of the property."
+            },
+            "depreciation_rate": {
+              "type": "integer",
+              "description": "The annual depreciation rate in percentage."
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years for which to calculate the depreciation."
+            },
+            "monthly": {
+              "type": "boolean",
+              "description": "If set to true, it will calculate monthly depreciation instead of annually. (optional)",
+              "default": false
+            }
+          },
+          "required": [
+            "initial_cost",
+            "depreciation_rate",
+            "years"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "finance_loan_repayment",
+        "description": "Calculates the monthly repayment for a loan.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "loan_amount": {
+              "type": "number",
+              "description": "The amount borrowed or loaned. This is a float type value.",
+              "format": "float"
+            },
+            "interest_rate": {
+              "type": "number",
+              "description": "The annual interest rate. This is a float type value.",
+              "format": "float"
+            },
+            "loan_term": {
+              "type": "integer",
+              "description": "The term of the loan in years."
+            }
+          },
+          "required": [
+            "loan_amount",
+            "interest_rate",
+            "loan_term"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "finance_inflation_adjustment",
+        "description": "Adjusts a sum of money for inflation based on the consumer price index (CPI).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_sum": {
+              "type": "number",
+              "description": "The initial sum of money. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years over which inflation is calculated."
+            },
+            "inflation_rate": {
+              "type": "number",
+              "description": "The annual rate of inflation. Default 0.0 This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_sum",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

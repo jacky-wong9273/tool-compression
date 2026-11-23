@@ -1,0 +1,94 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_41",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "electric_field_calculate",
+        "description": "Calculate the electric field based on the amount of charge and distance from the charge",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "Q": {
+              "type": "number",
+              "description": "The amount of charge in coulombs. This is a float type value.",
+              "format": "float"
+            },
+            "r": {
+              "type": "number",
+              "description": "The distance from the charge in meters. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "Q",
+            "r"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "magnetic_field_calculate",
+        "description": "Calculate the magnetic field based on the current flowing and the radial distance using Ampere’s law",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "I": {
+              "type": "integer",
+              "description": "The electric current flowing in Amperes."
+            },
+            "r": {
+              "type": "number",
+              "description": "The radial distance from the line of current in meters. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "I",
+            "r"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "electric_force_calculate",
+        "description": "Calculate the electric force between two charges at a distance",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "Q1": {
+              "type": "number",
+              "description": "The amount of the first charge in coulombs. This is a float type value.",
+              "format": "float"
+            },
+            "Q2": {
+              "type": "number",
+              "description": "The amount of the second charge in coulombs. This is a float type value.",
+              "format": "float"
+            },
+            "r": {
+              "type": "number",
+              "description": "The distance between the two charges in meters. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "Q1",
+            "Q2",
+            "r"
+          ]
+        }
+      }
+    }
+  ]
+}

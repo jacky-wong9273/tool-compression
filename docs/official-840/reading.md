@@ -263,6 +263,18 @@ Fourteen two-tool catalogues were read from each tool's own description. None re
 
 `multiple_185` drops "default value is 10" on `number_of_players` because the schema default is 10. That edit comes from the chess tool's own description. X stays equal to U because there is no cue.
 
+## Seventh tranche
+
+114 multi-tool cases were added. The first 714 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied.
+
+Sixteen catalogues receive a cue because every tool shares an action and the sources document the difference: areas in `multiple_1` and `multiple_30`, weather in `multiple_5` and `multiple_64`, currency conversion in `multiple_17`, European history in `multiple_18` and `multiple_70`, religious events in `multiple_19`, NBA point records in `multiple_22`, basketball statistics in `multiple_23`, game facts in `multiple_26` and `multiple_87`, chance devices in `multiple_51`, football goal figures in `multiple_83`, food searches in `multiple_89`, and travel prices in `multiple_94`. Each cue names one rival. Where two rivals were the same kind of alternative, catalogue order selected the earlier tool.
+
+`multiple_30` also drops "default is false" on `isDiameter` because the schema default is false. That edit comes from the circle tool's own description. The cue is a separate judgement about the shape. SX is the S text plus the cue, so U, S, X, and SX are four catalogues.
+
+98 catalogues have an empty cue. A square can already be read as a rectangle in `multiple_31`. A unit conversion can already be read as covering a currency conversion in `multiple_44`. A future value can already be read as covering compound or simple interest in `multiple_49`. An event search can already be read as covering movie showtimes in `multiple_60`. A search in a given library can already cover Google Books or the Open Library in `multiple_68`. Statistical or demographic data can already be read as covering population in `multiple_71`. A tourist attraction can already be a park in `multiple_77`. `multiple_34` and `multiple_37` each contain a closer pair, but another tool in the same catalogue does not share that action, and a cue has to cover every tool. The remaining empty cues are catalogues whose tools do not answer a similar request.
+
+Six catalogues change S. `multiple_127` and `multiple_165` drop the frame "This function". `multiple_20`, `multiple_165`, `multiple_177`, and `multiple_187` omit a schema default. `multiple_43` states a glucose-specific default of 2800 kJ/mol while the schema default is the integer 2800. That mismatch stays.
+
 ## What is still open
 
-The remaining 126 cases, including the formative twelve, have no sealed S and no sealed X. The four remaining one-tool catalogues are formative and are not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+The remaining 12 cases are the formative twelve. They have no sealed S and no sealed X. Their pilot seals were not copied. They wait for an independent reading from U.

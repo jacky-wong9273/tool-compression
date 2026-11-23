@@ -1,0 +1,85 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_83",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "team_stats_get_top_scorer",
+        "description": "Fetch the top scorer of a specified football team. Unlike league_stats_get_top_scorer, which fetches the top scorer of a football league, this fetches the top scorer of a football team.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the football team."
+            },
+            "competition": {
+              "type": "string",
+              "description": "Competition for which to fetch stats (optional). Default ''"
+            }
+          },
+          "required": [
+            "team_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "league_stats_get_top_scorer",
+        "description": "Fetch the top scorer of a specified football league. Unlike team_stats_get_top_scorer, which fetches the top scorer of a football team, this fetches the top scorer of a football league.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league_name": {
+              "type": "string",
+              "description": "The name of the football league."
+            },
+            "season": {
+              "type": "string",
+              "description": "Season for which to fetch stats (optional). Default ''"
+            }
+          },
+          "required": [
+            "league_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "player_stats_get_all_time_goals",
+        "description": "Fetch all-time goals scored by a particular football player for a specified team. Unlike team_stats_get_top_scorer, which fetches the top scorer of a football team, this fetches all-time goals scored by a football player.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_name": {
+              "type": "string",
+              "description": "The name of the football player."
+            },
+            "team_name": {
+              "type": "string",
+              "description": "The name of the team for which player has played."
+            },
+            "competition": {
+              "type": "string",
+              "description": "Competition for which to fetch stats (optional). Default ''"
+            }
+          },
+          "required": [
+            "player_name",
+            "team_name"
+          ]
+        }
+      }
+    }
+  ]
+}

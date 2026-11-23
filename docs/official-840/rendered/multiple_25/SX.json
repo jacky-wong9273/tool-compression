@@ -1,0 +1,92 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_25",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "video_games_store_currency",
+        "description": "Fetches the currency used in a specific region in a gaming platform store.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "description": "The gaming platform e.g. PlayStation, Xbox, Nintendo Switch"
+            },
+            "region": {
+              "type": "string",
+              "description": "The region e.g. United States, United Kingdom, Japan",
+              "default": "True"
+            }
+          },
+          "required": [
+            "platform"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "video_games_on_sale",
+        "description": "Checks if a particular game is currently on sale in a specific gaming platform store and in a specific region.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_title": {
+              "type": "string",
+              "description": "The title of the video game"
+            },
+            "platform": {
+              "type": "string",
+              "description": "The gaming platform e.g. PlayStation, Xbox, Nintendo Switch"
+            },
+            "region": {
+              "type": "string",
+              "description": "The region e.g. United States, United Kingdom, Japan. Default United States",
+              "optional": "True"
+            }
+          },
+          "required": [
+            "game_title",
+            "platform"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "video_games_store_price",
+        "description": "Fetches the selling price of a specified game in a particular gaming platform store and in a specific region.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_title": {
+              "type": "string",
+              "description": "The title of the video game"
+            },
+            "platform": {
+              "type": "string",
+              "description": "The gaming platform e.g. PlayStation, Xbox, Nintendo Switch"
+            },
+            "region": {
+              "type": "string",
+              "description": "The region e.g. United States, United Kingdom, Japan. Default to United States"
+            }
+          },
+          "required": [
+            "game_title",
+            "platform"
+          ]
+        }
+      }
+    }
+  ]
+}

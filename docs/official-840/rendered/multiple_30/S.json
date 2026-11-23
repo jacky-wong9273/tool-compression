@@ -1,0 +1,86 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_30",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "rectangle_area",
+        "description": "Calculate the area of a rectangle with given length and width",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "length": {
+              "type": "integer",
+              "description": "Length of the rectangle"
+            },
+            "width": {
+              "type": "integer",
+              "description": "Width of the rectangle"
+            }
+          },
+          "required": [
+            "length",
+            "width"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "circle_area",
+        "description": "Calculate the area of a circle with given radius",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number",
+              "description": "Radius of the circle This is a float type value.",
+              "format": "float"
+            },
+            "isDiameter": {
+              "type": "boolean",
+              "description": "Whether the given length is the diameter of the circle.",
+              "default": false
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "triangle_area",
+        "description": "Calculate the area of a triangle with given base and height",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "number",
+              "description": "Base of the triangle This is a float type value.",
+              "format": "float"
+            },
+            "height": {
+              "type": "number",
+              "description": "Height of the triangle This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "base",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

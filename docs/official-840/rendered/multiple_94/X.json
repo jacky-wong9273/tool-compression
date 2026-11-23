@@ -1,0 +1,98 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_94",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hotel_room_pricing_get",
+        "description": "Get pricing for a specific type of hotel room for specified number of nights. Unlike car_rental_pricing_get, which gets pricing for a rental car, this gets pricing for a hotel room.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "hotelName": {
+              "type": "string",
+              "description": "The name of the hotel e.g. Hilton New York"
+            },
+            "roomType": {
+              "type": "string",
+              "description": "Type of the room to be booked."
+            },
+            "nights": {
+              "type": "integer",
+              "description": "Number of nights to book the room for."
+            }
+          },
+          "required": [
+            "hotelName",
+            "roomType",
+            "nights"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "car_rental_pricing_get",
+        "description": "Get pricing for a specific type of rental car for a specified number of days. Unlike hotel_room_pricing_get, which gets pricing for a hotel room, this gets pricing for a rental car.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "rentalCompany": {
+              "type": "string",
+              "description": "The name of the rental company."
+            },
+            "carType": {
+              "type": "string",
+              "description": "Type of the car to be rented."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days to rent the car."
+            }
+          },
+          "required": [
+            "rentalCompany",
+            "carType",
+            "days"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "flight_ticket_pricing_get",
+        "description": "Get pricing for a specific type of flight ticket for specified number of passengers. Unlike hotel_room_pricing_get, which gets pricing for a hotel room, this gets pricing for a flight ticket.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "airline": {
+              "type": "string",
+              "description": "The name of the airline."
+            },
+            "flightClass": {
+              "type": "string",
+              "description": "Class of the flight."
+            },
+            "passengers": {
+              "type": "integer",
+              "description": "Number of passengers."
+            }
+          },
+          "required": [
+            "airline",
+            "flightClass",
+            "passengers"
+          ]
+        }
+      }
+    }
+  ]
+}
