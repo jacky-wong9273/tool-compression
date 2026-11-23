@@ -637,6 +637,229 @@ def fact_ledger_markdown(s_record: dict, x_record: dict) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def cue_revision_dir() -> Path:
+    return package_dir() / "cue-revision"
+
+
+def verify_cue_revision() -> dict:
+    """Check the versioned cue revision without rewriting the frozen pilot.
+
+    Request totals in the saved table are checked arithmetically here. A test
+    with the pinned BFCL files recomputes them. This function does not call a
+    provider.
+    """
+    root = package_dir()
+    revision = cue_revision_dir()
+    manifest, s_record, old_x, catalogues = load_package()
+    new_x = load_json(revision / "edits" / "x-record.json")
+    errors: list[str] = []
+    repo = root.parents[1]
+    hashes = load_json(revision / "checks" / "frozen-sha256.json")
+    for relative, digest in hashes["files"].items():
+        path = repo / relative
+        if not path.is_file() or file_sha256(path) != digest:
+            errors.append(f"frozen file changed {relative}")
+    if "docs/semantic-audit-pilot/README.md" in hashes["files"]:
+        errors.append("index hash should stay out of the frozen list")
+    selected_ids = [row["case_id"] for row in manifest["selected"]]
+    if selected_ids != [case["case_id"] for case in new_x["cases"]]:
+        errors.append("cue-revision case order")
+    if selected_ids != [case["case_id"] for case in old_x["cases"]]:
+        errors.append("frozen X case order")
+    if new_x.get("s_fixed") is not True or new_x.get("separator") != CUE_SEPARATOR:
+        errors.append("cue-revision header")
+    if new_x["coverage"]["coverage_changed_from_first_pilot"] is not False:
+        errors.append("coverage changed flag")
+    if new_x["coverage"]["multiple_cases_with_a_cue_ids"] != old_x["coverage"]["multiple_cases_with_a_cue_ids"]:
+        errors.append("cued case ids changed")
+    errors.extend(cue_errors(new_x, catalogues))
+    fields = _index_fields(s_record)
+    old_cues = _index_cues(old_x)
+    new_cues = _index_cues(new_x)
+    counter = local_counter()
+    field_rows = []
+    revised_cues = 0
+    for case in manifest["selected"]:
+        case_id = case["case_id"]
+        rendered = render_conditions(catalogues[case_id], fields[case_id], new_cues[case_id])
+        errors.extend(f"{case_id}: {item}" for item in composition_errors(rendered, fields[case_id], new_cues[case_id]))
+        errors.extend(f"{case_id}: {item}" for item in structural_errors(rendered))
+        errors.extend(f"{case_id}: {item}" for item in sibling_name_errors(rendered))
+        for condition in ("U", "S"):
+            frozen_bytes = (root / "rendered" / case_id / f"{condition}.json").read_bytes()
+            copied = (revision / "rendered" / case_id / f"{condition}.json").read_bytes()
+            if frozen_bytes != copied:
+                errors.append(f"U/S byte copy changed {case_id} {condition}")
+        names = [tool["function"]["name"] for tool in catalogues[case_id]]
+        old_by_index = {item["tool_index"]: item for item in old_cues[case_id]}
+        for item in new_cues[case_id]:
+            cue = item.get("cue") or ""
+            prior = old_by_index[item["tool_index"]].get("cue") or ""
+            if bool(cue) != bool(prior):
+                errors.append(f"cue coverage changed {case_id} {item['tool_index']}")
+            if cue and cue == prior:
+                errors.append(f"revised cue matches the frozen cue {case_id} {item['tool_index']}")
+            if not cue and item.get("no_cue_reason") != old_by_index[item["tool_index"]].get("no_cue_reason"):
+                errors.append(f"no-cue reason changed {case_id} {item['tool_index']}")
+            payload = load_json(revision / "rendered" / case_id / "X.json")
+            sx_payload = load_json(revision / "rendered" / case_id / "SX.json")
+            if payload["tools"] != rendered["X"] or sx_payload["tools"] != rendered["SX"]:
+                errors.append(f"rendered cue revision drifted {case_id}")
+            errors.extend(f"hidden key {case_id} {path}" for path in hidden_key_errors(payload))
+            errors.extend(f"hidden key {case_id} {path}" for path in hidden_key_errors(sx_payload))
+            if not cue:
+                continue
+            revised_cues += 1
+            lowered = cue.lower()
+            for banned in ("only this", "cannot", "can't"):
+                if banned in lowered:
+                    errors.append(f"exclusion wording {case_id} {item['tool_index']}")
+            own = item["function_name"]
+            if own in cue:
+                errors.append(f"cue names its own tool {case_id} {own}")
+            mentioned = [name for name in names if name != own and name in cue]
+            if mentioned != [item["rival"]["function_name"]]:
+                errors.append(f"cue rival count {case_id} {own} {mentioned}")
+            for proposition in item.get("propositions", []):
+                if "schema_path" not in proposition:
+                    continue
+                source = catalogues[case_id][proposition["source_tool_index"]]
+                try:
+                    value = resolve_path(source, proposition["schema_path"])
+                except KeyError:
+                    errors.append(f"schema path missing {proposition['id']}")
+                    continue
+                if "schema_equals" in proposition and value != proposition["schema_equals"]:
+                    errors.append(f"schema value mismatch {proposition['id']}")
+        field_rows.extend(field_token_rows(case_id, rendered, counter))
+        for index, tool in enumerate(catalogues[case_id]):
+            for condition in CONDITIONS:
+                if schema_signature(rendered[condition][index]) != schema_signature(tool):
+                    errors.append(f"schema signature changed {case_id} {index} {condition}")
+    polynomial = new_cues["multiple_11"][2]
+    polynomial_cue = polynomial["cue"]
+    if "coefficient array in highest-degree-first order" not in polynomial_cue:
+        errors.append("polynomial cue lost the array distinction")
+    if "separate a, b, and c" not in polynomial_cue:
+        errors.append("polynomial cue lost the separate arguments")
+    if "polynomial equation" in polynomial_cue or "quadratic equation" in polynomial_cue:
+        errors.append("polynomial cue repeats the class exclusion")
+    roa = new_cues["multiple_12"][2]
+    if "earlier than the growth-rate tool" in roa["rival"]["why_this_rival"]:
+        errors.append("ROA rationale still uses the wrong order")
+    if "more similar return ratio" not in roa["rival"]["why_this_rival"]:
+        errors.append("ROA rival rationale")
+    if "assesses population growth" not in new_cues["multiple_7"][0]["cue"]:
+        errors.append("growth cue verb")
+    if "analyzes impact" not in new_cues["multiple_7"][1]["cue"]:
+        errors.append("impact cue verb")
+    if "assesses" not in new_cues["multiple_7"][1]["cue"]:
+        errors.append("impact cue should name the growth verb")
+    frozen_signatures = load_json(root / "checks" / "signatures.json")["tools"]
+    retailer = [row for row in frozen_signatures if row["case_id"] == "multiple_92"]
+    if len({row["parameter_signature"] for row in retailer}) != 1:
+        errors.append("retailer family is not one parameter signature")
+    tokens = load_json(revision / "checks" / "tokens.json")
+    frozen_tokens = load_json(root / "checks" / "tokens.json")
+    errors.extend(_cue_revision_token_errors(tokens, frozen_tokens, field_rows, manifest))
+    if revised_cues != 15:
+        errors.append(f"revised cue count {revised_cues}")
+    if errors:
+        preview = "\n".join(errors[:40])
+        raise ValueError(f"{len(errors)} cue-revision checks failed\n{preview}")
+    overall = tokens["request"]["overall"]
+    return {
+        "cases": len(selected_ids),
+        "cue_cases": new_x["coverage"]["multiple_cases_with_a_cue"],
+        "coverage_changed": False,
+        "frozen_record_intact": True,
+        "structural_violations": 0,
+        "revised_cues": revised_cues,
+        "provider_called": False,
+        "request_totals": overall["cue_revision"],
+        "request_delta_vs_frozen": overall["delta_revision_minus_frozen"],
+        "request_delta_vs_U": {
+            condition: overall["cue_revision"][condition] - overall["cue_revision"]["U"]
+            for condition in ("S", "X", "SX")
+        },
+    }
+
+
+def _cue_revision_token_errors(tokens: dict, frozen_tokens: dict, field_rows: list[dict], manifest: dict) -> list[str]:
+    errors = []
+    if tokens.get("local_only") is not True or tokens.get("provider_usage") is not False:
+        errors.append("token labels")
+    if tokens.get("shorter_is_not_success") is not True:
+        errors.append("shorter-is-success flag")
+    recomputed = {}
+    for row in field_rows:
+        bucket = recomputed.setdefault(row["case_id"], {condition: 0 for condition in CONDITIONS})
+        for condition in CONDITIONS:
+            bucket[condition] += row[condition]
+    for case_id, totals in recomputed.items():
+        saved = tokens["field"]["by_case"][case_id]["cue_revision"]
+        frozen = frozen_tokens["field"]["by_case"][case_id]["totals"]
+        if saved != totals:
+            errors.append(f"field token drift {case_id}")
+        if tokens["field"]["by_case"][case_id]["frozen"] != frozen:
+            errors.append(f"frozen field token copy {case_id}")
+        if totals["U"] != frozen["U"] or totals["S"] != frozen["S"]:
+            errors.append(f"S or U field tokens moved {case_id}")
+    request = tokens["request"]["by_case"]
+    overall = {condition: 0 for condition in CONDITIONS}
+    frozen_overall = {condition: 0 for condition in CONDITIONS}
+    for case in manifest["selected"]:
+        case_id = case["case_id"]
+        row = request[case_id]
+        frozen = frozen_tokens["request"]["by_case"][case_id]["totals"]
+        current = row["cue_revision"]
+        if row["frozen"] != frozen:
+            errors.append(f"frozen request token copy {case_id}")
+        if current["U"] != frozen["U"] or current["S"] != frozen["S"]:
+            errors.append(f"S or U request tokens moved {case_id}")
+        for condition in CONDITIONS:
+            overall[condition] += current[condition]
+            frozen_overall[condition] += frozen[condition]
+            if row["delta_revision_minus_frozen"][condition] != current[condition] - frozen[condition]:
+                errors.append(f"request delta {case_id} {condition}")
+        for condition in ("S", "X", "SX"):
+            if row["delta_vs_U"][condition] != current[condition] - current["U"]:
+                errors.append(f"request delta vs U {case_id} {condition}")
+    if tokens["request"]["overall"]["cue_revision"] != overall:
+        errors.append("request overall")
+    if tokens["request"]["overall"]["frozen"] != frozen_overall:
+        errors.append("frozen request overall")
+    if tokens["request"]["overall"]["frozen"] != frozen_tokens["request"]["overall"]["totals"]:
+        errors.append("frozen request overall does not match the first pilot")
+    block = tokens["request"]["overall"]
+    for condition in ("S", "X", "SX"):
+        expected = saving(block["cue_revision"]["U"], block["cue_revision"][condition])
+        if abs(block["saving_vs_U"]["cue_revision"][condition] - expected) > 1e-12:
+            errors.append(f"cue-revision saving formula {condition}")
+        frozen_expected = saving(block["frozen"]["U"], block["frozen"][condition])
+        if abs(block["saving_vs_U"]["frozen"][condition] - frozen_expected) > 1e-12:
+            errors.append(f"frozen saving formula {condition}")
+    return errors
+
+
+def public_audit_summary() -> dict:
+    """Counts only. Case ids stay in the package files, not in this summary."""
+    pilot = verify_package()
+    revision = verify_cue_revision()
+    pilot["cue_revision"] = {
+        "cases": revision["cases"],
+        "cue_cases": revision["cue_cases"],
+        "coverage_changed": revision["coverage_changed"],
+        "frozen_record_intact": revision["frozen_record_intact"],
+        "structural_violations": revision["structural_violations"],
+        "provider_called": False,
+        "request_totals": revision["request_totals"],
+        "request_delta_vs_frozen": revision["request_delta_vs_frozen"],
+        "request_delta_vs_U": revision["request_delta_vs_U"],
+    }
+    return pilot
+
+
 def request_token_totals(bfcl_root: Path, rendered: dict[str, dict[str, list[dict]]]) -> dict[str, dict[str, int]]:
     """Count prepared requests. Messages are read and not returned."""
     from tool_compression.load import load_category

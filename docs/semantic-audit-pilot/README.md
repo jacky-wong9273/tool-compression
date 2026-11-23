@@ -27,6 +27,10 @@ Start here, then use the files below as the reporting sources.
 
 Each selected case has `rendered/<case_id>/U.json`, `S.json`, `X.json`, and `SX.json`. Those files are converted catalogue copies. They contain no question, gold call, or stored response.
 
+## Cue revision
+
+The files above are the frozen first-pilot record. A later pass keeps that record, keeps S, and compares a new set of contrast cues on the same 12 cases. It is not a shorter-wording contest and it does not rescore v1.1. Start at [cue-revision/README.md](cue-revision/README.md). Corrections to first-pilot explanations, including the ROA order sentence, the growth-tool verb, and the reading of the fact counts, are in [cue-revision/errata.md](cue-revision/errata.md). The sealed strings are not rewritten.
+
 Re-check the package with:
 
 ```bash

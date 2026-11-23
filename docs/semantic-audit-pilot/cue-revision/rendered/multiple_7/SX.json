@@ -1,0 +1,73 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "revision": "cue-revision-01",
+  "case_id": "multiple_7",
+  "category": "multiple",
+  "condition": "SX",
+  "note": "Rendered from the frozen first-pilot base plus the cue-revision cue. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "wildlife_population_assess_growth",
+        "description": "Assesses a species' population growth at a location over a period. Unlike ecological_impact_analyze, which analyzes impact on a particular ecosystem, this assesses population growth.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "Species whose growth is calculated."
+            },
+            "location": {
+              "type": "string",
+              "description": "The area where the species is present."
+            },
+            "duration": {
+              "type": "integer",
+              "description": "Time period in years."
+            }
+          },
+          "required": [
+            "species",
+            "location",
+            "duration"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "ecological_impact_analyze",
+        "description": "Analyzes the impact of a species on a particular ecosystem. Unlike wildlife_population_assess_growth, which assesses population growth, this analyzes impact on a particular ecosystem.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species whose impact is to be calculated."
+            },
+            "ecosystem": {
+              "type": "string",
+              "description": "The ecosystem being affected."
+            },
+            "location": {
+              "type": "string",
+              "description": "The area where the impact is analyzed."
+            },
+            "timeframe": {
+              "type": "integer",
+              "description": "Time period in years.",
+              "default": 5
+            }
+          },
+          "required": [
+            "species",
+            "ecosystem",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

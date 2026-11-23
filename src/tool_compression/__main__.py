@@ -149,9 +149,9 @@ def _groups(args) -> int:
 
 
 def _semantic_audit() -> int:
-    from tool_compression.semantic_audit import verify_package
+    from tool_compression.semantic_audit import public_audit_summary
 
-    print(json.dumps(verify_package(), indent=2, sort_keys=True))
+    print(json.dumps(public_audit_summary(), indent=2, sort_keys=True))
     return 0
 
 

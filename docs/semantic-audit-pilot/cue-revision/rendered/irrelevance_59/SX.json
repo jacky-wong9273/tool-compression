@@ -1,0 +1,34 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "revision": "cue-revision-01",
+  "case_id": "irrelevance_59",
+  "category": "irrelevance",
+  "condition": "SX",
+  "note": "Rendered from the frozen first-pilot base plus the cue-revision cue. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "linear_equation_solver",
+        "description": "Solve a linear equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "equation": {
+              "type": "string",
+              "description": "The linear equation to solve."
+            },
+            "variable": {
+              "type": "string",
+              "description": "The variable to solve for."
+            }
+          },
+          "required": [
+            "equation",
+            "variable"
+          ]
+        }
+      }
+    }
+  ]
+}
