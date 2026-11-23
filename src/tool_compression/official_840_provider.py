@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import json
 import os
+import socket
+import ssl
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -63,7 +65,15 @@ class LiveClient:
                 raw = response.read()
         except HTTPError as exc:
             raise UsxFlightRefused(f"provider HTTP {exc.code}") from None
-        except URLError:
+        except URLError as exc:
+            if _is_timeout(exc.reason):
+                raise UsxFlightRefused("provider timed out") from None
+            raise UsxFlightRefused("provider connection failed") from None
+        except (TimeoutError, socket.timeout):
+            raise UsxFlightRefused("provider timed out") from None
+        except ssl.SSLError as exc:
+            if _is_timeout(exc):
+                raise UsxFlightRefused("provider timed out") from None
             raise UsxFlightRefused("provider connection failed") from None
         try:
             payload = json.loads(raw.decode("utf-8"))
@@ -72,3 +82,11 @@ class LiveClient:
         if not isinstance(payload, dict):
             raise UsxFlightRefused("provider response was not an object")
         return payload
+
+
+def _is_timeout(exc: object) -> bool:
+    """True for socket timeouts and SSL read timeouts. The key is not read from the exception."""
+    if isinstance(exc, (TimeoutError, socket.timeout)):
+        return True
+    text = str(exc).lower()
+    return "timed out" in text or "timeout" in text

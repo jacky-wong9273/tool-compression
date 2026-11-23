@@ -74,3 +74,21 @@ python -m bfcl_eval evaluate \
 Repeat for `S`, `X`, and `SX`, and for `thinking-on`. `DeepSeek-V3.2-Exp-FC` is the handler alias. It is not the generation model.
 
 After scoring, fill the five contrasts from those accuracies, separately per thinking pass, and apply the irrelevance rule in [quality.md](quality.md). Leave the official v1.1 numbers where they are. Leave `official_settlement` false until Jacky separately says otherwise.
+
+## Resume onto an existing out directory
+
+The same `--live` command is the resume. It still requires the sealed 840 package, still refuses a peak minute, and still checks the off-peak reserve against the supplied ceiling. It does not take `--authorize-peak`. Point `--out` at the directory that already holds the result files. Do not delete those files and do not start a second out directory for the same flight.
+
+```bash
+export EXPLORATORY_CEILING_CNY='<the same ceiling Jacky supplied for this flight>'
+export DEEPSEEK_API_KEY='<key in the environment, not in the repo>'
+python -m tool_compression usx-840 --live \
+  --bfcl-root /path/to/gorilla/berkeley-function-call-leaderboard \
+  --out <the existing out directory>
+```
+
+A group is skipped only when every arm in that group already has a JSONL row for that thinking pass, category, and case id. A skipped group is not called again and is not appended again. A group that has only some of its arms is called. The arms that already have a row are not appended a second time.
+
+The run that stopped at 19:37 HKT on 23 November 2026 left thinking-off rows for `multiple_0` through `multiple_121`, all four arms, and no `calls-ledger.jsonl`. Resume that directory off-peak with the same ceiling. The first call is then the first thinking-off group that is not fully present, which is the first unique payload of `multiple_122`. Because those 122 cases have rows and no ledger, spend starts at `0`. `resume.json` records that the cache split for those rows is not invented. Do not lower the ceiling or the reserve to make the next call fit. A later run that does have `calls-ledger.jsonl` adds that settled spend, including the cache split, before the reserve check.
+
+`TimeoutError`, `socket.timeout`, and an SSL read timeout stop the process the same way as other provider failures. `stop.json` records the settled spend, the settled call count, and the stop reason. `calls-ledger.jsonl` is appended after each settled call, so a later crash keeps the bills. Neither file stores the API key. Official settlement stays false.

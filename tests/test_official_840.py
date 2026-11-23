@@ -28,13 +28,20 @@ from tool_compression.official_840 import (
     package_dir,
     peak_blocks,
     repo_root,
+    RESULT_VERSION_PREFIX,
     run_live,
     run_no_api_gate,
     u_path,
     verify_package,
 )
+from tool_compression.official_840_provider import LiveClient
 from tool_compression.semantic_audit import load_json, package_dir as pilot_package_dir
-from tool_compression.usx_flight import UsxFlightRefused, assert_generation_body, generation_body as systems_generation_body
+from tool_compression.usx_flight import (
+    EVALUATE_ALIAS,
+    UsxFlightRefused,
+    assert_generation_body,
+    generation_body as systems_generation_body,
+)
 
 PIN = Path("/tmp/bfcl-pin")
 SHANGHAI_SAMPLE = DRY_RUN_CLOCK.tzinfo
@@ -505,3 +512,170 @@ def test_pin_regenerates_the_gate_and_the_fresh_u(tmp_path):
             assert off["_bodies"][off_hash]["tools"] == onward["_bodies"][on_hash]["tools"]
             assert off["_bodies"][off_hash]["messages"] == onward["_bodies"][on_hash]["messages"]
             assert off_hash != on_hash
+
+
+def _result_path(root: Path, pass_name: str, arm: str) -> Path:
+    return root / "result" / f"thinking-{pass_name}" / arm / EVALUATE_ALIAS / f"{RESULT_VERSION_PREFIX}_multiple_result.json"
+
+
+def _seed_row(root: Path, pass_name: str, arm: str, case_id: str) -> None:
+    path = _result_path(root, pass_name, arm)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    row = {"id": case_id, "result": "[]", "input_token_count": 10, "output_token_count": 4, "thinking_pass": pass_name}
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row) + "\n")
+
+
+def _row_ids(root: Path, pass_name: str, arm: str) -> list[str]:
+    path = _result_path(root, pass_name, arm)
+    if not path.is_file():
+        return []
+    return [json.loads(line)["id"] for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def test_resume_skips_complete_groups_and_does_not_duplicate_partial_arms(tmp_path):
+    before = (package_dir() / "rendered" / "multiple_0" / "U.json").read_bytes()
+    frozen = (package_dir() / "checks" / "frozen-integrity.json").read_bytes()
+    plans = _synthetic_plans()
+    out = tmp_path / "resume"
+    for arm in ARMS:
+        _seed_row(out, "off", arm, "case-a")
+    _seed_row(out, "off", "U", "case-b")
+    client = ScriptedClient(_payload())
+    record = execute_plans(plans, out, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), client, sealed=True)
+    assert len(client.bodies) == 6
+    assert record["official_settlement"] is False
+    assert record["rows_without_persisted_cache_split"] is True
+    assert record["cache_split_not_reconstructed"] is True
+    assert record["starting_spend_cny"] == "0"
+    note = json.loads((out / "resume.json").read_text(encoding="utf-8"))
+    assert note["cache_split_not_reconstructed"] is True
+    assert "not invented" in note["note"]
+    assert _row_ids(out, "off", "U") == ["case-a", "case-b", "case-c"]
+    assert _row_ids(out, "off", "X") == ["case-a", "case-b", "case-c"]
+    assert _row_ids(out, "off", "S") == ["case-a", "case-b", "case-c"]
+    assert _row_ids(out, "off", "SX") == ["case-a", "case-b", "case-c"]
+    assert _row_ids(out, "on", "U") == ["case-a", "case-b", "case-c"]
+    assert SECRET not in (out / "calls-ledger.jsonl").read_text(encoding="utf-8")
+    assert (package_dir() / "rendered" / "multiple_0" / "U.json").read_bytes() == before
+    assert (package_dir() / "checks" / "frozen-integrity.json").read_bytes() == frozen
+
+    partial = tmp_path / "partial"
+    _seed_row(partial, "off", "U", "case-a")
+    caller = ScriptedClient(_payload())
+    execute_plans(plans, partial, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), caller, sealed=True)
+    assert len(caller.bodies) == 8
+    assert _row_ids(partial, "off", "U").count("case-a") == 1
+    assert _row_ids(partial, "off", "X").count("case-a") == 1
+
+    blocked = tmp_path / "ceiling"
+    for arm in ("U", "X"):
+        _seed_row(blocked, "off", arm, "case-a")
+    refused = ScriptedClient(_payload())
+    with pytest.raises(UsxFlightRefused, match="reserve"):
+        execute_plans(plans, blocked, Decimal("0.01"), lambda: _moment(2026, 11, 22, 19), refused, sealed=True)
+    assert refused.bodies == []
+    assert _row_ids(blocked, "off", "U") == ["case-a"]
+    stop = json.loads((blocked / "stop.json").read_text(encoding="utf-8"))
+    assert stop["stop_reason"] == "pre-call reserve would pass the supplied ceiling"
+    assert stop["peak_card_used"] is False
+    assert stop["starting_spend_cny"] == "0"
+    assert stop["ceiling_lifted"] is False
+
+    peaked = tmp_path / "peak-resume"
+    _seed_row(peaked, "off", "U", "case-a")
+    peaked_client = ScriptedClient(_payload())
+    with pytest.raises(UsxFlightRefused, match="peak_hours"):
+        execute_plans(plans, peaked, Decimal("1000"), lambda: _moment(2026, 11, 23, 17, 25), peaked_client, sealed=True)
+    assert peaked_client.bodies == []
+    assert _row_ids(peaked, "off", "U") == ["case-a"]
+    assert json.loads((peaked / "stop.json").read_text(encoding="utf-8"))["peak_card_used"] is False
+
+
+def test_timeout_writes_stop_and_keeps_a_settled_ledger(tmp_path):
+    out = tmp_path / "timeout"
+    out.mkdir()
+    settled = {
+        "case_id": "multiple_0",
+        "cell": "multiple_0:off",
+        "thinking": "off",
+        "arms": ["U", "S", "X", "SX"],
+        "shared": True,
+        "schedule": "off-peak",
+        "bill": {
+            "spend_cny": "1.25",
+            "T": 10,
+            "cache_hit_tokens": 4,
+            "cache_miss_tokens_billed": 6,
+            "output_tokens": 2,
+        },
+        "provider_called": True,
+    }
+    (out / "calls-ledger.jsonl").write_text(json.dumps(settled) + "\n", encoding="utf-8")
+
+    class TimeoutClient:
+        def __init__(self):
+            self.bodies = []
+
+        def complete(self, body):
+            self.bodies.append(body)
+            raise TimeoutError("The read operation timed out")
+
+    client = TimeoutClient()
+    with pytest.raises(UsxFlightRefused, match="provider timed out"):
+        execute_plans(_synthetic_plans(), out, Decimal("1000"), lambda: _moment(2026, 11, 22, 19), client, sealed=True)
+    assert len(client.bodies) == 1
+    stop = json.loads((out / "stop.json").read_text(encoding="utf-8"))
+    assert stop["stop_reason"] == "provider timed out"
+    assert stop["spend_cny"] == "1.25"
+    assert stop["calls_already_settled"] == 1
+    assert stop["official_settlement"] is False
+    assert stop["api_key_in_record"] is False
+    assert not (out / "live.json").exists()
+    ledger = (out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(ledger) == 1
+    assert json.loads(ledger[0])["bill"]["cache_hit_tokens"] == 4
+    assert SECRET not in ledger[0]
+
+    tight = tmp_path / "ledger-ceiling"
+    tight.mkdir()
+    (tight / "calls-ledger.jsonl").write_text(json.dumps(settled) + "\n", encoding="utf-8")
+    held = ScriptedClient(_payload())
+    with pytest.raises(UsxFlightRefused, match="reserve"):
+        execute_plans(_synthetic_plans(), tight, Decimal("3"), lambda: _moment(2026, 11, 22, 19), held, sealed=True)
+    assert held.bodies == []
+    assert (tight / "calls-ledger.jsonl").read_text(encoding="utf-8").count("\n") == 1
+    ceiling_stop = json.loads((tight / "stop.json").read_text(encoding="utf-8"))
+    assert ceiling_stop["spend_cny"] == "1.25"
+    assert ceiling_stop["calls_already_settled"] == 1
+    assert ceiling_stop["peak_card_used"] is False
+
+
+def test_provider_timeout_is_a_refusal_and_does_not_include_the_key():
+    import socket
+    import ssl
+
+    body = generation_body([{"role": "user", "content": "synthetic"}], [], "off")
+
+    def raise_timeout(*_args, **_kwargs):
+        raise TimeoutError("timed out")
+
+    client = LiveClient(SECRET, opener=raise_timeout)
+    with pytest.raises(UsxFlightRefused, match="provider timed out") as caught:
+        client.complete(body)
+    assert SECRET not in str(caught.value)
+
+    def raise_socket_timeout(*_args, **_kwargs):
+        raise socket.timeout("timed out")
+
+    client = LiveClient(SECRET, opener=raise_socket_timeout)
+    with pytest.raises(UsxFlightRefused, match="provider timed out"):
+        client.complete(body)
+
+    def raise_ssl(*_args, **_kwargs):
+        raise ssl.SSLError("The read operation timed out")
+
+    client = LiveClient(SECRET, opener=raise_ssl)
+    with pytest.raises(UsxFlightRefused, match="provider timed out") as ssl_caught:
+        client.complete(body)
+    assert SECRET not in str(ssl_caught.value)

@@ -16,6 +16,9 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 import json
+import os
+import socket
+import ssl
 
 from tool_compression.config import BFCL_DEFAULT_TEMPERATURE, BFCL_STORE
 from tool_compression.convert import to_openai_completions_tools
@@ -900,7 +903,12 @@ def run_live(bfcl_root: Path, out: Path, ceiling: Decimal, clock, client) -> dic
 
 
 def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client, *, sealed: bool, official_package: bool = False) -> dict:
-    """Send planned bodies. Tests pass a scripted client. Official entry requires the full sample."""
+    """Send planned bodies. Tests pass a scripted client. Official entry requires the full sample.
+
+    A directory that already has result rows is a resume. A group is skipped only when
+    every arm already has a row for that thinking pass, category, and case. Spend starts
+    from the calls ledger when one is present. Result rows alone do not invent a cache split.
+    """
     if sealed is not True:
         raise UsxFlightRefused("official 840 set is not fully sealed")
     _assert_pass_order(plans)
@@ -910,19 +918,21 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
             raise UsxFlightRefused("official 840 set is not fully sealed")
         if [plan["case_id"] for plan in plans if plan["thinking"] == "on"] != case_ids:
             raise UsxFlightRefused("thinking-on pass is not the same catalogues")
-    spent = Decimal("0")
-    calls = []
     out = Path(out)
     result_root = out / "result"
+    spent, calls, resume = _resume_state(out)
+    ledger_path = out / "calls-ledger.jsonl"
     for plan in plans:
         for group in plan["groups"]:
+            if _group_complete(result_root, plan, group):
+                continue
             moment = clock()
             if peak_blocks(moment):
-                _write_stop(out, spent, "peak", "peak_hours", ceiling, calls)
+                _write_stop(out, spent, "peak", "peak_hours", ceiling, calls, resume)
                 raise UsxFlightRefused("peak_hours")
             reserve = offpeak_reserve()
             if not remaining_allows_call(spent, ceiling, reserve):
-                _write_stop(out, spent, "off-peak", "pre-call reserve would pass the supplied ceiling", ceiling, calls)
+                _write_stop(out, spent, "off-peak", "pre-call reserve would pass the supplied ceiling", ceiling, calls, resume)
                 raise UsxFlightRefused("pre-call reserve would pass the supplied ceiling")
             if client is None:
                 client = build_live_client()
@@ -930,9 +940,18 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
             assert_official_body(body)
             if body["thinking"] != thinking_body(plan["thinking"]):
                 raise UsxFlightRefused("thinking field does not match the pass")
-            payload = client.complete(body)
+            try:
+                payload = client.complete(body)
+            except UsxFlightRefused as exc:
+                _write_stop(out, spent, "off-peak", str(exc), ceiling, calls, resume)
+                raise
+            except (TimeoutError, socket.timeout, ssl.SSLError) as exc:
+                reason = "provider timed out" if _provider_timeout(exc) else "provider connection failed"
+                _write_stop(out, spent, "off-peak", reason, ceiling, calls, resume)
+                raise UsxFlightRefused(reason) from None
             bill = usage_bill("off-peak", payload.get("usage") if isinstance(payload, dict) else None)
             if bill["schedule"] != "off-peak":
+                _write_stop(out, spent, "off-peak", "peak card used", ceiling, calls, resume)
                 raise UsxFlightRefused("peak card used")
             spent += Decimal(bill["spend_cny"])
             observation = {
@@ -950,22 +969,31 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
                 "provider_called": True,
             }
             calls.append(observation)
-            if spent > ceiling:
-                _write_stop(out, spent, "off-peak", "settled spend passed the supplied ceiling", ceiling, calls)
-                raise UsxFlightRefused("settled spend passed the supplied ceiling")
-            if not isinstance(payload, dict) or not payload.get("choices"):
-                _write_stop(out, spent, "off-peak", "provider response had no choice", ceiling, calls)
-                raise UsxFlightRefused("provider response had no choice")
-            if plan["thinking"] == "off" and not _thinking_stayed_off(payload):
-                _write_stop(out, spent, "off-peak", "provider response included thinking on the thinking-off pass", ceiling, calls)
-                raise UsxFlightRefused("provider response included thinking on the thinking-off pass")
-            for arm in group["arms"]:
-                _append_result(result_root, plan["thinking"], arm, plan["category"], plan["case_id"], payload, bill)
+            try:
+                _append_ledger(ledger_path, observation)
+                if spent > ceiling:
+                    _write_stop(out, spent, "off-peak", "settled spend passed the supplied ceiling", ceiling, calls, resume)
+                    raise UsxFlightRefused("settled spend passed the supplied ceiling")
+                if not isinstance(payload, dict) or not payload.get("choices"):
+                    _write_stop(out, spent, "off-peak", "provider response had no choice", ceiling, calls, resume)
+                    raise UsxFlightRefused("provider response had no choice")
+                if plan["thinking"] == "off" and not _thinking_stayed_off(payload):
+                    _write_stop(out, spent, "off-peak", "provider response included thinking on the thinking-off pass", ceiling, calls, resume)
+                    raise UsxFlightRefused("provider response included thinking on the thinking-off pass")
+                for arm in group["arms"]:
+                    if _case_arm_present(result_root, plan["thinking"], arm, plan["category"], plan["case_id"]):
+                        continue
+                    _append_result(result_root, plan["thinking"], arm, plan["category"], plan["case_id"], payload, bill)
+            except UsxFlightRefused:
+                raise
+            except Exception:
+                _write_stop(out, spent, "off-peak", "crash after a settled call", ceiling, calls, resume)
+                raise
     record = {
         "purpose": PURPOSE,
         "official_settlement": False,
         "live": True,
-        "provider_called": True,
+        "provider_called": bool(calls),
         "peak_card_used": False,
         "spend_cny": format(spent, "f"),
         "ceiling_cny": format(ceiling, "f"),
@@ -973,12 +1001,121 @@ def execute_plans(plans: list[dict], out: Path, ceiling: Decimal, clock, client,
         "calls": calls,
         "quality": quality_block(),
     }
+    record.update(resume)
     out.mkdir(parents=True, exist_ok=True)
     (out / "live.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     return record
 
 
-def _write_stop(out: Path, spent: Decimal, schedule: str, reason: str, ceiling: Decimal, calls: list) -> None:
+def _provider_timeout(exc: BaseException) -> bool:
+    if isinstance(exc, (TimeoutError, socket.timeout)):
+        return True
+    text = str(exc).lower()
+    return "timed out" in text or "timeout" in text
+
+
+def _resume_state(out: Path) -> tuple[Decimal, list, dict]:
+    """Load settled spend from the ledger. Result rows alone do not reconstruct a cache split."""
+    calls = _load_ledger(out / "calls-ledger.jsonl")
+    spent = Decimal("0")
+    for call in calls:
+        spent += Decimal(call["bill"]["spend_cny"])
+    rows = _any_result_rows(out / "result")
+    missing_split = bool(rows) and not calls
+    resume = {
+        "starting_spend_cny": format(spent, "f"),
+        "ledger_calls_loaded": len(calls),
+        "rows_without_persisted_cache_split": missing_split,
+        "cache_split_not_reconstructed": missing_split,
+    }
+    if missing_split:
+        out.mkdir(parents=True, exist_ok=True)
+        note = {
+            "purpose": PURPOSE,
+            "official_settlement": False,
+            "api_key_in_record": False,
+            "note": (
+                "Result rows were already on disk and no calls ledger was present. "
+                "Spend starts at 0. The cache split for those rows is not invented. "
+                "The operator must pass the same ceiling. Protections are not lowered."
+            ),
+        }
+        note.update(resume)
+        (out / "resume.json").write_text(json.dumps(note, indent=2) + "\n", encoding="utf-8")
+    return spent, calls, resume
+
+
+def _load_ledger(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    lines = path.read_text(encoding="utf-8").splitlines()
+    calls = []
+    for index, line in enumerate(lines):
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            if index == len(lines) - 1:
+                break
+            raise UsxFlightRefused("calls ledger is corrupt")
+        bill = item.get("bill") if isinstance(item, dict) else None
+        if not isinstance(bill, dict) or "spend_cny" not in bill:
+            raise UsxFlightRefused("calls ledger is corrupt")
+        calls.append(item)
+    return calls
+
+
+def _append_ledger(path: Path, observation: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    line = json.dumps(observation, ensure_ascii=False)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(line + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _any_result_rows(result_root: Path) -> bool:
+    if not result_root.is_dir():
+        return False
+    for path in result_root.rglob("*_result.json"):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                return True
+    return False
+
+
+def _group_complete(result_root: Path, plan: dict, group: dict) -> bool:
+    return all(
+        _case_arm_present(result_root, plan["thinking"], arm, plan["category"], plan["case_id"])
+        for arm in group["arms"]
+    )
+
+
+def _case_arm_present(result_root: Path, pass_name: str, arm: str, category: str, case_id: str) -> bool:
+    path = _result_file(result_root, pass_name, arm, category)
+    if not path.is_file():
+        return False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            raise UsxFlightRefused("result row is not JSON")
+        if row.get("id") != case_id:
+            continue
+        if "thinking_pass" in row and row["thinking_pass"] != pass_name:
+            continue
+        return True
+    return False
+
+
+def _result_file(result_root: Path, pass_name: str, arm: str, category: str) -> Path:
+    return result_root / f"thinking-{pass_name}" / arm / EVALUATE_ALIAS / f"{RESULT_VERSION_PREFIX}_{category}_result.json"
+
+
+def _write_stop(out: Path, spent: Decimal, schedule: str, reason: str, ceiling: Decimal, calls: list, resume: dict | None = None) -> None:
     out.mkdir(parents=True, exist_ok=True)
     record = {
         "purpose": PURPOSE,
@@ -994,13 +1131,14 @@ def _write_stop(out: Path, spent: Decimal, schedule: str, reason: str, ceiling: 
         "ceiling_lifted": False,
         "calls_already_settled": len(calls),
     }
+    if resume:
+        record.update(resume)
     (out / "stop.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
 
 
 def _append_result(result_root: Path, pass_name: str, arm: str, category: str, case_id: str, payload: dict, bill: dict) -> None:
-    directory = result_root / f"thinking-{pass_name}" / arm / EVALUATE_ALIAS
-    directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"{RESULT_VERSION_PREFIX}_{category}_result.json"
+    path = _result_file(result_root, pass_name, arm, category)
+    path.parent.mkdir(parents=True, exist_ok=True)
     row = {
         "id": case_id,
         "result": _fc_result(payload),
