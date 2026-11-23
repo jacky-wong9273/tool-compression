@@ -35,12 +35,14 @@ from tool_compression.runner import (
     select_validation_sample,
 )
 from tool_compression.exploratory import ExploratoryFlightRefused, accept_ceiling
-from tool_compression.exploratory_audit import load_hash_rows, write_audit
+from tool_compression.exploratory_audit import load_hash_rows, write_audit, write_full_catalogue_audit
 from tool_compression.exploratory_flight import (
     execute_exploratory_flight,
     exploratory_record,
+    full_catalogue_record,
     live_client,
     prepare_exploratory_flight,
+    prepare_full_catalogue_flight,
     score_live_outputs,
 )
 from tool_compression.external import public_report, run_arm_e
@@ -141,6 +143,34 @@ def main(argv: list[str] | None = None) -> int:
     exploratory.add_argument("--live", action="store_true", help="Start the provider flight. Omit this to plan only.")
     exploratory.add_argument("--score", action="store_true", help="After a live flight, run bfcl evaluate on saved outputs.")
 
+    full_audit = sub.add_parser(
+        "full-catalogue-audit",
+        help="Audit settings A and B offline and write the 840-case plan index. Does not call a provider.",
+    )
+    full_audit.add_argument("--bfcl-root", required=True, type=Path)
+    full_audit.add_argument("--out", required=True, type=Path)
+    full_audit.add_argument("--official-hashes", type=Path)
+    full_audit.add_argument("--h50-hashes", type=Path)
+
+    full_flight = sub.add_parser(
+        "full-catalogue-flight",
+        help=(
+            "Plan a later full-catalogue flight for setting A or B. "
+            "Does not call DeepSeek unless --live is set. The ceiling has no default. "
+            "Cases identical to official L stay in the plan."
+        ),
+    )
+    full_flight.add_argument("--setting", required=True, choices=("A", "B"))
+    full_flight.add_argument(
+        "--ceiling-cny",
+        help="Runtime CNY ceiling. Required for a plan or a live flight. There is no default.",
+    )
+    full_flight.add_argument("--audit", type=Path)
+    full_flight.add_argument("--bfcl-root", required=True, type=Path)
+    full_flight.add_argument("--out", required=True, type=Path)
+    full_flight.add_argument("--live", action="store_true", help="Start the provider flight. Omit this to plan only.")
+    full_flight.add_argument("--score", action="store_true", help="After a live flight, run bfcl evaluate on saved outputs.")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -162,6 +192,10 @@ def main(argv: list[str] | None = None) -> int:
         return _exploratory_audit(args)
     if args.command == "exploratory-flight":
         return _exploratory_flight(args)
+    if args.command == "full-catalogue-audit":
+        return _full_catalogue_audit(args)
+    if args.command == "full-catalogue-flight":
+        return _full_catalogue_flight(args)
     return 2
 
 
@@ -470,6 +504,90 @@ def _score_saved_outputs(args) -> int:
         return 1
     print("command=evaluate generation_started=false")
     return 0
+
+
+def _full_catalogue_audit(args) -> int:
+    from tool_compression.count import study_counters
+    from tool_compression.load import load_study
+
+    root = _repo_root()
+    official_path = args.official_hashes or root / "evidence" / "week1_request_hashes.jsonl"
+    h50_path = args.h50_hashes or root / "evidence" / "exploratory" / "h50_request_hashes.jsonl"
+    budget, sensitivity = study_counters()
+    study = load_study(args.bfcl_root)
+    payload = write_full_catalogue_audit(
+        study,
+        load_hash_rows(official_path),
+        load_hash_rows(h50_path),
+        args.out,
+        budget,
+        sensitivity,
+        bfcl_root=args.bfcl_root,
+        counter=budget,
+    )
+    for label, setting in payload["settings"].items():
+        print(
+            f"{label} plan_ready={setting['full_catalogue_plan_ready']} "
+            f"reason={setting['full_catalogue_reason']} "
+            f"identical_to_official_l={setting['identical_to_official_l']} "
+            f"cases_planned={setting['cases_planned']} "
+            f"cases_with_new_request={setting['cases_with_new_request']} "
+            f"provider_called={setting['provider_called']} network_used={setting['network_used']} "
+            f"paid_call_started={setting['paid_call_started']}"
+        )
+    pinned = payload["official_hash_reproduction"]["matched"] and payload["data_pin"]["matched"]
+    return 0 if pinned and payload["paid_call_started"] is False else 1
+
+
+def _full_catalogue_flight(args) -> int:
+    from tool_compression.count import study_counters
+    from tool_compression.load import load_study
+
+    if args.score and not args.live:
+        return _score_saved_outputs(args)
+    try:
+        ceiling = accept_ceiling(args.ceiling_cny)
+    except ExploratoryFlightRefused as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    root = _repo_root()
+    audit_path = args.audit or root / "evidence" / "full-catalogue" / "audit.json"
+    try:
+        audit = json.loads(Path(audit_path).read_text(encoding="utf-8"))
+        setting = audit["settings"][args.setting]
+    except (OSError, json.JSONDecodeError, KeyError) as exc:
+        print(f"full-catalogue audit is unreadable: {exc}", file=sys.stderr)
+        return 1
+    try:
+        counter = study_counters()[0]
+        study = load_study(args.bfcl_root)
+        summary, plans = prepare_full_catalogue_flight(
+            study, args.setting, ceiling, setting, args.out, counter
+        )
+        if not args.live:
+            print(
+                f"setting={args.setting} started=false live=false provider_called=false "
+                f"network_used=false paid_call_started=false "
+                f"groups_planned={summary['groups_planned']} "
+                f"cases_planned={summary['cases_planned']} stop_reason=not_started"
+            )
+            return 0
+        record = full_catalogue_record(args.setting, ceiling)
+        client = live_client(record)
+        summary = execute_exploratory_flight(
+            record, plans, ceiling, args.out, client=client, live=True
+        )
+        if args.score:
+            summary = score_live_outputs(summary, args.bfcl_root, args.out)
+        print(
+            f"setting={args.setting} provider_called={summary['provider_called']} "
+            f"network_used={summary['network_used']} paid_call_started={summary['paid_call_started']} "
+            f"stop_reason={summary['stop_reason']} ok={summary.get('ok')}"
+        )
+        return 0 if summary.get("ok") else 2
+    except (ExploratoryFlightRefused, MissingApiKey) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
 
 def _exploratory_flight(args) -> int:

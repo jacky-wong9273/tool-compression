@@ -1,0 +1,1990 @@
+{
+  "base_commit": "33f29512170f065faad08415f0e48dcbadac09d1",
+  "comparison": {
+    "denominator_note": "Local o200k_base sums count the prepared request serialization. Official S_LU uses provider prompt_tokens on the primary cohort. Those denominators differ. Local savings do not revise S_LU.",
+    "exploratory_only": true,
+    "local_o200k_base": {
+      "all_840": {
+        "A": 174189,
+        "B": 174224,
+        "U": 177291,
+        "official_L": 174224
+      },
+      "by_category": {
+        "irrelevance": {
+          "A": 37596,
+          "B": 37596,
+          "U": 38560,
+          "official_L": 37596
+        },
+        "multiple": {
+          "A": 70709,
+          "B": 70732,
+          "U": 72135,
+          "official_L": 70732
+        },
+        "simple_python": {
+          "A": 65884,
+          "B": 65896,
+          "U": 66596,
+          "official_L": 65896
+        }
+      },
+      "primary_saving_versus_U": {
+        "A": {
+          "denominator": 72135,
+          "denominator_kind": "local_o200k_base_sum_primary",
+          "numerator": 1426,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        },
+        "B": {
+          "denominator": 72135,
+          "denominator_kind": "local_o200k_base_sum_primary",
+          "numerator": 1403,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        },
+        "official_L": {
+          "denominator": 72135,
+          "denominator_kind": "local_o200k_base_sum_primary",
+          "numerator": 1403,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        }
+      },
+      "saving_versus_U_all_840": {
+        "A": {
+          "denominator": 177291,
+          "denominator_kind": "local_o200k_base_sum_all_840",
+          "numerator": 3102,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        },
+        "B": {
+          "denominator": 177291,
+          "denominator_kind": "local_o200k_base_sum_all_840",
+          "numerator": 3067,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        },
+        "official_L": {
+          "denominator": 177291,
+          "denominator_kind": "local_o200k_base_sum_all_840",
+          "numerator": 3067,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        }
+      },
+      "saving_versus_official_L_all_840": {
+        "A": {
+          "denominator": 174224,
+          "denominator_kind": "local_o200k_base_sum_official_L_all_840",
+          "numerator": 35,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        },
+        "B": {
+          "denominator": 174224,
+          "denominator_kind": "local_o200k_base_sum_official_L_all_840",
+          "numerator": 0,
+          "provider_T": false,
+          "revises_official_S_LU": false
+        }
+      }
+    },
+    "local_sums_are_not_provider_T": true,
+    "local_tokenizer": "o200k_base",
+    "official_billed": {
+      "S_LU": "1398/121018",
+      "S_LU_approximation": "1.155%",
+      "U": 121018,
+      "all_840_provider_T": null,
+      "basis": "provider_prompt_tokens",
+      "cache_subtracted": false,
+      "cohort": "primary multiple 200",
+      "derived_L": 119620,
+      "derived_L_note": "Subtract the closed S_LU numerator from the recorded primary U T.",
+      "price_weighted": false,
+      "provider_T_A": null,
+      "provider_T_B": null,
+      "three_case_h50_provider_figures_spliced": false
+    },
+    "provider_T_for_unflown_arms": {
+      "A": null,
+      "B": null
+    },
+    "revises_official_C_versus_U": false,
+    "revises_official_S_LU": false
+  },
+  "counting": {
+    "budget_backend": "tiktoken-0.14.0",
+    "budget_tokenizer": "o200k_base",
+    "provider_usage_measured": false,
+    "sensitivity_tokenizer_not_used_for_selection": "cl100k_base"
+  },
+  "data_pin": {
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "files": {
+      "BFCL_v4_irrelevance.json": "2b6ed4c2e992cdcf5f1678a701851f944bef7550ee026ed1ddb89efed5be01a6",
+      "BFCL_v4_multiple.json": "aef168155ebd74b7ac2401198b201343bc7d16d7a3d7e0d4e6d8ee82c6969b2a",
+      "BFCL_v4_simple_python.json": "82dd63ba502eb2520c6b5d1d9a5c4b590e03ff261565175561f6228a367d1991"
+    },
+    "matched": true,
+    "mismatches": []
+  },
+  "decoder_alias_is_scoring_only": true,
+  "denominators": {
+    "irrelevance": 240,
+    "multiple": 200,
+    "simple_python": 400
+  },
+  "evaluation_method": "bfcl evaluate from saved outputs",
+  "generation_model_when_flown": "deepseek-flash",
+  "h50_reconfirmation": {
+    "cases": 840,
+    "complete_requests_identical": true,
+    "different_cases": 0,
+    "different_ids": [],
+    "identical_cases": 840,
+    "left": "setting A",
+    "right": "H50"
+  },
+  "lambda_or_protections_loosened_to_force_a_difference": false,
+  "later_live_run": {
+    "authorized_total_cny": "50",
+    "billed_basis_field": "billed_basis_T_prompt_tokens",
+    "cache_subtracted": false,
+    "cases_in_plan": 840,
+    "ceiling_environment_name": "EXPLORATORY_CEILING_CNY",
+    "ceiling_flag": "--ceiling-cny",
+    "code_reads_environment": false,
+    "command": "full-catalogue-flight",
+    "decoder_alias": "DeepSeek-V3.2-Exp-FC",
+    "decoder_generates": false,
+    "default_in_code": false,
+    "generation_model": "deepseek-flash",
+    "max_calls_before_reserve_stops": 18,
+    "per_case_field": "input_token_count",
+    "pre_call_reserve_cny": "2.572864",
+    "price_weighted": false,
+    "remaining_authorized_cny": "48.74670004",
+    "reserve_changed": false,
+    "scoring": "bfcl evaluate on saved outputs",
+    "splice_three_case_h50": false,
+    "thinking": "disabled",
+    "this_package_starts_live": false
+  },
+  "local_sums_are_not_provider_T": true,
+  "network_used": false,
+  "official_baseline_closed": true,
+  "official_compressor": "week1.0 P/I/C",
+  "official_hash_reproduction": {
+    "cases": 840,
+    "config": "week1.0",
+    "local_token_sums": {
+      "by_category": {
+        "irrelevance": {
+          "C": 37596,
+          "I": 37596,
+          "P": 37596,
+          "U": 38560
+        },
+        "multiple": {
+          "C": 70732,
+          "I": 70732,
+          "P": 70732,
+          "U": 72135
+        },
+        "simple_python": {
+          "C": 65896,
+          "I": 65896,
+          "P": 65896,
+          "U": 66596
+        }
+      },
+      "local_only": true,
+      "provider_T": false,
+      "tokenizer": "o200k_base"
+    },
+    "matched": true,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "retention_r": "3/4"
+  },
+  "official_result": {
+    "S_LU": "1398/121018",
+    "S_LU_approximation": "1.155%",
+    "label": "L",
+    "lambda": "1/2",
+    "model": "deepseek-flash",
+    "model_version": "DeepSeek-V4.1-Flash-1017",
+    "primary_U_provider_prompt_tokens": 121018,
+    "primary_accuracy": {
+      "E": "186/200",
+      "L": "185/200",
+      "U": "186/200"
+    },
+    "retention_r": "3/4",
+    "retuned_by_this_package": false,
+    "target_lowered": false,
+    "target_provider_input_reduction": "1/10",
+    "thinking": "disabled"
+  },
+  "official_result_rewritten": false,
+  "official_target_lowered": false,
+  "paid_call_started": false,
+  "pins": {
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "bfcl_repository": "https://github.com/ShishirPatil/gorilla",
+    "conversion": "convert_to_tool(..., GORILLA_TO_OPENAPI, OPENAI_COMPLETIONS)",
+    "handler": "OpenAICompletionsHandler._query_FC",
+    "tscg_commit": "dfcba63d6190285c45a7c412268dbcc757664ab2",
+    "tscg_package": "@tscg/core",
+    "tscg_repository": "https://github.com/SKZL-AI/tscg",
+    "tscg_version": "1.4.3"
+  },
+  "provider_called": false,
+  "revises_official_C_versus_U": false,
+  "sample_size": 840,
+  "settings": {
+    "A": {
+      "arms_separate": false,
+      "cap_was_loosened": false,
+      "cases": 840,
+      "cases_identical_to_official_l": 837,
+      "cases_planned": 840,
+      "cases_with_new_request": 3,
+      "categories": {
+        "irrelevance": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 0,
+          "category": "irrelevance",
+          "contrast_activity_f": {
+            "denominator": 240,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 37596,
+              "I": 37596,
+              "P": 37596,
+              "U": 38560
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "I": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "P": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "U": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 38560,
+                "sum_variant": 38560
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 240,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 240,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 0,
+            "I": 0,
+            "P": 0
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 85,
+            "I": 85,
+            "P": 85
+          },
+          "preparation_failures": 0,
+          "prepared_records": 240,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 0,
+            "cases_identical": 240,
+            "complete_requests_identical": true
+          },
+          "request_identity_versus_u": {
+            "cases_different": 85,
+            "cases_identical": 155,
+            "complete_requests_identical": false
+          },
+          "role": "control",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 16,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 0,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10518,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 5502,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 873,
+                  "uplift_multi_span": 191,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 16,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 0,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10518,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 5502,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 873,
+                  "uplift_multi_span": 191,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 16,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 136,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10518,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 5502,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 873,
+                  "uplift_multi_span": 191,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 933,
+              "fields": 873,
+              "multi_span": 191,
+              "single_span": 682
+            },
+            "I": {
+              "description_fields": 933,
+              "fields": 873,
+              "multi_span": 191,
+              "single_span": 682
+            },
+            "P": {
+              "description_fields": 933,
+              "fields": 873,
+              "multi_span": 191,
+              "single_span": 682
+            }
+          }
+        },
+        "multiple": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 1,
+          "category": "multiple",
+          "contrast_activity_f": {
+            "denominator": 200,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 70709,
+              "I": 70709,
+              "P": 70709,
+              "U": 72135
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.019768,
+                "sum_baseline": 72135,
+                "sum_variant": 70709
+              },
+              "I": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.019768,
+                "sum_baseline": 72135,
+                "sum_variant": 70709
+              },
+              "P": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.019768,
+                "sum_baseline": 72135,
+                "sum_variant": 70709
+              },
+              "U": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 72135,
+                "sum_variant": 72135
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 200,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 200,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 1,
+            "I": 1,
+            "P": 1
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 89,
+            "I": 89,
+            "P": 89
+          },
+          "preparation_failures": 0,
+          "prepared_records": 200,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 1,
+            "cases_identical": 199,
+            "complete_requests_identical": false
+          },
+          "request_identity_versus_u": {
+            "cases_different": 89,
+            "cases_identical": 111,
+            "complete_requests_identical": false
+          },
+          "role": "primary",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 30,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 198,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 200,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 0,
+                  "tokens_achieved": 23498,
+                  "tokens_budget": 23554,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 11960,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 2014,
+                  "uplift_multi_span": 389,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 30,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 198,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 200,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 0,
+                  "tokens_achieved": 23498,
+                  "tokens_budget": 23554,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 11960,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 2014,
+                  "uplift_multi_span": 389,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 30,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 198,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 200,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 198,
+                  "tokens_achieved": 23498,
+                  "tokens_budget": 23554,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 11960,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 2014,
+                  "uplift_multi_span": 389,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 2101,
+              "fields": 2014,
+              "multi_span": 389,
+              "single_span": 1625
+            },
+            "I": {
+              "description_fields": 2101,
+              "fields": 2014,
+              "multi_span": 389,
+              "single_span": 1625
+            },
+            "P": {
+              "description_fields": 2101,
+              "fields": 2014,
+              "multi_span": 389,
+              "single_span": 1625
+            }
+          }
+        },
+        "simple_python": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 2,
+          "category": "simple_python",
+          "contrast_activity_f": {
+            "denominator": 400,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 65884,
+              "I": 65884,
+              "P": 65884,
+              "U": 66596
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010691,
+                "sum_baseline": 66596,
+                "sum_variant": 65884
+              },
+              "I": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010691,
+                "sum_baseline": 66596,
+                "sum_variant": 65884
+              },
+              "P": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010691,
+                "sum_baseline": 66596,
+                "sum_variant": 65884
+              },
+              "U": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 66596,
+                "sum_variant": 66596
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 400,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 400,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 2,
+            "I": 2,
+            "P": 2
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 80,
+            "I": 80,
+            "P": 80
+          },
+          "preparation_failures": 0,
+          "prepared_records": 400,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 2,
+            "cases_identical": 398,
+            "complete_requests_identical": false
+          },
+          "request_identity_versus_u": {
+            "cases_different": 80,
+            "cases_identical": 320,
+            "complete_requests_identical": false
+          },
+          "role": "control",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 21,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 94,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 98,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 0,
+                  "tokens_achieved": 18178,
+                  "tokens_budget": 18214,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 9077,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1540,
+                  "uplift_multi_span": 302,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 21,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 94,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 98,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 0,
+                  "tokens_achieved": 18178,
+                  "tokens_budget": 18214,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 9077,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1540,
+                  "uplift_multi_span": 302,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 21,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 94,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 98,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 94,
+                  "tokens_achieved": 18178,
+                  "tokens_budget": 18214,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 9077,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1540,
+                  "uplift_multi_span": 302,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 1570,
+              "fields": 1540,
+              "multi_span": 302,
+              "single_span": 1238
+            },
+            "I": {
+              "description_fields": 1570,
+              "fields": 1540,
+              "multi_span": 302,
+              "single_span": 1238
+            },
+            "P": {
+              "description_fields": 1570,
+              "fields": 1540,
+              "multi_span": 302,
+              "single_span": 1238
+            }
+          }
+        }
+      },
+      "coverage_complete": true,
+      "differing_only_reason": "complete_requests_differ_from_U_and_official_L",
+      "differing_only_would_send": true,
+      "drops_identical_to_official_l": false,
+      "failures": [],
+      "flyable": true,
+      "flyable_reason": "complete_requests_differ_from_U_and_official_L",
+      "full_catalogue_plan_ready": true,
+      "full_catalogue_reason": "full_catalogue_includes_every_prepared_case",
+      "identical_to_official_l": false,
+      "identical_to_u": false,
+      "identity": {
+        "c_minus_i_cases": 0,
+        "c_minus_i_fields": 0,
+        "complete_requests_identical_to_official_l": false,
+        "complete_requests_identical_to_u": false,
+        "contrast_activity_f": {
+          "irrelevance": {
+            "denominator": 240,
+            "numerator": 0
+          },
+          "multiple": {
+            "denominator": 200,
+            "numerator": 0
+          },
+          "simple_python": {
+            "denominator": 400,
+            "numerator": 0
+          }
+        },
+        "p_i_c_coincide": true,
+        "p_i_c_coincide_cases": 840,
+        "p_i_c_diverge_cases": 0,
+        "versus_official_l": {
+          "cases_different": 3,
+          "cases_identical": 837
+        },
+        "versus_u": {
+          "cases_different": 254,
+          "cases_identical": 586
+        }
+      },
+      "jaccard_min": "1/5",
+      "label": "A",
+      "lambda": "1/2",
+      "lambda_loosened_to_force_a_difference": false,
+      "local_token_sums": {
+        "local_only": true,
+        "p_i_c_sums_equal": true,
+        "provider_T": false,
+        "shared_sum": 174189,
+        "sums": {
+          "C": 174189,
+          "I": 174189,
+          "P": 174189,
+          "U": 177291
+        },
+        "tokenizer": "o200k_base"
+      },
+      "max_neighbours": 2,
+      "network_used": false,
+      "new_request_ids": [
+        "multiple/multiple_40",
+        "simple_python/simple_python_99",
+        "simple_python/simple_python_316"
+      ],
+      "p_i_c_coincide": true,
+      "p_i_c_coincide_cases": 840,
+      "p_i_c_diverge_cases": 0,
+      "paid_call_started": false,
+      "plan": {
+        "cases_planned": 840,
+        "cases_with_new_request": 3,
+        "ceiling_supplied": false,
+        "drops_identical_to_official_l": false,
+        "groups": 840,
+        "identical_to_official_l_cases_planned": 837,
+        "live": false,
+        "network_used": false,
+        "paid_call_started": false,
+        "provider_called": false,
+        "started": false
+      },
+      "protections_loosened": false,
+      "provider_called": false,
+      "ready_for_evaluation": true,
+      "reporting_label": "A",
+      "retention_decimal": "0.50",
+      "retention_r": "1/2",
+      "spec_version": "exploratory.a.r50.lambda12.2026-11-23",
+      "structural_violations": 0,
+      "tuned": false,
+      "u_hash_mismatches": [],
+      "unique_request_groups_u_and_setting": {
+        "all_categories": 1094,
+        "includes_E": false,
+        "irrelevance": 325,
+        "label_when_p_i_c_coincide": "A",
+        "multiple": 289,
+        "simple_python": 480
+      }
+    },
+    "B": {
+      "arms_separate": false,
+      "cap_was_loosened": false,
+      "cases": 840,
+      "cases_identical_to_official_l": 840,
+      "cases_planned": 840,
+      "cases_with_new_request": 0,
+      "categories": {
+        "irrelevance": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 0,
+          "category": "irrelevance",
+          "contrast_activity_f": {
+            "denominator": 240,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 37596,
+              "I": 37596,
+              "P": 37596,
+              "U": 38560
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "I": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "P": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.025,
+                "sum_baseline": 38560,
+                "sum_variant": 37596
+              },
+              "U": {
+                "local_only": true,
+                "n": 240,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 38560,
+                "sum_variant": 38560
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 240,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 240,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 0,
+            "I": 0,
+            "P": 0
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 85,
+            "I": 85,
+            "P": 85
+          },
+          "preparation_failures": 0,
+          "prepared_records": 240,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 0,
+            "cases_identical": 240,
+            "complete_requests_identical": true
+          },
+          "request_identity_versus_u": {
+            "cases_different": 85,
+            "cases_identical": 155,
+            "complete_requests_identical": false
+          },
+          "role": "control",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 125,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 0,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10865,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 8224,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 805,
+                  "uplift_multi_span": 123,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 125,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 0,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10865,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 8224,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 805,
+                  "uplift_multi_span": 123,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 1,
+                  "parameter": 135
+                },
+                "counts": {
+                  "achieved_below_nominal": 125,
+                  "changed": 136,
+                  "empty_or_whitespace": 0,
+                  "fields": 933,
+                  "fields_with_optional": 136,
+                  "frozen": 0,
+                  "multi_span_all_protected": 115,
+                  "optional_all_dropped_fields": 136,
+                  "optional_retained_fields": 0,
+                  "optional_spans": 138,
+                  "protected_spans": 1073,
+                  "single_span": 682,
+                  "single_span_with_other_cue": 110,
+                  "skipped_optional": 138,
+                  "span_hist_1": 682,
+                  "span_hist_2": 225,
+                  "span_hist_3": 25,
+                  "span_hist_4_plus": 1,
+                  "spans": 1211,
+                  "stopped_early": 136,
+                  "tokens_achieved": 10494,
+                  "tokens_budget": 10865,
+                  "tokens_d": 11449,
+                  "tokens_nominal": 8224,
+                  "tokens_p": 10494,
+                  "unchanged": 797,
+                  "uplift": 805,
+                  "uplift_multi_span": 123,
+                  "uplift_single_span": 682
+                },
+                "reasons": {
+                  "condition": 61,
+                  "default": 117,
+                  "first_span": 933,
+                  "literal": 140,
+                  "negation": 27,
+                  "restriction": 33,
+                  "unit": 88
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 933,
+              "fields": 805,
+              "multi_span": 123,
+              "single_span": 682
+            },
+            "I": {
+              "description_fields": 933,
+              "fields": 805,
+              "multi_span": 123,
+              "single_span": 682
+            },
+            "P": {
+              "description_fields": 933,
+              "fields": 805,
+              "multi_span": 123,
+              "single_span": 682
+            }
+          }
+        },
+        "multiple": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 0,
+          "category": "multiple",
+          "contrast_activity_f": {
+            "denominator": 200,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 70732,
+              "I": 70732,
+              "P": 70732,
+              "U": 72135
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.01945,
+                "sum_baseline": 72135,
+                "sum_variant": 70732
+              },
+              "I": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.01945,
+                "sum_baseline": 72135,
+                "sum_variant": 70732
+              },
+              "P": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.01945,
+                "sum_baseline": 72135,
+                "sum_variant": 70732
+              },
+              "U": {
+                "local_only": true,
+                "n": 200,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 72135,
+                "sum_variant": 72135
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 200,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 200,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 0,
+            "I": 0,
+            "P": 0
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 89,
+            "I": 89,
+            "P": 89
+          },
+          "preparation_failures": 0,
+          "prepared_records": 200,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 0,
+            "cases_identical": 200,
+            "complete_requests_identical": true
+          },
+          "request_identity_versus_u": {
+            "cases_different": 89,
+            "cases_identical": 111,
+            "complete_requests_identical": false
+          },
+          "role": "primary",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 174,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 196,
+                  "optional_retained_fields": 2,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 198,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 0,
+                  "tokens_achieved": 23521,
+                  "tokens_budget": 24057,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 17903,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 1917,
+                  "uplift_multi_span": 292,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 174,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 196,
+                  "optional_retained_fields": 2,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 198,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 0,
+                  "tokens_achieved": 23521,
+                  "tokens_budget": 24057,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 17903,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 1917,
+                  "uplift_multi_span": 292,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 9,
+                  "parameter": 189
+                },
+                "counts": {
+                  "achieved_below_nominal": 174,
+                  "changed": 198,
+                  "empty_or_whitespace": 0,
+                  "fields": 2101,
+                  "fields_with_optional": 198,
+                  "frozen": 0,
+                  "multi_span_all_protected": 278,
+                  "optional_all_dropped_fields": 196,
+                  "optional_retained_fields": 2,
+                  "optional_spans": 200,
+                  "protected_spans": 2431,
+                  "single_span": 1625,
+                  "single_span_with_other_cue": 270,
+                  "skipped_optional": 198,
+                  "span_hist_1": 1625,
+                  "span_hist_2": 425,
+                  "span_hist_3": 48,
+                  "span_hist_4_plus": 3,
+                  "spans": 2631,
+                  "stopped_early": 198,
+                  "tokens_achieved": 23521,
+                  "tokens_budget": 24057,
+                  "tokens_d": 24924,
+                  "tokens_nominal": 17903,
+                  "tokens_p": 23498,
+                  "unchanged": 1903,
+                  "uplift": 1917,
+                  "uplift_multi_span": 292,
+                  "uplift_single_span": 1625
+                },
+                "reasons": {
+                  "condition": 105,
+                  "default": 317,
+                  "first_span": 2101,
+                  "literal": 283,
+                  "negation": 32,
+                  "restriction": 83,
+                  "unit": 197
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 2101,
+              "fields": 1917,
+              "multi_span": 292,
+              "single_span": 1625
+            },
+            "I": {
+              "description_fields": 2101,
+              "fields": 1917,
+              "multi_span": 292,
+              "single_span": 1625
+            },
+            "P": {
+              "description_fields": 2101,
+              "fields": 1917,
+              "multi_span": 292,
+              "single_span": 1625
+            }
+          }
+        },
+        "simple_python": {
+          "c_minus_i_cases": 0,
+          "c_minus_i_fields": 0,
+          "cases_with_new_request": 0,
+          "category": "simple_python",
+          "contrast_activity_f": {
+            "denominator": 400,
+            "numerator": 0,
+            "value": 0.0
+          },
+          "coverage_complete": true,
+          "failures": [],
+          "hash_c_minus_i_cases": 0,
+          "local_token_sums": {
+            "local_only": true,
+            "provider_T": false,
+            "sums": {
+              "C": 65896,
+              "I": 65896,
+              "P": 65896,
+              "U": 66596
+            },
+            "tokenizer": "o200k_base",
+            "versus_u": {
+              "C": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010511,
+                "sum_baseline": 66596,
+                "sum_variant": 65896
+              },
+              "I": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010511,
+                "sum_baseline": 66596,
+                "sum_variant": 65896
+              },
+              "P": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.010511,
+                "sum_baseline": 66596,
+                "sum_variant": 65896
+              },
+              "U": {
+                "local_only": true,
+                "n": 400,
+                "provider_T": false,
+                "ratio_of_means": 0.0,
+                "sum_baseline": 66596,
+                "sum_variant": 66596
+              }
+            }
+          },
+          "measurement_agrees": true,
+          "n_records": 400,
+          "network_used": false,
+          "p_i_c_coincide": true,
+          "p_i_c_coincide_cases": 400,
+          "p_i_c_diverge_cases": 0,
+          "per_arm_cases_different_from_official_l": {
+            "C": 0,
+            "I": 0,
+            "P": 0
+          },
+          "per_arm_cases_different_from_u": {
+            "C": 80,
+            "I": 80,
+            "P": 80
+          },
+          "preparation_failures": 0,
+          "prepared_records": 400,
+          "provider_called": false,
+          "ready_for_evaluation": true,
+          "request_identity_versus_official_l": {
+            "cases_different": 0,
+            "cases_identical": 400,
+            "complete_requests_identical": true
+          },
+          "request_identity_versus_u": {
+            "cases_different": 80,
+            "cases_identical": 320,
+            "complete_requests_identical": false
+          },
+          "role": "control",
+          "stop_and_field_status": {
+            "arms": {
+              "C": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 77,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 91,
+                  "optional_retained_fields": 3,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 95,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 0,
+                  "tokens_achieved": 18190,
+                  "tokens_budget": 18445,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 13598,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1489,
+                  "uplift_multi_span": 251,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              },
+              "I": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 77,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 91,
+                  "optional_retained_fields": 3,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 95,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 0,
+                  "tokens_achieved": 18190,
+                  "tokens_budget": 18445,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 13598,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1489,
+                  "uplift_multi_span": 251,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              },
+              "P": {
+                "changed_by_role": {
+                  "function": 12,
+                  "parameter": 82
+                },
+                "counts": {
+                  "achieved_below_nominal": 77,
+                  "changed": 94,
+                  "empty_or_whitespace": 0,
+                  "fields": 1570,
+                  "fields_with_optional": 94,
+                  "frozen": 0,
+                  "multi_span_all_protected": 238,
+                  "optional_all_dropped_fields": 91,
+                  "optional_retained_fields": 3,
+                  "optional_spans": 98,
+                  "protected_spans": 1844,
+                  "single_span": 1238,
+                  "single_span_with_other_cue": 250,
+                  "skipped_optional": 95,
+                  "span_hist_1": 1238,
+                  "span_hist_2": 294,
+                  "span_hist_3": 36,
+                  "span_hist_4_plus": 2,
+                  "spans": 1942,
+                  "stopped_early": 94,
+                  "tokens_achieved": 18190,
+                  "tokens_budget": 18445,
+                  "tokens_d": 18894,
+                  "tokens_nominal": 13598,
+                  "tokens_p": 18178,
+                  "unchanged": 1476,
+                  "uplift": 1489,
+                  "uplift_multi_span": 251,
+                  "uplift_single_span": 1238
+                },
+                "reasons": {
+                  "condition": 110,
+                  "default": 270,
+                  "first_span": 1570,
+                  "literal": 278,
+                  "negation": 53,
+                  "restriction": 63,
+                  "unit": 186
+                }
+              }
+            },
+            "note": "Field status and stop reasons are the characterize_study counts and reason tallies: stopped_early, frozen, empty_or_whitespace, and the cue reasons."
+          },
+          "uplift": {
+            "C": {
+              "description_fields": 1570,
+              "fields": 1489,
+              "multi_span": 251,
+              "single_span": 1238
+            },
+            "I": {
+              "description_fields": 1570,
+              "fields": 1489,
+              "multi_span": 251,
+              "single_span": 1238
+            },
+            "P": {
+              "description_fields": 1570,
+              "fields": 1489,
+              "multi_span": 251,
+              "single_span": 1238
+            }
+          }
+        }
+      },
+      "coverage_complete": true,
+      "differing_only_reason": "complete_requests_identical_to_official_L",
+      "differing_only_would_send": false,
+      "drops_identical_to_official_l": false,
+      "failures": [],
+      "flyable": false,
+      "flyable_reason": "complete_requests_identical_to_official_L",
+      "full_catalogue_plan_ready": true,
+      "full_catalogue_reason": "complete_requests_identical_to_official_L",
+      "identical_to_official_l": true,
+      "identical_to_u": false,
+      "identity": {
+        "c_minus_i_cases": 0,
+        "c_minus_i_fields": 0,
+        "complete_requests_identical_to_official_l": true,
+        "complete_requests_identical_to_u": false,
+        "contrast_activity_f": {
+          "irrelevance": {
+            "denominator": 240,
+            "numerator": 0
+          },
+          "multiple": {
+            "denominator": 200,
+            "numerator": 0
+          },
+          "simple_python": {
+            "denominator": 400,
+            "numerator": 0
+          }
+        },
+        "p_i_c_coincide": true,
+        "p_i_c_coincide_cases": 840,
+        "p_i_c_diverge_cases": 0,
+        "versus_official_l": {
+          "cases_different": 0,
+          "cases_identical": 840
+        },
+        "versus_u": {
+          "cases_different": 254,
+          "cases_identical": 586
+        }
+      },
+      "jaccard_min": "1/5",
+      "label": "B",
+      "lambda": "1/4",
+      "lambda_loosened_to_force_a_difference": false,
+      "local_token_sums": {
+        "local_only": true,
+        "p_i_c_sums_equal": true,
+        "provider_T": false,
+        "shared_sum": 174224,
+        "sums": {
+          "C": 174224,
+          "I": 174224,
+          "P": 174224,
+          "U": 177291
+        },
+        "tokenizer": "o200k_base"
+      },
+      "max_neighbours": 2,
+      "network_used": false,
+      "new_request_ids": [],
+      "p_i_c_coincide": true,
+      "p_i_c_coincide_cases": 840,
+      "p_i_c_diverge_cases": 0,
+      "paid_call_started": false,
+      "plan": {
+        "cases_planned": 840,
+        "cases_with_new_request": 0,
+        "ceiling_supplied": false,
+        "drops_identical_to_official_l": false,
+        "groups": 840,
+        "identical_to_official_l_cases_planned": 840,
+        "live": false,
+        "network_used": false,
+        "paid_call_started": false,
+        "provider_called": false,
+        "started": false
+      },
+      "protections_loosened": false,
+      "provider_called": false,
+      "ready_for_evaluation": true,
+      "reporting_label": "B",
+      "retention_decimal": "0.75",
+      "retention_r": "3/4",
+      "spec_version": "exploratory.b.r75.lambda14.2026-11-23",
+      "structural_violations": 0,
+      "tuned": false,
+      "u_hash_mismatches": [],
+      "unique_request_groups_u_and_setting": {
+        "all_categories": 1094,
+        "includes_E": false,
+        "irrelevance": 325,
+        "label_when_p_i_c_coincide": "B",
+        "multiple": 289,
+        "simple_python": 480
+      }
+    }
+  },
+  "status": "exploratory_only",
+  "thinking": "disabled"
+}

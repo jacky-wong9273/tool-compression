@@ -1,5 +1,7 @@
 # Exploratory r=0.50 and r=0.25
 
+The later full-catalogue comparison of setting A (r=0.50, λ=1/2, all 840 cases) and setting B (r=0.75, λ=1/4, all 840 cases) is `evidence/full-catalogue/COMPARISON.md`. The official figures below stay closed.
+
 Offline audit of the official P/I/C compressor at the two named ratios. No provider call was made. The closed r=0.75 result is unchanged: L, λ=1/2, thinking off, DeepSeek-V4.1-Flash-1017, S_LU = 1398/121018 ≈ 1.155%, primary accuracy U 186/200, L 185/200, E 186/200. The 10% token target stays 1/10. This package does not claim that target.
 
 Branch base: `8619d2fd58dee5babc511970a8d88fb975037149` (open PR #3). Configs: `exploratory.h50.2026-11-20` (r=1/2) and `exploratory.h25.2026-11-20` (r=1/4). λ=1/2, Jaccard ≥ 1/5, at most two neighbours, tokenizer `o200k_base`. Protections, first-span structure, pins, and thinking-off are the official ones.

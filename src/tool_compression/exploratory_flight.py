@@ -19,6 +19,8 @@ from tool_compression.exploratory import (
     ARM_NAMES,
     EVALUATE_DECODER_ALIAS,
     EXPLORATORY_LABELS,
+    FULL_CATALOGUE_LABELS,
+    FULL_CATALOGUE_PURPOSE,
     GENERATION_MODEL,
     GENERATION_MODEL_VERSION,
     NOT_REFLOWN,
@@ -32,6 +34,7 @@ from tool_compression.exploratory import (
     classify_case,
     flight_groups,
     frozen_config,
+    full_catalogue_groups,
     official_evaluate_argv,
     refuse_generation_alias,
 )
@@ -59,11 +62,12 @@ CATEGORIES = ("multiple", "simple_python", "irrelevance")
 
 def exploratory_record(label: str, ceiling: Decimal) -> dict:
     """Frozen record. The ceiling is the value the caller just supplied."""
-    if label not in EXPLORATORY_LABELS:
+    full = label in FULL_CATALOGUE_LABELS
+    if label not in EXPLORATORY_LABELS and not full:
         raise ExploratoryFlightRefused("unknown exploratory setting")
     amount = accept_ceiling(ceiling)
     config = frozen_config(label)
-    return {
+    record = {
         "purpose": "exploratory-retention",
         "official_settlement": False,
         "official_accuracy": False,
@@ -100,15 +104,34 @@ def exploratory_record(label: str, ceiling: Decimal) -> dict:
         "frozen": True,
         "started_by_import": False,
     }
+    if full:
+        record["purpose"] = FULL_CATALOGUE_PURPOSE
+        record["full_catalogue"] = True
+        record["drops_identical_to_official_l"] = False
+        record["paid_call_on_plan"] = False
+        record["official_result_rewritten"] = False
+        record["lambda_loosened_to_force_a_difference"] = False
+        record["protections_loosened"] = False
+    return record
 
 
 def assert_exploratory_record(record: dict, ceiling: Decimal, label: str) -> None:
     if not isinstance(record, dict):
         raise ExploratoryFlightRefused("execution record is missing")
-    if record.get("setting") != label or label not in EXPLORATORY_LABELS:
-        raise ExploratoryFlightRefused("execution record setting is not H50 or H25")
-    if record.get("purpose") != "exploratory-retention":
-        raise ExploratoryFlightRefused("this path is the exploratory retention flight")
+    full = label in FULL_CATALOGUE_LABELS
+    legacy = label in EXPLORATORY_LABELS
+    if record.get("setting") != label or not (full or legacy):
+        raise ExploratoryFlightRefused("execution record setting is not a frozen exploratory flight")
+    expected_purpose = FULL_CATALOGUE_PURPOSE if full else "exploratory-retention"
+    if record.get("purpose") != expected_purpose:
+        raise ExploratoryFlightRefused("execution record purpose does not match the flight")
+    if full:
+        if record.get("full_catalogue") is not True:
+            raise ExploratoryFlightRefused("full-catalogue flight record is incomplete")
+        if record.get("drops_identical_to_official_l") is not False:
+            raise ExploratoryFlightRefused("full-catalogue flight must keep cases identical to official L")
+        if record.get("paid_call_on_plan") is not False:
+            raise ExploratoryFlightRefused("planning a full catalogue does not start a paid call")
     if record.get("official_settlement") is not False or record.get("official_accuracy") is not False:
         raise ExploratoryFlightRefused("this flight does not settle the official result")
     if record.get("official_target_lowered") is not False or record.get("official_result_retuned") is not False:
@@ -140,6 +163,171 @@ def assert_exploratory_record(record: dict, ceiling: Decimal, label: str) -> Non
             raise ExploratoryFlightRefused("U, E, and official L are not re-flown")
     if record.get("api_key_in_repository") is not False:
         raise ExploratoryFlightRefused("refusing a record that stores an API key")
+
+
+def full_catalogue_record(label: str, ceiling: Decimal) -> dict:
+    """Frozen full-catalogue record. The ceiling is the value the caller just supplied."""
+    if label not in FULL_CATALOGUE_LABELS:
+        raise ExploratoryFlightRefused("unknown full-catalogue setting")
+    record = exploratory_record(label, ceiling)
+    record["purpose"] = FULL_CATALOGUE_PURPOSE
+    record["full_catalogue"] = True
+    record["drops_identical_to_official_l"] = False
+    record["paid_call_on_plan"] = False
+    record["official_result_rewritten"] = False
+    record["lambda_loosened_to_force_a_difference"] = False
+    record["protections_loosened"] = False
+    return record
+
+
+def build_full_catalogue_plans(study: dict, label: str, counter) -> tuple[list[dict], dict]:
+    """Compress with the frozen config and keep every prepared case.
+
+    A request identical to official L is still a planned call. The member name
+    is the setting or an arm, never U, E, or L.
+    """
+    if label not in FULL_CATALOGUE_LABELS:
+        raise ExploratoryFlightRefused("unknown full-catalogue setting")
+    frozen_config(label)
+    plans = []
+    failures = []
+    identical_u = []
+    identical_l = []
+    coincide = []
+    new_cases = 0
+    identical_l_planned = 0
+    cases = 0
+    for category in CATEGORIES:
+        for record in study[category]:
+            cases += 1
+            try:
+                messages = record["question"][0]
+                if not isinstance(messages, list):
+                    raise TypeError("question turn is not a message list")
+                catalogue = convert_record(record)
+            except Exception:
+                failures.append({"category": category, "id": record.get("id"), "reason": "preparation_failure"})
+                continue
+            hashes, catalogues = _compress_hashes(catalogue, messages, frozen_config(label), counter)
+            official = {}
+            for method in ARM_NAMES:
+                produced = compress(catalogue, method, DEFAULT_CONFIG, counter)["catalogue"]
+                official[method] = request_hash(assemble_request(messages, produced))
+            classified = classify_case(hashes, {"U": hashes["U"], **official})
+            identical_u.append(classified["identical_to_u"])
+            identical_l.append(classified["identical_to_official_l"])
+            coincide.append(classified["p_i_c_coincide"])
+            if classified["new_request"]:
+                new_cases += 1
+            groups = full_catalogue_groups(label, hashes)
+            if not groups:
+                raise ExploratoryFlightRefused("full catalogue dropped a prepared case")
+            if classified["identical_to_official_l"]:
+                identical_l_planned += 1
+            for members in groups:
+                source = "P" if members == (label,) else members[0]
+                body = flight_request(messages, catalogues[source])
+                assert_generation_body(body)
+                assert_flight_members(members)
+                if any(name in NOT_REFLOWN for name in members):
+                    raise ExploratoryFlightRefused("U, E, and official L are not re-flown")
+                digest = request_hash(body)
+                plans.append(
+                    {
+                        "category": category,
+                        "case_id": str(record["id"]),
+                        "replicate": 0,
+                        "members": members,
+                        "response_group_id": f"full-catalogue/{label}/{category}/{record['id']}/r0/{digest}",
+                        "request_sha256": digest,
+                        "body": body,
+                        "identical_to_official_l": classified["identical_to_official_l"],
+                        "identical_to_u": classified["identical_to_u"],
+                        "new_request": classified["new_request"],
+                    }
+                )
+    stats = {
+        "cases": cases,
+        "preparation_failures": failures,
+        "cases_with_new_request": new_cases,
+        "identical_to_u": bool(identical_u) and all(identical_u) and not failures,
+        "identical_to_official_l": bool(identical_l) and all(identical_l) and not failures,
+        "identical_to_official_l_cases_planned": identical_l_planned,
+        "p_i_c_coincide": bool(coincide) and all(coincide) and not failures,
+        "groups": len(plans),
+        "drops_identical_to_official_l": False,
+        "cases_planned": cases - len(failures),
+    }
+    if not failures and stats["cases_planned"] != cases:
+        raise ExploratoryFlightRefused("full catalogue did not plan every case")
+    if not failures and stats["p_i_c_coincide"] and stats["groups"] != cases:
+        raise ExploratoryFlightRefused("coinciding arms must still plan one request per case")
+    return plans, stats
+
+
+def prepare_full_catalogue_flight(
+    study, label: str, ceiling: Decimal, audit_setting: dict, out: Path, counter
+) -> tuple[dict, list[dict]]:
+    """Write the 840-case plan. Do not construct a provider client."""
+    if label not in FULL_CATALOGUE_LABELS:
+        raise ExploratoryFlightRefused("unknown full-catalogue setting")
+    if not isinstance(audit_setting, dict):
+        raise ExploratoryFlightRefused("full-catalogue audit is missing")
+    if audit_setting.get("label") != label:
+        raise ExploratoryFlightRefused("audit setting does not match the requested flight")
+    if audit_setting.get("full_catalogue_plan_ready") is not True:
+        reason = audit_setting.get("full_catalogue_reason", "missing")
+        raise ExploratoryFlightRefused("full catalogue is not ready to plan: " + str(reason))
+    if audit_setting.get("drops_identical_to_official_l") is not False:
+        raise ExploratoryFlightRefused("refusing an audit that drops cases identical to official L")
+    if audit_setting.get("provider_called") is not False or audit_setting.get("network_used") is not False:
+        raise ExploratoryFlightRefused("refusing an audit that claims a provider call")
+    if audit_setting.get("paid_call_started") is not False:
+        raise ExploratoryFlightRefused("refusing an audit that started a paid call")
+    record = full_catalogue_record(label, ceiling)
+    assert_exploratory_record(record, ceiling, label)
+    plans, stats = build_full_catalogue_plans(study, label, counter)
+    if stats["preparation_failures"]:
+        raise ExploratoryFlightRefused("preparation failed for " + str(len(stats["preparation_failures"])) + " cases")
+    if stats["drops_identical_to_official_l"]:
+        raise ExploratoryFlightRefused("full catalogue dropped a case identical to official L")
+    if stats["cases_with_new_request"] != audit_setting.get("cases_with_new_request"):
+        raise ExploratoryFlightRefused("audit does not match a fresh compression")
+    if stats["identical_to_u"] != audit_setting.get("identical_to_u"):
+        raise ExploratoryFlightRefused("audit identity versus U does not match a fresh compression")
+    if stats["identical_to_official_l"] != audit_setting.get("identical_to_official_l"):
+        raise ExploratoryFlightRefused("audit identity versus official L does not match a fresh compression")
+    if stats["identical_to_official_l_cases_planned"] != audit_setting.get("cases_identical_to_official_l"):
+        raise ExploratoryFlightRefused("audit count of official-L identities does not match a fresh compression")
+    if stats["cases_planned"] != audit_setting.get("cases_planned"):
+        raise ExploratoryFlightRefused("audit does not plan every case")
+    if stats["cases_planned"] != stats["cases"]:
+        raise ExploratoryFlightRefused("full catalogue did not plan every case")
+    summary = _base_summary(record, ceiling, label)
+    summary["purpose"] = FULL_CATALOGUE_PURPOSE
+    summary.update(
+        {
+            "started": False,
+            "live": False,
+            "provider_called": False,
+            "network_used": False,
+            "paid_call_started": False,
+            "stop_reason": "not_started",
+            "full_catalogue": True,
+            "drops_identical_to_official_l": False,
+            "groups_planned": len(plans),
+            "cases_planned": stats["cases_planned"],
+            "cases_with_new_request": stats["cases_with_new_request"],
+            "identical_to_official_l_cases_planned": stats["identical_to_official_l_cases_planned"],
+            "p_i_c_coincide": stats["p_i_c_coincide"],
+            "reporting_label": label if stats["p_i_c_coincide"] else None,
+            "arms_separate": not stats["p_i_c_coincide"],
+            "identical_to_u": stats["identical_to_u"],
+            "identical_to_official_l": stats["identical_to_official_l"],
+        }
+    )
+    _write_plan(out, record, summary, plans)
+    return summary, plans
 
 
 def build_flight_plans(study: dict, label: str, counter) -> tuple[list[dict], dict]:
@@ -285,10 +473,14 @@ def execute_exploratory_flight(
             "live": bool(live),
             "provider_called": False,
             "network_used": False,
+            "paid_call_started": False,
             "groups_planned": len(plans),
             "stop_reason": None,
         }
     )
+    if record.get("full_catalogue") is True:
+        summary["full_catalogue"] = True
+        summary["drops_identical_to_official_l"] = False
     rows = {name: [] for name in CATEGORIES}
     request_lines = []
     provider_called = False
@@ -355,6 +547,7 @@ def execute_exploratory_flight(
             break
     summary["provider_called"] = provider_called
     summary["network_used"] = provider_called
+    summary["paid_call_started"] = provider_called
     summary["stop_reason"] = stop
     summary["groups_completed"] = len(account.logical)
     summary["physical_attempts"] = len(account.attempts)
@@ -417,7 +610,7 @@ def _compress_hashes(catalogue, messages, config, counter):
 def _base_summary(record: dict, ceiling: Decimal, label: str) -> dict:
     result_dir = None
     return {
-        "purpose": "exploratory-retention",
+        "purpose": record.get("purpose", "exploratory-retention"),
         "setting": label,
         "model": GENERATION_MODEL,
         "model_version": GENERATION_MODEL_VERSION,
