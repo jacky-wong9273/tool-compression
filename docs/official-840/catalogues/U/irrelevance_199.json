@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_199",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "play_poker",
+        "description": "Deal the hand of poker.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number_of_players": {
+              "type": "integer",
+              "description": "The number of players."
+            },
+            "cards_per_player": {
+              "type": "integer",
+              "description": "The number of cards to be dealt to each player."
+            },
+            "game_type": {
+              "type": "string",
+              "description": "Type of the poker game. Defaults to 'Texas Holdem'"
+            }
+          },
+          "required": [
+            "number_of_players",
+            "cards_per_player"
+          ]
+        }
+      }
+    }
+  ]
+}

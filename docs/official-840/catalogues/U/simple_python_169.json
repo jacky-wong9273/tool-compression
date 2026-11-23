@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_169",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "court_case_search",
+        "description": "Retrieves details about a court case using its docket number and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "docket_number": {
+              "type": "string",
+              "description": "The docket number for the case."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the case is registered, in the format: state, e.g., Texas"
+            },
+            "full_text": {
+              "type": "boolean",
+              "default": "false",
+              "description": "Option to return the full text of the case ruling."
+            }
+          },
+          "required": [
+            "docket_number",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

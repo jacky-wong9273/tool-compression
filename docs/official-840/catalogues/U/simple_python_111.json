@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_111",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "random_normalvariate",
+        "description": "Generates a random number from a normal distribution given the mean and standard deviation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "mu": {
+              "type": "integer",
+              "description": "Mean of the normal distribution."
+            },
+            "sigma": {
+              "type": "integer",
+              "description": "Standard deviation of the normal distribution."
+            }
+          },
+          "required": [
+            "mu",
+            "sigma"
+          ]
+        }
+      }
+    }
+  ]
+}

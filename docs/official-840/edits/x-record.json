@@ -1,0 +1,1719 @@
+{
+  "sample": "official-840",
+  "record": "X",
+  "s_record": "docs/official-840/edits/s-record.json",
+  "s_used_as_cue_source": false,
+  "separator": " ",
+  "pointer": "/function/description",
+  "parameter_edits": false,
+  "source": "Original converted descriptions and schemas. S replacement text was not an input to the cue wording.",
+  "editor": "same editor, after S was specified",
+  "reviewer": "same editor",
+  "independent_review": false,
+  "questions_used": false,
+  "review_question": "Could both descriptions be true of the same request, and if so, does this cue still help the reader choose?",
+  "success_is_not_shorter_wording": true,
+  "coverage_is_not_efficiency": true,
+  "coverage": {
+    "sealed_cases": 18,
+    "cued_cases": 9,
+    "uncued_cases": 9,
+    "uncued_single_tool": 6,
+    "uncued_multi_tool": 3,
+    "cued_ids": [
+      "multiple_2",
+      "multiple_4",
+      "multiple_9",
+      "multiple_21",
+      "multiple_27",
+      "multiple_33",
+      "multiple_45",
+      "multiple_57",
+      "multiple_73"
+    ],
+    "uncued_ids": [
+      "multiple_24",
+      "multiple_28",
+      "multiple_99",
+      "simple_python_0",
+      "simple_python_1",
+      "simple_python_2",
+      "irrelevance_0",
+      "irrelevance_1",
+      "irrelevance_2"
+    ],
+    "uncued_single_tool_ids": [
+      "simple_python_0",
+      "simple_python_1",
+      "simple_python_2",
+      "irrelevance_0",
+      "irrelevance_1",
+      "irrelevance_2"
+    ],
+    "uncued_multi_tool_ids": [
+      "multiple_24",
+      "multiple_28",
+      "multiple_99"
+    ],
+    "note": "These denominators are the sealed tranche, not the 840. Coverage is not cue efficiency. Shorter wording is not the success criterion."
+  },
+  "cases": [
+    {
+      "case_id": "multiple_2",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Three fetch tools on one country. The two city facts share an action and a resource. Population is a different returned fact, so its rival is the earlier city tool.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "country_info_largest_city",
+          "pointer": "/function/description",
+          "cue": "Unlike country_info_capital, which fetches the capital city, this fetches the largest city.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "largest city"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "country_info_capital",
+            "pointer": "/function/description",
+            "excerpt": "capital city",
+            "axis": "which city fact of the country is fetched",
+            "why_confusable": "Both fetch a city of a specified country. A request that only says the country's city can be read as either.",
+            "why_this_rival": "Capital is the same action on the same resource, a city of the country. Population returns a count, so it is not the closer rival.",
+            "rejected": [
+              "country_info_population returns a count, not a city."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that says capital or largest city makes only one description true. A request that only says the country's city can be read as either, and the cue names which city fact."
+          },
+          "propositions": [
+            {
+              "id": "multiple_2/t0/function/description#0",
+              "excerpt": "largest city",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_2/t1/function/description#1",
+              "excerpt": "capital city",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "country_info_capital",
+          "pointer": "/function/description",
+          "cue": "Unlike country_info_largest_city, which fetches the largest city, this fetches the capital city.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "capital city"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "country_info_largest_city",
+            "pointer": "/function/description",
+            "excerpt": "largest city",
+            "axis": "which city fact of the country is fetched",
+            "why_confusable": "Both fetch a city of a specified country.",
+            "why_this_rival": "Largest city is the other city fact. Population is a count.",
+            "rejected": [
+              "country_info_population is a different returned fact."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "The two city descriptions are not included in each other. The cue names the city fact a vague request left open."
+          },
+          "propositions": [
+            {
+              "id": "multiple_2/t1/function/description#0",
+              "excerpt": "capital city",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_2/t0/function/description#1",
+              "excerpt": "largest city",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 2,
+          "function_name": "country_info_population",
+          "pointer": "/function/description",
+          "cue": "Unlike country_info_largest_city, which fetches the largest city, this fetches the current population.",
+          "target": {
+            "tool_index": 2,
+            "pointer": "/function/description",
+            "excerpt": "current population"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "country_info_largest_city",
+            "pointer": "/function/description",
+            "excerpt": "largest city",
+            "axis": "whether the returned country fact is a city or the current population",
+            "why_confusable": "All three tools fetch a fact about a specified country. An underspecified country request can be offered to any of them.",
+            "why_this_rival": "The two city tools are the same kind of alternative to a population count. Catalogue order selects the earlier city tool.",
+            "rejected": [
+              "Naming both city tools in one cue.",
+              "Using country_info_capital, which is the later city tool."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request for the population does not make the largest-city description true. A request that only names the country can be read as either, and the cue names the returned fact. Current stays in the cue because the source says current population."
+          },
+          "propositions": [
+            {
+              "id": "multiple_2/t2/function/description#0",
+              "excerpt": "current population",
+              "span": [
+                10,
+                28
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 2,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_2/t0/function/description#1",
+              "excerpt": "largest city",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_4",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools take an initial speed, an acceleration, and a time. The selection axis is the quantity they return.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "kinematics_calculate_displacement",
+          "pointer": "/function/description",
+          "cue": "Unlike kinematics_calculate_final_speed, which calculates the final speed, this calculates displacement.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "displacement"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "kinematics_calculate_final_speed",
+            "pointer": "/function/description",
+            "excerpt": "final speed",
+            "axis": "which kinematic quantity is calculated",
+            "why_confusable": "Both calculate a straight-line motion quantity from initial speed, acceleration, and time.",
+            "why_this_rival": "Only one other tool, and it states the other quantity.",
+            "rejected": [
+              "The rounding argument is shared machinery, not the selection axis."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that only says the object accelerated for a time can be read as asking for either quantity. A request that names displacement does not make the final-speed description true."
+          },
+          "propositions": [
+            {
+              "id": "multiple_4/t0/function/description#0",
+              "excerpt": "displacement",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_4/t1/function/description#1",
+              "excerpt": "final speed",
+              "span": [
+                14,
+                25
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "kinematics_calculate_final_speed",
+          "pointer": "/function/description",
+          "cue": "Unlike kinematics_calculate_displacement, which calculates displacement, this calculates the final speed.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "final speed"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "kinematics_calculate_displacement",
+            "pointer": "/function/description",
+            "excerpt": "displacement",
+            "axis": "which kinematic quantity is calculated",
+            "why_confusable": "Both calculate a straight-line motion quantity from initial speed, acceleration, and time.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "Do not treat float versus integer parameter types as the reason to choose a tool."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "The descriptions name different quantities. The cue repeats that difference and does not say either tool rejects a duration."
+          },
+          "propositions": [
+            {
+              "id": "multiple_4/t1/function/description#0",
+              "excerpt": "final speed",
+              "span": [
+                14,
+                25
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_4/t0/function/description#1",
+              "excerpt": "displacement",
+              "span": [
+                10,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_9",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "All three read one grade dictionary. Standard deviation and average are the same action, a statistic over the scores. The highest-score tool finds a subject instead.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "calculate_standard_deviation",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_average, which calculates the average grade, this calculates the standard deviation.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "standard deviation"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "calculate_average",
+            "pointer": "/function/description",
+            "excerpt": "average grade",
+            "axis": "which statistic of the scores is calculated",
+            "why_confusable": "Both calculate a statistic from the same kind of subject-to-score dictionary for one student.",
+            "why_this_rival": "Average is the same action, a summary statistic. Finding the subject with the highest score is a different action.",
+            "rejected": [
+              "highest_grade returns a subject, not a statistic."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request to summarize the scores can be read as either statistic. The descriptions are not included in each other: an average is not a standard deviation."
+          },
+          "propositions": [
+            {
+              "id": "multiple_9/t0/function/description#0",
+              "excerpt": "standard deviation",
+              "span": [
+                29,
+                47
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_9/t1/function/description#1",
+              "excerpt": "average grade",
+              "span": [
+                29,
+                42
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "calculate_average",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_standard_deviation, which calculates the standard deviation, this calculates the average grade.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "average grade"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "calculate_standard_deviation",
+            "pointer": "/function/description",
+            "excerpt": "standard deviation",
+            "axis": "which statistic of the scores is calculated",
+            "why_confusable": "Both calculate a statistic from the same kind of grade dictionary.",
+            "why_this_rival": "Standard deviation is the same action. The subject-finding tool is a different action.",
+            "rejected": [
+              "highest_grade is a different action."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request for the student's overall grade can be read as the average. The cue names that statistic against the spread."
+          },
+          "propositions": [
+            {
+              "id": "multiple_9/t1/function/description#0",
+              "excerpt": "average grade",
+              "span": [
+                29,
+                42
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_9/t0/function/description#1",
+              "excerpt": "standard deviation",
+              "span": [
+                29,
+                47
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 2,
+          "function_name": "highest_grade",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_standard_deviation, which calculates the standard deviation, this finds the subject with the highest score.",
+          "target": {
+            "tool_index": 2,
+            "pointer": "/function/description",
+            "excerpt": "highest score"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "calculate_standard_deviation",
+            "pointer": "/function/description",
+            "excerpt": "standard deviation",
+            "axis": "whether the result is a statistic or the subject with the highest score",
+            "why_confusable": "All three read the same grade dictionary. A request about how the student did can be offered to a statistic or to the top subject.",
+            "why_this_rival": "Both statistics are the same kind of alternative to finding a subject. Catalogue order selects the earlier statistic.",
+            "rejected": [
+              "Naming both statistics in one cue.",
+              "Using calculate_average, which is the later statistic."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request for the strongest subject does not make the standard-deviation description true. A vague request about the scores can be read as either, and the cue names a subject rather than a spread."
+          },
+          "propositions": [
+            {
+              "id": "multiple_9/t2/function/description#0",
+              "excerpt": "highest score",
+              "span": [
+                58,
+                71
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 2,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_9/t0/function/description#1",
+              "excerpt": "standard deviation",
+              "span": [
+                29,
+                47
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_21",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools are about a sound wave file. One plays an existing file. The other generates a file.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "play_sound_wave",
+          "pointer": "/function/description",
+          "cue": "Unlike generate_sound_wave, which generates a sound wave file, this plays a sound wave file.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "playing a sound wave file"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "generate_sound_wave",
+            "pointer": "/function/description",
+            "excerpt": "generating a sinusoidal sound wave file",
+            "axis": "whether an existing sound wave file is played or a new file is generated",
+            "why_confusable": "Both concern a sound wave file. A request that only says sound wave can be read as either.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "Do not turn the generator's sinusoidal wording into a claim that playback rejects other waveforms."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "Play and generate can both be read as true of a request that only says sound wave. The cue names the action. It does not say playback is unable to generate."
+          },
+          "propositions": [
+            {
+              "id": "multiple_21/t0/function/description#0",
+              "excerpt": "playing a sound wave file",
+              "span": [
+                21,
+                46
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_21/t1/function/description#1",
+              "excerpt": "generating a sinusoidal sound wave file",
+              "span": [
+                21,
+                60
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "generate_sound_wave",
+          "pointer": "/function/description",
+          "cue": "Unlike play_sound_wave, which plays a sound wave file, this generates a sound wave file.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "generating a sinusoidal sound wave file"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "play_sound_wave",
+            "pointer": "/function/description",
+            "excerpt": "playing a sound wave file",
+            "axis": "whether a sound wave file is generated or an existing file is played",
+            "why_confusable": "Both concern a sound wave file.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "The waveform enum is an argument of generation, not a contrast with playback."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "The generator description adds frequency, duration, and WAV. Those stay in the original. The cue's one difference is generate versus play."
+          },
+          "propositions": [
+            {
+              "id": "multiple_21/t1/function/description#0",
+              "excerpt": "generating a sinusoidal sound wave file",
+              "span": [
+                21,
+                60
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_21/t0/function/description#1",
+              "excerpt": "playing a sound wave file",
+              "span": [
+                21,
+                46
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_24",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "A route between two points and the details of a chess club do not answer a similar request. The word location in the chess-club description is not a route.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "route_planner_calculate_route",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Calculates a route between two points. The other tool returns details of a named chess club. No shared action or resource is documented."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "chess_club_details_find",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Returns details of a chess club, including location. The other tool calculates a route. A location is not a route, so no selection cue is written."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_27",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools take a trip and a mode of transportation. One estimates travel time. The other finds the shortest path.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "maps_route_times",
+          "pointer": "/function/description",
+          "cue": "Unlike maps_shortest_path, which finds the shortest path, this estimates the travel time.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "time it will take to travel"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "maps_shortest_path",
+            "pointer": "/function/description",
+            "excerpt": "shortest path",
+            "axis": "whether the result is a travel time or the shortest path",
+            "why_confusable": "Both answer a from-here-to-there request with the same listed modes.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "The mode list is shared, so it is not the selection axis."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request to get from one place to another can be read as asking for a duration or for a path. The cue names which result."
+          },
+          "propositions": [
+            {
+              "id": "multiple_27/t0/function/description#0",
+              "excerpt": "time it will take to travel",
+              "span": [
+                14,
+                41
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_27/t1/function/description#1",
+              "excerpt": "shortest path",
+              "span": [
+                9,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "maps_shortest_path",
+          "pointer": "/function/description",
+          "cue": "Unlike maps_route_times, which estimates the travel time, this finds the shortest path.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "shortest path"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "maps_route_times",
+            "pointer": "/function/description",
+            "excerpt": "time it will take to travel",
+            "axis": "whether the result is the shortest path or a travel time",
+            "why_confusable": "Both answer a from-here-to-there request.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "Start and end location wording is an argument difference, not the selection axis."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "Shortest path and travel time are both documented results. The cue does not say either tool rejects a mode."
+          },
+          "propositions": [
+            {
+              "id": "multiple_27/t1/function/description#0",
+              "excerpt": "shortest path",
+              "span": [
+                9,
+                22
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_27/t0/function/description#1",
+              "excerpt": "time it will take to travel",
+              "span": [
+                14,
+                41
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_28",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "Quadratic roots, an RGB-to-hex conversion, and reversing a string do not share an action or a resource.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "solve_quadratic_equation",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Solves a quadratic equation. Neither an RGB conversion nor string reversal documents a shared selection axis with that equation."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "convert_rgb_to_hex",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Converts RGB values to a hexadecimal color. Quadratic roots and string reversal are not color conversions."
+        },
+        {
+          "tool_index": 2,
+          "function_name": "perform_string_reverse",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Reverses a string. Quadratic roots and an RGB conversion are not string operations on the same resource."
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_33",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools take a single-variable function. One calculates a derivative. The other calculates a definite integral.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "calculate_derivative",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_integral, which calculates the definite integral, this calculates the derivative.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "derivative"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "calculate_integral",
+            "pointer": "/function/description",
+            "excerpt": "definite integral",
+            "axis": "whether the operation is a derivative or a definite integral",
+            "why_confusable": "Both operate on a single-variable function. A request that only says to do the calculus can be read as either.",
+            "why_this_rival": "Only one other tool, and the function descriptions name the two operations.",
+            "rejected": [
+              "Do not contrast the class word calculus. A derivative is not a definite integral, and the cue names the operation."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request for the derivative does not make the definite-integral description true. A request that only names the function can be read as either. The cue uses the operation, not a nested class label."
+          },
+          "propositions": [
+            {
+              "id": "multiple_33/t0/function/description#0",
+              "excerpt": "derivative",
+              "span": [
+                14,
+                24
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_33/t1/function/description#1",
+              "excerpt": "definite integral",
+              "span": [
+                14,
+                31
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "calculate_integral",
+          "pointer": "/function/description",
+          "cue": "Unlike calculate_derivative, which calculates the derivative, this calculates the definite integral.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "definite integral"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "calculate_derivative",
+            "pointer": "/function/description",
+            "excerpt": "derivative",
+            "axis": "whether the operation is a definite integral or a derivative",
+            "why_confusable": "Both operate on a single-variable function.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "The bounds versus an x value follow the operation. They are not a second cue."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "Definite integral is the source's own qualifier. The cue keeps it so the contrast is not any integral against any derivative."
+          },
+          "propositions": [
+            {
+              "id": "multiple_33/t1/function/description#0",
+              "excerpt": "definite integral",
+              "span": [
+                14,
+                31
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_33/t0/function/description#1",
+              "excerpt": "derivative",
+              "span": [
+                14,
+                24
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_45",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools return a date and share a years-ago flag. One dates a geological era. The other dates a historical event.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "geology_get_era",
+          "pointer": "/function/description",
+          "cue": "Unlike history_get_event_date, which gets the date of a historical event, this gets the estimated date of a geological era.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "geological era"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "history_get_event_date",
+            "pointer": "/function/description",
+            "excerpt": "historical event",
+            "axis": "whether the dated thing is a geological era or a historical event",
+            "why_confusable": "Both get a date. A request that only says when something was can be read as either domain.",
+            "why_this_rival": "Only one other tool. The shared years-ago flag is the same fact, so it is not the axis.",
+            "rejected": [
+              "The shared boolean is not a difference."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "An era name does not make the historical-event description true, and an event name does not make the era description true. An ambiguous when-was-it request can be read as either, and the cue names the domain. Estimated stays because the era description says estimated."
+          },
+          "propositions": [
+            {
+              "id": "multiple_45/t0/function/description#0",
+              "excerpt": "geological era",
+              "span": [
+                28,
+                42
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_45/t1/function/description#1",
+              "excerpt": "historical event",
+              "span": [
+                19,
+                35
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "history_get_event_date",
+          "pointer": "/function/description",
+          "cue": "Unlike geology_get_era, which gets the estimated date of a geological era, this gets the date of a historical event.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "historical event"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "geology_get_era",
+            "pointer": "/function/description",
+            "excerpt": "geological era",
+            "axis": "whether the dated thing is a historical event or a geological era",
+            "why_confusable": "Both get a date.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "Do not treat the shared default on the years-ago flag as the reason to choose a tool."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "The source says an historical event. The cue's 'a historical event' keeps that noun and does not add a century, a place, or an exclusion."
+          },
+          "propositions": [
+            {
+              "id": "multiple_45/t1/function/description#0",
+              "excerpt": "historical event",
+              "span": [
+                19,
+                35
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_45/t0/function/description#1",
+              "excerpt": "geological era",
+              "span": [
+                28,
+                42
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_57",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools calculate interest from a principal, a rate, and a time. One is compound interest. The other is simple interest.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "financial_compound_interest",
+          "pointer": "/function/description",
+          "cue": "Unlike financial_simple_interest, which calculates simple interest, this calculates compound interest.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "compound interest"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "financial_simple_interest",
+            "pointer": "/function/description",
+            "excerpt": "simple interest",
+            "axis": "whether the interest is compound or simple",
+            "why_confusable": "Both calculate interest from an initial amount, an annual rate, and a time in years.",
+            "why_this_rival": "Only one other tool, and the function descriptions name the two interest types.",
+            "rejected": [
+              "The compounding frequency n is an argument of compound interest, not a contrast that simple interest lacks a rate."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request that only says interest can be read as either type. Compound and simple are alternate types, not a class and a subclass. The cue names the type."
+          },
+          "propositions": [
+            {
+              "id": "multiple_57/t0/function/description#0",
+              "excerpt": "compound interest",
+              "span": [
+                11,
+                28
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_57/t1/function/description#1",
+              "excerpt": "simple interest",
+              "span": [
+                11,
+                26
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "financial_simple_interest",
+          "pointer": "/function/description",
+          "cue": "Unlike financial_compound_interest, which calculates compound interest, this calculates simple interest.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "simple interest"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "financial_compound_interest",
+            "pointer": "/function/description",
+            "excerpt": "compound interest",
+            "axis": "whether the interest is simple or compound",
+            "why_confusable": "Both calculate interest from an initial amount, an annual rate, and a time in years.",
+            "why_this_rival": "Only one other tool. The function description is the selection text.",
+            "rejected": [
+              "The simple-interest time sentence says compounded. That conflicts with this function description and is not used as the axis."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "The cue follows the function description, which says simple interest. It does not repeat the conflicting time sentence and does not say either tool rejects a principal."
+          },
+          "propositions": [
+            {
+              "id": "multiple_57/t1/function/description#0",
+              "excerpt": "simple interest",
+              "span": [
+                11,
+                26
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_57/t0/function/description#1",
+              "excerpt": "compound interest",
+              "span": [
+                11,
+                28
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_73",
+      "category": "multiple",
+      "cue_applied": true,
+      "case_reason": "Both tools look up one religion. One returns core beliefs and practices. The other returns origin and founder.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "religion_get_core_beliefs",
+          "pointer": "/function/description",
+          "cue": "Unlike religion_get_origin, which retrieves the origin and founder, this retrieves the core beliefs and practices.",
+          "target": {
+            "tool_index": 0,
+            "pointer": "/function/description",
+            "excerpt": "core beliefs and practices"
+          },
+          "rival": {
+            "tool_index": 1,
+            "function_name": "religion_get_origin",
+            "pointer": "/function/description",
+            "excerpt": "origin and founder",
+            "axis": "whether the religion fact is the core beliefs and practices or the origin and founder",
+            "why_confusable": "Both retrieve a fact about a specified religion. A request that only names the religion can be read as either.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "Do not drop practices or founder. Each description states both halves of its fact."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "Beliefs and origin can both be true of a request that only names the religion. The cue keeps practices with beliefs and founder with origin, which is what the sources say."
+          },
+          "propositions": [
+            {
+              "id": "multiple_73/t0/function/description#0",
+              "excerpt": "core beliefs and practices",
+              "span": [
+                14,
+                40
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_73/t1/function/description#1",
+              "excerpt": "origin and founder",
+              "span": [
+                14,
+                32
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            }
+          ]
+        },
+        {
+          "tool_index": 1,
+          "function_name": "religion_get_origin",
+          "pointer": "/function/description",
+          "cue": "Unlike religion_get_core_beliefs, which retrieves the core beliefs and practices, this retrieves the origin and founder.",
+          "target": {
+            "tool_index": 1,
+            "pointer": "/function/description",
+            "excerpt": "origin and founder"
+          },
+          "rival": {
+            "tool_index": 0,
+            "function_name": "religion_get_core_beliefs",
+            "pointer": "/function/description",
+            "excerpt": "core beliefs and practices",
+            "axis": "whether the religion fact is the origin and founder or the core beliefs and practices",
+            "why_confusable": "Both retrieve a fact about a specified religion.",
+            "why_this_rival": "Only one other tool.",
+            "rejected": [
+              "The parameter name religion is shared, so it is not the axis."
+            ]
+          },
+          "same_request": {
+            "both_descriptions_can_fit": true,
+            "cue_still_helps": true,
+            "implies_unsupported_exclusion": false,
+            "note": "A request for the founder does not make the beliefs description true. The cue still separates the two facts when the request only names the religion."
+          },
+          "propositions": [
+            {
+              "id": "multiple_73/t1/function/description#0",
+              "excerpt": "origin and founder",
+              "span": [
+                14,
+                32
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-target",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Target fact cited by the cue.",
+              "source_tool_index": 1,
+              "source_pointer": "/function/description"
+            },
+            {
+              "id": "multiple_73/t0/function/description#1",
+              "excerpt": "core beliefs and practices",
+              "span": [
+                14,
+                40
+              ],
+              "role": "both",
+              "decision": "KEEP",
+              "kind": "cue-rival",
+              "recovery": "verbatim",
+              "lost": false,
+              "unsupported": false,
+              "uncertain": false,
+              "duplicate": false,
+              "illustrative": false,
+              "note": "Rival fact cited by the cue, from that tool's original description.",
+              "source_tool_index": 0,
+              "source_pointer": "/function/description"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case_id": "multiple_99",
+      "category": "multiple",
+      "cue_applied": false,
+      "case_reason": "A derivative at a value and a personality-trait lookup do not answer a similar request.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "calculus_derivative",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Computes a derivative of a function at a value. The other tool retrieves personality traits. No shared action or resource is documented."
+        },
+        {
+          "tool_index": 1,
+          "function_name": "get_personality_traits",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "Retrieves personality traits for a personality type. The other tool computes a derivative. No selection cue is written."
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_0",
+      "category": "simple_python",
+      "cue_applied": false,
+      "case_reason": "simple_python_0 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "calculate_triangle_area",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "simple_python_0 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_1",
+      "category": "simple_python",
+      "cue_applied": false,
+      "case_reason": "simple_python_1 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "math_factorial",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "simple_python_1 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "simple_python_2",
+      "category": "simple_python",
+      "cue_applied": false,
+      "case_reason": "simple_python_2 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "math_hypot",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "simple_python_2 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_0",
+      "category": "irrelevance",
+      "cue_applied": false,
+      "case_reason": "irrelevance_0 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "determine_body_mass_index",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "irrelevance_0 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_1",
+      "category": "irrelevance",
+      "cue_applied": false,
+      "case_reason": "irrelevance_1 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "math_sum",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "irrelevance_1 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    },
+    {
+      "case_id": "irrelevance_2",
+      "category": "irrelevance",
+      "cue_applied": false,
+      "case_reason": "irrelevance_2 has one tool. There is no second description, so no rival, axis, or cue location qualifies.",
+      "tools": [
+        {
+          "tool_index": 0,
+          "function_name": "distance_calculator_calculate",
+          "pointer": "/function/description",
+          "cue": "",
+          "no_cue_reason": "irrelevance_2 has one tool. There is no second description, so no rival, axis, or cue location qualifies."
+        }
+      ]
+    }
+  ]
+}

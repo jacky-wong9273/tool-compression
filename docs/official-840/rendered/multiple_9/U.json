@@ -1,0 +1,68 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_9",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_standard_deviation",
+        "description": "This function calculates the standard deviation across different scores for a specific student.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "gradeDict": {
+              "type": "object",
+              "description": "A dictionary where keys represent subjects and values represent scores"
+            }
+          },
+          "required": [
+            "gradeDict"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_average",
+        "description": "This function calculates the average grade across different subjects for a specific student.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "gradeDict": {
+              "type": "object",
+              "description": "A dictionary where keys represent subjects and values represent scores"
+            }
+          },
+          "required": [
+            "gradeDict"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "highest_grade",
+        "description": "This function finds the subject where the student got the highest score.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "gradeDict": {
+              "type": "object",
+              "description": "A dictionary where keys represent subjects and values represent scores"
+            }
+          },
+          "required": [
+            "gradeDict"
+          ]
+        }
+      }
+    }
+  ]
+}

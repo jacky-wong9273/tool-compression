@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_215",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_tip",
+        "description": "Calculate the tip amount for a restaurant bill.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "bill_amount": {
+              "type": "number",
+              "description": "The total restaurant bill amount. This is a float type value.",
+              "format": "float"
+            },
+            "tip_percentage": {
+              "type": "number",
+              "description": "The tip percentage as a decimal. This is a float type value.",
+              "format": "float"
+            },
+            "split_bill": {
+              "type": "integer",
+              "description": "The number of people to split the bill with. This parameter is optional.",
+              "default": 1
+            }
+          },
+          "required": [
+            "bill_amount",
+            "tip_percentage"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_13",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_compound_interest",
+        "description": "Calculate the compound interest for a given principal amount, rate, time and compounding frequency.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "principal_amount": {
+              "type": "number",
+              "description": "The initial amount of money that is loaned or invested. This is a float type value.",
+              "format": "float"
+            },
+            "annual_interest_rate": {
+              "type": "number",
+              "description": "The annual interest rate as a decimal number. For example, an interest rate of 5% would be entered as 0.05. This is a float type value.",
+              "format": "float"
+            },
+            "compounding_periods_per_year": {
+              "type": "integer",
+              "description": "The number of times that interest is compounded per year."
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years the money is invested for."
+            }
+          },
+          "required": [
+            "principal_amount",
+            "annual_interest_rate",
+            "compounding_periods_per_year",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

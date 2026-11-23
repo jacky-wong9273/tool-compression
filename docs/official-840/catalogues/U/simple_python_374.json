@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_374",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "grocery_info_nutritional_info",
+        "description": "Retrieve nutritional information for a given food item from a particular store",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "store": {
+              "type": "string",
+              "description": "The store where the item is available"
+            },
+            "food": {
+              "type": "string",
+              "description": "Food item for which information is needed."
+            },
+            "information": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Protein",
+                  "Calories",
+                  "Carbohydrates",
+                  "Fat",
+                  "Fiber"
+                ]
+              },
+              "description": "Nutritional details required."
+            }
+          },
+          "required": [
+            "store",
+            "food",
+            "information"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_130",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_big_five_traits",
+        "description": "Calculate the big five personality traits based on a set of questions answered by the user.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "answers": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Answers to a set of questions rated on a scale from 1 to 5."
+            },
+            "calculate_percentile": {
+              "type": "boolean",
+              "description": "If true, the percentile rank for each trait will also be calculated."
+            },
+            "average_answers": {
+              "type": "boolean",
+              "description": "If true, answers will be averaged across each trait's questions.",
+              "default": true
+            }
+          },
+          "required": [
+            "answers",
+            "calculate_percentile"
+          ]
+        }
+      }
+    }
+  ]
+}

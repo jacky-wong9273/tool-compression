@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_2",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "math_hypot",
+        "description": "Calculate the Euclidean norm, sqrt(sum(squares)), the length of the vector from the origin to point (x, y) which is the hypotenuse of the right triangle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "integer",
+              "description": "The x-coordinate value."
+            },
+            "y": {
+              "type": "integer",
+              "description": "The y-coordinate value."
+            },
+            "z": {
+              "type": "integer",
+              "description": "Optional. The z-coordinate value. Default is 0."
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ]
+        }
+      }
+    }
+  ]
+}

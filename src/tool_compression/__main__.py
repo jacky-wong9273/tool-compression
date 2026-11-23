@@ -68,6 +68,12 @@ def main(argv: list[str] | None = None) -> int:
     flight.add_argument("--live", action="store_true")
     flight.add_argument("--authorize-peak", action="store_true")
 
+    official = sub.add_parser("usx-840")
+    official.add_argument("--bfcl-root", required=True, type=Path)
+    official.add_argument("--out", required=True, type=Path)
+    official.add_argument("--no-api", action="store_true")
+    official.add_argument("--live", action="store_true")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -85,6 +91,8 @@ def main(argv: list[str] | None = None) -> int:
         return _semantic_audit()
     if args.command == "usx-flight":
         return _usx_flight(args)
+    if args.command == "usx-840":
+        return _usx_840(args)
     return 2
 
 
@@ -209,6 +217,50 @@ def _usx_flight(args) -> int:
     try:
         run_live(args.bfcl_root, args.out, ceiling, clock, client=None, authorize_peak=True)
     except UsxFlightRefused as exc:
+        print(str(exc))
+        return 1
+    return 0
+
+
+def _usx_840(args) -> int:
+    """Stage A unless ``--live`` is set. Live stays off-peak and refuses an unsealed sample."""
+    from tool_compression.official_840 import SHANGHAI, UsxFlightRefused, read_ceiling_from_env, run_live, run_no_api_gate
+
+    if args.live and args.no_api:
+        print("pass only one of --live and --no-api")
+        return 2
+    try:
+        ceiling = read_ceiling_from_env()
+    except UsxFlightRefused as exc:
+        print(str(exc))
+        return 2
+
+    def clock():
+        return datetime.now(SHANGHAI)
+
+    if not args.live:
+        try:
+            gate = run_no_api_gate(args.bfcl_root, args.out, ceiling, clock)
+        except (UsxFlightRefused, ValueError) as exc:
+            print(str(exc))
+            return 1
+        print(json.dumps({
+            "stage": gate["stage"],
+            "provider_called": gate["provider_called"],
+            "api_key_read": gate["api_key_read"],
+            "spend_cny": gate["spend_cny"],
+            "sample_cases": gate["sample_cases"],
+            "sealed_cases": gate["sealed_cases"],
+            "blocked_cases": gate["blocked_cases"],
+            "flight_ready": gate["flight_ready"],
+            "schedule_at_gate": gate["schedule_at_gate"],
+            "stopped_for_peak": gate["stopped_for_peak"],
+            "official_settlement": gate["official_settlement"],
+        }, sort_keys=True))
+        return 0
+    try:
+        run_live(args.bfcl_root, args.out, ceiling, clock, client=None)
+    except (UsxFlightRefused, ValueError) as exc:
         print(str(exc))
         return 1
     return 0

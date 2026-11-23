@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_2",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "distance_calculator_calculate",
+        "description": "Calculate the distance between two geographical coordinates.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinate_1": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The first coordinate, a pair of latitude and longitude."
+            },
+            "coordinate_2": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The second coordinate, a pair of latitude and longitude."
+            }
+          },
+          "required": [
+            "coordinate_1",
+            "coordinate_2"
+          ]
+        }
+      }
+    }
+  ]
+}
