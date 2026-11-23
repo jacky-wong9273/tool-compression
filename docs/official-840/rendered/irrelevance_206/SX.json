@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_206",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "game_find_best_weapon",
+        "description": "Finds the best weapon in the inventory to use against a particular enemy type based on the player's level and the enemy's strength and weaknesses.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_level": {
+              "type": "integer",
+              "description": "The player's current level."
+            },
+            "enemy_type": {
+              "type": "string",
+              "description": "The type of enemy the player is facing."
+            },
+            "inventory": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of weapons currently in player's inventory.",
+              "default": [
+                "knife"
+              ]
+            }
+          },
+          "required": [
+            "player_level",
+            "enemy_type"
+          ]
+        }
+      }
+    }
+  ]
+}

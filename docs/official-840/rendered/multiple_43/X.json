@@ -1,0 +1,92 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_43",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "biological_calc_biomass",
+        "description": "Calculate the biomass from the energy given the energy conversion efficiency.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "energy": {
+              "type": "number",
+              "description": "The total energy produced. This is a float type value.",
+              "format": "float"
+            },
+            "efficiency": {
+              "type": "number",
+              "description": "The conversion efficiency, default value is 10%. This is a float type value.",
+              "default": 0.1,
+              "format": "float"
+            }
+          },
+          "required": [
+            "energy"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "biological_calc_energy",
+        "description": "Calculate energy from amount of substance based on its molecular composition.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "mols": {
+              "type": "integer",
+              "description": "Amount of substance in moles."
+            },
+            "substance": {
+              "type": "string",
+              "description": "The chemical formula of the substance."
+            },
+            "joules_per_mol": {
+              "type": "integer",
+              "description": "The energy produced or required for the reaction, default value for glucose is 2800 kJ/mol",
+              "default": 2800
+            }
+          },
+          "required": [
+            "mols",
+            "substance"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "physical_calc_work",
+        "description": "Calculate the work from energy.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "energy": {
+              "type": "number",
+              "description": "The total energy produced. This is a float type value.",
+              "format": "float"
+            },
+            "distance": {
+              "type": "number",
+              "description": "The distance over which the work is done. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "energy",
+            "distance"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_272",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_circle_dimensions",
+        "description": "Calculate the area and circumference of a circle based on the radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "integer",
+              "description": "The radius of the circle."
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

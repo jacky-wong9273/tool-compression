@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_251",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_earliest_reference",
+        "description": "Retrieve the earliest historical reference of a person.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the person."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "scriptures",
+                "historical records"
+              ],
+              "description": "Source to fetch the reference. Default is 'scriptures'"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_363",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_search_find_closest",
+        "description": "Locate the closest sushi restaurant based on certain criteria, such as the presence of a patio.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city, for instance Boston, MA"
+            },
+            "cuisine": {
+              "type": "string",
+              "description": "Type of food like Sushi."
+            },
+            "amenities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Patio",
+                  "Wi-Fi",
+                  "Happy Hour",
+                  "Wheelchair Accessible"
+                ]
+              },
+              "description": "Preferred amenities in the restaurant. Default 'Wi-Fi'."
+            }
+          },
+          "required": [
+            "location",
+            "cuisine"
+          ]
+        }
+      }
+    }
+  ]
+}

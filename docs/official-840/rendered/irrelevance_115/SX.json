@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_115",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_distance",
+        "description": "Calculate the distance between two geographical coordinates in miles.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "origin": {
+              "type": "object",
+              "description": "The origin coordinate with latitude and longitude as decimal values."
+            },
+            "destination": {
+              "type": "object",
+              "description": "The destination coordinate with latitude and longitude as decimal values."
+            },
+            "speed": {
+              "type": "number",
+              "description": "The speed of travel in mph. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "origin",
+            "destination",
+            "speed"
+          ]
+        }
+      }
+    }
+  ]
+}

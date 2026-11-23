@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_160",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "most_frequent_visitor",
+        "description": "Retrieve the visitor who visited the museum the most within a given period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "museum_name": {
+              "type": "string",
+              "description": "The name of the museum."
+            },
+            "start_date": {
+              "type": "string",
+              "description": "The start date of the period, format: yyyy-mm-dd."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "The end date of the period, format: yyyy-mm-dd."
+            },
+            "minimum_visits": {
+              "type": "integer",
+              "description": "The minimum number of visits to qualify. Default: 1"
+            }
+          },
+          "required": [
+            "museum_name",
+            "start_date",
+            "end_date"
+          ]
+        }
+      }
+    }
+  ]
+}

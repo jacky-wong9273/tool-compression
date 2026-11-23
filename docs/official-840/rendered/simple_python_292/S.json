@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_292",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "compose_melody",
+        "description": "Compose a melody using the specified chord progression for a certain number of measures on specified instrument.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "progression": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The progression of chords."
+            },
+            "measures": {
+              "type": "integer",
+              "description": "The number of measures of the melody."
+            },
+            "instrument": {
+              "type": "string",
+              "description": "The instrument for the composition. Default is 'Piano'."
+            }
+          },
+          "required": [
+            "progression",
+            "measures"
+          ]
+        }
+      }
+    }
+  ]
+}

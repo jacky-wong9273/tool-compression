@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_396",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hospital_locate",
+        "description": "Locate nearby hospitals based on location and radius. Options to include specific departments are available.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. Denver, CO"
+            },
+            "radius": {
+              "type": "integer",
+              "description": "The radius within which you want to find the hospital in kms."
+            },
+            "department": {
+              "type": "string",
+              "description": "Specific department within the hospital. Default is 'General Medicine'.",
+              "enum": [
+                "General Medicine",
+                "Emergency",
+                "Pediatrics",
+                "Cardiology",
+                "Orthopedics"
+              ]
+            }
+          },
+          "required": [
+            "location",
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

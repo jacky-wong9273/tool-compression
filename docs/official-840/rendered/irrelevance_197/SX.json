@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_197",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "board_game_possible_moves",
+        "description": "Calculate the total possible moves for a specific board game based on the current state of the game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "Name of the board game."
+            },
+            "current_state": {
+              "type": "string",
+              "description": "The current state of the board game, including pieces on the board and their positions."
+            },
+            "include_repetitions": {
+              "type": "boolean",
+              "description": "Include repetitive moves in the count or not. Default is false."
+            }
+          },
+          "required": [
+            "game_name",
+            "current_state"
+          ]
+        }
+      }
+    }
+  ]
+}

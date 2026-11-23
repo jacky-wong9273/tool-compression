@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_361",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_finder",
+        "description": "Locate restaurants based on certain criteria such as cuisine, city, and dietary preferences.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "City where you are looking for the restaurant."
+            },
+            "cuisine": {
+              "type": "string",
+              "description": "Type of cuisine you are interested in."
+            },
+            "diet": {
+              "type": "string",
+              "description": "Dietary preferences. e.g. 'Vegetarian', 'Gluten-free', etc. Default 'Vegetarian'."
+            }
+          },
+          "required": [
+            "city",
+            "cuisine"
+          ]
+        }
+      }
+    }
+  ]
+}

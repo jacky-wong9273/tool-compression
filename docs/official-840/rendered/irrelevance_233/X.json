@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_233",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_in_location",
+        "description": "Retrieve the current weather conditions in a specific location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location where to retrieve the weather conditions."
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "C",
+                "F"
+              ],
+              "description": "The unit to use for the temperature, either Celsius (C) or Fahrenheit (F)."
+            }
+          },
+          "required": [
+            "location",
+            "unit"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_182",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_info",
+        "description": "Retrieves details of a lawsuit given a case number",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case_number": {
+              "type": "string",
+              "description": "The unique identifier of the lawsuit case"
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year in which the lawsuit case was initiated.",
+              "optional": true,
+              "default": 2023
+            },
+            "location": {
+              "type": "string",
+              "description": "The location or court jurisdiction where the case was filed. Default is 'all'.",
+              "optional": true
+            }
+          },
+          "required": [
+            "case_number"
+          ]
+        }
+      }
+    }
+  ]
+}

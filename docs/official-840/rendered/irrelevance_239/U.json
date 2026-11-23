@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_239",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_date",
+        "description": "Get the time difference between two geographical locations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location_1": {
+              "type": "string",
+              "description": "location for first city."
+            },
+            "location_2": {
+              "type": "string",
+              "description": "location for first city."
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "miles",
+                "kilometers"
+              ],
+              "description": "The unit of measure for the distance. Default is miles."
+            }
+          },
+          "required": [
+            "location_1",
+            "location_2"
+          ]
+        }
+      }
+    }
+  ]
+}

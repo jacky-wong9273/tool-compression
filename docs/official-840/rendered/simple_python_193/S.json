@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_193",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "local_nursery_find",
+        "description": "Locate local nurseries based on location and plant types availability.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city or locality where the nursery needs to be located."
+            },
+            "plant_types": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Annual",
+                  "Perennial",
+                  "Shrub",
+                  "Tree",
+                  "Herbs",
+                  "Fruits"
+                ]
+              },
+              "description": "Type of plants the nursery should provide."
+            }
+          },
+          "required": [
+            "location",
+            "plant_types"
+          ]
+        }
+      }
+    }
+  ]
+}

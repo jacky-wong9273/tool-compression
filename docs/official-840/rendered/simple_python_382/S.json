@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_382",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "book_hotel",
+        "description": "Book a room of specified type for a particular number of nights at a specific hotel, starting from a specified date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "hotel_name": {
+              "type": "string",
+              "description": "The name of the hotel."
+            },
+            "location": {
+              "type": "string",
+              "description": "The city in which the hotel is located."
+            },
+            "room_type": {
+              "type": "string",
+              "description": "The type of room to be booked."
+            },
+            "start_date": {
+              "type": "string",
+              "description": "The start date for the booking."
+            },
+            "nights": {
+              "type": "integer",
+              "description": "The number of nights for which the booking is to be made."
+            }
+          },
+          "required": [
+            "hotel_name",
+            "location",
+            "room_type",
+            "start_date",
+            "nights"
+          ]
+        }
+      }
+    }
+  ]
+}

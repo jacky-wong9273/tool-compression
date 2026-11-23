@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_160",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_case_info",
+        "description": "Retrieve case details using a specific case docket number and court location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "docket": {
+              "type": "string",
+              "description": "Docket number for the specific court case."
+            },
+            "court": {
+              "type": "string",
+              "description": "Court in which the case was heard."
+            },
+            "info_type": {
+              "type": "string",
+              "description": "Specify the information type needed for the case. i.e., victim, accused, verdict etc."
+            }
+          },
+          "required": [
+            "docket",
+            "court",
+            "info_type"
+          ]
+        }
+      }
+    }
+  ]
+}

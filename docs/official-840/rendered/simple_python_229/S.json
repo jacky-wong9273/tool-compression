@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_229",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_bigfive_scores",
+        "description": "Retrieve Big Five Personality trait scores based on individual's behavioural characteristics.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "characteristics": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of user's behavioural characteristics."
+            },
+            "scale": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "low"
+              ],
+              "description": "The scoring scale of traits (default is medium)."
+            }
+          },
+          "required": [
+            "characteristics"
+          ]
+        }
+      }
+    }
+  ]
+}

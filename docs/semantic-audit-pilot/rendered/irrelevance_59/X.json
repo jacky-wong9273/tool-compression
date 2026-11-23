@@ -1,0 +1,33 @@
+{
+  "pilot": "semantic-audit-pilot-01",
+  "case_id": "irrelevance_59",
+  "category": "irrelevance",
+  "condition": "X",
+  "note": "Converted catalogue copy for this pilot. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "linear_equation_solver",
+        "description": "Solve a linear equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "equation": {
+              "type": "string",
+              "description": "The linear equation to solve."
+            },
+            "variable": {
+              "type": "string",
+              "description": "The variable to solve for."
+            }
+          },
+          "required": [
+            "equation",
+            "variable"
+          ]
+        }
+      }
+    }
+  ]
+}

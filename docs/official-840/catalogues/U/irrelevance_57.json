@@ -1,0 +1,49 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_57",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "genetic_algorithm_optimize",
+        "description": "Apply the genetic algorithm to optimize a function with multiple variables.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "description": "The function to be optimized."
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "A list of constraints for the variables in the function."
+              }
+            },
+            "population_size": {
+              "type": "integer",
+              "description": "The size of the population for the genetic algorithm."
+            },
+            "mutation_rate": {
+              "type": "number",
+              "description": "The rate of mutation for the genetic algorithm. This is a float type value.",
+              "default": 0.01,
+              "format": "float"
+            }
+          },
+          "required": [
+            "function",
+            "constraints",
+            "population_size"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_137",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_stock_return",
+        "description": "Calculate the projected return of a stock investment given the investment amount, the annual growth rate and holding period in years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "investment_amount": {
+              "type": "integer",
+              "description": "The amount of money to invest."
+            },
+            "annual_growth_rate": {
+              "type": "number",
+              "description": "The expected annual growth rate of the stock. This is a float type value.",
+              "format": "float"
+            },
+            "holding_period": {
+              "type": "integer",
+              "description": "The number of years you intend to hold the stock."
+            },
+            "dividends": {
+              "type": "boolean",
+              "description": "Optional. True if the calculation should take into account potential dividends. Default is false."
+            }
+          },
+          "required": [
+            "investment_amount",
+            "annual_growth_rate",
+            "holding_period"
+          ]
+        }
+      }
+    }
+  ]
+}

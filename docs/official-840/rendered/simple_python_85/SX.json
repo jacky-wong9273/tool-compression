@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_85",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geo_distance_calculate",
+        "description": "Calculate the geographic distance between two given locations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_location": {
+              "type": "string",
+              "description": "The starting location for the distance calculation. Specify the location in the format of City, State."
+            },
+            "end_location": {
+              "type": "string",
+              "description": "The destination location for the distance calculation. Specify the location in the format of City, State."
+            },
+            "units": {
+              "type": "string",
+              "description": "Optional. The desired units for the resulting distance ('miles' or 'kilometers'). Defaults to 'miles'."
+            }
+          },
+          "required": [
+            "start_location",
+            "end_location"
+          ]
+        }
+      }
+    }
+  ]
+}

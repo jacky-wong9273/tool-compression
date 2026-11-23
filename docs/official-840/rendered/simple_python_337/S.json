@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_337",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "poker_game_winner",
+        "description": "Identify the winner in a poker game based on the cards.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "players": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Names of the players in a list."
+            },
+            "cards": {
+              "type": "object",
+              "description": "An object containing the player name as key and the cards as values in a list."
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of poker game. Defaults to 'Texas Holdem'"
+            }
+          },
+          "required": [
+            "players",
+            "cards"
+          ]
+        }
+      }
+    }
+  ]
+}

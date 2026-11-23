@@ -1,0 +1,34 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_228",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_personality_traits",
+        "description": "Retrieve the common personality traits of people based on their hobbies or activities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "hobby": {
+              "type": "string",
+              "description": "The hobby or activity of interest."
+            },
+            "trait_count": {
+              "type": "integer",
+              "description": "The number of top traits to return, default is 5"
+            }
+          },
+          "required": [
+            "hobby"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_154",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_info_find_creator",
+        "description": "Retrieve the creator of a sculpture based on the name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sculpture_name": {
+              "type": "string",
+              "description": "The name of the sculpture."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the sculpture is displayed, if known."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year the sculpture was created, if known.",
+              "default": 2000
+            }
+          },
+          "required": [
+            "sculpture_name",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_174",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_top_cases",
+        "description": "Retrieve a list of the most influential or landmark cases in a specific field of law.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "field_of_law": {
+              "type": "string",
+              "description": "The specific field of law e.g., constitutional law, criminal law, etc."
+            },
+            "top_number": {
+              "type": "integer",
+              "description": "The number of top cases to retrieve."
+            },
+            "country": {
+              "type": "string",
+              "description": "The country where the law cases should be retrieved from. Default is United States of America."
+            }
+          },
+          "required": [
+            "field_of_law",
+            "top_number"
+          ]
+        }
+      }
+    }
+  ]
+}

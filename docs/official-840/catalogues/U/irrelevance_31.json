@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_31",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "cell_divide",
+        "description": "Simulate the division of a cell into two daughter cells.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cell_id": {
+              "type": "string",
+              "description": "The unique ID of the parent cell."
+            },
+            "method": {
+              "type": "string",
+              "description": "The method of cell division, i.e., 'mitosis' or 'meiosis'."
+            },
+            "times": {
+              "type": "integer",
+              "description": "The number of times the cell will divide. Defaults to 1 if not provided."
+            }
+          },
+          "required": [
+            "cell_id",
+            "method"
+          ]
+        }
+      }
+    }
+  ]
+}

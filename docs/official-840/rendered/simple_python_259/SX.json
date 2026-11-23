@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_259",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_paint_needed",
+        "description": "Calculate the amount of paint needed to cover a surface area based on the coverage rate of a specific paint brand.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coverage_rate": {
+              "type": "integer",
+              "description": "The area in square feet that one gallon of paint can cover."
+            },
+            "length": {
+              "type": "integer",
+              "description": "Length of the wall to be painted in feet."
+            },
+            "height": {
+              "type": "integer",
+              "description": "Height of the wall to be painted in feet."
+            }
+          },
+          "required": [
+            "coverage_rate",
+            "length",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

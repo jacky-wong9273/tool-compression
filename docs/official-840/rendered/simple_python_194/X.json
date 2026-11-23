@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_194",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_plants_for_slope",
+        "description": "Retrieve the list of plants suitable for slope based on erosion control ability.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "slope_type": {
+              "type": "string",
+              "description": "The type of slope like steep, moderate etc."
+            },
+            "num_results": {
+              "type": "integer",
+              "description": "The number of top results needed. Default is 5."
+            }
+          },
+          "required": [
+            "slope_type",
+            "num_results"
+          ]
+        }
+      }
+    }
+  ]
+}

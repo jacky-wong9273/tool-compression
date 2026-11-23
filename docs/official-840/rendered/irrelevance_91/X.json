@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_91",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_law_categories",
+        "description": "Retrieves the list of categories within a specified type of law.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "law_type": {
+              "type": "string",
+              "description": "The type of law to be searched."
+            },
+            "country": {
+              "type": "string",
+              "description": "The country where the law is applicable."
+            },
+            "specific_category": {
+              "type": "string",
+              "description": "Specific category within the type of law (Optional). Default: 'business'"
+            }
+          },
+          "required": [
+            "law_type",
+            "country"
+          ]
+        }
+      }
+    }
+  ]
+}

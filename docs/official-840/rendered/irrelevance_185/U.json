@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_185",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "player_stats_average_scoring",
+        "description": "Retrieve average scoring details of a specific basketball player.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_name": {
+              "type": "string",
+              "description": "The name of the basketball player."
+            },
+            "season": {
+              "type": "string",
+              "description": "The specific season to get statistics for."
+            },
+            "league": {
+              "type": "string",
+              "default": "NBA",
+              "description": "The league the player belongs to."
+            }
+          },
+          "required": [
+            "player_name",
+            "season"
+          ]
+        }
+      }
+    }
+  ]
+}

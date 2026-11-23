@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_126",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "linear_regression_get_r_squared",
+        "description": "Calculate the coefficient of determination of a regression model.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_path": {
+              "type": "string",
+              "description": "Path to the CSV dataset file."
+            },
+            "independent_variables": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The independent variables to use in the regression model."
+            },
+            "dependent_variable": {
+              "type": "string",
+              "description": "The dependent variable to predict in the regression model."
+            }
+          },
+          "required": [
+            "dataset_path",
+            "independent_variables",
+            "dependent_variable"
+          ]
+        }
+      }
+    }
+  ]
+}

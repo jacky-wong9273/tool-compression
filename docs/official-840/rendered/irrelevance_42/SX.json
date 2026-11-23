@@ -1,0 +1,47 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_42",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_biodiversity_index",
+        "description": "Calculate the biodiversity index of a specific environment or biome using species richness and species evenness.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species_richness": {
+              "type": "integer",
+              "description": "The number of different species in a specific environment."
+            },
+            "species_evenness": {
+              "type": "integer",
+              "description": "The relative abundance of the different species in an environment."
+            },
+            "region": {
+              "type": "string",
+              "description": "The specific environment or biome to be measured.",
+              "enum": [
+                "Tropical Rainforest",
+                "Desert",
+                "Tundra",
+                "Grassland",
+                "Ocean"
+              ],
+              "default": "Desert"
+            }
+          },
+          "required": [
+            "species_richness",
+            "species_evenness"
+          ]
+        }
+      }
+    }
+  ]
+}

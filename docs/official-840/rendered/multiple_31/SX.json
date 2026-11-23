@@ -1,0 +1,73 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_31",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_square_calculate",
+        "description": "Calculates the area and perimeter of a square given the side length.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "side": {
+              "type": "integer",
+              "description": "The length of a side of the square."
+            }
+          },
+          "required": [
+            "side"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_circle_calculate",
+        "description": "Calculates the area and circumference of a circle given the radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "integer",
+              "description": "The radius of the circle."
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_rectangle_calculate",
+        "description": "Calculates the area and perimeter of a rectangle given the width and length.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "integer",
+              "description": "The width of the rectangle."
+            },
+            "length": {
+              "type": "integer",
+              "description": "The length of the rectangle."
+            }
+          },
+          "required": [
+            "width",
+            "length"
+          ]
+        }
+      }
+    }
+  ]
+}

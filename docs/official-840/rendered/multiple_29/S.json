@@ -1,0 +1,54 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_29",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "functions_zero",
+        "description": "Find the zero points of a function.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "description": "Function given as a string with x as the variable, e.g. 3x+2"
+            }
+          },
+          "required": [
+            "function"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "functions_intersect",
+        "description": "Locate the intersection points of two functions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function1": {
+              "type": "string",
+              "description": "First function given as a string with x as the variable, e.g. 3x+2"
+            },
+            "function2": {
+              "type": "string",
+              "description": "Second function given as a string with x as the variable, e.g. 2x+3"
+            }
+          },
+          "required": [
+            "function1",
+            "function2"
+          ]
+        }
+      }
+    }
+  ]
+}

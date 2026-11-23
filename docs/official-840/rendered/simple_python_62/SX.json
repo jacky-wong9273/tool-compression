@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_62",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "analyze_dna_sequence",
+        "description": "Analyzes the DNA sequence based on a reference sequence and return any potential mutations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sequence": {
+              "type": "string",
+              "description": "The DNA sequence to be analyzed."
+            },
+            "reference_sequence": {
+              "type": "string",
+              "description": "The reference DNA sequence."
+            },
+            "mutation_type": {
+              "type": "string",
+              "enum": [
+                "insertion",
+                "deletion",
+                "substitution"
+              ],
+              "description": "Type of the mutation to be looked for in the sequence. Default to 'substitution'."
+            }
+          },
+          "required": [
+            "sequence",
+            "reference_sequence"
+          ]
+        }
+      }
+    }
+  ]
+}

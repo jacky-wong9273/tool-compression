@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_184",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_check_case",
+        "description": "Verify the details of a lawsuit case and check its status using case ID.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case_id": {
+              "type": "integer",
+              "description": "The identification number of the lawsuit case."
+            },
+            "closed_status": {
+              "type": "boolean",
+              "description": "The status of the lawsuit case to be verified."
+            }
+          },
+          "required": [
+            "case_id",
+            "closed_status"
+          ]
+        }
+      }
+    }
+  ]
+}

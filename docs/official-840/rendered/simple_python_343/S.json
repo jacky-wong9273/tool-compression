@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_343",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "game_stats_fetch_player_statistics",
+        "description": "Fetch player statistics for a specific video game for a given user.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game": {
+              "type": "string",
+              "description": "The name of the video game."
+            },
+            "username": {
+              "type": "string",
+              "description": "The username of the player."
+            },
+            "platform": {
+              "type": "string",
+              "description": "The platform user is playing on.",
+              "default": "PC"
+            }
+          },
+          "required": [
+            "game",
+            "username"
+          ]
+        }
+      }
+    }
+  ]
+}

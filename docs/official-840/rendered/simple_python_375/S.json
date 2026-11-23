@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_375",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "walmart_check_price",
+        "description": "Calculate total price for given items and their quantities at Walmart.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of items to be priced."
+            },
+            "quantities": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Quantity of each item corresponding to the items list."
+            },
+            "store_location": {
+              "type": "string",
+              "description": "The store location for specific pricing (optional). Default to all if not specified."
+            }
+          },
+          "required": [
+            "items",
+            "quantities"
+          ]
+        }
+      }
+    }
+  ]
+}

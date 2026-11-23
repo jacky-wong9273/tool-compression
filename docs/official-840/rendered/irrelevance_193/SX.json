@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_193",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_sport_team_details",
+        "description": "Retrieve information about a sports team including roster, previous results, upcoming matches, etc.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the team."
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "roster",
+                  "results",
+                  "upcoming_matches"
+                ]
+              },
+              "description": "Specific details about the team you want to retrieve."
+            }
+          },
+          "required": [
+            "team_name",
+            "details"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_230",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_hotel",
+        "description": "Search for hotels based on specific criteria like price range and pet policy.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city where you want to book the hotel."
+            },
+            "max_price_per_night": {
+              "type": "number",
+              "description": "The maximum amount you are willing to pay per night. This is a float type value.",
+              "format": "float"
+            },
+            "pet_friendly": {
+              "type": "boolean",
+              "description": "Whether the hotel should allow pets. Defaults to false."
+            }
+          },
+          "required": [
+            "location",
+            "max_price_per_night"
+          ]
+        }
+      }
+    }
+  ]
+}

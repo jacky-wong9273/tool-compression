@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_212",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_info",
+        "description": "Retrieves information about a specific stock based on company's name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company."
+            },
+            "detail_level": {
+              "type": "string",
+              "description": "Level of detail for stock information. Can be 'summary' or 'detailed'."
+            },
+            "market": {
+              "type": "string",
+              "description": "The stock market of interest. Default is 'NASDAQ'"
+            }
+          },
+          "required": [
+            "company_name",
+            "detail_level"
+          ]
+        }
+      }
+    }
+  ]
+}

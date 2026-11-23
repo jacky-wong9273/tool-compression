@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_372",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "whole_foods_find_top_brands",
+        "description": "Get top brands based on a specific product from Whole Foods",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "product": {
+              "type": "string",
+              "description": "The product for which the top brands should be fetched."
+            },
+            "number": {
+              "type": "integer",
+              "description": "Number of top brands to be fetched. Default is 5"
+            },
+            "organic": {
+              "type": "boolean",
+              "description": "If the product should be organic. Default is false"
+            }
+          },
+          "required": [
+            "product"
+          ]
+        }
+      }
+    }
+  ]
+}

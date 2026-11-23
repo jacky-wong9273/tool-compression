@@ -1,0 +1,36 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_28",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_boiling_point",
+        "description": "Calculate the boiling point of a given substance at a given pressure.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "substance": {
+              "type": "string",
+              "description": "The chemical name of the substance."
+            },
+            "pressure": {
+              "type": "number",
+              "description": "The external pressure. Default is 1 atm (atmospheric pressure). This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "substance",
+            "pressure"
+          ]
+        }
+      }
+    }
+  ]
+}

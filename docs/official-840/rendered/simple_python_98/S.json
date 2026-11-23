@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_98",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_clock_angle",
+        "description": "Calculate the angle between the hour and minute hands of a clock at a given time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "hours": {
+              "type": "integer",
+              "description": "The hour on the clock face."
+            },
+            "minutes": {
+              "type": "integer",
+              "description": "The minutes on the clock face."
+            },
+            "round_to": {
+              "type": "integer",
+              "description": "The number of decimal places to round the result to, default is 2."
+            }
+          },
+          "required": [
+            "hours",
+            "minutes"
+          ]
+        }
+      }
+    }
+  ]
+}

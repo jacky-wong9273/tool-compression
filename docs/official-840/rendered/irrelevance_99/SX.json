@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_99",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_search",
+        "description": "Search for lawsuits related to a particular subject matter in a certain location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to perform the search in."
+            },
+            "subject": {
+              "type": "string",
+              "description": "The subject matter of the lawsuits."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Optional. The year in which the lawsuit was filed. Default: 2024"
+            }
+          },
+          "required": [
+            "location",
+            "subject"
+          ]
+        }
+      }
+    }
+  ]
+}

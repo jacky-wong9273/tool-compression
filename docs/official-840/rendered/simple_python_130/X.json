@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_130",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "finance_calculator_npv",
+        "description": "Calculate the Net Present Value (NPV) for a series of cash flows discounted at a certain interest rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cash_flows": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "A list of cash flows."
+            },
+            "discount_rate": {
+              "type": "number",
+              "description": "The annual interest rate used to discount the cash flows. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "A list of years when the cash flow occurs. Default is empty array."
+            }
+          },
+          "required": [
+            "cash_flows",
+            "discount_rate"
+          ]
+        }
+      }
+    }
+  ]
+}

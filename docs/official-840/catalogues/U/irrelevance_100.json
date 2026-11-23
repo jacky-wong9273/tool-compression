@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_100",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_litigation_cost",
+        "description": "Calculate the potential cost of a lawsuit based on its length and complexity.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "length_in_days": {
+              "type": "integer",
+              "description": "The expected length of the trial in days."
+            },
+            "complexity": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "description": "The complexity of the lawsuit."
+            },
+            "extra_expenses": {
+              "type": "boolean",
+              "description": "Does this lawsuit involve extra expenses such as private investigators, travel, etc.?",
+              "default": false
+            }
+          },
+          "required": [
+            "length_in_days",
+            "complexity"
+          ]
+        }
+      }
+    }
+  ]
+}

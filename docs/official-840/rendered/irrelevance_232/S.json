@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_232",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hotel_search_find_hotels",
+        "description": "Search for hotels based on location and amenities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. New York, NY."
+            },
+            "amenities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Breakfast",
+                  "Fitness Centre",
+                  "Free Wi-Fi",
+                  "Parking"
+                ]
+              },
+              "description": "Preferred amenities in the hotel."
+            }
+          },
+          "required": [
+            "location",
+            "amenities"
+          ]
+        }
+      }
+    }
+  ]
+}

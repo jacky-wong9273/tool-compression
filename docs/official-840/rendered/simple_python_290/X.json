@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_290",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "concert_find_details",
+        "description": "Finds details of a concert event.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "artist": {
+              "type": "string",
+              "description": "Name of the artist performing."
+            },
+            "month": {
+              "type": "string",
+              "description": "Month in which the concert is happening."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Year of the concert.",
+              "default": 2022
+            }
+          },
+          "required": [
+            "artist",
+            "month"
+          ]
+        }
+      }
+    }
+  ]
+}

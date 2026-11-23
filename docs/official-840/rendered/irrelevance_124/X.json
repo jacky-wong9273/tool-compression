@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_124",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_social_trends",
+        "description": "Retrieve trending topics in a given category.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "The category to get the trends from."
+            },
+            "region": {
+              "type": "string",
+              "description": "The region where the trend should be located. Default is worldwide."
+            }
+          },
+          "required": [
+            "category",
+            "region"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_280",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_instrument",
+        "description": "Search for a musical instrument within specified budget and of specific type.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "budget": {
+              "type": "integer",
+              "description": "Your budget for the instrument."
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of the instrument"
+            },
+            "make": {
+              "type": "string",
+              "description": "Maker of the instrument. Default to not use if not specified."
+            }
+          },
+          "required": [
+            "budget",
+            "type"
+          ]
+        }
+      }
+    }
+  ]
+}

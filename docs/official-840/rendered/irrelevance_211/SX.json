@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_211",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "recipe_calculator_calculate_time",
+        "description": "Calculates the time to cook a recipe based on weight and per unit time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "number",
+              "description": "The weight of the item to be cooked. This is a float type value.",
+              "format": "float"
+            },
+            "per_unit_time": {
+              "type": "integer",
+              "description": "The time required to cook per unit weight."
+            },
+            "unit_of_time": {
+              "type": "string",
+              "description": "Unit of time, such as minutes or hours. Default is minutes."
+            }
+          },
+          "required": [
+            "weight",
+            "per_unit_time"
+          ]
+        }
+      }
+    }
+  ]
+}

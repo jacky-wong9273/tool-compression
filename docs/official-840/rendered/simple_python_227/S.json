@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_227",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_personality_traits",
+        "description": "Retrieve the personality traits for a specific personality type, including their strengths and weaknesses.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The personality type."
+            },
+            "traits": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "strengths",
+                  "weaknesses"
+                ]
+              },
+              "description": "List of traits to be retrieved, default is ['strengths']."
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      }
+    }
+  ]
+}

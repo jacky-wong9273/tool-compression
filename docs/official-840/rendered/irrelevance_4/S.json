@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_4",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_roots",
+        "description": "Find the roots of a quadratic equation ax^2 + bx + c = 0.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number",
+              "description": "Coefficient of x^2. This is a float type value.",
+              "format": "float"
+            },
+            "b": {
+              "type": "number",
+              "description": "Coefficient of x. This is a float type value.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "Constant term. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    }
+  ]
+}

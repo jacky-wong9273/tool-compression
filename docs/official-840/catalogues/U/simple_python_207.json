@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_207",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_shortest_distance",
+        "description": "Calculate the shortest driving distance between two locations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_location": {
+              "type": "string",
+              "description": "The starting location for the drive."
+            },
+            "end_location": {
+              "type": "string",
+              "description": "The destination location for the drive."
+            },
+            "route_preference": {
+              "type": "string",
+              "enum": [
+                "Shortest",
+                "Scenic"
+              ],
+              "description": "The preferred type of route."
+            }
+          },
+          "required": [
+            "start_location",
+            "end_location",
+            "route_preference"
+          ]
+        }
+      }
+    }
+  ]
+}

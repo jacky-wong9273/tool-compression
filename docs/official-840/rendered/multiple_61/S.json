@@ -1,0 +1,69 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_61",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "home_renovation_expert_find_specialty",
+        "description": "Search for a home renovation expert based on the location and specialization",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the professional is based, e.g. Portland, OR."
+            },
+            "specialization": {
+              "type": "string",
+              "description": "A specific area of expertise, such as kitchen or bathroom renovation."
+            },
+            "years_experience": {
+              "type": "integer",
+              "description": "Number of years the professional has been practicing in their field. (optional)",
+              "default": 0
+            }
+          },
+          "required": [
+            "location",
+            "specialization"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "landscape_architect_find_specialty",
+        "description": "Search for a landscape architect based on the location and specialization",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the professional is based, e.g. Portland, OR."
+            },
+            "specialization": {
+              "type": "string",
+              "description": "A specific area of expertise. Common areas include residential design, commercial design, urban design, and park design."
+            },
+            "years_experience": {
+              "type": "integer",
+              "description": "Number of years the professional has been practicing in their field. (optional)",
+              "default": 0
+            }
+          },
+          "required": [
+            "location",
+            "specialization"
+          ]
+        }
+      }
+    }
+  ]
+}

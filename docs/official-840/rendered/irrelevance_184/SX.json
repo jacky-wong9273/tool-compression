@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_184",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_stats_get_player_stats",
+        "description": "Retrieve statistics of a specific player for a given season and league.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_name": {
+              "type": "string",
+              "description": "The name of the player."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season of the statistics, e.g. '2020-2021'."
+            },
+            "league": {
+              "type": "string",
+              "description": "The league of the player's sport, e.g. 'NBA'.",
+              "default": "NBA"
+            }
+          },
+          "required": [
+            "player_name",
+            "season"
+          ]
+        }
+      }
+    }
+  ]
+}

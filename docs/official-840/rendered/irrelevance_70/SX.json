@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_70",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_mortgage_payment",
+        "description": "Calculate the monthly mortgage payment given the loan amount, loan term and annual interest rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "loan_amount": {
+              "type": "number",
+              "description": "The loan amount in USD. This is a float type value.",
+              "format": "float"
+            },
+            "loan_term": {
+              "type": "integer",
+              "description": "The loan term in years."
+            },
+            "annual_interest_rate": {
+              "type": "number",
+              "description": "The annual interest rate in percentage. e.g. 3.5 for 3.5% This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "loan_amount",
+            "loan_term",
+            "annual_interest_rate"
+          ]
+        }
+      }
+    }
+  ]
+}

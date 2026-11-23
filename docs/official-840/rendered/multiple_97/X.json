@@ -1,0 +1,77 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_97",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_area_circle",
+        "description": "Calculate the area of a circle given the radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "integer",
+              "description": "The radius of the circle."
+            },
+            "units": {
+              "type": "string",
+              "description": "The units in which the radius is measured (defaults to meters).",
+              "default": "meters"
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "plot_sine_wave",
+        "description": "Plot a sine wave for a given frequency in a given range.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_range": {
+              "type": "number",
+              "description": "Start of the range in radians. This is a float type value.",
+              "format": "float"
+            },
+            "end_range": {
+              "type": "number",
+              "description": "End of the range in radians. This is a float type value.",
+              "format": "float"
+            },
+            "frequency": {
+              "type": "number",
+              "description": "Frequency of the sine wave in Hz. This is a float type value.",
+              "format": "float"
+            },
+            "amplitude": {
+              "type": "number",
+              "description": "Amplitude of the sine wave. Default is 1. This is a float type value.",
+              "format": "float"
+            },
+            "phase_shift": {
+              "type": "number",
+              "description": "Phase shift of the sine wave in radians. Default is 0. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "start_range",
+            "end_range",
+            "frequency"
+          ]
+        }
+      }
+    }
+  ]
+}

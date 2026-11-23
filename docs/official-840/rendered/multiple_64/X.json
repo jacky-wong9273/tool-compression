@@ -1,0 +1,83 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_64",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "uv_index_get_future",
+        "description": "Retrieve UV index data for a specified location and date. Unlike rainfall_prediction, which retrieves rainfall data, this retrieves UV index data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to retrieve the UV index for."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for the UV index, in the format mm-dd-yyyy."
+            }
+          },
+          "required": [
+            "location",
+            "date"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "rainfall_prediction",
+        "description": "Retrieve rainfall data for a specified location and date. Unlike uv_index_get_future, which retrieves UV index data, this retrieves rainfall data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to retrieve the rainfall prediction for."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for the rainfall prediction, in the format mm/dd/yyyy.'"
+            }
+          },
+          "required": [
+            "location",
+            "date"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "snowfall_prediction",
+        "description": "Retrieve snowfall data for a specified location and date. Unlike uv_index_get_future, which retrieves UV index data, this retrieves snowfall data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to retrieve the snowfall prediction for."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for the snowfall prediction, in the format mm-dd-yyyy."
+            }
+          },
+          "required": [
+            "location",
+            "date"
+          ]
+        }
+      }
+    }
+  ]
+}

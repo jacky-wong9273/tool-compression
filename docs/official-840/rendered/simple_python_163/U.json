@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_163",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "property_records_get",
+        "description": "Fetch property records based on location, parcel number and county.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "Address of the property."
+            },
+            "parcel_number": {
+              "type": "string",
+              "description": "Parcel number of the property."
+            },
+            "county": {
+              "type": "string",
+              "description": "County where the property is located."
+            },
+            "include_owner": {
+              "type": "boolean",
+              "description": "Include owner's name in the property record. Default is false.",
+              "default": false
+            }
+          },
+          "required": [
+            "address",
+            "parcel_number",
+            "county"
+          ]
+        }
+      }
+    }
+  ]
+}

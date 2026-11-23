@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_116",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "word_count",
+        "description": "Calculate the word count of a provided string of text.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "The text for which word count needs to be calculated."
+            },
+            "language": {
+              "type": "string",
+              "description": "The language in which the text is written."
+            }
+          },
+          "required": [
+            "text",
+            "language"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_133",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_mutual_fund_balance",
+        "description": "Calculate the final balance of a mutual fund investment based on the total initial investment, annual yield rate and the time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "investment_amount": {
+              "type": "integer",
+              "description": "The initial total amount invested in the fund."
+            },
+            "annual_yield": {
+              "type": "number",
+              "description": "The annual yield rate of the fund. This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "The period of time for the fund to mature."
+            }
+          },
+          "required": [
+            "investment_amount",
+            "annual_yield",
+            "years"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_calculate_area_circle",
+        "description": "Calculate the area of a circle given its radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number",
+              "description": "The radius of the circle. This is a float type value.",
+              "format": "float"
+            },
+            "unit": {
+              "type": "string",
+              "description": "The measurement unit of the radius (optional parameter, default is 'units')."
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

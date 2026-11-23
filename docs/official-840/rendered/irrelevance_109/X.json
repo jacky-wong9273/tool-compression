@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_109",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_water_needs",
+        "description": "Calculate the weekly watering needs of a plant based on its type, location, and time of year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "plant_type": {
+              "type": "string",
+              "description": "The type of plant, e.g. 'cactus'"
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the plant is situated, e.g. 'Arizona'"
+            },
+            "season": {
+              "type": "string",
+              "enum": [
+                "spring",
+                "summer",
+                "autumn",
+                "winter"
+              ],
+              "description": "The current season. Default: 'winter'"
+            }
+          },
+          "required": [
+            "plant_type",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

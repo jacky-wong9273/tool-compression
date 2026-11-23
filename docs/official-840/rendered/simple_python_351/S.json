@@ -1,0 +1,47 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_351",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "multiplayer_game_finder",
+        "description": "Locate multiplayer games that match specific criteria such as rating, platform compatibility, genre, etc.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "description": "The platform you want the game to be compatible with, e.g. Windows 10, PS5."
+            },
+            "rating": {
+              "type": "number",
+              "description": "Desired minimum game rating on a 5.0 scale. This is a float type value.",
+              "format": "float"
+            },
+            "genre": {
+              "type": "string",
+              "description": "Desired game genre, e.g. Action, Adventure, Racing. Default is 'Action'.",
+              "enum": [
+                "Action",
+                "Adventure",
+                "Racing",
+                "Strategy",
+                "Simulation"
+              ]
+            }
+          },
+          "required": [
+            "platform",
+            "rating"
+          ]
+        }
+      }
+    }
+  ]
+}

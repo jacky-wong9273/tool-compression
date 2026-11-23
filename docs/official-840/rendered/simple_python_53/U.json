@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_53",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "fetch_DNA_sequence",
+        "description": "Retrieve the sequence of a DNA molecule with the given id from a public database.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "DNA_id": {
+              "type": "string",
+              "description": "Unique ID of the DNA molecule in the database."
+            },
+            "format": {
+              "type": "string",
+              "description": "Optional parameter to get sequence in specific format (default to 'fasta')."
+            },
+            "upstream": {
+              "type": "integer",
+              "description": "Optional parameter to include certain number of base pairs upstream the DNA sequence (default to 0)."
+            }
+          },
+          "required": [
+            "DNA_id"
+          ]
+        }
+      }
+    }
+  ]
+}

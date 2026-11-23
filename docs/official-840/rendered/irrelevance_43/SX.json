@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_43",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "evolve_creatures",
+        "description": "Apply the Evolutionary Algorithm to improve the creatures in a simulation over generations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "population_size": {
+              "type": "integer",
+              "description": "The initial size of the creature population."
+            },
+            "mutation_rate": {
+              "type": "number",
+              "description": "The probability of mutation in each generation. This is a float type value.",
+              "format": "float"
+            },
+            "generations": {
+              "type": "integer",
+              "description": "The number of generations to run the simulation."
+            },
+            "fitness_goal": {
+              "type": "integer",
+              "description": "The fitness goal that the creatures should strive for. This is an optional parameter. Default: 1"
+            }
+          },
+          "required": [
+            "population_size",
+            "mutation_rate",
+            "generations"
+          ]
+        }
+      }
+    }
+  ]
+}

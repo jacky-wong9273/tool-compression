@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_183",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_search",
+        "description": "Retrieve all lawsuits involving a particular entity from specified jurisdiction.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "entity": {
+              "type": "string",
+              "description": "The entity involved in lawsuits."
+            },
+            "county": {
+              "type": "string",
+              "description": "The jurisdiction for the lawsuit search for example Alameda county."
+            },
+            "state": {
+              "type": "string",
+              "description": "The state for the lawsuit search. Default is California."
+            }
+          },
+          "required": [
+            "entity",
+            "county"
+          ]
+        }
+      }
+    }
+  ]
+}

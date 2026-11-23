@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_65",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "probability_determine_population",
+        "description": "Calculate the population based on the probability and sample size",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "probability": {
+              "type": "number",
+              "description": "Probability of a certain outcome. This is a float type value.",
+              "format": "float"
+            },
+            "sample_size": {
+              "type": "integer",
+              "description": "Total number of events in sample."
+            },
+            "round": {
+              "type": "boolean",
+              "description": "Should the answer be rounded up to nearest integer? Default is true"
+            }
+          },
+          "required": [
+            "probability",
+            "sample_size"
+          ]
+        }
+      }
+    }
+  ]
+}

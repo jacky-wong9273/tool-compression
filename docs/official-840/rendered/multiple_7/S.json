@@ -1,0 +1,74 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_7",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "wildlife_population_assess_growth",
+        "description": "Assesses the population growth of a specific species in a specified location over a period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species for which the growth is to be calculated."
+            },
+            "location": {
+              "type": "string",
+              "description": "The area where the species is present."
+            },
+            "duration": {
+              "type": "integer",
+              "description": "The time period for which the population growth should be calculated in years."
+            }
+          },
+          "required": [
+            "species",
+            "location",
+            "duration"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "ecological_impact_analyze",
+        "description": "Analyzes the impact of a species on a particular ecosystem.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species whose impact is to be calculated."
+            },
+            "ecosystem": {
+              "type": "string",
+              "description": "The ecosystem being affected."
+            },
+            "location": {
+              "type": "string",
+              "description": "The area where the impact is analyzed."
+            },
+            "timeframe": {
+              "type": "integer",
+              "description": "The time period for which the impact analysis should be carried out in years.",
+              "default": 5
+            }
+          },
+          "required": [
+            "species",
+            "ecosystem",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

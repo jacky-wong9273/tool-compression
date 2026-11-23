@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_16",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_projectile_range",
+        "description": "Calculate the range of a projectile launched at an angle with initial velocity, using the kinematic equation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "number",
+              "description": "The initial velocity at which projectile is launched. This is a float type value.",
+              "format": "float"
+            },
+            "angle": {
+              "type": "number",
+              "description": "The angle at which projectile is launched. This should be in degrees. This is a float type value.",
+              "format": "float"
+            },
+            "time": {
+              "type": "number",
+              "description": "The time in seconds after which the range is to be calculated. This is a float type value.",
+              "default": 0.5,
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_velocity",
+            "angle"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_283",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "guitar_price_find",
+        "description": "Retrieve the price of a specific used guitar model based on its condition and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string",
+              "description": "The model of the guitar."
+            },
+            "condition": {
+              "type": "string",
+              "enum": [
+                "Poor",
+                "Good",
+                "Excellent"
+              ],
+              "description": "The condition of the guitar."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the guitar is being sold."
+            }
+          },
+          "required": [
+            "model",
+            "condition",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

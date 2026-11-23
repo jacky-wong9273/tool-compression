@@ -1,0 +1,77 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_163",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "metropolitan_museum_get_top_artworks",
+        "description": "Fetches the list of popular artworks at the Metropolitan Museum of Art. Results can be sorted based on popularity.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "The number of artworks to fetch"
+            },
+            "sort_by": {
+              "type": "string",
+              "description": "The criteria to sort the results on. Default is ''.",
+              "enum": [
+                "popularity",
+                "chronological",
+                "alphabetical"
+              ]
+            }
+          },
+          "required": [
+            "number"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_search",
+        "description": "Search for lawsuits related to a specific company within a specific date range and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company related to the lawsuit."
+            },
+            "start_date": {
+              "type": "string",
+              "description": "Start of the date range for when the lawsuit was filed."
+            },
+            "location": {
+              "type": "string",
+              "description": "Location where the lawsuit was filed."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "ongoing",
+                "settled",
+                "dismissed"
+              ],
+              "description": "The status of the lawsuit. Default is 'ongoing'."
+            }
+          },
+          "required": [
+            "company",
+            "start_date",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

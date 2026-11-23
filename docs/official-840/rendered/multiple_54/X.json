@@ -1,0 +1,67 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_54",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "corporate_finance_dividend_data",
+        "description": "Get historical dividend data of a specific company within a particular duration. Unlike stock_market_data, which retrieves stock market data, this gets historical dividend data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company that you want to get the dividend data for."
+            },
+            "years": {
+              "type": "integer",
+              "description": "Number of past years for which to retrieve the data."
+            },
+            "frequency": {
+              "type": "string",
+              "enum": [
+                "quarterly",
+                "annually"
+              ],
+              "description": "The frequency of the dividend payment. Default annually"
+            }
+          },
+          "required": [
+            "company",
+            "years"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "stock_market_data",
+        "description": "Retrieve stock market data for a specific company and time frame. Unlike corporate_finance_dividend_data, which gets historical dividend data, this retrieves stock market data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company that you want to get the stock market data for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of past days for which to retrieve the data."
+            }
+          },
+          "required": [
+            "company",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

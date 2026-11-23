@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_69",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "regression_model_predict",
+        "description": "Predict the target variable based on input features using a trained regression model.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Input features to make predictions with."
+            },
+            "model": {
+              "type": "object",
+              "description": "Trained regression model object."
+            },
+            "scaler": {
+              "type": "number",
+              "description": "Fitted Scaler object for input features scaling. This is a float type value.",
+              "default": "1.2",
+              "format": "float"
+            }
+          },
+          "required": [
+            "features",
+            "model"
+          ]
+        }
+      }
+    }
+  ]
+}

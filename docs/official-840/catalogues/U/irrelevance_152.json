@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_152",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_create",
+        "description": "Create a 3D model of a sculpture from given inputs",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "design": {
+              "type": "string",
+              "description": "The design to be used for creating the sculpture"
+            },
+            "material": {
+              "type": "string",
+              "description": "The material to be used for creating the sculpture, default is marble"
+            },
+            "size": {
+              "type": "string",
+              "description": "The desired size of the sculpture"
+            }
+          },
+          "required": [
+            "design",
+            "size"
+          ]
+        }
+      }
+    }
+  ]
+}

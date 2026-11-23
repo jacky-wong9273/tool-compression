@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_222",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_bmi",
+        "description": "Calculate the Body Mass Index based on given weight and height.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "description": "The weight of a person in kilograms."
+            },
+            "height": {
+              "type": "integer",
+              "description": "The height of a person in centimeters."
+            },
+            "unit": {
+              "type": "string",
+              "description": "Optional. The measurement system to be used for the result. The default is 'metric'."
+            }
+          },
+          "required": [
+            "weight",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_76",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "painting_create_custom",
+        "description": "Order a custom painting with your preferred color. Unlike sculpture_create_custom, which orders a custom sculpture, this orders a custom painting.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "description": "The subject of the painting, e.g. horse"
+            },
+            "color": {
+              "type": "string",
+              "enum": [
+                "Red",
+                "Blue",
+                "Green",
+                "Yellow",
+                "Black"
+              ],
+              "description": "Preferred main color for the painting."
+            },
+            "size": {
+              "type": "integer",
+              "description": "The desired size for the painting in inches. This parameter is optional. Default 12"
+            }
+          },
+          "required": [
+            "subject",
+            "color"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_create_custom",
+        "description": "Order a custom sculpture with your preferred material. Unlike painting_create_custom, which orders a custom painting, this orders a custom sculpture.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "item": {
+              "type": "string",
+              "description": "The subject of the sculpture, e.g. horse"
+            },
+            "material": {
+              "type": "string",
+              "enum": [
+                "Bronze",
+                "Marble",
+                "Terracotta",
+                "Wood",
+                "Stone"
+              ],
+              "description": "Preferred material for the sculpture."
+            },
+            "size": {
+              "type": "integer",
+              "description": "The desired size for the sculpture in inches. This parameter is optional. Default 12"
+            }
+          },
+          "required": [
+            "item",
+            "material"
+          ]
+        }
+      }
+    }
+  ]
+}

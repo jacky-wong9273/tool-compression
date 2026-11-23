@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_316",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_sport_ranking",
+        "description": "Retrieve the current world ranking of a sportsperson based on the sport and player's name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sport": {
+              "type": "string",
+              "description": "Name of the sport."
+            },
+            "player_name": {
+              "type": "string",
+              "description": "Name of the player."
+            },
+            "gender": {
+              "type": "string",
+              "description": "Gender of the player. This is optional. The possible values are male or female.",
+              "default": "all"
+            }
+          },
+          "required": [
+            "sport",
+            "player_name"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_125",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "predict_house_price",
+        "description": "Predict house price based on area, number of rooms and year of construction.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "area": {
+              "type": "integer",
+              "description": "Area of the house in square feet."
+            },
+            "rooms": {
+              "type": "integer",
+              "description": "Number of rooms in the house."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Year when the house was constructed."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location or city of the house."
+            }
+          },
+          "required": [
+            "area",
+            "rooms",
+            "year",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

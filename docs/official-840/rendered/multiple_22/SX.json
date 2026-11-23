@@ -1,0 +1,68 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_22",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_single_season",
+        "description": "Returns the record for the most points scored by a single player in one season of NBA, including the player name, points scored, and season. Unlike sports_data_basketball_most_points_career, which returns the most-points record for a career, this returns the most-points record for one season.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_career",
+        "description": "Returns the record for the most points scored by a player in his career in NBA, including the player name, total points scored, and career span. Unlike sports_data_basketball_most_points_single_season, which returns the most-points record for one season, this returns the most-points record for a career.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_single_game",
+        "description": "Returns the record for the most points scored by a single player in one game of NBA, including the player name, points scored, and game date. Unlike sports_data_basketball_most_points_single_season, which returns the most-points record for one season, this returns the most-points record for one game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_243",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_discoverer",
+        "description": "Get the person or team who made a particular scientific discovery",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "discovery": {
+              "type": "string",
+              "description": "The discovery for which the discoverer's information is needed."
+            },
+            "detail": {
+              "type": "boolean",
+              "description": "Optional flag to get additional details about the discoverer, such as birth date and nationality. Defaults to false."
+            }
+          },
+          "required": [
+            "discovery",
+            "detail"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_258",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "mix_paint_color",
+        "description": "Combine two primary paint colors and adjust the resulting color's lightness level.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "color1": {
+              "type": "string",
+              "description": "The first primary color to be mixed."
+            },
+            "color2": {
+              "type": "string",
+              "description": "The second primary color to be mixed."
+            },
+            "lightness": {
+              "type": "integer",
+              "description": "The desired lightness level of the resulting color in percentage. The default level is set to 50."
+            }
+          },
+          "required": [
+            "color1",
+            "color2"
+          ]
+        }
+      }
+    }
+  ]
+}

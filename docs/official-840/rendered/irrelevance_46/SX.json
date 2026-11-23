@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_46",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_exchange_rate",
+        "description": "Retrieve the current exchange rate between two currencies.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base_currency": {
+              "type": "string",
+              "description": "The base currency."
+            },
+            "target_currency": {
+              "type": "string",
+              "description": "The target currency."
+            }
+          },
+          "required": [
+            "base_currency",
+            "target_currency"
+          ]
+        }
+      }
+    }
+  ]
+}

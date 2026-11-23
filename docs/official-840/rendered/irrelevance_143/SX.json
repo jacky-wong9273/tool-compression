@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_143",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_historical_figure_info",
+        "description": "Retrieve detailed information about a historical figure including their date of birth, death and main achievements.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the historical figure."
+            },
+            "detail": {
+              "type": "string",
+              "enum": [
+                "birth",
+                "death",
+                "achievement"
+              ],
+              "description": "The specific detail wanted about the historical figure."
+            },
+            "region": {
+              "type": "string",
+              "default": "global",
+              "description": "The region or country the historical figure is associated with."
+            }
+          },
+          "required": [
+            "name",
+            "detail"
+          ]
+        }
+      }
+    }
+  ]
+}

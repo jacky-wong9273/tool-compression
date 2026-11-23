@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_249",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "religion_history_info",
+        "description": "Provides comprehensive historical details about a specified religion till a specified century.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "religion": {
+              "type": "string",
+              "description": "The name of the religion for which historical details are needed."
+            },
+            "till_century": {
+              "type": "integer",
+              "description": "The century till which historical details are needed."
+            },
+            "include_people": {
+              "type": "boolean",
+              "description": "To include influential people related to the religion during that time period, default is False"
+            }
+          },
+          "required": [
+            "religion",
+            "till_century"
+          ]
+        }
+      }
+    }
+  ]
+}

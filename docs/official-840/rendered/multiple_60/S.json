@@ -1,0 +1,83 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_60",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "event_search",
+        "description": "Search for events happening in a specific location for a future date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city that you want to get the event information for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of future days for which to retrieve the event information."
+            }
+          },
+          "required": [
+            "location",
+            "days"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "movie_showtimes",
+        "description": "Retrieve movie showtimes for a specific location and for a future date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city that you want to get the movie showtimes for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of future days for which to retrieve the showtimes."
+            }
+          },
+          "required": [
+            "location",
+            "days"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "humidity_temperature_forecast",
+        "description": "Retrieve forecast of humidity and temperature for a specific location and for a future date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city that you want to get the humidity and temperature forecast for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of future days for which to retrieve the forecast."
+            }
+          },
+          "required": [
+            "location",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

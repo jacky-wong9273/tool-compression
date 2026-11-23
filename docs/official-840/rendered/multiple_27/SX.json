@@ -1,0 +1,64 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_27",
+  "category": "multiple",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "maps_route_times",
+        "description": "Estimates the time it will take to travel from one location to another by a specific mode of transportation. Unlike maps_shortest_path, which finds the shortest path, this estimates the travel time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "route": {
+              "type": "string",
+              "description": "The string representation of the route."
+            },
+            "mode": {
+              "type": "string",
+              "description": "The mode of transportation (walk, bike, transit, drive).",
+              "default": "walk"
+            }
+          },
+          "required": [
+            "route"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "maps_shortest_path",
+        "description": "Find the shortest path from one location to another by using a specific mode of transportation. Unlike maps_route_times, which estimates the travel time, this finds the shortest path.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_location": {
+              "type": "string",
+              "description": "The name or coordinates of the start location."
+            },
+            "end_location": {
+              "type": "string",
+              "description": "The name or coordinates of the end location."
+            },
+            "mode": {
+              "type": "string",
+              "description": "The mode of transportation (walk, bike, transit, drive).",
+              "default": "walk"
+            }
+          },
+          "required": [
+            "start_location",
+            "end_location"
+          ]
+        }
+      }
+    }
+  ]
+}

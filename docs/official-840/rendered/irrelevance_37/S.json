@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_37",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "local_fauna",
+        "description": "Get information about fauna in a specified region.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The region or area to find information about."
+            },
+            "species_type": {
+              "type": "string",
+              "description": "Type of species e.g birds, mammals etc. for detailed information."
+            },
+            "migration_season": {
+              "type": "string",
+              "description": "Season when fauna migrate e.g spring, winter, none. Default is none."
+            }
+          },
+          "required": [
+            "location",
+            "species_type"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_65",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_density",
+        "description": "Calculate the population density of a specific country in a specific year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "The country for which the density needs to be calculated."
+            },
+            "year": {
+              "type": "string",
+              "description": "The year in which the density is to be calculated."
+            },
+            "population": {
+              "type": "integer",
+              "description": "The population of the country."
+            },
+            "land_area": {
+              "type": "integer",
+              "description": "The land area of the country in square kilometers."
+            }
+          },
+          "required": [
+            "country",
+            "year",
+            "population",
+            "land_area"
+          ]
+        }
+      }
+    }
+  ]
+}

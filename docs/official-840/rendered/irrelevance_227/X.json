@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_227",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_sunrise",
+        "description": "Calculate the time of sunrise for a specific date and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location for which sunrise time needs to be calculated."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for which sunrise time needs to be calculated in YYYY-MM-DD format. If not provided, current date is considered. Default: 1998-12-03"
+            },
+            "format": {
+              "type": "string",
+              "description": "Format in which the time should be returned. If not provided, default format 'HH:MM' is considered."
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

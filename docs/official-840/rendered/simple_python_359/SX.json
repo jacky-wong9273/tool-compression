@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_359",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "recipe_search",
+        "description": "Search for a recipe given dietary restriction, ingredients, and number of servings.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dietary_restriction": {
+              "type": "string",
+              "description": "The dietary restriction, e.g., 'Vegetarian'."
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The list of ingredients."
+            },
+            "servings": {
+              "type": "integer",
+              "description": "The number of servings the recipe should make"
+            }
+          },
+          "required": [
+            "dietary_restriction",
+            "ingredients",
+            "servings"
+          ]
+        }
+      }
+    }
+  ]
+}

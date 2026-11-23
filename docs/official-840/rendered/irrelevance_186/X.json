@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_186",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_MVP",
+        "description": "Retrieve the most valuable player of a particular sport season",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "season": {
+              "type": "string",
+              "description": "The season to look for MVP."
+            },
+            "sport_type": {
+              "type": "string",
+              "description": "The type of sport to look for MVP."
+            },
+            "team": {
+              "type": "string",
+              "description": "Specific team to look for MVP, Default is all teams"
+            }
+          },
+          "required": [
+            "season",
+            "sport_type"
+          ]
+        }
+      }
+    }
+  ]
+}

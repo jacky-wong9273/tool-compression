@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_365",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "cooking_conversion_convert",
+        "description": "Convert cooking measurements from one unit to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "quantity": {
+              "type": "integer",
+              "description": "The quantity to be converted."
+            },
+            "from_unit": {
+              "type": "string",
+              "description": "The unit to convert from."
+            },
+            "to_unit": {
+              "type": "string",
+              "description": "The unit to convert to."
+            },
+            "item": {
+              "type": "string",
+              "description": "The item to be converted."
+            }
+          },
+          "required": [
+            "quantity",
+            "from_unit",
+            "to_unit",
+            "item"
+          ]
+        }
+      }
+    }
+  ]
+}

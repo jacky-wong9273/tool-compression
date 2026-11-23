@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_84",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_data",
+        "description": "Retrieve the current stock price for a specific company.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The company for which to retrieve the stock price."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for which to retrieve the stock price."
+            }
+          },
+          "required": [
+            "company_name",
+            "date"
+          ]
+        }
+      }
+    }
+  ]
+}

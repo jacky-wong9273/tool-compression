@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_308",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_match_schedule",
+        "description": "Retrieve the match schedule for a specific sports team.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the sports team."
+            },
+            "num_matches": {
+              "type": "integer",
+              "description": "The number of upcoming matches you want to get."
+            },
+            "league": {
+              "type": "string",
+              "description": "The sports league of the team. This is an optional parameter. Default is 'English Premier League'."
+            }
+          },
+          "required": [
+            "team_name",
+            "num_matches"
+          ]
+        }
+      }
+    }
+  ]
+}

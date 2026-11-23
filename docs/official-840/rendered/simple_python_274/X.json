@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_274",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "museum_info",
+        "description": "Retrieve information about the opening hours of a museum based on its name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "museum_name": {
+              "type": "string",
+              "description": "The name of the museum."
+            },
+            "info_type": {
+              "type": "string",
+              "description": "The type of information needed about the museum.",
+              "default": "opening_hours"
+            }
+          },
+          "required": [
+            "museum_name"
+          ]
+        }
+      }
+    }
+  ]
+}

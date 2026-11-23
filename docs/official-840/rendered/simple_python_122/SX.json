@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_122",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "chi_squared_test",
+        "description": "Performs a Chi-Squared test for independence on a 2x2 contingency table.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "description": "A 2x2 contingency table presented in array form."
+            },
+            "alpha": {
+              "type": "number",
+              "description": "Significance level for the Chi-Squared test. Default is 0.05. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "table"
+          ]
+        }
+      }
+    }
+  ]
+}

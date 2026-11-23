@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_50",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "entropy_change_calculate",
+        "description": "Calculate the change in entropy for a mass of a specific substance under set initial and final conditions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "substance": {
+              "type": "string",
+              "description": "The substance for which the change in entropy is calculated."
+            },
+            "mass": {
+              "type": "integer",
+              "description": "The mass of the substance in kg."
+            },
+            "initial_temperature": {
+              "type": "integer",
+              "description": "The initial temperature of the substance in degree Celsius."
+            },
+            "final_temperature": {
+              "type": "integer",
+              "description": "The final temperature of the substance in degree Celsius."
+            },
+            "pressure": {
+              "type": "integer",
+              "default": 1,
+              "description": "The pressure the substance is under in atmospheres."
+            }
+          },
+          "required": [
+            "substance",
+            "mass",
+            "initial_temperature",
+            "final_temperature"
+          ]
+        }
+      }
+    }
+  ]
+}

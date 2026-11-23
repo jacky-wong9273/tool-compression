@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_109",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "random_forest_train",
+        "description": "Train a Random Forest Model on given data",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "n_estimators": {
+              "type": "integer",
+              "description": "The number of trees in the forest."
+            },
+            "max_depth": {
+              "type": "integer",
+              "description": "The maximum depth of the tree."
+            },
+            "data": {
+              "type": "string",
+              "description": "The training data for the model."
+            }
+          },
+          "required": [
+            "n_estimators",
+            "max_depth",
+            "data"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_165",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "civil_cases_retrieve",
+        "description": "Retrieve civil cases based on given parameters, including year, crime type, and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "integer",
+              "description": "Year of the cases"
+            },
+            "crime_type": {
+              "type": "string",
+              "description": "Type of the crime."
+            },
+            "location": {
+              "type": "string",
+              "description": "Location of the case in the format of city name."
+            }
+          },
+          "required": [
+            "year",
+            "crime_type",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

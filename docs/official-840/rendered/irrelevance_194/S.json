@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_194",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "fetch_game_stats",
+        "description": "Fetch board game statistics like top players, winning scores and game histories",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_type": {
+              "type": "string",
+              "description": "The type of the board game."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year when the game was played."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the game was played. This is an optional parameter.",
+              "default": "NY"
+            }
+          },
+          "required": [
+            "game_type",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_0",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "determine_body_mass_index",
+        "description": "Calculate body mass index given weight and height.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "number",
+              "description": "Weight of the individual in kilograms. This is a float type value.",
+              "format": "float"
+            },
+            "height": {
+              "type": "number",
+              "description": "Height of the individual in meters. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "weight",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

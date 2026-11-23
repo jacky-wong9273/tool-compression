@@ -1,0 +1,59 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_44",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "gene_sequencer",
+        "description": "Generate possible gene sequences to see evolutionary changes",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species whose gene sequence you want to create."
+            },
+            "mutation_rate": {
+              "type": "number",
+              "description": "The rate at which mutation occurs, ranging from 0-1. This is a float type value.",
+              "format": "float"
+            },
+            "evolution_duration": {
+              "type": "integer",
+              "description": "The duration for which evolution occurs, in years."
+            },
+            "mutation_factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "genetic_drift",
+                  "natural_selection",
+                  "non-random_mating",
+                  "gene_flow",
+                  "mutation"
+                ],
+                "default": [
+                  "genetic_drift",
+                  "gene_flow"
+                ]
+              },
+              "description": "Factors contributing to mutation. Optional."
+            }
+          },
+          "required": [
+            "species",
+            "mutation_rate",
+            "evolution_duration"
+          ]
+        }
+      }
+    }
+  ]
+}

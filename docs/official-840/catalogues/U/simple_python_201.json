@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_201",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "estimate_population",
+        "description": "Estimate the population of a particular species in a given country.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species for which population needs to be estimated."
+            },
+            "country": {
+              "type": "string",
+              "description": "The country where the species lives."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year for which population estimate is sought. Default is the current year."
+            }
+          },
+          "required": [
+            "species",
+            "country"
+          ]
+        }
+      }
+    }
+  ]
+}

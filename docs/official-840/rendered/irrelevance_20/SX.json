@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_20",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "currency_converter",
+        "description": "Converts a value from one currency to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base_currency": {
+              "type": "string",
+              "description": "The base currency you want to convert from."
+            },
+            "target_currency": {
+              "type": "string",
+              "description": "The target currency you want to convert to."
+            },
+            "amount": {
+              "type": "number",
+              "description": "The amount of money you want to convert. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "base_currency",
+            "target_currency",
+            "amount"
+          ]
+        }
+      }
+    }
+  ]
+}

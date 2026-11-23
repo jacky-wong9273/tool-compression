@@ -1,0 +1,63 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_55",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "stock_forecast",
+        "description": "Predict the future stock price for a specific company and time frame.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company that you want to get the stock price prediction for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of future days for which to predict the stock price."
+            },
+            "model": {
+              "type": "string",
+              "description": "The model to use for prediction. Default 'regression'"
+            }
+          },
+          "required": [
+            "company",
+            "days"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_forecast",
+        "description": "Retrieve a weather forecast for a specific location and time frame.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city that you want to get the weather for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days for the forecast."
+            }
+          },
+          "required": [
+            "location",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

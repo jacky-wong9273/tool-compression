@@ -1,0 +1,36 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_50",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "convert_celsius_to_fahrenheit",
+        "description": "Convert a temperature from Celsius to Fahrenheit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "celsius": {
+              "type": "number",
+              "description": "The temperature in Celsius to be converted. This is a float type value.",
+              "format": "float"
+            },
+            "precision": {
+              "type": "integer",
+              "description": "The decimal precision for the conversion result.",
+              "default": 2
+            }
+          },
+          "required": [
+            "celsius"
+          ]
+        }
+      }
+    }
+  ]
+}

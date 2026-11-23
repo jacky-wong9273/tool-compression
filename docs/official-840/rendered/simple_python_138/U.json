@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_138",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "portfolio_future_value",
+        "description": "Calculate the future value of an investment in a specific stock based on the invested amount, expected annual return and number of years.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "stock": {
+              "type": "string",
+              "description": "The ticker symbol of the stock."
+            },
+            "invested_amount": {
+              "type": "integer",
+              "description": "The invested amount in USD."
+            },
+            "expected_annual_return": {
+              "type": "number",
+              "description": "The expected annual return on investment as a decimal. E.g. 5% = 0.05 This is a float type value.",
+              "format": "float"
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years for which the investment is made."
+            }
+          },
+          "required": [
+            "stock",
+            "invested_amount",
+            "expected_annual_return",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

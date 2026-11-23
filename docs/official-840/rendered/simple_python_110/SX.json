@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_110",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "predict_house_price",
+        "description": "Predict the price of a house in a given area based on number of bedrooms, bathrooms and area.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "bedrooms": {
+              "type": "integer",
+              "description": "The number of bedrooms in the house."
+            },
+            "bathrooms": {
+              "type": "integer",
+              "description": "The number of bathrooms in the house."
+            },
+            "area": {
+              "type": "integer",
+              "description": "The area of the house in square feet."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location of the house in the format of city name."
+            }
+          },
+          "required": [
+            "bedrooms",
+            "bathrooms",
+            "area",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

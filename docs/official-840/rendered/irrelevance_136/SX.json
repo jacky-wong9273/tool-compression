@@ -1,0 +1,34 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_136",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "us_president_in_year",
+        "description": "Find out who was the president of United States in a given year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "year": {
+              "type": "integer",
+              "description": "The year to lookup for."
+            },
+            "state": {
+              "type": "string",
+              "description": "Optional. State to lookup for governor. Default is all US."
+            }
+          },
+          "required": [
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

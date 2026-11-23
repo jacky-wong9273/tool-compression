@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_47",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_boiling_melting_points",
+        "description": "Retrieve the boiling point and melting point of a substance based on its name and the sea level.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "substance": {
+              "type": "string",
+              "description": "The name of the substance."
+            },
+            "sea_level": {
+              "type": "integer",
+              "description": "The sea level in meters."
+            }
+          },
+          "required": [
+            "substance",
+            "sea_level"
+          ]
+        }
+      }
+    }
+  ]
+}

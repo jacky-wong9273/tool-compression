@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_200",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_highest_card_holder",
+        "description": "Fetches the player with the highest number of a specified suit in a game of poker.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_id": {
+              "type": "string",
+              "description": "The ID of the game."
+            },
+            "suit": {
+              "type": "string",
+              "description": "The type of card suit to search for (hearts, diamonds, clubs, spades)."
+            }
+          },
+          "required": [
+            "game_id",
+            "suit"
+          ]
+        }
+      }
+    }
+  ]
+}

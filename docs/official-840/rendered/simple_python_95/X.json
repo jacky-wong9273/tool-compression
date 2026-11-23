@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_95",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calc_area_triangle",
+        "description": "Calculate the area of a triangle with the formula area = 0.5 * base * height.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "integer",
+              "description": "The length of the base of the triangle in meters."
+            },
+            "height": {
+              "type": "integer",
+              "description": "The perpendicular height of the triangle from the base to the opposite vertex in meters."
+            }
+          },
+          "required": [
+            "base",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

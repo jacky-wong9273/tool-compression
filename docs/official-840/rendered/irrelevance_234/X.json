@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_234",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "convert_currency",
+        "description": "Convert a amount from one currency to another at the current exchange rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "description": "The amount of money you want to convert. This is a float type value.",
+              "format": "float"
+            },
+            "from_currency": {
+              "type": "string",
+              "description": "The currency to convert from."
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The currency to convert to."
+            }
+          },
+          "required": [
+            "amount",
+            "from_currency",
+            "to_currency"
+          ]
+        }
+      }
+    }
+  ]
+}

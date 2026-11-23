@@ -1,0 +1,36 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_7",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "draw_circle",
+        "description": "Draw a circle based on the radius provided.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number",
+              "description": "The radius of the circle. This is a float type value.",
+              "format": "float"
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit of measurement for the radius. e.g. 'm' for meters, 'cm' for centimeters"
+            }
+          },
+          "required": [
+            "radius",
+            "unit"
+          ]
+        }
+      }
+    }
+  ]
+}

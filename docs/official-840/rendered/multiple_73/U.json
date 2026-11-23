@@ -1,0 +1,49 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_73",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "religion_get_core_beliefs",
+        "description": "Retrieves the core beliefs and practices of a specified religion.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "religion": {
+              "type": "string",
+              "description": "Name of the religion for which to retrieve the core beliefs and practices."
+            }
+          },
+          "required": [
+            "religion"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "religion_get_origin",
+        "description": "Retrieves the origin and founder information of a specified religion.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "religion": {
+              "type": "string",
+              "description": "Name of the religion for which to retrieve the founder and origin."
+            }
+          },
+          "required": [
+            "religion"
+          ]
+        }
+      }
+    }
+  ]
+}
