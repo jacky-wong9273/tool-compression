@@ -9,8 +9,8 @@ Preparation only. No provider was called. `--live` was not run. No pull request 
 | Branch | `cursor/official-840-usx-package-87f6` |
 | Base | `main` at `1ab2b5d042b7d8fadbb0c922c51201ae6fc75c21` |
 | Started from | PR #11 tip `7797047f1280d21e0b1e842d8c2a784cb9dfc7b5` (`cursor/semantic-audit-usx-pilot-5ea4`) |
-| Package commit | recorded in the following commit on this branch |
-| Pull-request tip | the commit that records the package commit; the pull request description quotes that tip SHA |
+| Package commit | `2374520557fef85c16af19b2b541c7da09f50f76` |
+| Pull-request tip | the commit that records the package commit above. The pull request description quotes that tip SHA. |
 
 PR #11 was not updated. The first-pilot files from `61329baeba8e40fb3ed6c62fbbc8cae71ded1ac3` are covered by `checks/frozen-integrity.json` and were not rewritten.
 
