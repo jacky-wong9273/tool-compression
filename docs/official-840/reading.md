@@ -239,6 +239,30 @@ Twelve two-tool catalogues were read from each tool's own description. None rece
 
 `multiple_142` drops "Default is false." on `include_player_stats` because the schema default is false. That edit comes from the sports tool's own description. X stays equal to U because there is no cue.
 
+## Sixth tranche
+
+149 cases were added. The first 565 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied.
+
+135 of the new cases have one tool: `simple_python_303` through `simple_python_399`, and `irrelevance_202` through `irrelevance_239`. Each description slot was read. An empty cue is the one-tool rule, applied after that reading. X equals U and SX equals S.
+
+Seven of those one-tool catalogues change S:
+
+| Case | Slot | Replacement |
+| --- | --- | --- |
+| `simple_python_326` | `include_player_stats` | "Indicates if individual player statistics should be included in the result." The schema default false is omitted. |
+| `simple_python_331` | `number_of_players` | "Number of players you want to retrieve." The schema default 10 is omitted. |
+| `simple_python_357` | `diet_preference` | "Preferred dietary consideration like vegan, vegetarian, gluten-free etc." The schema default none is omitted. |
+| `simple_python_384` | `room_type` | "The type of the room. Options are 'Standard', 'Deluxe', 'Suite'." The schema default Standard is omitted. The option list stays. |
+| `simple_python_385` | `no_of_rooms` | "Number of rooms to book." The schema default 1 is omitted. |
+| `irrelevance_202` | `game_rounds` | "The total game rounds." The schema default 3 is omitted. The schema type is integer and the default is the string `'3'`; that mismatch stays. |
+| `irrelevance_204` | `solve_method` | "Method to be used to solve the puzzle." The schema default brute_force is omitted. |
+
+The other one-tool catalogues in this tranche are unchanged, so S equals U. A word that names an option, such as "normal" on `simple_python_341` or "12" on `irrelevance_228`, was kept when the sentence does not state that value as the default. Prose defaults that the schema does not state were kept, including the unfinished default sentence on `simple_python_379`. Schema defaults that the prose does not restate were not copied into S. Prose that says "list" was not rewritten to array. Conflicts that were noticed were left as written, including `irrelevance_220` (a boolean field whose schema default is the string `'false'`), `irrelevance_224` (a boolean field whose schema default is the string `'True'`), `irrelevance_225` (the schema default is `'13:30:00'` and the example is `'15:30:00'`), and `irrelevance_239` (the function says a time difference while the unit measures distance, and the second location repeats the first city's wording).
+
+Fourteen two-tool catalogues were read from each tool's own description. None receives a cue. The pairs do not answer a similar request: a sports ranking and air quality, restaurants and precipitation, the current time and a stock, historical events and a sculpture's value, a team ranking and a person's earliest reference, player statistics and a building analysis, museum artworks and lawsuits, Walmart items and a musical scale, a poker full-house probability and a basketball winner, a sports ranking and compound interest, chess players and a sushi restaurant, a recipe and a scientific discovery, emission savings and a time-zone conversion, and a forest forecast and database records. Sharing a location, as in `multiple_146` and `multiple_185`, is not a selection axis.
+
+`multiple_185` drops "default value is 10" on `number_of_players` because the schema default is 10. That edit comes from the chess tool's own description. X stays equal to U because there is no cue.
+
 ## What is still open
 
-The remaining 275 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+The remaining 126 cases, including the formative twelve, have no sealed S and no sealed X. The four remaining one-tool catalogues are formative and are not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.

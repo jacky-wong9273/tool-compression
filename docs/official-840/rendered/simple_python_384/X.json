@@ -1,0 +1,55 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_384",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hotel_booking_book",
+        "description": "Book a hotel room given the city, date, and the number of adults and children.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "The city where the hotel is located."
+            },
+            "from_date": {
+              "type": "string",
+              "description": "The start date of the booking. The format is MM-DD-YYYY."
+            },
+            "to_date": {
+              "type": "string",
+              "description": "The end date of the booking. The format is MM-DD-YYYY."
+            },
+            "adults": {
+              "type": "integer",
+              "description": "The number of adults for the booking."
+            },
+            "children": {
+              "type": "integer",
+              "description": "The number of children for the booking."
+            },
+            "room_type": {
+              "type": "string",
+              "description": "The type of the room, default is 'Standard'. Options are 'Standard', 'Deluxe', 'Suite'.",
+              "default": "Standard"
+            }
+          },
+          "required": [
+            "city",
+            "from_date",
+            "to_date",
+            "adults",
+            "children"
+          ]
+        }
+      }
+    }
+  ]
+}

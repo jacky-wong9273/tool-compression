@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_392",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "latest_exchange_rate",
+        "description": "Retrieve the latest exchange rate between two specified currencies.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_currency": {
+              "type": "string",
+              "description": "The currency you are converting from."
+            },
+            "target_currency": {
+              "type": "string",
+              "description": "The currency you are converting to."
+            },
+            "amount": {
+              "type": "number",
+              "description": "The amount to be converted. If omitted, default to exchange rate of 1 unit source currency This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "source_currency",
+            "target_currency"
+          ]
+        }
+      }
+    }
+  ]
+}

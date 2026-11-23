@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_209",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "fetch_recipe",
+        "description": "Retrieve a specific cooking recipe based on user query.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The user's query for a recipe."
+            },
+            "numberOfResults": {
+              "type": "integer",
+              "description": "Number of recipes the user wants to retrieve. Default is 1."
+            },
+            "includeIngredients": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "An array of ingredients to include in the search. Optional.",
+              "default": [
+                "flour"
+              ]
+            }
+          },
+          "required": [
+            "query",
+            "numberOfResults"
+          ]
+        }
+      }
+    }
+  ]
+}

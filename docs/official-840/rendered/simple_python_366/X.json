@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_366",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "recipe_unit_conversion",
+        "description": "Convert a value from one kitchen unit to another for cooking purposes.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "description": "The value to be converted."
+            },
+            "from_unit": {
+              "type": "string",
+              "description": "The unit to convert from. Supports 'teaspoon', 'tablespoon', 'cup', etc."
+            },
+            "to_unit": {
+              "type": "string",
+              "description": "The unit to convert to. Supports 'teaspoon', 'tablespoon', 'cup', etc."
+            },
+            "precision": {
+              "type": "integer",
+              "description": "The precision to round the output to, in case of a non-integer result. Optional, default is 1."
+            }
+          },
+          "required": [
+            "value",
+            "from_unit",
+            "to_unit"
+          ]
+        }
+      }
+    }
+  ]
+}

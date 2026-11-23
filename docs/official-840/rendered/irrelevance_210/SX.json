@@ -1,0 +1,56 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_210",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "recipe_based_restaurants",
+        "description": "Search for the restaurants based on the specific dishes.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "recipe_name": {
+              "type": "string",
+              "description": "The name of the dish."
+            },
+            "location": {
+              "type": "string",
+              "description": "The city where to look for the restaurants."
+            },
+            "price_range": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "$",
+                  "$$",
+                  "$$$",
+                  "$$$$"
+                ]
+              },
+              "description": "The desired price range.",
+              "default": [
+                "$$"
+              ]
+            },
+            "preferred_rating": {
+              "type": "integer",
+              "description": "The minimum restaurant rating.",
+              "default": 3
+            }
+          },
+          "required": [
+            "recipe_name",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_203",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_player_score",
+        "description": "Retrieve a player's score from a specific game",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player": {
+              "type": "string",
+              "description": "The name of the player"
+            },
+            "game": {
+              "type": "string",
+              "description": "The game that the player is participating in"
+            }
+          },
+          "required": [
+            "player",
+            "game"
+          ]
+        }
+      }
+    }
+  ]
+}

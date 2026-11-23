@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_228",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_local_time",
+        "description": "Retrieve the local time for a specific city.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city to get the local time for."
+            },
+            "format": {
+              "type": "string",
+              "description": "The format of the time to be retrieved, either 12 hours or 24 hours.",
+              "enum": [
+                "12",
+                "24"
+              ],
+              "default": "12"
+            },
+            "timezone": {
+              "type": "string",
+              "description": "The timezone of the location. If left blank, the function will default to the city's local timezone."
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

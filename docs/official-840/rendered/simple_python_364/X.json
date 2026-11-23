@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_364",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_restaurant",
+        "description": "Locate nearby restaurants based on user defined criteria",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location where user wants to search for a restaurant."
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of the cuisine/restaurant."
+            },
+            "diet_option": {
+              "type": "string",
+              "description": "Special dietary preferences."
+            }
+          },
+          "required": [
+            "location",
+            "type",
+            "diet_option"
+          ]
+        }
+      }
+    }
+  ]
+}

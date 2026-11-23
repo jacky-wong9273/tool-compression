@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_237",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_route_to_location",
+        "description": "Calculates a route to a specified location based on the starting point and desired method of transportation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_point": {
+              "type": "string",
+              "description": "The starting location for the route."
+            },
+            "end_point": {
+              "type": "string",
+              "description": "The desired destination of the route."
+            },
+            "transport_method": {
+              "type": "string",
+              "description": "The method of transportation. Options include 'Driving', 'Walking', 'Cycling', and 'Public Transport'",
+              "default": "Driving"
+            }
+          },
+          "required": [
+            "start_point",
+            "end_point"
+          ]
+        }
+      }
+    }
+  ]
+}

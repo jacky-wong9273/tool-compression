@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_213",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_finder",
+        "description": "Find restaurants based on specified cuisine and location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cuisine": {
+              "type": "string",
+              "description": "The cuisine the user wants to search."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location in which the user wants to search for restaurants."
+            },
+            "rating": {
+              "type": "integer",
+              "default": 3,
+              "description": "Minimum acceptable restaurant rating."
+            }
+          },
+          "required": [
+            "cuisine",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

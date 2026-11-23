@@ -1,0 +1,49 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_328",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "boardgame_get_info",
+        "description": "Retrieve detailed information of a board game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the board game."
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "player count",
+                  "playing time",
+                  "age",
+                  "mechanics",
+                  "rating"
+                ]
+              },
+              "description": "Game characteristics interested."
+            },
+            "language": {
+              "type": "string",
+              "description": "The preferred language for the game information, default is English"
+            }
+          },
+          "required": [
+            "name",
+            "parameters"
+          ]
+        }
+      }
+    }
+  ]
+}

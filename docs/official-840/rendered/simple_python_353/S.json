@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_353",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_recipes",
+        "description": "Find recipes based on dietary restrictions, meal type, and preferred ingredients.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "diet": {
+              "type": "string",
+              "description": "The dietary restrictions, e.g., 'vegan', 'gluten-free'."
+            },
+            "meal_type": {
+              "type": "string",
+              "description": "The type of meal, e.g., 'dinner', 'breakfast'."
+            },
+            "ingredients": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The preferred ingredients. If left blank, it will default to return general recipes."
+            }
+          },
+          "required": [
+            "diet",
+            "meal_type"
+          ]
+        }
+      }
+    }
+  ]
+}

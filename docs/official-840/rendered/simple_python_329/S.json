@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_329",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "monopoly_odds_calculator",
+        "description": "Calculates the probability of rolling a certain sum with two dice, commonly used in board game like Monopoly.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "The number for which the odds are calculated."
+            },
+            "dice_number": {
+              "type": "integer",
+              "description": "The number of dice involved in the roll."
+            },
+            "dice_faces": {
+              "type": "integer",
+              "description": "The number of faces on a single die. Default is 6 for standard six-faced die."
+            }
+          },
+          "required": [
+            "number",
+            "dice_number"
+          ]
+        }
+      }
+    }
+  ]
+}

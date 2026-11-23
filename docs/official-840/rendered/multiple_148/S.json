@@ -1,0 +1,67 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_148",
+  "category": "multiple",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_current_time",
+        "description": "Retrieve the current time in a specific time zone.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The name of the city."
+            },
+            "country": {
+              "type": "string",
+              "description": "The name of the country."
+            },
+            "timezone": {
+              "type": "string",
+              "description": "The optional timezone to get current time. Default ''"
+            }
+          },
+          "required": [
+            "location",
+            "country"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_info",
+        "description": "Retrieves information about a specific stock based on company's name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company."
+            },
+            "detail_level": {
+              "type": "string",
+              "description": "Level of detail for stock information. Can be 'summary' or 'detailed'."
+            },
+            "market": {
+              "type": "string",
+              "description": "The stock market of interest. Default is 'NASDAQ'"
+            }
+          },
+          "required": [
+            "company_name",
+            "detail_level"
+          ]
+        }
+      }
+    }
+  ]
+}

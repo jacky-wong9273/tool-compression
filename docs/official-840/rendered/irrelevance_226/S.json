@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_226",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_local_time",
+        "description": "Retrieve the current local time in a specified time zone.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "The timezone for which local time needs to be calculated."
+            },
+            "date_format": {
+              "type": "string",
+              "description": "The format in which the date and time should be returned. Default is 'YYYY-MM-DD HH:mm:ss'."
+            }
+          },
+          "required": [
+            "timezone",
+            "date_format"
+          ]
+        }
+      }
+    }
+  ]
+}

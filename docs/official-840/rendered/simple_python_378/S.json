@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_378",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "timezone_convert",
+        "description": "Convert time from one time zone to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string",
+              "description": "The local time you want to convert, e.g. 3pm"
+            },
+            "from_timezone": {
+              "type": "string",
+              "description": "The time zone you want to convert from."
+            },
+            "to_timezone": {
+              "type": "string",
+              "description": "The time zone you want to convert to."
+            }
+          },
+          "required": [
+            "time",
+            "from_timezone",
+            "to_timezone"
+          ]
+        }
+      }
+    }
+  ]
+}

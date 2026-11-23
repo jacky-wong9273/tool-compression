@@ -1,0 +1,49 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_317",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_team_rank",
+        "description": "Get the team ranking in a sports league based on season and type.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the sports team."
+            },
+            "league": {
+              "type": "string",
+              "description": "The name of the league in which the team competes."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season for which the team's ranking is sought."
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of the season: regular or playoff.",
+              "enum": [
+                "regular",
+                "playoff"
+              ]
+            }
+          },
+          "required": [
+            "team_name",
+            "league",
+            "season",
+            "type"
+          ]
+        }
+      }
+    }
+  ]
+}

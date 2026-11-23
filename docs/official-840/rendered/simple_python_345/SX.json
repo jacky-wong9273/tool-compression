@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_345",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "game_valuation",
+        "description": "Get the current market value of a vintage video game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "release_year": {
+              "type": "integer",
+              "description": "The year the game was released."
+            },
+            "condition": {
+              "type": "string",
+              "enum": [
+                "New",
+                "Like New",
+                "Used",
+                "Fair",
+                "Poor"
+              ],
+              "description": "The condition of the game. Default is 'Used'."
+            }
+          },
+          "required": [
+            "game_name",
+            "release_year"
+          ]
+        }
+      }
+    }
+  ]
+}
