@@ -1,0 +1,36 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_14",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_maximum_height",
+        "description": "Calculate the maximum height an object will reach if it's thrown straight upwards with an initial velocity, ignoring air resistance.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "number",
+              "description": "The initial velocity in meters per second. This is a float type value.",
+              "format": "float"
+            },
+            "gravity": {
+              "type": "number",
+              "description": "The acceleration due to gravity in meters per second squared, default value is 9.8. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_velocity"
+          ]
+        }
+      }
+    }
+  ]
+}

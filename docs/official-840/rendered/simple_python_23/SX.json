@@ -1,0 +1,34 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_23",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "prime_factorize",
+        "description": "Calculate the prime factorization of a given integer.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "The number for which to calculate the prime factorization."
+            },
+            "return_type": {
+              "type": "string",
+              "description": "Determines the format of the returned prime factorization. Can be 'list' for a list of all prime factors or 'dictionary' for a count of each prime factor. Default is 'list'."
+            }
+          },
+          "required": [
+            "number"
+          ]
+        }
+      }
+    }
+  ]
+}

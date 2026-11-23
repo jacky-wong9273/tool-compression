@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_46",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_final_temperature",
+        "description": "Calculates the final equilibrium temperature after mixing two bodies with different masses and temperatures",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "mass1": {
+              "type": "integer",
+              "description": "The mass of the first body (kg)."
+            },
+            "temperature1": {
+              "type": "integer",
+              "description": "The initial temperature of the first body (Celsius)."
+            },
+            "mass2": {
+              "type": "integer",
+              "description": "The mass of the second body (kg)."
+            },
+            "temperature2": {
+              "type": "integer",
+              "description": "The initial temperature of the second body (Celsius)."
+            },
+            "specific_heat_capacity": {
+              "type": "number",
+              "description": "The specific heat capacity of the bodies in kJ/kg/K. If not provided, will default to that of water at room temperature, which is 4.2 kJ/kg/K. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "mass1",
+            "temperature1",
+            "mass2",
+            "temperature2"
+          ]
+        }
+      }
+    }
+  ]
+}

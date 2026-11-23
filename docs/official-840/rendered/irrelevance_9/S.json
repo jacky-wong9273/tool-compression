@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_9",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "CalculateTax",
+        "description": "Calculate the income tax based on the annual income, tax rate, and other deductions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "annual_income": {
+              "type": "number",
+              "description": "The annual income of the person. This is a float type value.",
+              "format": "float"
+            },
+            "tax_rate": {
+              "type": "number",
+              "description": "The tax rate. This is a float type value.",
+              "format": "float"
+            },
+            "other_deductions": {
+              "type": "number",
+              "description": "Any other deductions. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "annual_income",
+            "tax_rate",
+            "other_deductions"
+          ]
+        }
+      }
+    }
+  ]
+}

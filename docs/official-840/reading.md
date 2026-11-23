@@ -92,4 +92,56 @@ Fact ledger for the tranche: 152 propositions, 152 preserved, 0 lost, 0 unsuppor
 
 ## What this tranche does not decide
 
-The remaining 822 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+## Second tranche
+
+131 cases were added. The first 18 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied.
+
+115 of the new cases have one tool: `simple_python_3` through `simple_python_33`, `simple_python_35` through `simple_python_61`, `irrelevance_3` through `irrelevance_49`, `irrelevance_51` through `irrelevance_58`, and `irrelevance_60` through `irrelevance_61`. Each description slot was read. An empty cue is the one-tool rule, applied to these catalogues after that reading. X equals U and SX equals S.
+
+Six of those one-tool catalogues change S:
+
+| Case | Slot | Replacement |
+| --- | --- | --- |
+| `simple_python_4` | function description | "Solve the quadratic equation and return its roots." |
+| `simple_python_16` | `function_variable` | "The variable present in the function. Default is 'x'." The open-ended "for instance x or y, etc." is omitted. The default stays because the schema has no default. |
+| `simple_python_17` | function description | "Retrieve prime factors of a number." |
+| `irrelevance_32` | function description | "Return the type of the cell based on it's characteristics." The source apostrophe stays. |
+| `irrelevance_32` | `membrane_type` | "Type of membrane in the cell." The schema default `Phospholipid bi-layer` is omitted from the prose. |
+| `irrelevance_55` | function description | "Add a product to the user's cart." |
+| `irrelevance_58` | `usage_efficiency` | "The efficiency of energy usage in the home. This is a float type value." The schema default 0.8 is omitted. The float sentence stays. |
+
+The other one-tool catalogues in this tranche are unchanged, so S equals U. Float sentences, input examples, and prose defaults that the schema does not state were kept. Prose that says "number", "list", or "dictionary" was not rewritten to the schema type. Conflicts that were noticed were left as written, including `simple_python_5` (an unspecified root type may return complex roots, while the parameter says the default is real), `simple_python_30` (the function assumes initial velocity 0 while the parameter can be set), `simple_python_54` (the function says a human gene while species can vary), `irrelevance_24` (the function names voltage and resistance while frequency is also a parameter), `irrelevance_38` (an omitted author is described as the most-cited paper, while the schema default is `'None'`), `irrelevance_53` (dictionary versus object), and `irrelevance_55` (a missing cart id creates a new cart, while the schema default is `'0'`).
+
+Sixteen two-tool catalogues were read after tool 0. Thirteen receive a cue. The cue is one space on the original function description. SX uses that same string on the S base.
+
+`multiple_3`. Euclidean distance versus the angle of two points with respect to the x-axis. The shared rounding argument is not the axis.
+
+`multiple_8`. Estimated property value versus finding properties. The budget belongs only to the finder.
+
+`multiple_10`. Deleting or adding columns versus creating a backup. S drops the frame "This function" on both descriptions. The column parameter still says "list" where the schema says array.
+
+`multiple_13`. Current selling price versus a revenue estimate.
+
+`multiple_15`. Solar-farm energy output versus wind-farm energy output.
+
+`multiple_29`. Zero points of one function versus intersection points of two functions.
+
+`multiple_32`. Cone volume versus cone mass.
+
+`multiple_36`. Acceleration versus the speed of an object that starts from rest. The function's "starts from rest" sentence is not repaired against the settable initial speed.
+
+`multiple_38`. Reserving a library book versus searching for one.
+
+`multiple_40`. Ampere's Circuital Law versus the Biot-Savart law. The cue names the law. It does not turn either geometry sentence into an exclusion.
+
+`multiple_47`. Cosine similarity versus a correlation coefficient. Pearson versus Spearman stays an argument of the correlation tool.
+
+`multiple_48`. Nearby stores versus nearby libraries.
+
+`multiple_53`. Linear regression versus Random Forest Regression. The methods are alternatives. The cue does not treat one as a subclass of the other.
+
+Three two-tool catalogues have an empty cue. `multiple_39`: a grocery order and a ride share a cost ceiling, not an action. `multiple_42`: mixture temperature and mass from molar mass do not answer a similar request. `multiple_52`: a unit conversion can already be read as covering a currency conversion, so a cue would be the polynomial failure, an exclusion the sources do not state.
+
+## What is still open
+
+The remaining 691 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.

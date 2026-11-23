@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_27",
+  "category": "irrelevance",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_heat",
+        "description": "Calculate the heat required to raise the temperature of a substance using its specific heat.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "mass": {
+              "type": "number",
+              "description": "The mass of the substance in kilograms. This is a float type value.",
+              "format": "float"
+            },
+            "specific_heat": {
+              "type": "number",
+              "description": "The specific heat of the substance in J/kg.°C. For water, it is 4.184 J/kg.°C This is a float type value.",
+              "format": "float"
+            },
+            "change_in_temp": {
+              "type": "number",
+              "description": "The change in temperature in degrees Celsius. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "mass",
+            "specific_heat",
+            "change_in_temp"
+          ]
+        }
+      }
+    }
+  ]
+}

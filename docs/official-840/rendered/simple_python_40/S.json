@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_40",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_magnetic_field",
+        "description": "Calculate the magnetic field produced at the center of a circular loop carrying current.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "current": {
+              "type": "integer",
+              "description": "The current through the circular loop in Amperes."
+            },
+            "radius": {
+              "type": "integer",
+              "description": "The radius of the circular loop in meters."
+            },
+            "permeability": {
+              "type": "number",
+              "description": "The magnetic permeability. Default is 12.57e10 (Vacuum Permeability). This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "current",
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

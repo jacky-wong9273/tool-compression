@@ -1,0 +1,41 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_31",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_final_velocity",
+        "description": "Calculate the final velocity of an object under constant acceleration, knowing its initial velocity, acceleration, and time of acceleration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "integer",
+              "description": "The initial velocity of the object."
+            },
+            "acceleration": {
+              "type": "number",
+              "description": "The acceleration of the object. This is a float type value.",
+              "format": "float"
+            },
+            "time": {
+              "type": "integer",
+              "description": "The time of acceleration."
+            }
+          },
+          "required": [
+            "initial_velocity",
+            "acceleration",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

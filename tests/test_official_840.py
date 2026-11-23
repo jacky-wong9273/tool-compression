@@ -130,27 +130,27 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
     summary = verify_package()
     counts = summary["counts"]
     assert summary["cases"] == 840
-    assert summary["sealed"] == 18
-    assert summary["remaining"] == 822
+    assert summary["sealed"] == 149
+    assert summary["remaining"] == 691
     assert summary["provider_called"] is False
     assert summary["official_settlement"] is False
     assert counts["single_tool_cases"] == 640
     assert counts["multi_tool_cases"] == 200
-    assert counts["cued_cases"] == 9
-    assert counts["uncued_cases"] == 9
-    assert counts["uncued_single_tool"] == 6
-    assert counts["uncued_multi_tool"] == 3
-    assert counts["s_equals_u"] == 13
-    assert counts["x_equals_u"] == 9
-    assert counts["sx_equals_s"] == 9
-    assert counts["sx_equals_x"] == 13
-    assert counts["sx_equals_u"] == 7
-    assert counts["four_distinct"] == 3
-    assert counts["four_distinct_ids"] == ["multiple_9", "multiple_21", "multiple_73"]
+    assert counts["cued_cases"] == 22
+    assert counts["uncued_cases"] == 127
+    assert counts["uncued_single_tool"] == 121
+    assert counts["uncued_multi_tool"] == 6
+    assert counts["s_equals_u"] == 137
+    assert counts["x_equals_u"] == 127
+    assert counts["sx_equals_s"] == 127
+    assert counts["sx_equals_x"] == 137
+    assert counts["sx_equals_u"] == 119
+    assert counts["four_distinct"] == 4
+    assert counts["four_distinct_ids"] == ["multiple_9", "multiple_10", "multiple_21", "multiple_73"]
     assert counts["x_equals_u_ids"] == counts["uncued_ids"]
     assert counts["sx_equals_s_ids"] == counts["uncued_ids"]
     assert counts["sx_equals_x_ids"] == counts["s_equals_u_ids"]
-    assert counts["cued_ids"] == [
+    first_cued = [
         "multiple_2",
         "multiple_4",
         "multiple_9",
@@ -161,6 +161,24 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
         "multiple_57",
         "multiple_73",
     ]
+    assert set(first_cued) <= set(counts["cued_ids"])
+    assert set(counts["s_differs_from_u_ids"]) >= {
+        "multiple_9",
+        "multiple_10",
+        "multiple_21",
+        "multiple_24",
+        "multiple_73",
+        "multiple_99",
+        "simple_python_4",
+        "simple_python_16",
+        "simple_python_17",
+        "irrelevance_32",
+        "irrelevance_55",
+        "irrelevance_58",
+    }
+    assert "multiple_52" in counts["uncued_ids"]
+    assert "multiple_39" in counts["uncued_ids"]
+    assert "multiple_3" in counts["cued_ids"]
     assert counts["fact_counts"]["lost"] == 0
     assert counts["fact_counts"]["unsupported_additions"] == 0
     assert counts["flight_ready"] is False
@@ -335,12 +353,12 @@ def test_committed_gate_is_a_no_api_peak_stop():
     assert gate["spend_cny"] == "0"
     assert gate["official_settlement"] is False
     assert gate["sample_cases"] == 840
-    assert gate["sealed_cases"] == 18
-    assert gate["blocked_cases"] == 822
+    assert gate["sealed_cases"] == 149
+    assert gate["blocked_cases"] == 691
     assert gate["flight_ready"] is False
     assert gate["partial_live_refused"] is True
     assert gate["live_requires_all_840_sealed"] is True
-    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 70
+    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 374
     assert gate["thinking_passes"] == ["off", "on"]
     assert gate["thinking_on_is_catalogue_change"] is False
     assert gate["schedule_at_gate"] == "peak"
@@ -396,11 +414,13 @@ def test_pin_regenerates_the_gate_and_the_fresh_u(tmp_path):
     question = fresh["multiple_2"]["messages"][0]["content"]
     assert question not in json.dumps(fresh_gate)
     flight = build_flight(PIN)
-    assert len(flight["plans"]) == 36
-    assert [plan["thinking"] for plan in flight["plans"][:18]] == ["off"] * 18
-    assert [plan["thinking"] for plan in flight["plans"][18:]] == ["on"] * 18
-    assert [plan["case_id"] for plan in flight["plans"][:18]] == [plan["case_id"] for plan in flight["plans"][18:]]
-    for off, onward in zip(flight["plans"][:18], flight["plans"][18:]):
+    sealed_n = flight["sealed_cases"]
+    assert sealed_n == 149
+    assert len(flight["plans"]) == sealed_n * 2
+    assert [plan["thinking"] for plan in flight["plans"][:sealed_n]] == ["off"] * sealed_n
+    assert [plan["thinking"] for plan in flight["plans"][sealed_n:]] == ["on"] * sealed_n
+    assert [plan["case_id"] for plan in flight["plans"][:sealed_n]] == [plan["case_id"] for plan in flight["plans"][sealed_n:]]
+    for off, onward in zip(flight["plans"][:sealed_n], flight["plans"][sealed_n:]):
         for arm in ARMS:
             off_hash = next(group["request_sha256"] for group in off["groups"] if arm in group["arms"])
             on_hash = next(group["request_sha256"] for group in onward["groups"] if arm in group["arms"])

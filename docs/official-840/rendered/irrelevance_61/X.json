@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_61",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_svm",
+        "description": "Calculate the Support Vector Machine(SVM) model",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "train_data": {
+              "type": "string",
+              "description": "The training data for the SVM model. Should include the class labels."
+            },
+            "test_data": {
+              "type": "string",
+              "description": "The test data for the SVM model. This data will be used to verify the model."
+            },
+            "C": {
+              "type": "number",
+              "description": "The Regularization parameter. The strength of the regularization is inversely proportional to C. Must be strictly positive. Default is 1.0. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "train_data",
+            "test_data"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_32",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_calculate_cone_volume",
+        "description": "Calculate the volume of a cone given the radius and height.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "integer",
+              "description": "Radius of the cone base."
+            },
+            "height": {
+              "type": "integer",
+              "description": "Height of the cone."
+            },
+            "round_off": {
+              "type": "integer",
+              "description": "Number of decimal places to round off the answer. Default 0"
+            }
+          },
+          "required": [
+            "radius",
+            "height"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "physics_calculate_cone_mass",
+        "description": "Calculate the mass of a cone given the radius, height, and density.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number",
+              "description": "Radius of the cone base. This is a float type value.",
+              "format": "float"
+            },
+            "height": {
+              "type": "number",
+              "description": "Height of the cone. This is a float type value.",
+              "format": "float"
+            },
+            "density": {
+              "type": "number",
+              "description": "Density of the material the cone is made of. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "radius",
+            "height",
+            "density"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_55",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "add_product_to_cart",
+        "description": "Add a product to the user's cart.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "product_id": {
+              "type": "integer",
+              "description": "The ID of the product"
+            },
+            "quantity": {
+              "type": "integer",
+              "description": "The number of this product to add to the cart"
+            },
+            "cart_id": {
+              "type": "integer",
+              "description": "The ID of the cart, if no ID is given a new cart is created",
+              "default": "0"
+            }
+          },
+          "required": [
+            "product_id",
+            "quantity"
+          ]
+        }
+      }
+    }
+  ]
+}

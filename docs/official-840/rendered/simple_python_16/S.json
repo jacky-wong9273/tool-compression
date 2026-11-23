@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_16",
+  "category": "simple_python",
+  "condition": "S",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculus_derivative",
+        "description": "Compute the derivative of a function at a specific value.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "description": "The function to calculate the derivative of."
+            },
+            "value": {
+              "type": "integer",
+              "description": "The value where the derivative needs to be calculated at."
+            },
+            "function_variable": {
+              "type": "string",
+              "description": "The variable present in the function. Default is 'x'."
+            }
+          },
+          "required": [
+            "function",
+            "value"
+          ]
+        }
+      }
+    }
+  ]
+}

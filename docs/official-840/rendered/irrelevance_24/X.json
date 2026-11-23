@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_24",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_current",
+        "description": "Calculate the electric current by giving the voltage and resistance.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "voltage": {
+              "type": "number",
+              "description": "The electric voltage in volts. This is a float type value.",
+              "format": "float"
+            },
+            "resistance": {
+              "type": "number",
+              "description": "The electrical resistance in ohms. This is a float type value.",
+              "format": "float"
+            },
+            "frequency": {
+              "type": "number",
+              "description": "The frequency of the current, default is 50Hz. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "voltage",
+            "resistance"
+          ]
+        }
+      }
+    }
+  ]
+}

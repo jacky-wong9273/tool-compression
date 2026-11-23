@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_54",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_protein_sequence",
+        "description": "Retrieve the protein sequence encoded by a human gene.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "gene": {
+              "type": "string",
+              "description": "The human gene of interest."
+            },
+            "species": {
+              "type": "string",
+              "description": "The species for which the gene is to be analyzed.",
+              "default": "Homo sapiens"
+            }
+          },
+          "required": [
+            "gene"
+          ]
+        }
+      }
+    }
+  ]
+}

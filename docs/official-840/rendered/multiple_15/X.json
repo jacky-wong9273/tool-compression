@@ -1,0 +1,75 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_15",
+  "category": "multiple",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "solarFarm_potential",
+        "description": "Estimate the energy output of a solar farm given its location and panel area for a particular month. Unlike windFarm_potential, which estimates the energy output of a wind farm, this estimates the energy output of a solar farm.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographic coordinates of the location of the solar farm."
+            },
+            "panelArea": {
+              "type": "integer",
+              "description": "The total solar panel area in square feet at the location."
+            },
+            "month": {
+              "type": "string",
+              "description": "The month for which to calculate the potential energy output. Default to January",
+              "optional": true
+            }
+          },
+          "required": [
+            "coordinates",
+            "panelArea"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "windFarm_potential",
+        "description": "Estimate the energy output of a wind farm given its location and turbine count for a particular month. Unlike solarFarm_potential, which estimates the energy output of a solar farm, this estimates the energy output of a wind farm.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographic coordinates of the location of the wind farm."
+            },
+            "turbineCount": {
+              "type": "integer",
+              "description": "The total number of wind turbines at the location."
+            },
+            "month": {
+              "type": "string",
+              "description": "The month for which to calculate the potential energy output. Default to January",
+              "optional": true
+            }
+          },
+          "required": [
+            "coordinates",
+            "turbineCount"
+          ]
+        }
+      }
+    }
+  ]
+}

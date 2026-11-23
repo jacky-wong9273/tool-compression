@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_59",
+  "category": "simple_python",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_molecular_weight",
+        "description": "Calculate the molecular weight of a compound given the compound formula.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "compound": {
+              "type": "string",
+              "description": "The molecular formula of the compound."
+            },
+            "to_unit": {
+              "type": "string",
+              "description": "The unit in which to return the result."
+            }
+          },
+          "required": [
+            "compound",
+            "to_unit"
+          ]
+        }
+      }
+    }
+  ]
+}

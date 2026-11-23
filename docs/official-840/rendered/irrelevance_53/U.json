@@ -1,0 +1,50 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_53",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "database_query_run",
+        "description": "Run a query on a SQL database.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "database": {
+              "type": "string",
+              "description": "The name of the database."
+            },
+            "query": {
+              "type": "string",
+              "description": "The SQL query to run."
+            },
+            "connect_credentials": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "description": "username to connect the databse"
+                },
+                "password": {
+                  "type": "string",
+                  "description": "password to connect the database."
+                }
+              },
+              "description": "Optional field. A dictionary of credentials to connect to the database if needed.",
+              "default": {}
+            }
+          },
+          "required": [
+            "database",
+            "query"
+          ]
+        }
+      }
+    }
+  ]
+}

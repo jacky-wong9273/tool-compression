@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_17",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_time",
+        "description": "Calculates the time taken to cover a distance at a certain speed.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "distance": {
+              "type": "number",
+              "description": "The distance to be covered in meters. This is a float type value.",
+              "format": "float"
+            },
+            "speed": {
+              "type": "number",
+              "description": "The speed at which the object is moving in m/s. This is a float type value.",
+              "format": "float"
+            },
+            "round_to_nearest_second": {
+              "type": "boolean",
+              "description": "Optional parameter to round the time to the nearest second.",
+              "default": false
+            }
+          },
+          "required": [
+            "distance",
+            "speed"
+          ]
+        }
+      }
+    }
+  ]
+}

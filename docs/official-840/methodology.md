@@ -43,7 +43,7 @@ S was written one tool at a time from that tool's converted name, schema, and de
 
 X was written from the original converted descriptions after the S map existed. S replacement text was not an input to the cue wording. The same review question was applied to every non-empty cue. Conflicts between prose and schema were left as written. [reading.md](reading.md) is the case record. `edits/s-record.json` and `edits/x-record.json` are the machine ledger.
 
-The other 822 cases have no S judgement and no X judgement. [remaining-work.json](remaining-work.json) lists them. A later editor continues from U with the same rules. The verifier does not permanently ban the formative twelve; it only checks that this tranche did not seal them.
+A second tranche added 131 cases after the same reading: 115 one-tool catalogues and 16 two-tool catalogues. The formative twelve were not copied from the pilot and remain unsealed. [remaining-work.json](remaining-work.json) lists the other 691 cases. A later editor continues from U with the same rules. The verifier does not permanently ban the formative twelve.
 
 ## Thinking passes
 
@@ -68,7 +68,7 @@ A matching body in another case is a different call. A matching catalogue on the
 
 When an audit shows two arms are identical, the plan records the identity. The package does not insert a token, a cue, or a paraphrase to force the bodies apart.
 
-If the 18 sealed cells were sent, the plan has 70 payloads: 35 on thinking off and 35 on thinking on.
+If the 149 sealed cells were sent, the plan has 374 payloads: 187 on thinking off and 187 on thinking on. The first 18 cells are still the 70 payloads inside that total.
 
 | Sealed cases | Why the bodies match inside one pass | Calls per pass |
 | --- | --- | --- |
@@ -76,6 +76,8 @@ If the 18 sealed cells were sent, the plan has 70 payloads: 35 on thinking off a
 | `multiple_2`, `multiple_4`, `multiple_27`, `multiple_33`, `multiple_45`, `multiple_57` | S matches U, and the cue makes X and SX a second body | 2 each |
 | `multiple_24`, `multiple_99` | No cue, so X matches U and SX matches S. S itself differs from U | 2 each |
 | `multiple_28` and the six one-tool cases | No cue, and S matches U, so all four arms are one body | 1 each |
+
+The second tranche adds 152 calls per pass. `multiple_10` is four catalogues. The other 12 new cues sit on an unchanged S, so each is two calls. `multiple_39`, `multiple_42`, and `multiple_52` are one call. 109 unchanged one-tool catalogues are one call, and the six edited one-tool catalogues are two calls.
 
 Unsealed cases are listed in the gate as blocked. They have no generation body.
 
