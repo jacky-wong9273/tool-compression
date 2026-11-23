@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_275",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "metropolitan_museum_get_top_artworks",
+        "description": "Fetches the list of popular artworks at the Metropolitan Museum of Art. Results can be sorted based on popularity.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "The number of artworks to fetch"
+            },
+            "sort_by": {
+              "type": "string",
+              "description": "The criteria to sort the results on. Default is 'popularity'.",
+              "enum": [
+                "popularity",
+                "chronological",
+                "alphabetical"
+              ]
+            }
+          },
+          "required": [
+            "number"
+          ]
+        }
+      }
+    }
+  ]
+}

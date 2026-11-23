@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_270",
+  "category": "simple_python",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "building_get_dimensions",
+        "description": "Retrieve the dimensions of a specific building based on its name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "building_name": {
+              "type": "string",
+              "description": "The name of the building."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The unit in which you want the dimensions. Default is meter.",
+              "enum": [
+                "meter",
+                "feet"
+              ]
+            }
+          },
+          "required": [
+            "building_name",
+            "unit"
+          ]
+        }
+      }
+    }
+  ]
+}

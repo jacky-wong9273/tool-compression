@@ -1,0 +1,69 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_196",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "boardgame_calculate_score",
+        "description": "Calculate final scores for a board game given a list of player actions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "player_id": {
+                    "type": "integer",
+                    "description": "Unique identifier for each player."
+                  },
+                  "action": {
+                    "type": "string",
+                    "description": "Action performed by the player. Possible values are: 'buy property', 'sell property', 'pass go', 'pay fine'."
+                  },
+                  "property_id": {
+                    "type": "integer",
+                    "description": "Unique identifier for each property in the game."
+                  }
+                },
+                "required": [
+                  "player_id",
+                  "action"
+                ]
+              },
+              "description": "A list of player actions."
+            },
+            "initial_scores": {
+              "type": "object",
+              "properties": {
+                "player_id": {
+                  "type": "integer",
+                  "description": "Unique identifier for each player."
+                },
+                "score": {
+                  "type": "integer",
+                  "description": "Initial score of the player. Defaults to 0 if not provided."
+                }
+              },
+              "description": "Initial scores for each player.",
+              "required": [
+                "player_id",
+                "score"
+              ]
+            }
+          },
+          "required": [
+            "player_actions"
+          ]
+        }
+      }
+    }
+  ]
+}

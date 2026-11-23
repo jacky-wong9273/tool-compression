@@ -29,7 +29,7 @@ S and X are specified from U in separate maps (`CHANGES` and `CUES` in `official
 
 An X cue names at most one rival. The cue rules are the revised-cue rules in `docs/semantic-audit-pilot/cue-revision/methodology.md`: same stated action on the same resource where one exists, earlier catalogue order on a tie, one tool's silence is not an exclusion, and the review question is whether both descriptions could be true of the same request and whether the cue still helps the reader choose. Coverage is not cue efficiency. Shorter wording is not the success criterion.
 
-When no rival, axis, and location are justified, the cue is empty. X is then U and SX is then S. That includes a one-tool catalogue. Those cases are counted. An empty cue is a judgement about the sealed case. It is not applied in advance to the 259 unsealed one-tool cases.
+When no rival, axis, and location are justified, the cue is empty. X is then U and SX is then S. That includes a one-tool catalogue. Those cases are counted. An empty cue is a judgement about the sealed case. It is not applied in advance to the 139 unsealed one-tool cases.
 
 X may add tokens. The flight records that cost. It does not rewrite a cue to remove it.
 
@@ -43,7 +43,7 @@ S was written one tool at a time from that tool's converted name, schema, and de
 
 X was written from the original converted descriptions after the S map existed. S replacement text was not an input to the cue wording. The same review question was applied to every non-empty cue. Conflicts between prose and schema were left as written. [reading.md](reading.md) is the case record. `edits/s-record.json` and `edits/x-record.json` are the machine ledger.
 
-A second tranche added 131 cases after the same reading: 115 one-tool catalogues and 16 two-tool catalogues. A third tranche added 142 more: 130 one-tool catalogues (`simple_python_62` through `simple_python_141`, and `irrelevance_62` through `irrelevance_111`) and 12 two-tool catalogues. A fourth tranche added 142 more: 130 one-tool catalogues (`simple_python_142` through `simple_python_174`, `simple_python_176` through `simple_python_222`, and `irrelevance_112` through `irrelevance_161`) and 12 two-tool catalogues. `simple_python_175` stays with the formative twelve. [remaining-work.json](remaining-work.json) lists the other 407 cases. A later editor continues from U with the same rules. The verifier does not permanently ban the formative twelve.
+A second tranche added 131 cases after the same reading: 115 one-tool catalogues and 16 two-tool catalogues. A third tranche added 142 more: 130 one-tool catalogues (`simple_python_62` through `simple_python_141`, and `irrelevance_62` through `irrelevance_111`) and 12 two-tool catalogues. A fourth tranche added 142 more: 130 one-tool catalogues (`simple_python_142` through `simple_python_174`, `simple_python_176` through `simple_python_222`, and `irrelevance_112` through `irrelevance_161`) and 12 two-tool catalogues. A fifth tranche added 132 more: 120 one-tool catalogues (`simple_python_223` through `simple_python_302`, and `irrelevance_162` through `irrelevance_201`) and 12 two-tool catalogues. None of those twelve receive a cue, because the two tools do not answer a similar request. `simple_python_175` stays with the formative twelve. [remaining-work.json](remaining-work.json) lists the other 275 cases. A later editor continues from U with the same rules. The verifier does not permanently ban the formative twelve.
 
 ## Thinking passes
 
@@ -68,7 +68,7 @@ A matching body in another case is a different call. A matching catalogue on the
 
 When an audit shows two arms are identical, the plan records the identity. The package does not insert a token, a cue, or a paraphrase to force the bodies apart.
 
-If the 433 sealed cells were sent, the plan has 990 payloads: 495 on thinking off and 495 on thinking on. The first 18 cells are still the 70 payloads inside that total. The second tranche is still 152 per pass. The third tranche is still 151 per pass.
+If the 565 sealed cells were sent, the plan has 1268 payloads: 634 on thinking off and 634 on thinking on. The first 18 cells are still the 70 payloads inside that total. The second tranche is still 152 per pass. The third tranche is still 151 per pass. The fourth tranche is still 157 per pass.
 
 | Sealed cases | Why the bodies match inside one pass | Calls per pass |
 | --- | --- | --- |
@@ -82,6 +82,8 @@ The second tranche adds 152 calls per pass. `multiple_10` is four catalogues. Th
 The third tranche adds 151 calls per pass. Seven new cues sit on an unchanged S, so each is two calls. `multiple_55`, `multiple_59`, `multiple_74`, `multiple_78`, and `multiple_79` are one call. 128 unchanged one-tool catalogues are one call, and the two edited one-tool catalogues (`irrelevance_62` and `irrelevance_64`) are two calls.
 
 The fourth tranche adds 157 calls per pass. Nine new cues sit on an unchanged S, so each is two calls. `multiple_93` and `multiple_95` are one call. `multiple_97` has an S edit and no cue, so it is two calls. 125 unchanged one-tool catalogues are one call, and the five edited one-tool catalogues are two calls.
+
+The fifth tranche adds 139 calls per pass. None of the twelve new two-tool catalogues is cued. Eleven of them match U on every arm, so each is one call. `multiple_142` has an S edit and no cue, so it is two calls. 114 unchanged one-tool catalogues are one call, and the six edited one-tool catalogues are two calls.
 
 Unsealed cases are listed in the gate as blocked. They have no generation body.
 

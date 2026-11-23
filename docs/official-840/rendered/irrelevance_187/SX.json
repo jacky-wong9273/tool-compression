@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_187",
+  "category": "irrelevance",
+  "condition": "SX",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_team_ranking",
+        "description": "Retrieve the ranking of a specific team in a particular sport league.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the team."
+            },
+            "sport_league": {
+              "type": "string",
+              "description": "The league that the team is in."
+            },
+            "season": {
+              "type": "integer",
+              "optional": "true",
+              "description": "The season for which the ranking is requested. If not provided, the most recent season is considered. Default: 1"
+            }
+          },
+          "required": [
+            "team_name",
+            "sport_league"
+          ]
+        }
+      }
+    }
+  ]
+}

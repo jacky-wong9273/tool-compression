@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_269",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_compound_interest",
+        "description": "Calculates the compound interest of an investment over a given time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "principle": {
+              "type": "integer",
+              "description": "The initial amount of the investment."
+            },
+            "interest_rate": {
+              "type": "number",
+              "description": "The yearly interest rate of the investment. This is a float type value.",
+              "format": "float"
+            },
+            "time": {
+              "type": "integer",
+              "description": "The time, in years, the money is invested or borrowed for."
+            },
+            "compounds_per_year": {
+              "type": "integer",
+              "description": "The number of times the interest is compounded per year. Default is 1 (interest is compounded yearly)."
+            }
+          },
+          "required": [
+            "principle",
+            "interest_rate",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

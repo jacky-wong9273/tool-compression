@@ -29,7 +29,7 @@ The process does not read `DEEPSEEK_API_KEY`, even when the variable is present.
 
 The committed gate is `dry-run/gate.json`. It was produced with `EXPLORATORY_CEILING_CNY=0.01` at `2026-11-23T17:25:00+08:00`, a Monday inside the 14:00–18:00 window. The schedule is peak, `stopped_for_peak` is true, spend is `"0"`, and the off-peak reserve of ¥2.572864 does not fit under 0.01. The 0.01 figure shows which value the process received. It is not Jacky's ceiling, and it does not authorize a later process to spend.
 
-The same gate records `2026-11-23T19:00:00+08:00` as an off-peak example. `live_permitted` is false there because 407 cases are still unsealed. A paid start at that clock is not feasible on this package.
+The same gate records `2026-11-23T19:00:00+08:00` as an off-peak example. `live_permitted` is false there because 275 cases are still unsealed. A paid start at that clock is not feasible on this package.
 
 A dry-run with a larger environment value also writes spend `"0"`. The larger value is still not permission to start `--live`.
 

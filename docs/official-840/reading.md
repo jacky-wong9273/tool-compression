@@ -215,6 +215,30 @@ Twelve two-tool catalogues were read from each tool's own description. Nine rece
 
 Three two-tool catalogues have an empty cue. `multiple_93`: renting a car and booking a hotel room do not answer a similar request. `multiple_95`: a unit conversion can already be read as covering a currency conversion, so a cue would be an exclusion the unit description does not state. `multiple_97`: the area of a circle and a sine-wave plot do not answer a similar request. S on `multiple_97` drops "(defaults to meters)" because the schema default is meters. That edit comes from the circle tool's own description.
 
+## Fifth tranche
+
+132 cases were added. The first 433 were not rewritten. The formative twelve were left unsealed. Their pilot S and X were not copied.
+
+120 of the new cases have one tool: `simple_python_223` through `simple_python_302`, and `irrelevance_162` through `irrelevance_201`. Each description slot was read. An empty cue is the one-tool rule, applied after that reading. X equals U and SX equals S.
+
+Six of those one-tool catalogues change S:
+
+| Case | Slot | Replacement |
+| --- | --- | --- |
+| `simple_python_252` | `sort_by` | "Order of sorting the events." The schema default chronological is omitted. |
+| `simple_python_252` | `count` | "Number of events to return." The schema default 5 is omitted. |
+| `simple_python_257` | function description | "Identify the RGB values of a named color." The frame "This function" is omitted. |
+| `simple_python_277` | `information` | "The type of information needed from the museum. This is optional." The schema default `all` is omitted. The schema type is array and the default is the string `'all'`; that mismatch stays. |
+| `simple_python_296` | `scale_type` | "The type of scale to generate." The schema default major is omitted. |
+| `irrelevance_163` | function description | "Tune instruments based on the instrument type and the desired key or note." The frame "This function helps" is omitted. |
+| `irrelevance_164` | `top` | "Number of top players to return." The schema default 5 is omitted. |
+
+The other one-tool catalogues in this tranche are unchanged, so S equals U. Prose defaults that the schema does not state were kept. Schema defaults that the prose does not restate were not copied into S. Prose that says "list" was not rewritten to array. Conflicts that were noticed were left as written, including `irrelevance_167` (boolean fields whose schema default is the string `'false'`), `irrelevance_176` (an integer field whose schema default is the string `'optional'`), `irrelevance_179` (a venue field whose schema default is the string `'basketball'`), `irrelevance_189` (an integer year whose schema default is the string `'The current year'`), and `irrelevance_195` (the function says chess while the game parameter names the board game).
+
+Twelve two-tool catalogues were read from each tool's own description. None receives a cue. The pairs do not answer a similar request: a greatest common divisor and landmark law cases, paint mixing and density, heat capacity and discounted cash flow, game collectables and a genetic mutation, forest growth and a discovery credit, body mass index and a celebrity's net worth, lawsuits and compound interest, a mutual-fund balance and a circle's area, court-case details and a triangle's area, a crime rate and a poker winner, lawsuits and hotel availability, and a humidity forecast and a team's score. Sharing a location, as in `multiple_140`, is not a selection axis.
+
+`multiple_142` drops "Default is false." on `include_player_stats` because the schema default is false. That edit comes from the sports tool's own description. X stays equal to U because there is no cue.
+
 ## What is still open
 
-The remaining 407 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.
+The remaining 275 cases, including the formative twelve, have no sealed S and no sealed X. A one-tool catalogue in that remainder is not automatically uncued. A multi-tool catalogue in that remainder is not automatically cued. Both wait for the same reading.

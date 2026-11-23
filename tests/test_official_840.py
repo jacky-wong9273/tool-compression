@@ -130,21 +130,21 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
     summary = verify_package()
     counts = summary["counts"]
     assert summary["cases"] == 840
-    assert summary["sealed"] == 433
-    assert summary["remaining"] == 407
+    assert summary["sealed"] == 565
+    assert summary["remaining"] == 275
     assert summary["provider_called"] is False
     assert summary["official_settlement"] is False
     assert counts["single_tool_cases"] == 640
     assert counts["multi_tool_cases"] == 200
     assert counts["cued_cases"] == 38
-    assert counts["uncued_cases"] == 395
-    assert counts["uncued_single_tool"] == 381
-    assert counts["uncued_multi_tool"] == 14
-    assert counts["s_equals_u"] == 413
-    assert counts["x_equals_u"] == 395
-    assert counts["sx_equals_s"] == 395
-    assert counts["sx_equals_x"] == 413
-    assert counts["sx_equals_u"] == 379
+    assert counts["uncued_cases"] == 527
+    assert counts["uncued_single_tool"] == 501
+    assert counts["uncued_multi_tool"] == 26
+    assert counts["s_equals_u"] == 538
+    assert counts["x_equals_u"] == 527
+    assert counts["sx_equals_s"] == 527
+    assert counts["sx_equals_x"] == 538
+    assert counts["sx_equals_u"] == 504
     assert counts["four_distinct"] == 4
     assert counts["four_distinct_ids"] == ["multiple_9", "multiple_10", "multiple_21", "multiple_73"]
     assert counts["x_equals_u_ids"] == counts["uncued_ids"]
@@ -183,6 +183,13 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
         "simple_python_215",
         "simple_python_217",
         "multiple_97",
+        "simple_python_252",
+        "simple_python_257",
+        "simple_python_277",
+        "simple_python_296",
+        "irrelevance_163",
+        "irrelevance_164",
+        "multiple_142",
     }
     assert "multiple_52" in counts["uncued_ids"]
     assert "multiple_39" in counts["uncued_ids"]
@@ -190,6 +197,8 @@ def test_package_counts_identities_and_leaves_the_pilot_unsealed():
     assert "multiple_55" in counts["uncued_ids"]
     assert "multiple_95" in counts["uncued_ids"]
     assert "multiple_93" in counts["uncued_ids"]
+    assert "multiple_101" in counts["uncued_ids"]
+    assert "multiple_142" in counts["uncued_ids"]
     assert "multiple_3" in counts["cued_ids"]
     assert "multiple_54" in counts["cued_ids"]
     assert "multiple_76" in counts["cued_ids"]
@@ -369,12 +378,12 @@ def test_committed_gate_is_a_no_api_peak_stop():
     assert gate["spend_cny"] == "0"
     assert gate["official_settlement"] is False
     assert gate["sample_cases"] == 840
-    assert gate["sealed_cases"] == 433
-    assert gate["blocked_cases"] == 407
+    assert gate["sealed_cases"] == 565
+    assert gate["blocked_cases"] == 275
     assert gate["flight_ready"] is False
     assert gate["partial_live_refused"] is True
     assert gate["live_requires_all_840_sealed"] is True
-    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 990
+    assert gate["unique_payloads_if_the_sealed_cells_were_sent"] == 1268
     assert gate["thinking_passes"] == ["off", "on"]
     assert gate["thinking_on_is_catalogue_change"] is False
     assert gate["schedule_at_gate"] == "peak"
@@ -431,7 +440,7 @@ def test_pin_regenerates_the_gate_and_the_fresh_u(tmp_path):
     assert question not in json.dumps(fresh_gate)
     flight = build_flight(PIN)
     sealed_n = flight["sealed_cases"]
-    assert sealed_n == 433
+    assert sealed_n == 565
     assert len(flight["plans"]) == sealed_n * 2
     assert [plan["thinking"] for plan in flight["plans"][:sealed_n]] == ["off"] * sealed_n
     assert [plan["thinking"] for plan in flight["plans"][sealed_n:]] == ["on"] * sealed_n

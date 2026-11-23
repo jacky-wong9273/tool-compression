@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_281",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_instrument_info",
+        "description": "Retrieve the details about a specific musical instrument based on its name, maker, and manufacturing year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the instrument."
+            },
+            "maker": {
+              "type": "string",
+              "description": "The name of the maker who created the instrument."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year the instrument was made."
+            }
+          },
+          "required": [
+            "name",
+            "maker",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

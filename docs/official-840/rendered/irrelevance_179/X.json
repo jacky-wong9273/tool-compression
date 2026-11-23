@@ -1,0 +1,45 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_179",
+  "category": "irrelevance",
+  "condition": "X",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Rendered from the sealed S and X records. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_game_results",
+        "description": "Retrieve game results between two teams on a specific date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_1": {
+              "type": "string",
+              "description": "The first team's name."
+            },
+            "team_2": {
+              "type": "string",
+              "description": "The second team's name."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date of the game in the format YYYY-MM-DD."
+            },
+            "venue": {
+              "type": "string",
+              "description": "The venue of the match.",
+              "default": "basketball"
+            }
+          },
+          "required": [
+            "team_1",
+            "team_2",
+            "date"
+          ]
+        }
+      }
+    }
+  ]
+}
