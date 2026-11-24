@@ -24,8 +24,18 @@ What this runner does:
 - allows the run to stop short when the next request would pass the ceiling;
   completion of all 840 cases is not required before starting and is not
   guaranteed; a start that requires that guarantee is refused
-- keeps an unknown charge at its peak-rate reserve until it is reconciled, and
-  does not release that reserve against an unconfirmed off-peak quote
+- keeps an unknown charge at its peak-rate reserve until that attempt is
+  reconciled, and does not release that reserve against an unconfirmed
+  off-peak quote
+- bills each attempt on its own, so a timed-out call and a later retry of the
+  same slot are two charges; a saved total is not consumed by the pending retry
+- prices known token usage at the higher published rate for budget decisions
+  until the response confirms the charge; the off-peak figure is an estimate
+  for reporting; unknown usage keeps the full reserve
+- saves the returned tool call so every arm that shared the request can be
+  scored after a restart, without sending that request again
+- reports benchmark completion separately from charge reconciliation, and does
+  not label a partial run as the official 840
 - does not delete the last record of exposure when a resume is refused
 - refuses a resume whose ledger, hold, stop, and completion records disagree
   about exposure, whose ledger is missing while a summary claims spend, or
@@ -156,7 +166,9 @@ REMAINING_RUN_NOTE = (
     "counts settled spend and every unresolved charge. It does not pre-reserve "
     "that peak bound for every remaining official send. A timed-out call stays "
     "unconfirmed and keeps its peak-rate reserve; an off-peak quote does not "
-    "release it. If the next request would pass the ceiling, the run stops "
+    "release it. Known token usage is budgeted at the higher published rate "
+    "until the charge itself is confirmed. The off-peak figure is only an "
+    "estimate. If the next request would pass the ceiling, the run stops "
     "short. Local tokens are not provider T."
 )
 ESTIMATED_TO_FIT = "estimated to fit ¥80"
@@ -624,6 +636,7 @@ class CapState:
         self.events = events
         self.pending = pending
         self.loaded_events = loaded_events
+        self.attempt_seq = 0
         self.sticky: str | None = None
         # Greatest observed provider-prompt / local-o200k ratio. 1/1 means no overrun.
         self.ratio_num = 1
@@ -665,6 +678,17 @@ class CapState:
     def exposure_base(self) -> Decimal:
         """Settled spend plus holds. Does not include calls that have not been attempted."""
         return self.settled + self.unknown + self.pending_amount
+
+    @property
+    def offpeak_estimate(self) -> Decimal:
+        """Reporting total. Not a budget input and not confirmed spend."""
+        total = Decimal("0")
+        for record in [*self.calls, *self.events]:
+            raw = record.get("offpeak_estimate_cny") if isinstance(record, dict) else None
+            if raw is None:
+                continue
+            total += Decimal(raw)
+        return total
 
 
 def _decimal_field(value, label: str) -> Decimal:
@@ -800,6 +824,10 @@ def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra
         "provider_network": False,
         "api_key_in_record": False,
         "spend_cny": _money(state.settled),
+        "confirmed_spend_cny": _money(state.settled),
+        "offpeak_estimate_cny": _money(state.offpeak_estimate),
+        "offpeak_estimate_is_a_budget": False,
+        "usage_is_not_confirmed_cny": True,
         "outstanding_unknown_timeout_cny": _money(state.unknown),
         "conservative_held_cny": _money(state.settled + state.unknown),
         "stop_reason": reason,
@@ -811,6 +839,7 @@ def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra
         "max_tokens": MAX_TOKENS,
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
+        "reservation_is_provider_enforced_cutoff": False,
         "completion_guaranteed": False,
         "run_may_stop_short": True,
         "money_limit": ESTIMATED_TO_FIT,
@@ -963,18 +992,76 @@ def _events_from_hold(hold: dict) -> list[dict]:
         if not isinstance(item, dict) or "held_worst_case_cny" not in item:
             raise AmendmentFlightRefused("cap hold is corrupt")
         amount = _decimal_field(item["held_worst_case_cny"], "timeout hold")
+        attempt = item.get("attempt_id")
+        if attempt is not None and not isinstance(attempt, str):
+            raise AmendmentFlightRefused("cap hold is corrupt")
+        estimate = item.get("offpeak_estimate_cny")
         events.append(
             {
+                "attempt_id": attempt if isinstance(attempt, str) and attempt != "" else None,
                 "slot_id": item.get("slot_id"),
                 "request_sha256": item.get("request_sha256"),
                 "case_id": item.get("case_id"),
                 "thinking": item.get("thinking"),
                 "held_worst_case_cny": _money(amount),
+                "offpeak_estimate_cny": None if estimate is None else _money(_decimal_field(estimate, "off-peak estimate")),
                 "clock": item.get("clock"),
                 "reason": item.get("reason") or "unknown charge",
+                "response_saved": item.get("response_saved") is True,
+                "tool_calls": item.get("tool_calls") if isinstance(item.get("tool_calls"), list) else [],
+                "charge_confirmed": False,
             }
         )
     return events
+
+
+def _ensure_attempt_id(record: dict, fallback: str) -> str:
+    attempt = record.get("attempt_id")
+    if isinstance(attempt, str) and attempt != "":
+        return attempt
+    record["attempt_id"] = fallback
+    return fallback
+
+
+def _max_attempt_seq(records: list[dict]) -> int:
+    best = 0
+    for record in records:
+        attempt = record.get("attempt_id") if isinstance(record, dict) else None
+        if not isinstance(attempt, str) or "#" not in attempt:
+            continue
+        tail = attempt.rsplit("#", 1)[-1]
+        if tail.isdigit():
+            best = max(best, int(tail))
+    return best
+
+
+def _is_confirmed_row(row: dict) -> bool:
+    """A legacy ledger row is a confirmed charge. Explicit false is usage without a tariff."""
+    if row.get("charge_confirmed") is False:
+        return False
+    if "budget_hold_cny" in row and row.get("charge_confirmed") is not True:
+        return False
+    return True
+
+
+def _event_from_unconfirmed_row(row: dict) -> dict:
+    amount = _decimal_field(row.get("budget_hold_cny"), "budget hold")
+    estimate = row.get("offpeak_estimate_cny")
+    attempt = row.get("attempt_id")
+    return {
+        "attempt_id": attempt if isinstance(attempt, str) and attempt != "" else None,
+        "slot_id": row.get("slot_id"),
+        "request_sha256": row.get("request_sha256"),
+        "case_id": row.get("case_id"),
+        "thinking": row.get("thinking"),
+        "held_worst_case_cny": _money(amount),
+        "offpeak_estimate_cny": None if estimate is None else _money(_decimal_field(estimate, "off-peak estimate")),
+        "clock": row.get("clock"),
+        "reason": row.get("reason") or "usage confirmed; tariff not confirmed; held at the peak rate",
+        "response_saved": True,
+        "tool_calls": row.get("tool_calls") if isinstance(row.get("tool_calls"), list) else [],
+        "charge_confirmed": False,
+    }
 
 
 def _reconciliation_entries(out: Path) -> list:
@@ -988,13 +1075,18 @@ def _reconciliation_entries(out: Path) -> list:
     return entries
 
 
-def _charge_reconciled(entries: list, slot_id: object, amount: Decimal) -> bool:
-    if not isinstance(slot_id, str) or slot_id == "":
+def _charge_reconciled(entries: list, attempt_id: object, amount: Decimal) -> bool:
+    """True only when this attempt and this spend are both named.
+
+    A slot id is not an attempt. Acknowledging one attempt does not clear
+    another, and it does not make the per-call reserve a verified cutoff.
+    """
+    if not isinstance(attempt_id, str) or attempt_id == "":
         return False
     for entry in entries:
         if not isinstance(entry, dict) or entry.get("reconciled") is not True:
             continue
-        if entry.get("slot_id") != slot_id:
+        if entry.get("attempt_id") != attempt_id:
             continue
         if _decimal_field(entry.get("spend_cny"), "reconciled spend") == amount:
             return True
@@ -1005,17 +1097,17 @@ def _open_over_reserve(out: Path, calls: list, events: list) -> bool:
     """True when a settled bill or unresolved hold is above the per-call reserve and unreconciled.
 
     Clearing ``sticky_stop_reason`` does not reconcile the charge. The ledger
-    bill stays either way.
+    bill stays either way. Reconciliation has to name the attempt.
     """
     reserve = documented_call_reserve_cny()
     entries = _reconciliation_entries(out)
     for row in calls:
         amount = Decimal(row["bill"]["spend_cny"])
-        if amount > reserve and not _charge_reconciled(entries, row.get("slot_id"), amount):
+        if amount > reserve and not _charge_reconciled(entries, row.get("attempt_id"), amount):
             return True
     for event in events:
         amount = Decimal(event["held_worst_case_cny"])
-        if amount > reserve and not _charge_reconciled(entries, event.get("slot_id"), amount):
+        if amount > reserve and not _charge_reconciled(entries, event.get("attempt_id"), amount):
             return True
     return False
 
@@ -1033,17 +1125,30 @@ def load_cap_state(out: Path) -> CapState:
     out = Path(out)
     ledger_path = _ledger_path(out)
     ledger_exists = ledger_path.is_file()
-    calls = _load_ledger(ledger_path) if ledger_exists else []
+    raw_calls = _load_ledger(ledger_path)
     settled = Decimal("0")
     settled_slots: set[str] = set()
-    for row in calls:
-        settled += Decimal(row["bill"]["spend_cny"])
+    settled_attempts: set[str] = set()
+    confirmed: list[dict] = []
+    unconfirmed_rows: list[dict] = []
+    for row in raw_calls:
         slot_id = row.get("slot_id")
         if not isinstance(slot_id, str) or slot_id == "":
             _fail_accounting(out, "calls ledger is missing slot_id")
-        if slot_id in settled_slots:
-            _fail_accounting(out, "calls ledger repeats a slot")
-        settled_slots.add(slot_id)
+        if _is_confirmed_row(row):
+            if slot_id in settled_slots:
+                _fail_accounting(out, "calls ledger repeats a slot")
+            settled += Decimal(row["bill"]["spend_cny"])
+            settled_slots.add(slot_id)
+            confirmed.append(row)
+        else:
+            if "budget_hold_cny" not in row:
+                _fail_accounting(out, "calls ledger is corrupt")
+            unconfirmed_rows.append(row)
+    for index, row in enumerate(confirmed):
+        _ensure_attempt_id(row, f"legacy-settled:{index}:{row.get('slot_id')}")
+        settled_attempts.add(row["attempt_id"])
+    calls = confirmed
     hold_path = _hold_path(out)
     hold = _read_json_object(hold_path, "cap hold")
     stop = _read_json_object(_stop_path(out), "stop record")
@@ -1072,37 +1177,83 @@ def load_cap_state(out: Path) -> CapState:
         if sticky is not None and not isinstance(sticky, str):
             raise AmendmentFlightRefused("cap hold is corrupt")
     loaded_events = len(events)
+    for index, event in enumerate(events):
+        _ensure_attempt_id(event, f"legacy-event:{index}:{event.get('slot_id')}")
+    by_attempt = {event["attempt_id"]: event for event in events}
+    for index, row in enumerate(unconfirmed_rows):
+        event = _event_from_unconfirmed_row(row)
+        _ensure_attempt_id(event, f"legacy-unconfirmed:{index}:{row.get('slot_id')}")
+        existing = by_attempt.get(event["attempt_id"])
+        if existing is None:
+            events.append(event)
+            by_attempt[event["attempt_id"]] = event
+            continue
+        if event["tool_calls"] and not existing.get("tool_calls"):
+            existing["tool_calls"] = event["tool_calls"]
+            existing["response_saved"] = True
+        elif event["response_saved"]:
+            existing["response_saved"] = True
+        if existing.get("offpeak_estimate_cny") is None and event.get("offpeak_estimate_cny") is not None:
+            existing["offpeak_estimate_cny"] = event["offpeak_estimate_cny"]
+    # The saved outstanding total does not include pending_call. Itemized
+    # events and unconfirmed ledger rows explain that total. A pending retry
+    # is a later attempt and must not be counted as that explanation.
+    itemized = sum((Decimal(event["held_worst_case_cny"]) for event in events), Decimal("0"))
+    if stored_unknown > itemized:
+        gap = stored_unknown - itemized
+        gap_event = {
+            "attempt_id": f"unitemized-outstanding:{_money(gap)}",
+            "slot_id": None,
+            "request_sha256": None,
+            "case_id": None,
+            "thinking": None,
+            "held_worst_case_cny": _money(gap),
+            "offpeak_estimate_cny": None,
+            "clock": None,
+            "reason": "unitemized outstanding hold reloaded",
+            "response_saved": False,
+            "tool_calls": [],
+            "charge_confirmed": False,
+        }
+        if gap_event["attempt_id"] not in by_attempt:
+            events.append(gap_event)
+            by_attempt[gap_event["attempt_id"]] = gap_event
     if pending:
         if not isinstance(pending, dict) or "held_worst_case_cny" not in pending:
             raise AmendmentFlightRefused("cap hold is corrupt")
         amount = _decimal_field(pending["held_worst_case_cny"], "pending hold")
+        attempt = pending.get("attempt_id")
+        if attempt is not None and not isinstance(attempt, str):
+            raise AmendmentFlightRefused("cap hold is corrupt")
+        if not isinstance(attempt, str) or attempt == "":
+            attempt = None
         slot_id = pending.get("slot_id")
-        if slot_id not in settled_slots:
-            events.append(
-                {
-                    "slot_id": slot_id,
-                    "request_sha256": pending.get("request_sha256"),
-                    "case_id": pending.get("case_id"),
-                    "thinking": pending.get("thinking"),
-                    "held_worst_case_cny": _money(amount),
-                    "clock": pending.get("clock"),
-                    "reason": "in-flight call was not settled",
-                }
-            )
-        pending = None
-    from_events = sum((Decimal(event["held_worst_case_cny"]) for event in events), Decimal("0"))
-    if stored_unknown > from_events:
-        events.append(
-            {
-                "slot_id": None,
-                "request_sha256": None,
-                "case_id": None,
-                "thinking": None,
-                "held_worst_case_cny": _money(stored_unknown - from_events),
-                "clock": None,
-                "reason": "unitemized outstanding hold reloaded",
-            }
-        )
+        stale = False
+        if attempt is not None and (attempt in by_attempt or attempt in settled_attempts):
+            stale = True
+        elif attempt is None and slot_id in settled_slots:
+            stale = True
+        if not stale:
+            if attempt is None:
+                attempt = f"pending:{slot_id}"
+            if attempt not in by_attempt:
+                events.append(
+                    {
+                        "attempt_id": attempt,
+                        "slot_id": slot_id,
+                        "request_sha256": pending.get("request_sha256"),
+                        "case_id": pending.get("case_id"),
+                        "thinking": pending.get("thinking"),
+                        "held_worst_case_cny": _money(amount),
+                        "offpeak_estimate_cny": pending.get("offpeak_estimate_cny"),
+                        "clock": pending.get("clock"),
+                        "reason": "in-flight call was not settled",
+                        "response_saved": False,
+                        "tool_calls": [],
+                        "charge_confirmed": False,
+                    }
+                )
+                by_attempt[attempt] = events[-1]
     reconstructed = sum((Decimal(event["held_worst_case_cny"]) for event in events), Decimal("0"))
     claimed_unknown = _claimed_unresolved(stop, live)
     if claimed_unknown is not None and claimed_unknown > reconstructed:
@@ -1113,12 +1264,13 @@ def load_cap_state(out: Path) -> CapState:
     if hold is None and reconstructed == 0 and claimed_unknown is not None and claimed_unknown > 0:
         _fail_accounting(out, EXPOSURE_UNRESOLVED)
     state = CapState(settled, calls, events, None, loaded_events)
+    state.attempt_seq = _max_attempt_seq([*calls, *events, *unconfirmed_rows])
     if _open_over_reserve(out, calls, events):
         sticky = OVER_RESERVE_STOP
     elif sticky == OVER_RESERVE_STOP:
         sticky = None
     state.sticky = sticky
-    _note_recorded_inputs(state, calls, hold)
+    _note_recorded_inputs(state, raw_calls, hold)
     return state
 
 
@@ -1145,8 +1297,9 @@ def _is_timeout(exc: BaseException) -> bool:
     return "timed out" in text or "timeout" in text
 
 
-def _pending_record(slot: dict, amount: Decimal, moment) -> dict:
+def _pending_record(slot: dict, amount: Decimal, moment, attempt_id: str) -> dict:
     return {
+        "attempt_id": attempt_id,
         "slot_id": slot["slot_id"],
         "request_sha256": slot["request_sha256"],
         "case_id": slot["case_id"],
@@ -1154,28 +1307,44 @@ def _pending_record(slot: dict, amount: Decimal, moment) -> dict:
         "held_worst_case_cny": _money(amount),
         "clock": moment.isoformat(),
         "reason": "in flight",
+        "response_saved": False,
+        "charge_confirmed": False,
     }
 
 
-def _retained_unconfirmed_hold(reserved: Decimal, offpeak_quote: Decimal | None) -> Decimal:
-    """Keep a peak-rate reserve. An unconfirmed off-peak quote does not release it.
+def _next_attempt_id(state: CapState, slot: dict) -> str:
+    state.attempt_seq += 1
+    return f"{slot['slot_id']}#{state.attempt_seq}"
 
-    A quote above the reserve raises the hold. A smaller quote leaves the
-    reserve in place for later budget decisions.
+
+def _retained_unconfirmed_hold(reserved: Decimal, peak_quote: Decimal | None) -> Decimal:
+    """Keep the peak-rate reserve. A peak quote above it raises the hold.
+
+    Unknown usage passes no quote, so the full reserve stays. An off-peak
+    quote is not passed here and cannot release or replace the reserve.
     """
-    if offpeak_quote is None or offpeak_quote <= reserved:
+    if peak_quote is None or peak_quote <= reserved:
         return reserved
-    return offpeak_quote
+    return peak_quote
 
 
-def _hold_pending(state: CapState, reason: str, actual: Decimal | None = None) -> None:
+def _hold_pending(
+    state: CapState,
+    reason: str,
+    peak_quote: Decimal | None = None,
+    offpeak_estimate: Decimal | None = None,
+) -> None:
     pending = state.pending
     if not isinstance(pending, dict):
         raise AmendmentFlightRefused("missing in-flight hold")
-    amount = _retained_unconfirmed_hold(Decimal(pending["held_worst_case_cny"]), actual)
+    amount = _retained_unconfirmed_hold(Decimal(pending["held_worst_case_cny"]), peak_quote)
     event = dict(pending)
     event["held_worst_case_cny"] = _money(amount)
     event["reason"] = reason
+    event["response_saved"] = False
+    event["charge_confirmed"] = False
+    if offpeak_estimate is not None:
+        event["offpeak_estimate_cny"] = _money(offpeak_estimate)
     state.events.append(event)
     state.pending = None
     if amount > documented_call_reserve_cny():
@@ -1197,11 +1366,11 @@ def _next_request_reserve(incomplete: set[str]) -> Decimal:
 
 
 def _budget_exceeds(state: CapState, incomplete: set[str], ceiling: Decimal) -> bool:
-    """True when settled spend, unresolved charges, and the next request pass the ceiling.
+    """True when confirmed spend, unresolved charges, and the next request pass the ceiling.
 
-    Unresolved charges stay at the amount recorded for them. For an unconfirmed
-    call that amount is the peak-rate reserve, and an off-peak quote does not
-    reduce it. Remaining sends are not pre-reserved.
+    Unknown usage stays at the documented reserve. Known usage stays at its
+    peak price until the charge is confirmed. An off-peak quote is not the
+    recorded hold. Remaining sends are not pre-reserved.
     """
     return state.exposure_base + _next_request_reserve(incomplete) > ceiling
 
@@ -1240,18 +1409,168 @@ def _refuse_live_client(client) -> None:
         raise AmendmentFlightRefused(OFFICIAL_DISPATCH_STOP)
 
 
-def _response_bill(payload) -> tuple[dict | None, Decimal | None]:
-    """Price a returned usage at the off-peak card.
+def _stated_money(value) -> Decimal | None:
+    if isinstance(value, bool) or isinstance(value, float) or value is None:
+        return None
+    try:
+        amount = Decimal(str(value))
+    except InvalidOperation:
+        return None
+    if not amount.is_finite() or amount < 0:
+        return None
+    return amount
 
-    The quote settles a confirmed completion. It does not replace a peak-rate
-    reserve on an unconfirmed charge.
+
+def _price_response(payload) -> dict:
+    """Separate confirmed token usage from a confirmed CNY charge.
+
+    Known usage yields an off-peak estimate for reporting and a peak-rate
+    figure for budget decisions. Neither is settled spend. A charge is
+    confirmed only when the response names a published tariff and the CNY
+    that tariff yields for the same usage. An unmatched or smaller figure
+    does not confirm the charge and does not release the peak budget.
     """
+    empty = {
+        "usage_known": False,
+        "offpeak_bill": None,
+        "offpeak_cny": None,
+        "peak_cny": None,
+        "confirmed_cny": None,
+        "confirmed_bill": None,
+    }
     usage = payload.get("usage") if isinstance(payload, dict) else None
     try:
-        bill = usage_bill(OFFPEAK, usage)
+        offpeak_bill = usage_bill(OFFPEAK, usage)
+        peak_bill = usage_bill(RESERVE_SCHEDULE, usage)
     except UsxFlightRefused:
-        return None, None
-    return bill, Decimal(bill["spend_cny"])
+        return empty
+    offpeak_cny = Decimal(offpeak_bill["spend_cny"])
+    peak_cny = Decimal(peak_bill["spend_cny"])
+    if peak_cny < offpeak_cny:
+        raise AmendmentFlightRefused("peak price of known usage is below the off-peak estimate")
+    confirmed_cny = None
+    confirmed_bill = None
+    raw = payload.get("confirmed_charge") if isinstance(payload, dict) else None
+    if isinstance(raw, dict) and raw.get("confirmed") is True and raw.get("schedule") in (OFFPEAK, RESERVE_SCHEDULE):
+        try:
+            matched = usage_bill(raw["schedule"], usage)
+        except UsxFlightRefused:
+            matched = None
+        stated = _stated_money(raw.get("spend_cny"))
+        if matched is not None and stated is not None and stated == Decimal(matched["spend_cny"]):
+            confirmed_cny = stated
+            confirmed_bill = matched
+    return {
+        "usage_known": True,
+        "offpeak_bill": offpeak_bill,
+        "offpeak_cny": offpeak_cny,
+        "peak_cny": peak_cny,
+        "confirmed_cny": confirmed_cny,
+        "confirmed_bill": confirmed_bill,
+    }
+
+
+def _tool_calls(payload) -> list:
+    """Tool calls needed to score a saved response. Empty when the body has none."""
+    if not isinstance(payload, dict):
+        return []
+    try:
+        message = payload["choices"][0]["message"]
+    except (KeyError, TypeError, IndexError):
+        return []
+    if not isinstance(message, dict):
+        return []
+    raw = message.get("tool_calls") or []
+    if not isinstance(raw, list):
+        return []
+    parsed = []
+    for call in raw:
+        if not isinstance(call, dict):
+            continue
+        function = call.get("function") if isinstance(call.get("function"), dict) else {}
+        name = function.get("name")
+        if not isinstance(name, str) or name == "":
+            continue
+        arguments = function.get("arguments")
+        if not isinstance(arguments, str):
+            arguments = json.dumps(arguments, ensure_ascii=False) if arguments is not None else ""
+        parsed.append({"name": name, "arguments": arguments})
+    return parsed
+
+
+def _tool_names(body: dict) -> set[str]:
+    names: set[str] = set()
+    tools = body.get("tools") if isinstance(body, dict) else None
+    if not isinstance(tools, list):
+        return names
+    for tool in tools:
+        if not isinstance(tool, dict):
+            continue
+        function = tool.get("function") if isinstance(tool.get("function"), dict) else {}
+        name = function.get("name")
+        if isinstance(name, str) and name:
+            names.add(name)
+    return names
+
+
+def _ledger_row(
+    slot: dict,
+    attempt_id: str,
+    fresh: str,
+    moment,
+    *,
+    charge_confirmed: bool,
+    bill: dict,
+    offpeak_cny: Decimal,
+    tool_calls: list,
+    local_in: int,
+    billed_in: int | None,
+    reason: str,
+    budget_cny: Decimal | None = None,
+) -> dict:
+    stored = dict(bill)
+    stored["role"] = "confirmed_charge" if charge_confirmed else "offpeak_estimate"
+    stored["prices_are_not_confirmed_cny"] = not charge_confirmed
+    row = {
+        "attempt_id": attempt_id,
+        "slot_id": slot["slot_id"],
+        "case_id": slot["case_id"],
+        "cell": slot["cell"],
+        "thinking": slot["thinking"],
+        "arms": list(slot["arms"]),
+        "shared": len(slot["arms"]) > 1,
+        "request_sha256": fresh,
+        "charge_confirmed": charge_confirmed,
+        "confirmed_schedule": stored.get("schedule") if charge_confirmed else None,
+        "offpeak_estimate_cny": _money(offpeak_cny),
+        "clock": moment.isoformat(),
+        "bill": stored,
+        "tool_calls": tool_calls,
+        "response_saved": True,
+        "reason": reason,
+        "local_input_tokens": local_in,
+        "billed_input_tokens": billed_in,
+        "input_above_local_estimate": billed_in is not None and billed_in > local_in,
+        "provider_called": False,
+        "provider_network": False,
+        "scripted": True,
+        "max_tokens": MAX_TOKENS,
+    }
+    if not charge_confirmed:
+        if budget_cny is None:
+            raise AmendmentFlightRefused("unconfirmed usage is missing its peak budget")
+        row["budget_hold_cny"] = _money(budget_cny)
+    return row
+
+
+def _input_gap(local_in: int, billed_in: int | None, reserve: Decimal, budget: Decimal | None) -> dict:
+    return {
+        "local_input_tokens": local_in,
+        "billed_input_tokens": billed_in,
+        "input_above_local_estimate": billed_in is not None and billed_in > local_in,
+        "documented_call_reserve_cny": _money(reserve),
+        "returned_bill_above_documented_reserve": budget is not None and budget > reserve,
+    }
 
 
 def _acceptable(slot: dict, payload, bill: dict | None) -> bool:
@@ -1264,7 +1583,99 @@ def _acceptable(slot: dict, payload, bill: dict | None) -> bool:
     return True
 
 
-def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
+def _answered_slots(state: CapState) -> set[str]:
+    done: set[str] = set()
+    for row in state.calls:
+        slot_id = row.get("slot_id")
+        if isinstance(slot_id, str) and slot_id:
+            done.add(slot_id)
+    for event in state.events:
+        if event.get("response_saved") is True:
+            slot_id = event.get("slot_id")
+            if isinstance(slot_id, str) and slot_id:
+                done.add(slot_id)
+    return done
+
+
+def _research_report(plans: list[dict], state: CapState, out: Path) -> dict:
+    """Apply each saved response to every arm that shared that request.
+
+    Benchmark completion is not charge reconciliation, and a partial plan is
+    not the official 840.
+    """
+    saved: dict[str, dict] = {}
+    for event in state.events:
+        if event.get("response_saved") is True and isinstance(event.get("slot_id"), str):
+            saved[event["slot_id"]] = event
+    for row in state.calls:
+        if row.get("response_saved") is True and isinstance(row.get("slot_id"), str):
+            saved[row["slot_id"]] = row
+    slots = wire_slots(plans)
+    arm_rows = []
+    for slot in slots:
+        record = saved.get(slot["slot_id"])
+        if record is None:
+            continue
+        parsed = record.get("tool_calls") if isinstance(record.get("tool_calls"), list) else []
+        names = _tool_names(slot["body"])
+        called = [call.get("name") for call in parsed if isinstance(call, dict)]
+        applicable = bool(called) and all(isinstance(name, str) and name in names for name in called)
+        for arm in slot["arms"]:
+            arm_rows.append(
+                {
+                    "slot_id": slot["slot_id"],
+                    "case_id": slot["case_id"],
+                    "thinking": slot["thinking"],
+                    "arm": arm,
+                    "tool_calls": parsed,
+                    "applicable": applicable,
+                    "score": 1 if applicable else 0,
+                }
+            )
+    planned = len(slots)
+    scored = len({row["slot_id"] for row in arm_rows})
+    official = is_official_sample(plans) and planned == 2174 and scored == planned
+    return {
+        "benchmark_complete": planned > 0 and scored == planned,
+        "benchmark_slots_scored": scored,
+        "benchmark_slots_planned": planned,
+        "benchmark_cases_scored": len({row["case_id"] for row in arm_rows}),
+        "official_case_count": sum(CATEGORY_COUNTS.values()),
+        "official_840_complete": official,
+        "partial_run": scored != planned,
+        "charges_reconciled": state.unknown == 0 and not _open_over_reserve(out, state.calls, state.events),
+        "confirmed_spend_cny": _money(state.settled),
+        "offpeak_estimate_cny": _money(state.offpeak_estimate),
+        "unresolved_cny": _money(state.unknown),
+        "arms": arm_rows,
+        "provider_called": False,
+        "provider_network": False,
+    }
+
+
+def _benchmark_fields(plans: list[dict], state: CapState, out: Path) -> dict:
+    report = _research_report(plans, state, out)
+    return {
+        key: report[key]
+        for key in (
+            "benchmark_complete",
+            "benchmark_slots_scored",
+            "benchmark_slots_planned",
+            "benchmark_cases_scored",
+            "official_case_count",
+            "official_840_complete",
+            "partial_run",
+            "charges_reconciled",
+        )
+    }
+
+
+def score_saved(plans: list[dict], out: Path) -> dict:
+    """Score saved synthetic responses. Does not send and does not read a key."""
+    return _research_report(plans, load_cap_state(out), out)
+
+
+def _write_live(out: Path, state: CapState, ceiling: Decimal, plans: list[dict]) -> dict:
     _require_owner(out)
     if state.pending is not None:
         raise AmendmentFlightRefused("in-flight hold is still open")
@@ -1286,6 +1697,10 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
         "provider_called": False,
         "provider_network": False,
         "spend_cny": _money(state.settled),
+        "confirmed_spend_cny": _money(state.settled),
+        "offpeak_estimate_cny": _money(state.offpeak_estimate),
+        "offpeak_estimate_is_a_budget": False,
+        "usage_is_not_confirmed_cny": True,
         "outstanding_unknown_timeout_cny": _money(state.unknown),
         "unknown_charges_reconciled": state.unknown == 0,
         "ceiling_cny": _money(ceiling),
@@ -1296,19 +1711,23 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
         "arms": list(ARMS),
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
+        "reservation_is_provider_enforced_cutoff": False,
         "completion_guaranteed": False,
         "run_may_stop_short": True,
         "money_limit": ESTIMATED_TO_FIT,
         "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
         "full_run_peak_prereservation_is_funding_gate": False,
         "note": (
-            "Scripted completion. Each send reserved the next request against "
-            "verified pricing and counted settled spend and unresolved charges. "
-            "The local model is estimated to fit ¥80 and is not a spending cap. "
-            "spending_guarantee is false. The official run may stop short. This "
-            "is not a provider call and not a paid flight."
+            "Scripted completion of this plan. Each send reserved the next "
+            "request and counted confirmed spend and unresolved charges. "
+            "Known usage stays at the peak rate until the charge is confirmed. "
+            "The off-peak figure is an estimate, not settled spend. Benchmark "
+            "completion is not charge reconciliation and is not the official "
+            "840 unless official_840_complete is true. spending_guarantee is "
+            "false. This is not a provider call and not a paid flight."
         ),
     }
+    record.update(_benchmark_fields(plans, state, out))
     record.update(_alert_fields(state.settled, state.unknown))
     _write_hold(out, state)
     stop_file = _stop_path(out)
@@ -1482,7 +1901,9 @@ def _settlement_conflict(state: CapState, by_slot: dict[str, dict]) -> str | Non
 
     The check runs before a later slot is sent. It is not delayed until completion.
     """
-    for row in state.calls:
+    rows = list(state.calls)
+    rows.extend(event for event in state.events if event.get("response_saved") is True)
+    for row in rows:
         entry = by_slot.get(row.get("slot_id"))
         if entry is None:
             return SETTLEMENT_MISMATCH
@@ -1493,18 +1914,21 @@ def _settlement_conflict(state: CapState, by_slot: dict[str, dict]) -> str | Non
 
 
 def _completion_conflict(state: CapState, by_slot: dict[str, dict]) -> str | None:
-    """Completion requires every settlement to match one manifest entry."""
-    if len(state.calls) != len(by_slot):
+    """Every answered slot must match the manifest. Charges can still be open."""
+    if _answered_slots(state) != set(by_slot):
         return SETTLEMENT_MISMATCH
-    seen: set[str] = set()
-    for row in state.calls:
-        slot_id = row.get("slot_id")
-        entry = by_slot.get(slot_id)
-        if entry is None or row.get("request_sha256") != entry.get("request_sha256"):
+    for slot_id, entry in by_slot.items():
+        sources = [row for row in state.calls if row.get("slot_id") == slot_id]
+        sources.extend(
+            event
+            for event in state.events
+            if event.get("slot_id") == slot_id and event.get("response_saved") is True
+        )
+        if not sources:
             return SETTLEMENT_MISMATCH
-        seen.add(slot_id)
-    if seen != set(by_slot):
-        return SETTLEMENT_MISMATCH
+        for row in sources:
+            if row.get("request_sha256") != entry.get("request_sha256"):
+                return SETTLEMENT_MISMATCH
     return None
 
 
@@ -1526,13 +1950,14 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     conflict = _settlement_conflict(state, by_slot)
     if conflict:
         _fail_accounting(out, conflict)
-    incomplete = {slot["slot_id"] for slot in slots} - {row["slot_id"] for row in state.calls}
+    incomplete = {slot["slot_id"] for slot in slots} - _answered_slots(state)
     reserve = documented_call_reserve_cny()
 
     def stop(reason: str, extra: dict | None = None) -> None:
         reserved = _next_request_reserve(incomplete)
         local_remaining = _remaining(slots, incomplete, costs)
         payload = _cap_extra(state, reserved, local_remaining, slots, incomplete)
+        payload.update(_benchmark_fields(plans, state, out))
         if extra:
             payload.update(extra)
         _write_stop(out, state, ceiling, reason, payload)
@@ -1557,7 +1982,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         completion = _completion_conflict(state, by_slot)
         if completion:
             _fail_accounting(out, completion)
-        return _write_live(out, state, ceiling)
+        return _write_live(out, state, ceiling, plans)
     if not dispatch:
         stop(LIVE_STOP)
         raise AmendmentFlightRefused(LIVE_STOP)
@@ -1591,7 +2016,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         entry = by_slot.get(slot["slot_id"])
         if entry is None or fresh != entry.get("request_sha256") or fresh != slot["request_sha256"]:
             raise AmendmentFlightRefused(SEND_HASH_MISMATCH)
-        state.pending = _pending_record(slot, reserve, moment)
+        state.pending = _pending_record(slot, reserve, moment, _next_attempt_id(state, slot))
         _write_hold(out, state)
         try:
             payload = client.complete(outgoing)
@@ -1606,53 +2031,84 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
             stop_reason = TIMEOUT_STOP if timeout else UNKNOWN_STOP
             stop(stop_reason, {"timed_out_request_sha256": fresh})
             raise AmendmentFlightRefused(stop_reason) from None
-        bill, actual = _response_bill(payload)
+        priced = _price_response(payload)
+        offpeak_bill = priced["offpeak_bill"]
         local_in = local_input_tokens(outgoing)
-        billed_in = bill.get("T") if isinstance(bill, dict) else None
+        billed_in = offpeak_bill.get("T") if isinstance(offpeak_bill, dict) else None
         if isinstance(billed_in, bool) or not isinstance(billed_in, int) or billed_in < 0:
             billed_in = None
         if billed_in is not None:
             state.note_input(local_in, billed_in)
-        input_gap = {
-            "local_input_tokens": local_in,
-            "billed_input_tokens": billed_in,
-            "input_above_local_estimate": billed_in is not None and billed_in > local_in,
-            "documented_call_reserve_cny": _money(reserve),
-            "returned_bill_above_documented_reserve": actual is not None and actual > reserve,
-        }
-        if not _acceptable(slot, payload, bill):
-            _hold_pending(state, "response was not a settled off-peak completion", actual)
+        if not _acceptable(slot, payload, offpeak_bill):
+            _hold_pending(
+                state,
+                "response did not confirm a charge",
+                priced["peak_cny"],
+                priced["offpeak_cny"],
+            )
+            input_gap = _input_gap(local_in, billed_in, reserve, priced["peak_cny"])
             if state.sticky == OVER_RESERVE_STOP:
                 stop(OVER_RESERVE_STOP, input_gap)
                 raise AmendmentFlightRefused(OVER_RESERVE_STOP)
             stop(UNKNOWN_STOP, input_gap)
             raise AmendmentFlightRefused(UNKNOWN_STOP)
-        state.settled += actual
-        state.pending = None
-        observation = {
-            "slot_id": slot["slot_id"],
-            "case_id": slot["case_id"],
-            "cell": slot["cell"],
-            "thinking": slot["thinking"],
-            "arms": list(slot["arms"]),
-            "shared": len(slot["arms"]) > 1,
-            "request_sha256": fresh,
-            "schedule": OFFPEAK,
-            "max_tokens": MAX_TOKENS,
-            "clock": moment.isoformat(),
-            "bill": bill,
-            "local_input_tokens": local_in,
-            "billed_input_tokens": billed_in,
-            "input_above_local_estimate": billed_in is not None and billed_in > local_in,
-            "provider_called": False,
-            "provider_network": False,
-            "scripted": True,
-        }
-        state.calls.append(observation)
-        _append_ledger(_ledger_path(out), observation)
-        _write_hold(out, state)
-        incomplete.discard(slot["slot_id"])
-        if actual > reserve:
+        attempt_id = state.pending["attempt_id"]
+        parsed_calls = _tool_calls(payload)
+        if priced["confirmed_cny"] is None:
+            if priced["peak_cny"] is None or priced["offpeak_cny"] is None or offpeak_bill is None:
+                _hold_pending(state, "response did not confirm a charge")
+                stop(UNKNOWN_STOP, _input_gap(local_in, billed_in, reserve, None))
+                raise AmendmentFlightRefused(UNKNOWN_STOP)
+            event = dict(state.pending)
+            event["held_worst_case_cny"] = _money(priced["peak_cny"])
+            event["offpeak_estimate_cny"] = _money(priced["offpeak_cny"])
+            event["response_saved"] = True
+            event["tool_calls"] = parsed_calls
+            event["charge_confirmed"] = False
+            event["reason"] = "usage confirmed; tariff not confirmed; held at the peak rate"
+            state.events.append(event)
+            state.pending = None
+            observation = _ledger_row(
+                slot,
+                attempt_id,
+                fresh,
+                moment,
+                charge_confirmed=False,
+                bill=offpeak_bill,
+                offpeak_cny=priced["offpeak_cny"],
+                budget_cny=priced["peak_cny"],
+                tool_calls=parsed_calls,
+                local_in=local_in,
+                billed_in=billed_in,
+                reason=event["reason"],
+            )
+            _append_ledger(_ledger_path(out), observation)
+            _write_hold(out, state)
+            incomplete.discard(slot["slot_id"])
+            held = priced["peak_cny"]
+        else:
+            state.settled += priced["confirmed_cny"]
+            state.pending = None
+            observation = _ledger_row(
+                slot,
+                attempt_id,
+                fresh,
+                moment,
+                charge_confirmed=True,
+                bill=priced["confirmed_bill"],
+                offpeak_cny=priced["offpeak_cny"],
+                tool_calls=parsed_calls,
+                local_in=local_in,
+                billed_in=billed_in,
+                reason="charge confirmed",
+            )
+            state.calls.append(observation)
+            _append_ledger(_ledger_path(out), observation)
+            _write_hold(out, state)
+            incomplete.discard(slot["slot_id"])
+            held = priced["confirmed_cny"]
+        input_gap = _input_gap(local_in, billed_in, reserve, held)
+        if held > reserve:
             state.sticky = OVER_RESERVE_STOP
             stop(OVER_RESERVE_STOP, input_gap)
             raise AmendmentFlightRefused(OVER_RESERVE_STOP)
@@ -1674,7 +2130,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     completion = _completion_conflict(state, by_slot)
     if completion:
         _fail_accounting(out, completion)
-    return _write_live(out, state, ceiling)
+    return _write_live(out, state, ceiling, plans)
 
 
 def _gate(summary: dict, moment, next_fits: bool, manifest: dict, next_reserve: Decimal) -> dict:
