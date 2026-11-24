@@ -6,6 +6,38 @@ The request count serializes `{model: UNSELECTED, temperature: 0.001, store: fal
 
 Gold-linked rival check: not run. It would be a scoring diagnostic after this freeze, and gold is not an editing input.
 
+## Adopted S2 edits by rule effect
+
+Rule effect of each adopted S2 field. suffix_only_float_sentence removes only the converter sentence ' This is a float type value.' other_adopted is every remaining adopted edit. These counts are what the editor removed. They are not a meaningful-versus-cosmetic judgment.
+
+The audited parent filled `meaningfully_changed` with the adopted count and `cosmetic_only` with zero. Adoption set the first label whenever a row had a change class, and the row constructor set the second label false. Those columns are omitted here. The rows below are the rule effect of each adopted edit.
+
+| rule effect | fields | o200k_base field tokens saved | changed cases |
+| --- | ---: | ---: | ---: |
+| suffix_only_float_sentence | 373 | 2611 | 187 |
+| other_adopted | 56 | 329 | 43 |
+| adopted | 429 | 2940 | 230 |
+
+Suffix-only removals are 2611 of 2940 saved field tokens (88.81%). In 187 of 230 changed cases, every adopted edit is that suffix removal.
+
+Other adopted edits by the rule that fired: direct_action 17, flag_normalization 7, schema_guaranteed 14, within_tool_duplicate 18.
+
+A suffix-only row is also `schema_guaranteed`: format float and type number remain on the schema. That class covers 373 suffix-only fields and 14 other adopted fields. The change class alone does not separate the float-sentence removal from a default or enum deletion.
+
+The split uses local o200k_base field tokens. Those counts are not billed usage, accuracy, or the closed 1/10 target. Character length is not this split. `cl100k_base` is a recount only and is not used for selection: 2611 of 2938 saved field tokens.
+
+## Evidence ownership
+
+All 30 cues were checked in both directions. Each target citation and each rival citation was compared with the original tool at the recorded index, path, and value.
+
+`multiple_11` `math_roots_polynomial` at index 2 had its parameter citations swapped with `math_roots_quadratic` at index 0. The target cited ['a', 'b', 'c'], which belong to math_roots_quadratic. The rival cited ['coefficients'] and held `order_support`, which belong to math_roots_polynomial. The target now cites ['coefficients'] and `order_support` at `/function/parameters/properties/coefficients/description`. The rival now cites ['a', 'b', 'c'].
+
+The cue sentence is unchanged. The quadratic and cubic directions already cited their own named coefficients, with the ordered array and `order_support` on `math_roots_polynomial`. Those directions were checked and their cited values were left in place.
+
+Cue text changes: 0. Cues whose cited values were already on the owning tool: 29.
+
+`multiple_12` remains uncued. No rule was added for return on equity versus return on assets. That missed contrast stays a recorded limitation.
+
 ## Fixtures
 
 ```json
@@ -35,7 +67,10 @@ Gold-linked rival check: not run. It would be a scoring diagnostic after this fr
   "gold_linked_rival_check": {
     "ran": false,
     "reason": "Scoring-only diagnostic. Gold is not loaded."
-  }
+  },
+  "evidence_ownership": "pass",
+  "cue_text_changed": false,
+  "multiple_12_cued": false
 }
 ```
 
@@ -83,8 +118,8 @@ Fields
 | eligible | 4604/4604 |
 | proposed | 897/4604 |
 | adopted | 429/4604 |
-| meaningfully_changed | 429/4604 |
-| cosmetic_only | 0/4604 |
+| suffix_only_float_sentence | 373/4604 |
+| other_adopted | 56/4604 |
 | unchanged | 4175/4604 |
 
 Tools
@@ -94,8 +129,8 @@ Tools
 | eligible | 1197/1197 |
 | proposed | 650/1197 |
 | adopted | 274/1197 |
-| meaningfully_changed | 274/1197 |
-| cosmetic_only | 0/1197 |
+| suffix_only_float_sentence | 224/1197 |
+| other_adopted | 50/1197 |
 | unchanged | 923/1197 |
 
 Cases
@@ -105,9 +140,11 @@ Cases
 | eligible | 840/840 |
 | proposed | 506/840 |
 | adopted | 230/840 |
-| meaningfully_changed | 230/840 |
-| cosmetic_only | 0/840 |
+| suffix_only_float_sentence | 187/840 |
+| other_adopted | 43/840 |
 | unchanged | 601/840 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 2611 of 2940 (88.81%); other adopted 329. Changed cases whose edits are all suffix-only: 187 of 230.
 
 Cues
 
@@ -229,8 +266,8 @@ Fields
 | eligible | 2101/2101 |
 | proposed | 434/2101 |
 | adopted | 213/2101 |
-| meaningfully_changed | 213/2101 |
-| cosmetic_only | 0/2101 |
+| suffix_only_float_sentence | 180/2101 |
+| other_adopted | 33/2101 |
 | unchanged | 1888/2101 |
 
 Tools
@@ -240,8 +277,8 @@ Tools
 | eligible | 557/557 |
 | proposed | 310/557 |
 | adopted | 130/557 |
-| meaningfully_changed | 130/557 |
-| cosmetic_only | 0/557 |
+| suffix_only_float_sentence | 101/557 |
+| other_adopted | 29/557 |
 | unchanged | 427/557 |
 
 Cases
@@ -251,9 +288,11 @@ Cases
 | eligible | 200/200 |
 | proposed | 166/200 |
 | adopted | 86/200 |
-| meaningfully_changed | 86/200 |
-| cosmetic_only | 0/200 |
+| suffix_only_float_sentence | 64/200 |
+| other_adopted | 22/200 |
 | unchanged | 105/200 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 1260 of 1462 (86.18%); other adopted 202. Changed cases whose edits are all suffix-only: 64 of 86.
 
 Cues
 
@@ -375,8 +414,8 @@ Fields
 | eligible | 1570/1570 |
 | proposed | 268/1570 |
 | adopted | 77/1570 |
-| meaningfully_changed | 77/1570 |
-| cosmetic_only | 0/1570 |
+| suffix_only_float_sentence | 64/1570 |
+| other_adopted | 13/1570 |
 | unchanged | 1493/1570 |
 
 Tools
@@ -386,8 +425,8 @@ Tools
 | eligible | 400/400 |
 | proposed | 222/400 |
 | adopted | 69/400 |
-| meaningfully_changed | 69/400 |
-| cosmetic_only | 0/400 |
+| suffix_only_float_sentence | 57/400 |
+| other_adopted | 12/400 |
 | unchanged | 331/400 |
 
 Cases
@@ -397,9 +436,11 @@ Cases
 | eligible | 400/400 |
 | proposed | 222/400 |
 | adopted | 69/400 |
-| meaningfully_changed | 69/400 |
-| cosmetic_only | 0/400 |
+| suffix_only_float_sentence | 57/400 |
+| other_adopted | 12/400 |
 | unchanged | 331/400 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 448 of 508 (88.19%); other adopted 60. Changed cases whose edits are all suffix-only: 57 of 69.
 
 Cues
 
@@ -521,8 +562,8 @@ Fields
 | eligible | 933/933 |
 | proposed | 195/933 |
 | adopted | 139/933 |
-| meaningfully_changed | 139/933 |
-| cosmetic_only | 0/933 |
+| suffix_only_float_sentence | 129/933 |
+| other_adopted | 10/933 |
 | unchanged | 794/933 |
 
 Tools
@@ -532,8 +573,8 @@ Tools
 | eligible | 240/240 |
 | proposed | 118/240 |
 | adopted | 75/240 |
-| meaningfully_changed | 75/240 |
-| cosmetic_only | 0/240 |
+| suffix_only_float_sentence | 66/240 |
+| other_adopted | 9/240 |
 | unchanged | 165/240 |
 
 Cases
@@ -543,9 +584,11 @@ Cases
 | eligible | 240/240 |
 | proposed | 118/240 |
 | adopted | 75/240 |
-| meaningfully_changed | 75/240 |
-| cosmetic_only | 0/240 |
+| suffix_only_float_sentence | 66/240 |
+| other_adopted | 9/240 |
 | unchanged | 165/240 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 903 of 970 (93.09%); other adopted 67. Changed cases whose edits are all suffix-only: 66 of 75.
 
 Cues
 
@@ -667,8 +710,8 @@ Fields
 | eligible | 95/95 |
 | proposed | 29/95 |
 | adopted | 22/95 |
-| meaningfully_changed | 22/95 |
-| cosmetic_only | 0/95 |
+| suffix_only_float_sentence | 14/95 |
+| other_adopted | 8/95 |
 | unchanged | 73/95 |
 
 Tools
@@ -678,8 +721,8 @@ Tools
 | eligible | 24/24 |
 | proposed | 17/24 |
 | adopted | 11/24 |
-| meaningfully_changed | 11/24 |
-| cosmetic_only | 0/24 |
+| suffix_only_float_sentence | 6/24 |
+| other_adopted | 5/24 |
 | unchanged | 13/24 |
 
 Cases
@@ -689,9 +732,11 @@ Cases
 | eligible | 12/12 |
 | proposed | 8/12 |
 | adopted | 7/12 |
-| meaningfully_changed | 7/12 |
-| cosmetic_only | 0/12 |
+| suffix_only_float_sentence | 3/12 |
+| other_adopted | 4/12 |
 | unchanged | 4/12 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 98 of 177 (55.37%); other adopted 79. Changed cases whose edits are all suffix-only: 3 of 7.
 
 Cues
 
@@ -813,8 +858,8 @@ Fields
 | eligible | 4509/4509 |
 | proposed | 868/4509 |
 | adopted | 407/4509 |
-| meaningfully_changed | 407/4509 |
-| cosmetic_only | 0/4509 |
+| suffix_only_float_sentence | 359/4509 |
+| other_adopted | 48/4509 |
 | unchanged | 4102/4509 |
 
 Tools
@@ -824,8 +869,8 @@ Tools
 | eligible | 1173/1173 |
 | proposed | 633/1173 |
 | adopted | 263/1173 |
-| meaningfully_changed | 263/1173 |
-| cosmetic_only | 0/1173 |
+| suffix_only_float_sentence | 218/1173 |
+| other_adopted | 45/1173 |
 | unchanged | 910/1173 |
 
 Cases
@@ -835,9 +880,11 @@ Cases
 | eligible | 828/828 |
 | proposed | 498/828 |
 | adopted | 223/828 |
-| meaningfully_changed | 223/828 |
-| cosmetic_only | 0/828 |
+| suffix_only_float_sentence | 184/828 |
+| other_adopted | 39/828 |
 | unchanged | 597/828 |
+
+Adopted-field tokens in this scope, o200k_base: suffix-only 2513 of 2763 (90.95%); other adopted 250. Changed cases whose edits are all suffix-only: 184 of 223.
 
 Cues
 

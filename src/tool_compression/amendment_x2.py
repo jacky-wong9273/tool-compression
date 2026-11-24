@@ -71,6 +71,13 @@ def qualify_catalogue(tools: list[dict]) -> list[dict]:
             })
             rows.append(_uncued(index, tool, rejected + _as_rejected(not_chosen)))
             continue
+        _stamp_ownership(
+            chosen["evidence"],
+            index,
+            tool["function"]["name"],
+            chosen["tool_index"],
+            chosen["function_name"],
+        )
         for item in not_chosen:
             rejected.append({
                 "tool_index": item["tool_index"],
@@ -166,16 +173,8 @@ def _parallel_pair(target: dict, rival: dict) -> dict | None:
         "rival_description": right,
         "score": (_jaccard(left, right), len(pre) + len(suf), -0),
         "evidence": {
-            "target": {
-                "function_excerpt": target_excerpt,
-                "function_text": left,
-                "schema_required": _required_records(target),
-            },
-            "rival": {
-                "function_excerpt": rival_excerpt,
-                "function_text": right,
-                "schema_required": _required_records(rival),
-            },
+            "target": _evidence_side(target, target_excerpt),
+            "rival": _evidence_side(rival, rival_excerpt),
             "shared_kind": kind,
         },
     }
@@ -204,6 +203,14 @@ def _interface_pair(target: dict, rival: dict) -> dict | None:
         return None
     array = _array_parameter(array_tool)
     named = _named_parameter_notes(named_tool)
+    # Parameter notes and order_support belong to the tool that contains them.
+    # The array tool is the rival when the target is named, and the target otherwise.
+    if target_is_named:
+        target_notes, rival_notes = named, [array]
+        target_order, rival_order = None, array["description"]
+    else:
+        target_notes, rival_notes = [array], named
+        target_order, rival_order = array["description"], None
     return {
         "kind": "interface",
         "axis": "named-coefficients-versus-ordered-array",
@@ -212,19 +219,8 @@ def _interface_pair(target: dict, rival: dict) -> dict | None:
         "target_is_named": target_is_named,
         "score": (_jaccard(left, right), 0, -0),
         "evidence": {
-            "target": {
-                "function_excerpt": left,
-                "function_text": left,
-                "parameter_excerpts": named,
-                "schema_required": _required_records(target),
-            },
-            "rival": {
-                "function_excerpt": right,
-                "function_text": right,
-                "parameter_excerpts": [array],
-                "schema_required": _required_records(rival),
-                "order_support": array["description"],
-            },
+            "target": _evidence_side(target, left, parameter_excerpts=target_notes, order_support=target_order),
+            "rival": _evidence_side(rival, right, parameter_excerpts=rival_notes, order_support=rival_order),
             "shared_kind": "roots-from-coefficients",
         },
     }
@@ -352,6 +348,193 @@ def _required(tool: dict) -> tuple:
 
 def _required_records(tool: dict) -> list[dict]:
     return [{"name": name, "type": kind} for name, kind in _required(tool)]
+
+
+def value_at(tool: dict, path: str):
+    """Return the value at a tool-local JSON pointer, or None when the path is absent."""
+    if not isinstance(path, str) or not path.startswith("/"):
+        return None
+    node = tool
+    for part in path.split("/")[1:]:
+        if not isinstance(node, dict) or part not in node:
+            return None
+        node = node[part]
+    return node
+
+
+def _evidence_side(tool: dict, excerpt: str, *, parameter_excerpts: list[dict] | None = None, order_support: str | None = None) -> dict:
+    """Citations for one side. Indexes are stamped once the catalogue position is known."""
+    description = tool["function"]["description"]
+    citations = [_function_citation(description, excerpt), *_required_citations(tool)]
+    side = {
+        "function_excerpt": excerpt,
+        "function_text": description,
+        "schema_required": _required_records(tool),
+        "citations": citations,
+    }
+    if parameter_excerpts is not None:
+        side["parameter_excerpts"] = parameter_excerpts
+        citations.extend(_parameter_citations(parameter_excerpts, order_support))
+    if order_support is not None:
+        side["order_support"] = order_support
+    return side
+
+
+def _function_citation(description: str, excerpt: str) -> dict:
+    return {"path": "/function/description", "value": description, "excerpt": excerpt}
+
+
+def _required_citations(tool: dict) -> list[dict]:
+    required = list(tool["function"]["parameters"].get("required") or [])
+    citations = [{"path": "/function/parameters/required", "value": required}]
+    props = tool["function"]["parameters"].get("properties") or {}
+    for name in required:
+        schema = props.get(name) or {}
+        citations.append({
+            "path": f"/function/parameters/properties/{name}/type",
+            "value": schema.get("type"),
+        })
+        if schema.get("type") == "array":
+            citations.append({
+                "path": f"/function/parameters/properties/{name}/items/type",
+                "value": (schema.get("items") or {}).get("type"),
+            })
+    return citations
+
+
+def _parameter_citations(notes: list[dict], order_support: str | None) -> list[dict]:
+    citations = []
+    marked = False
+    for note in notes:
+        item = {
+            "path": f"/function/parameters/properties/{note['name']}/description",
+            "value": note.get("description"),
+        }
+        if order_support is not None and not marked and note.get("description") == order_support:
+            item["role"] = "order_support"
+            marked = True
+        citations.append(item)
+    return citations
+
+
+def _stamp_ownership(evidence: dict, target_index: int, target_name: str, rival_index: int, rival_name: str) -> None:
+    mapping = {"target": (target_index, target_name), "rival": (rival_index, rival_name)}
+    for side, (index, name) in mapping.items():
+        block = evidence[side]
+        block["tool_index"] = index
+        block["function_name"] = name
+        for citation in block["citations"]:
+            citation["tool_index"] = index
+            citation["function_name"] = name
+
+
+def ownership_problems(tools: list[dict], row: dict) -> list[str]:
+    """Both directions: target citations and rival citations must match that tool, index, path, and value."""
+    if not row.get("cue"):
+        if row.get("evidence") is not None:
+            return ["uncued row carries evidence"]
+        return []
+    evidence = row.get("evidence") or {}
+    problems = []
+    indexes = {
+        "target": row.get("tool_index"),
+        "rival": (row.get("rival") or {}).get("tool_index"),
+    }
+    if indexes["target"] == indexes["rival"]:
+        problems.append("target and rival indexes are the same")
+    resolved = {}
+    for side, index in indexes.items():
+        block = evidence.get(side)
+        if not isinstance(index, int) or not (0 <= index < len(tools)) or not isinstance(block, dict):
+            problems.append(f"{side} evidence is not tied to a catalogue tool")
+            continue
+        tool = tools[index]
+        name = tool["function"]["name"]
+        resolved[side] = tool
+        if block.get("tool_index") != index or block.get("function_name") != name:
+            problems.append(f"{side} citation tool index or name does not match the catalogue")
+        expected_name = row["function_name"] if side == "target" else row["rival"]["function_name"]
+        if name != expected_name:
+            problems.append(f"{side} function name does not match the recorded index")
+        description = tool["function"]["description"]
+        if block.get("function_text") != description:
+            problems.append(f"{side} function_text is not the original description")
+        excerpt = block.get("function_excerpt")
+        if not isinstance(excerpt, str) or excerpt not in description:
+            problems.append(f"{side} function_excerpt is not in the original description")
+        if block.get("schema_required") != _required_records(tool):
+            problems.append(f"{side} schema_required does not match the original required parameters")
+        props = tool["function"]["parameters"].get("properties") or {}
+        notes = block.get("parameter_excerpts")
+        if notes is not None:
+            for note in notes:
+                schema = props.get(note.get("name"))
+                if not isinstance(schema, dict):
+                    problems.append(f"{side} parameter {note.get('name')!r} is not on this tool")
+                    continue
+                if schema.get("description") != note.get("description") or schema.get("type") != note.get("type"):
+                    problems.append(f"{side} parameter {note.get('name')!r} value does not match this tool")
+                if "items" in note and (schema.get("items") or {}).get("type") != note.get("items"):
+                    problems.append(f"{side} parameter {note.get('name')!r} item type does not match this tool")
+        order = block.get("order_support", None)
+        if "order_support" in block:
+            owned = any(isinstance(schema, dict) and schema.get("description") == order for schema in props.values())
+            if not owned:
+                problems.append(f"{side} order_support is not a parameter description on this tool")
+        citations = block.get("citations")
+        if not isinstance(citations, list) or not citations:
+            problems.append(f"{side} has no path citations")
+            continue
+        paths = set()
+        saw_description = False
+        saw_order = "order_support" not in block
+        for citation in citations:
+            path = citation.get("path")
+            paths.add(path)
+            if citation.get("tool_index") != index or citation.get("function_name") != name:
+                problems.append(f"{side} citation {path} names a different tool")
+            if value_at(tool, path) != citation.get("value"):
+                problems.append(f"{side} citation {path} value does not match the original tool")
+            if path == "/function/description":
+                saw_description = citation.get("excerpt") == excerpt and citation.get("value") == description
+            if citation.get("role") == "order_support":
+                saw_order = citation.get("value") == order
+        if not saw_description:
+            problems.append(f"{side} description citation does not match the excerpt")
+        if not saw_order:
+            problems.append(f"{side} order_support has no matching description citation")
+        required = list(tool["function"]["parameters"].get("required") or [])
+        expected_paths = {"/function/description", "/function/parameters/required"}
+        for required_name in required:
+            schema = props.get(required_name) or {}
+            expected_paths.add(f"/function/parameters/properties/{required_name}/type")
+            if schema.get("type") == "array":
+                expected_paths.add(f"/function/parameters/properties/{required_name}/items/type")
+        if notes is not None:
+            for note in notes:
+                expected_paths.add(f"/function/parameters/properties/{note.get('name')}/description")
+        missing = expected_paths - paths
+        if missing:
+            problems.append(f"{side} missing citations {sorted(missing)}")
+    if len(resolved) == 2:
+        for side, tool in resolved.items():
+            other = resolved["rival" if side == "target" else "target"]
+            excerpt = (evidence.get(side) or {}).get("function_excerpt")
+            if isinstance(excerpt, str) and excerpt in other["function"]["description"]:
+                problems.append(f"{side} function_excerpt also appears in the other tool's description")
+            block = evidence.get(side) or {}
+            other_props = other["function"]["parameters"].get("properties") or {}
+            own_props = tool["function"]["parameters"].get("properties") or {}
+            for note in block.get("parameter_excerpts") or []:
+                if note.get("name") not in own_props and note.get("name") in other_props:
+                    problems.append(f"{side} parameter {note.get('name')!r} belongs to the other tool")
+            if "order_support" in block:
+                order = block["order_support"]
+                on_own = any(isinstance(schema, dict) and schema.get("description") == order for schema in own_props.values())
+                on_other = any(isinstance(schema, dict) and schema.get("description") == order for schema in other_props.values())
+                if on_other and not on_own:
+                    problems.append(f"{side} order_support belongs to the other tool")
+    return problems
 
 
 def _named_coefficients(tool: dict) -> bool:

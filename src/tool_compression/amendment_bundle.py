@@ -20,8 +20,8 @@ import sys
 
 from tool_compression.adapter import description_slots
 from tool_compression.amendment_s2 import FLOAT_SUFFIX as S2_FLOAT_SUFFIX
-from tool_compression.amendment_s2 import KEEP_REASONS, edit_tool
-from tool_compression.amendment_x2 import CUE_POINTER, CUE_SEPARATOR, qualify_catalogue
+from tool_compression.amendment_s2 import KEEP_REASONS, edit_tool, suffix_only_float_removal
+from tool_compression.amendment_x2 import CUE_POINTER, CUE_SEPARATOR, ownership_problems, qualify_catalogue
 from tool_compression.config import (
     BFCL_DEFAULT_TEMPERATURE,
     BFCL_STORE,
@@ -87,6 +87,18 @@ POLYNOMIAL_CUE = (
     "this takes an ordered coefficient array."
 )
 GET_ANGLES = "Whether to calculate the internal angles"
+CUE_TEXT_SHA256 = "4cb90884500b8a7de33b81127cb2c1be61dcfc6603681e6fd0bf51e5edc7f569"
+REPRODUCED_S2_SPLIT = {
+    "adopted_fields": 429,
+    "suffix_only_fields": 373,
+    "other_adopted_fields": 56,
+    "saved_field_tokens_o200k": 2940,
+    "suffix_only_field_tokens_o200k": 2611,
+    "other_field_tokens_o200k": 329,
+    "cases_with_an_adopted_field": 230,
+    "cases_suffix_only": 187,
+    "cases_with_other_adopted": 43,
+}
 ALGORITHM_FINAL = "The specific algorithm to use in the calculation. Default 'euclidean'"
 METHOD_ORIGINAL = (
     "The specific method to use in the calculation. "
@@ -448,8 +460,8 @@ def _invariant_errors(case_id: str, rendered: dict, s2_rows: list[dict], x2_rows
             errors.append(f"adopted field also has a KEEP reason {key}")
         if not row["adopted"] and row["keep_reason"] not in KEEP_REASONS:
             errors.append(f"KEEP reason is not field-specific {key}")
-        if row["cosmetic"] or (row["adopted"] and _words_only(row["original"]) == _words_only(row["final"])):
-            errors.append(f"cosmetic edit was adopted {key}")
+        if row["adopted"] and _words_only(row["original"]) == _words_only(row["final"]):
+            errors.append(f"adopted field has the same words as the original {key}")
         if row["adopted"] and row["final"] == row["original"]:
             errors.append(f"unchanged field was marked adopted {key}")
     for index, tool in enumerate(rendered["S2"]):
@@ -491,6 +503,10 @@ def _invariant_errors(case_id: str, rendered: dict, s2_rows: list[dict], x2_rows
                 errors.append(f"missing no-cue reason {key}")
         if len(original) == 1 and (cue or row["no_cue_reason"] != "Single-tool control. Controls receive no cue."):
             errors.append("a control received a cue")
+        errors.extend(
+            f"evidence ownership {row['function_name']}: {item}"
+            for item in ownership_problems(original, row)
+        )
     if len(original) == 1:
         if rendered["X2"] != original or _envelope(rendered["X2"]) != _envelope(original):
             errors.append("control X2 input is not U byte for byte")
@@ -523,6 +539,10 @@ def _row_by_name(rows: list[dict], name: str) -> dict:
     if len(found) != 1:
         raise AmendmentFailure(f"expected one function row for {name}")
     return found[0]
+
+
+def _parameter_names(block: dict) -> list[str]:
+    return [item["name"] for item in block.get("parameter_excerpts") or []]
 
 
 def _field(rows: list[dict], name: str, pointer_suffix: str) -> dict:
@@ -577,6 +597,27 @@ def _fixture_errors(cases: dict[str, dict]) -> list[str]:
     for row in (quadratic, cubic, polynomial):
         if _cue_problem(row["cue"], ["math_roots_quadratic", "math_roots_cubic", "math_roots_polynomial"], row["function_name"], row["rival"]["function_name"]):
             errors.append("multiple_11 cue claims an exclusive quadratic capability")
+        errors.extend(f"multiple_11 {row['function_name']}: {item}" for item in ownership_problems(roots["tools"]["U"], row))
+    order_text = roots["tools"]["U"][2]["function"]["parameters"]["properties"]["coefficients"]["description"]
+    if _parameter_names(polynomial["evidence"]["target"]) != ["coefficients"]:
+        errors.append("multiple_11 polynomial target still cites named coefficients")
+    if _parameter_names(polynomial["evidence"]["rival"]) != ["a", "b", "c"]:
+        errors.append("multiple_11 polynomial rival does not cite the quadratic coefficients")
+    if polynomial["evidence"]["target"].get("order_support") != order_text:
+        errors.append("multiple_11 order_support is not on the polynomial target")
+    if "order_support" in polynomial["evidence"]["rival"]:
+        errors.append("multiple_11 polynomial rival still holds order_support")
+    if _parameter_names(quadratic["evidence"]["target"]) != ["a", "b", "c"] or _parameter_names(quadratic["evidence"]["rival"]) != ["coefficients"]:
+        errors.append("multiple_11 quadratic direction lost its own coefficients")
+    if quadratic["evidence"]["rival"].get("order_support") != order_text or "order_support" in quadratic["evidence"]["target"]:
+        errors.append("multiple_11 quadratic direction moved order_support off the array tool")
+    if _parameter_names(cubic["evidence"]["target"]) != ["a", "b", "c", "d"] or _parameter_names(cubic["evidence"]["rival"]) != ["coefficients"]:
+        errors.append("multiple_11 cubic direction lost its own coefficients")
+    if cubic["evidence"]["rival"].get("order_support") != order_text or "order_support" in cubic["evidence"]["target"]:
+        errors.append("multiple_11 cubic direction moved order_support off the array tool")
+    finance = cases["multiple_12"]
+    if any(row["cue"] for row in finance["x2_rows"]) or any(row["rival"] for row in finance["x2_rows"]):
+        errors.append("multiple_12 received a cue; the denominator contrast stays a recorded limitation")
     angles = _field(cases["multiple_0"]["s2_rows"], "triangle_properties_get", "/get_angles/description")
     if angles["final"] != GET_ANGLES or angles["change_class"] != "flag_normalization":
         errors.append("get_angles did not stay a whether-clause with internal kept")
@@ -643,28 +684,61 @@ def _cue_class(baseline: int, cue: int, net: int) -> str:
     return "cue_exceeds_savings"
 
 
+def _saved_tokens(rows: list[dict], lookup: dict, encoding: str) -> int:
+    total = 0
+    for row in rows:
+        block = lookup[(row["tool_index"], row["pointer"])][encoding]
+        total += block["U"] - block["S2"]
+    return total
+
+
 def _annotate(case: dict) -> None:
     adopted = [row for row in case["s2_rows"] if row["adopted"]]
     proposed = [row for row in case["s2_rows"] if row["candidate"] != row["original"]]
     cued = [row for row in case["x2_rows"] if row["cue"]]
+    lookup = {(row["tool_index"], row["pointer"]): row for row in case["field_rows"]}
+    suffix_rows = []
+    other_rows = []
+    for row in case["s2_rows"]:
+        if not row["adopted"]:
+            row["rule_effect"] = None
+            continue
+        if suffix_only_float_removal(row["original"], row["final"]):
+            row["rule_effect"] = "suffix_only_float_sentence"
+            suffix_rows.append(row)
+        else:
+            row["rule_effect"] = "other_adopted"
+            other_rows.append(row)
     case["fields_eligible"] = len(case["s2_rows"])
     case["fields_proposed"] = len(proposed)
     case["fields_adopted"] = len(adopted)
-    case["fields_meaningful"] = len(adopted)
-    case["fields_cosmetic"] = 0
+    case["fields_suffix_only"] = len(suffix_rows)
+    case["fields_other"] = len(other_rows)
     case["fields_unchanged"] = len(case["s2_rows"]) - len(adopted)
+    case["suffix_saved_o200k"] = _saved_tokens(suffix_rows, lookup, "o200k_base")
+    case["other_saved_o200k"] = _saved_tokens(other_rows, lookup, "o200k_base")
+    case["suffix_saved_cl100k"] = _saved_tokens(suffix_rows, lookup, "cl100k_base")
+    case["other_saved_cl100k"] = _saved_tokens(other_rows, lookup, "cl100k_base")
+    if adopted and not other_rows:
+        case["adopted_case_effect"] = "suffix_only_float_sentence"
+    elif other_rows:
+        case["adopted_case_effect"] = "other_adopted"
+    else:
+        case["adopted_case_effect"] = None
     tools = {}
     for row in case["s2_rows"]:
-        slot = tools.setdefault(row["tool_index"], {"proposed": 0, "adopted": 0})
+        slot = tools.setdefault(row["tool_index"], {"proposed": 0, "adopted": 0, "other": 0})
         if row["candidate"] != row["original"]:
             slot["proposed"] += 1
         if row["adopted"]:
             slot["adopted"] += 1
+        if row["rule_effect"] == "other_adopted":
+            slot["other"] += 1
     case["tools_eligible"] = len(case["tools"]["U"])
     case["tools_proposed"] = sum(1 for slot in tools.values() if slot["proposed"])
     case["tools_adopted"] = sum(1 for slot in tools.values() if slot["adopted"])
-    case["tools_meaningful"] = case["tools_adopted"]
-    case["tools_cosmetic"] = 0
+    case["tools_suffix_only"] = sum(1 for slot in tools.values() if slot["adopted"] and slot["other"] == 0)
+    case["tools_other"] = sum(1 for slot in tools.values() if slot["other"])
     case["tools_unchanged"] = case["tools_eligible"] - case["tools_adopted"]
     case["cued_tools"] = len(cued)
     case["noop"] = case["fields_adopted"] == 0 and case["cued_tools"] == 0
@@ -712,6 +786,63 @@ def _bucket(cases: list[dict], attribute: str) -> dict:
     return {name: _ratio(counts[name], len(cases)) for name in names}
 
 
+def _share(part: int, whole: int) -> str:
+    if whole == 0:
+        return "0.00%"
+    return f"{(100 * part / whole):.2f}%"
+
+
+def _adopted_edit_split(cases: list[dict]) -> dict:
+    suffix_fields = sum(case["fields_suffix_only"] for case in cases)
+    other_fields = sum(case["fields_other"] for case in cases)
+    adopted_fields = sum(case["fields_adopted"] for case in cases)
+    suffix_tokens = sum(case["suffix_saved_o200k"] for case in cases)
+    other_tokens = sum(case["other_saved_o200k"] for case in cases)
+    saved = suffix_tokens + other_tokens
+    changed_cases = [case for case in cases if case["fields_adopted"]]
+    suffix_cases = sum(1 for case in changed_cases if case["adopted_case_effect"] == "suffix_only_float_sentence")
+    other_cases = sum(1 for case in changed_cases if case["adopted_case_effect"] == "other_adopted")
+    other_classes = Counter(
+        row["change_class"]
+        for case in cases
+        for row in case["s2_rows"]
+        if row["rule_effect"] == "other_adopted"
+    )
+    suffix_classes = Counter(
+        row["change_class"]
+        for case in cases
+        for row in case["s2_rows"]
+        if row["rule_effect"] == "suffix_only_float_sentence"
+    )
+    return {
+        "adopted_fields": adopted_fields,
+        "suffix_only_fields": suffix_fields,
+        "other_adopted_fields": other_fields,
+        "saved_field_tokens_o200k": saved,
+        "suffix_only_field_tokens_o200k": suffix_tokens,
+        "other_field_tokens_o200k": other_tokens,
+        "suffix_only_share_of_saved_field_tokens": _share(suffix_tokens, saved),
+        "saved_field_tokens_cl100k_not_used_for_selection": (
+            sum(case["suffix_saved_cl100k"] for case in cases) + sum(case["other_saved_cl100k"] for case in cases)
+        ),
+        "suffix_only_field_tokens_cl100k_not_used_for_selection": sum(case["suffix_saved_cl100k"] for case in cases),
+        "cases_with_an_adopted_field": len(changed_cases),
+        "cases_suffix_only": suffix_cases,
+        "cases_with_other_adopted": other_cases,
+        "cases_suffix_only_of_changed": _ratio(suffix_cases, len(changed_cases)),
+        "cases_with_other_adopted_of_changed": _ratio(other_cases, len(changed_cases)),
+        "suffix_only_by_change_class": dict(suffix_classes),
+        "other_adopted_by_change_class": dict(other_classes),
+        "label": (
+            "Rule effect of each adopted S2 field. "
+            "suffix_only_float_sentence removes only the converter sentence ' This is a float type value.' "
+            "other_adopted is every remaining adopted edit. "
+            "These counts are what the editor removed. "
+            "They are not a meaningful-versus-cosmetic judgment."
+        ),
+    }
+
+
 def _scope(cases: list[dict]) -> dict:
     n = len(cases)
     fields = sum(case["fields_eligible"] for case in cases)
@@ -736,26 +867,29 @@ def _scope(cases: list[dict]) -> dict:
             "eligible": _ratio(fields, fields),
             "proposed": _ratio(sum(case["fields_proposed"] for case in cases), fields),
             "adopted": _ratio(sum(case["fields_adopted"] for case in cases), fields),
-            "meaningfully_changed": _ratio(sum(case["fields_meaningful"] for case in cases), fields),
-            "cosmetic_only": _ratio(sum(case["fields_cosmetic"] for case in cases), fields),
+            "suffix_only_float_sentence": _ratio(sum(case["fields_suffix_only"] for case in cases), fields),
+            "other_adopted": _ratio(sum(case["fields_other"] for case in cases), fields),
             "unchanged": _ratio(sum(case["fields_unchanged"] for case in cases), fields),
         },
         "tools": {
             "eligible": _ratio(tools, tools),
             "proposed": _ratio(sum(case["tools_proposed"] for case in cases), tools),
             "adopted": _ratio(sum(case["tools_adopted"] for case in cases), tools),
-            "meaningfully_changed": _ratio(sum(case["tools_meaningful"] for case in cases), tools),
-            "cosmetic_only": _ratio(sum(case["tools_cosmetic"] for case in cases), tools),
+            "suffix_only_float_sentence": _ratio(sum(case["tools_suffix_only"] for case in cases), tools),
+            "other_adopted": _ratio(sum(case["tools_other"] for case in cases), tools),
             "unchanged": _ratio(sum(case["tools_unchanged"] for case in cases), tools),
         },
         "case_status": {
             "eligible": _ratio(n, n),
             "proposed": _ratio(sum(1 for case in cases if case["fields_proposed"]), n),
             "adopted": _ratio(sum(1 for case in cases if case["fields_adopted"]), n),
-            "meaningfully_changed": _ratio(sum(1 for case in cases if case["fields_meaningful"]), n),
-            "cosmetic_only": _ratio(sum(1 for case in cases if case["fields_cosmetic"] and not case["fields_meaningful"]), n),
+            "suffix_only_float_sentence": _ratio(
+                sum(1 for case in cases if case["adopted_case_effect"] == "suffix_only_float_sentence"), n
+            ),
+            "other_adopted": _ratio(sum(1 for case in cases if case["adopted_case_effect"] == "other_adopted"), n),
             "unchanged": _ratio(sum(1 for case in cases if case["noop"]), n),
         },
+        "adopted_edit_split": _adopted_edit_split(cases),
         "cues": {
             "cued_tools": _ratio(sum(case["cued_tools"] for case in cases), tools),
             "cued_cases": _ratio(len(cued_cases), n),
@@ -885,8 +1019,7 @@ def _ledger_s2(row: dict) -> dict:
         "keep_reason": row["keep_reason"],
         "keep_detail": row["keep_detail"],
         "change_class": row["change_class"],
-        "meaningful": row["meaningful"],
-        "cosmetic": row["cosmetic"],
+        "rule_effect": row["rule_effect"],
         "facts": row["facts"],
     }
 
@@ -1034,7 +1167,7 @@ A candidate that is not strictly shorter, that changes only spacing or punctuati
 
 Qualify each target on the original ordered catalogue. S2 is hidden. A control, one tool, gets no cue. A rival has to serve one common user need, with evidence on both sides from the original function text, parameter text, or immutable schema. An unrelated tool does not veto another pair. The closest rival is the one with the longer shared wording, then the lower original index. At most one cue is appended to the target's function description. The cue names that rival once, states the supported axis, and does not say that only one tool can do the job. An unqualified target stays verbatim.
 
-The verified axes are a shared action with the same required parameter names and types and one short substitution, and named polynomial coefficients versus one ordered coefficient array.
+The verified axes are a shared action with the same required parameter names and types and one short substitution, and named polynomial coefficients versus one ordered coefficient array. Each citation records the tool index, the path, and the value on the tool that owns that text. The target cites its own parameters. The rival cites its own parameters.
 
 ## SX2
 
@@ -1060,6 +1193,8 @@ U files under `rendered/<case>/U.json` are byte copies of `docs/official-840/cat
 ```
 
 The command rebuilds the edits in memory, compares them with these files, and repeats the mocked completion with socket construction denied. It does not accept `--live`. `--freeze` rewrites this directory and is not the check.
+
+Evidence ownership for the 30 cues, and the split of adopted S2 edits into suffix-only float-sentence removals and other adopted edits, are in `comparison/sheet.md`, `checks/evidence-ownership.json`, and `checks/s2-edit-split.json`. The blinded-sample protocol and the source-only packets are `docs/child-revision-evidence-ownership/`.
 
 Local token counts use `o200k_base`. `cl100k_base` is a recount only. Neither number is provider usage, a billed saving, or the closed 1/10 target. The BPE tables are the committed files in `src/tool_compression/tiktoken_cache`. The check does not download them.
 """
@@ -1139,6 +1274,190 @@ def _markdown_deltas(title: str, block: dict) -> str:
     return "\n".join(lines)
 
 
+def _cue_records(cases: list[dict]) -> list[dict]:
+    records = []
+    for case in cases:
+        for row in case["x2_rows"]:
+            if not row["cue"]:
+                continue
+            records.append({
+                "case_id": case["case_id"],
+                "tool_index": row["tool_index"],
+                "function_name": row["function_name"],
+                "rival_index": row["rival"]["tool_index"],
+                "rival_name": row["rival"]["function_name"],
+                "axis": row["axis"],
+                "cue": row["cue"],
+            })
+    return records
+
+
+def _cue_sha(records: list[dict]) -> str:
+    raw = json.dumps(records, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return sha256(raw).hexdigest()
+
+
+def _evidence_ownership_report(cases: list[dict], cue_sha: str) -> dict:
+    cues = []
+    for case in cases:
+        tools = case["tools"]["U"]
+        for row in case["x2_rows"]:
+            if not row["cue"]:
+                continue
+            problems = ownership_problems(tools, row)
+            if problems:
+                raise AmendmentFailure(f"{row['occurrence_id']} evidence ownership failed: " + "; ".join(problems))
+            target = row["evidence"]["target"]
+            rival = row["evidence"]["rival"]
+            if "order_support" in target:
+                order_side = "target"
+            elif "order_support" in rival:
+                order_side = "rival"
+            else:
+                order_side = None
+            value_fix = case["case_id"] == "multiple_11" and row["function_name"] == "math_roots_polynomial"
+            cues.append({
+                "case_id": case["case_id"],
+                "occurrence_id": row["occurrence_id"],
+                "tool_index": row["tool_index"],
+                "function_name": row["function_name"],
+                "rival_tool_index": row["rival"]["tool_index"],
+                "rival_function_name": row["rival"]["function_name"],
+                "ownership": "pass",
+                "value_fix": value_fix,
+                "cue_text_changed": False,
+                "target_parameter_names": _parameter_names(target),
+                "rival_parameter_names": _parameter_names(rival),
+                "order_support_side": order_side,
+            })
+    if len(cues) != 30 or sum(1 for item in cues if item["value_fix"]) != 1:
+        raise AmendmentFailure("evidence ownership report does not cover the 30 cues and the one audited swap")
+    polynomial = next(item for item in cues if item["value_fix"])
+    if polynomial["target_parameter_names"] != ["coefficients"] or polynomial["rival_parameter_names"] != ["a", "b", "c"]:
+        raise AmendmentFailure("polynomial parameter citations were not returned to their own tools")
+    if polynomial["order_support_side"] != "target":
+        raise AmendmentFailure("polynomial order_support is still on the rival")
+    named = [item for item in cues if item["case_id"] == "multiple_11" and not item["value_fix"]]
+    if len(named) != 2 or any(item["order_support_side"] != "rival" for item in named):
+        raise AmendmentFailure("named-coefficient directions no longer keep order_support on the array tool")
+    poly_row = next(
+        row
+        for case in cases
+        if case["case_id"] == "multiple_11"
+        for row in case["x2_rows"]
+        if row["function_name"] == "math_roots_polynomial"
+    )
+    finance = next(case for case in cases if case["case_id"] == "multiple_12")
+    if any(row["cue"] for row in finance["x2_rows"]):
+        raise AmendmentFailure("multiple_12 was cued")
+    return {
+        "cues_checked": 30,
+        "directions": "target_and_rival",
+        "failures": [],
+        "cue_text_sha256": cue_sha,
+        "cue_text_changes": [],
+        "cues_with_no_value_change": 29,
+        "multiple_12": {"cued": False, "rule_added": False},
+        "value_fixes": [
+            {
+                "case_id": "multiple_11",
+                "occurrence_id": poly_row["occurrence_id"],
+                "target": {"tool_index": 2, "function_name": "math_roots_polynomial"},
+                "rival": {"tool_index": 0, "function_name": "math_roots_quadratic"},
+                "cue_text_changed": False,
+                "cue": poly_row["cue"],
+                "audited_misattribution": {
+                    "target_parameter_names": ["a", "b", "c"],
+                    "target_parameters_belong_to": "math_roots_quadratic",
+                    "rival_parameter_names": ["coefficients"],
+                    "rival_parameters_belong_to": "math_roots_polynomial",
+                    "order_support_side": "rival",
+                    "order_support_belongs_to": "math_roots_polynomial",
+                },
+                "corrected": {
+                    "target_parameter_names": _parameter_names(poly_row["evidence"]["target"]),
+                    "rival_parameter_names": _parameter_names(poly_row["evidence"]["rival"]),
+                    "order_support_side": "target",
+                    "order_support_path": "/function/parameters/properties/coefficients/description",
+                    "order_support": poly_row["evidence"]["target"]["order_support"],
+                    "target_citations": poly_row["evidence"]["target"]["citations"],
+                    "rival_citations": poly_row["evidence"]["rival"]["citations"],
+                },
+            }
+        ],
+        "cues": cues,
+    }
+
+
+def _edit_split_lines(packet: dict) -> list[str]:
+    split = packet["s2_edit_split"]["all_840"]
+    other = split["other_adopted_by_change_class"]
+    other_text = ", ".join(f"{name} {other[name]}" for name in sorted(other))
+    return [
+        "## Adopted S2 edits by rule effect",
+        "",
+        split["label"],
+        "",
+        "The audited parent filled `meaningfully_changed` with the adopted count and `cosmetic_only` with zero. "
+        "Adoption set the first label whenever a row had a change class, and the row constructor set the second label false. "
+        "Those columns are omitted here. The rows below are the rule effect of each adopted edit.",
+        "",
+        "| rule effect | fields | o200k_base field tokens saved | changed cases |",
+        "| --- | ---: | ---: | ---: |",
+        f"| suffix_only_float_sentence | {split['suffix_only_fields']} | {split['suffix_only_field_tokens_o200k']} | {split['cases_suffix_only']} |",
+        f"| other_adopted | {split['other_adopted_fields']} | {split['other_field_tokens_o200k']} | {split['cases_with_other_adopted']} |",
+        f"| adopted | {split['adopted_fields']} | {split['saved_field_tokens_o200k']} | {split['cases_with_an_adopted_field']} |",
+        "",
+        (
+            f"Suffix-only removals are {split['suffix_only_field_tokens_o200k']} of "
+            f"{split['saved_field_tokens_o200k']} saved field tokens "
+            f"({split['suffix_only_share_of_saved_field_tokens']}). "
+            f"In {split['cases_suffix_only']} of {split['cases_with_an_adopted_field']} changed cases, "
+            "every adopted edit is that suffix removal."
+        ),
+        "",
+        f"Other adopted edits by the rule that fired: {other_text}.",
+        "",
+        "A suffix-only row is also `schema_guaranteed`: format float and type number remain on the schema. "
+        f"That class covers {split['suffix_only_by_change_class'].get('schema_guaranteed', 0)} suffix-only fields "
+        f"and {other.get('schema_guaranteed', 0)} other adopted fields. "
+        "The change class alone does not separate the float-sentence removal from a default or enum deletion.",
+        "",
+        "The split uses local o200k_base field tokens. Those counts are not billed usage, accuracy, or the closed 1/10 target. "
+        "Character length is not this split. "
+        f"`cl100k_base` is a recount only and is not used for selection: "
+        f"{split['suffix_only_field_tokens_cl100k_not_used_for_selection']} of "
+        f"{split['saved_field_tokens_cl100k_not_used_for_selection']} saved field tokens.",
+    ]
+
+
+def _ownership_lines(packet: dict) -> list[str]:
+    report = packet["evidence_ownership"]
+    fix = report["value_fixes"][0]
+    before = fix["audited_misattribution"]
+    after = fix["corrected"]
+    return [
+        "## Evidence ownership",
+        "",
+        "All 30 cues were checked in both directions. Each target citation and each rival citation was compared with the original tool at the recorded index, path, and value.",
+        "",
+        (
+            f"`{fix['case_id']}` `{fix['target']['function_name']}` at index {fix['target']['tool_index']} "
+            f"had its parameter citations swapped with `{fix['rival']['function_name']}` at index {fix['rival']['tool_index']}. "
+            f"The target cited {before['target_parameter_names']}, which belong to {before['target_parameters_belong_to']}. "
+            f"The rival cited {before['rival_parameter_names']} and held `order_support`, which belong to {before['order_support_belongs_to']}. "
+            f"The target now cites {after['target_parameter_names']} and `order_support` at `{after['order_support_path']}`. "
+            f"The rival now cites {after['rival_parameter_names']}."
+        ),
+        "",
+        "The cue sentence is unchanged. The quadratic and cubic directions already cited their own named coefficients, with the ordered array and `order_support` on `math_roots_polynomial`. Those directions were checked and their cited values were left in place.",
+        "",
+        f"Cue text changes: {len(report['cue_text_changes'])}. Cues whose cited values were already on the owning tool: {report['cues_with_no_value_change']}.",
+        "",
+        "`multiple_12` remains uncued. No rule was added for return on equity versus return on assets. That missed contrast stays a recorded limitation.",
+    ]
+
+
 def _comparison_markdown(packet: dict) -> str:
     lines = [
         "# S2 / X2 / SX2 comparison",
@@ -1148,6 +1467,10 @@ def _comparison_markdown(packet: dict) -> str:
         "The request count serializes `{model: UNSELECTED, temperature: 0.001, store: false, tools}` and omits messages because this packet does not load questions. `cl100k_base` is not used to choose an edit.",
         "",
         "Gold-linked rival check: not run. It would be a scoring diagnostic after this freeze, and gold is not an editing input.",
+        "",
+        *_edit_split_lines(packet),
+        "",
+        *_ownership_lines(packet),
         "",
         "## Fixtures",
         "",
@@ -1182,7 +1505,20 @@ def _comparison_markdown(packet: dict) -> str:
         lines.append(_markdown_ratio(scope["tools"]))
         lines.extend(["", "Cases", ""])
         lines.append(_markdown_ratio(scope["case_status"]))
-        lines.extend(["", "Cues", ""])
+        split = scope["adopted_edit_split"]
+        lines.extend([
+            "",
+            (
+                f"Adopted-field tokens in this scope, o200k_base: suffix-only "
+                f"{split['suffix_only_field_tokens_o200k']} of {split['saved_field_tokens_o200k']} "
+                f"({split['suffix_only_share_of_saved_field_tokens']}); "
+                f"other adopted {split['other_field_tokens_o200k']}. "
+                f"Changed cases whose edits are all suffix-only: {split['cases_suffix_only']} of "
+                f"{split['cases_with_an_adopted_field']}."
+            ),
+            "",
+        ])
+        lines.extend(["Cues", ""])
         lines.append(_markdown_ratio(scope["cues"]))
         lines.extend(["", _markdown_deltas("Field tokens, o200k_base", scope["field_tokens_o200k_base"]), ""])
         lines.extend([_markdown_deltas("Whole request tokens without messages, o200k_base", scope["request_tokens_o200k_base_without_messages"]), ""])
@@ -1298,6 +1634,8 @@ def _files(packet: dict) -> dict[str, str]:
         "checks/mock-network-denial.json": _json_text(packet["mock"]),
         "checks/field-tokens.jsonl": _jsonl(packet["field_token_rows"]),
         "checks/request-tokens.jsonl": _jsonl(packet["request_token_rows"]),
+        "checks/evidence-ownership.json": _json_text(packet["evidence_ownership"]),
+        "checks/s2-edit-split.json": _json_text(packet["s2_edit_split"]),
     }
     for case in packet["cases"]:
         case_id = case["case_id"]
@@ -1345,8 +1683,13 @@ def _assemble() -> dict:
     controls = [case for case in cases if case["control"]]
     if len(controls) != 640 or any(case["cued_tools"] for case in controls):
         raise AmendmentFailure("single-tool controls did not stay at 640 with zero cues")
-    if any(case["fields_cosmetic"] for case in cases):
-        raise AmendmentFailure("a cosmetic edit was adopted")
+    cue_records = _cue_records(cases)
+    cue_sha = _cue_sha(cue_records)
+    if len(cue_records) != 30 or cue_sha != CUE_TEXT_SHA256:
+        raise AmendmentFailure(
+            f"cue text changed ({len(cue_records)} cues, {cue_sha}). "
+            "Report the sentence change before moving the pin. No coverage rule was added for this repair."
+        )
     mock = _mock_child()
     mock["editor_ran_with_socket_construction_denied"] = True
     scopes = {
@@ -1357,6 +1700,20 @@ def _assemble() -> dict:
         "formative_12": _scope([case for case in cases if case["exposed"]]),
         "excluding_formative_12": _scope([case for case in cases if not case["exposed"]]),
     }
+    headline = scopes["all_840"]["adopted_edit_split"]
+    actual_split = {key: headline[key] for key in REPRODUCED_S2_SPLIT}
+    if actual_split != REPRODUCED_S2_SPLIT:
+        raise AmendmentFailure(
+            "S2 split recount differs from the audited #13 figures. "
+            "Report the recount; do not add a rule to force the old numbers. "
+            + json.dumps(actual_split, sort_keys=True)
+        )
+    field_delta = scopes["all_840"]["field_tokens_o200k_base"]["signed_deltas"]["S2-U"]
+    if field_delta != -headline["saved_field_tokens_o200k"]:
+        raise AmendmentFailure("adopted field-token savings do not equal the S2-U field-token delta")
+    if headline["suffix_only_fields"] + headline["other_adopted_fields"] != headline["adopted_fields"]:
+        raise AmendmentFailure("suffix-only and other adopted fields do not add up to adopted fields")
+    evidence_ownership = _evidence_ownership_report(cases, cue_sha)
     formative_rows = _formative_sheet(by_id, formative)
     counterexamples = _counterexamples(by_id)
     packet = {
@@ -1382,6 +1739,9 @@ def _assemble() -> dict:
             "control_examples": ["simple_python_0", "irrelevance_0"],
             "control_comparison": "tool list and request envelope bytes; wrapper condition labels may differ",
             "gold_linked_rival_check": {"ran": False, "reason": "Scoring-only diagnostic. Gold is not loaded."},
+            "evidence_ownership": "pass",
+            "cue_text_changed": False,
+            "multiple_12_cued": False,
         },
         "invariants": {
             "passed": True,
@@ -1428,7 +1788,18 @@ def _assemble() -> dict:
         "cued_case_ids": [case["case_id"] for case in cases if case["cued_tools"]],
         "cue_exceeds_field_savings": [case["case_id"] for case in cases if case["field_cue_class"] == "cue_exceeds_savings"],
         "cue_exceeds_request_savings": [case["case_id"] for case in cases if case["request_cue_class"] == "cue_exceeds_savings"],
+        "s2_edit_split": {
+            "label": headline["label"],
+            "all_840": headline,
+        },
+        "evidence_ownership_value_fixes": [item["occurrence_id"] for item in evidence_ownership["value_fixes"]],
     }
+    packet["s2_edit_split"] = {
+        "label": headline["label"],
+        "all_840": headline,
+        "by_scope": {name: scope["adopted_edit_split"] for name, scope in scopes.items()},
+    }
+    packet["evidence_ownership"] = evidence_ownership
     packet["comparison_markdown"] = _comparison_markdown(packet)
     return packet
 

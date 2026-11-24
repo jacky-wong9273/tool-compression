@@ -15,6 +15,19 @@ from tool_compression.adapter import description_slots
 
 FLOAT_SUFFIX = " This is a float type value."
 KEEP_REASONS = ("already_minimal", "ambiguous_source", "no_shorter_faithful_candidate")
+
+
+def suffix_only_float_removal(original: str, final: str) -> bool:
+    """The adopted field drops only the converter float sentence from the end.
+
+    This describes the text change. It is not a meaningful or cosmetic label.
+    """
+    return (
+        isinstance(original, str)
+        and isinstance(final, str)
+        and original.endswith(FLOAT_SUFFIX)
+        and final == original[: -len(FLOAT_SUFFIX)]
+    )
 _STOP = {
     "a", "an", "the", "of", "to", "for", "and", "or", "in", "on", "with", "from", "by",
     "into", "over", "under", "between", "across", "at", "as", "if", "is", "are", "be",
@@ -207,8 +220,6 @@ def _row(tool, pointer, original, candidate, final, adopted, reason, detail, fac
         "conflict": conflict,
         "nontrivial": nontrivial or adopted,
         "rejected_candidates": rejected_texts,
-        "meaningful": bool(adopted and change_class),
-        "cosmetic": False,
     }
 
 
