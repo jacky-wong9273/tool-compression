@@ -168,23 +168,28 @@ def test_rate_card_is_offpeak_flash_and_worst_case_uses_it():
         accept_run_ceiling(80.0)  # type: ignore[arg-type]
 
 
-def test_runner_source_does_not_name_a_key_or_a_provider_client():
+def test_runner_source_does_not_read_a_key_or_open_a_socket():
     text = MODULE.read_text(encoding="utf-8")
     for banned in (
         "DEEPSEEK_API_KEY",
         "OPENAI_API_KEY",
         "urlopen",
-        "build_live_client",
         "import tool_compression.official_840_provider",
         "from tool_compression.official_840_provider",
         "import tool_compression.usx_provider",
         "from tool_compression.usx_provider",
         "execute_plans",
         "api.deepseek.com",
+        "getenv",
     ):
         assert banned not in text
-    cli = MODULE.read_text(encoding="utf-8").split("def main(", 1)[1]
-    for banned in ("DEEPSEEK_API_KEY", "urlopen", "build_live_client", "os.environ"):
+    assert text.count("build_live_client") == 1
+    before_sender, sender_and_after = text.split("# Request-by-request sender.", 1)
+    assert "def _official_provider_client" in before_sender
+    assert "build_live_client" in before_sender
+    sender, cli = sender_and_after.split("\ndef main(", 1)
+    assert "build_live_client" not in sender
+    for banned in ("DEEPSEEK_API_KEY", "urlopen", "build_live_client", "os.environ", "getenv"):
         assert banned not in cli
 
 
@@ -198,6 +203,7 @@ def test_live_flag_refuses_without_a_provider_call(monkeypatch, capsys, tmp_path
         raise AssertionError("socket opened")
 
     monkeypatch.setattr(socket, "create_connection", deny)
+    monkeypatch.setattr(socket.socket, "connect", deny)
     monkeypatch.setattr(urllib.request, "urlopen", deny)
     with pytest.raises(AmendmentFlightRefused, match="does not authorize a flight"):
         refuse_provider_call()
@@ -505,6 +511,7 @@ def test_official_sample_refuses_when_underfunded_and_when_the_cap_would_fund_it
         raise AssertionError("socket opened")
 
     monkeypatch.setattr(socket, "create_connection", deny)
+    monkeypatch.setattr(socket.socket, "connect", deny)
     monkeypatch.setattr(urllib.request, "urlopen", deny)
     under = Scripted()
     with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):

@@ -21,11 +21,12 @@ What this runner does:
 - after a timeout, or any call whose charge is unknown, holds that call's
   worst case and will not send further calls unless the ceiling still covers
   the hold plus the remaining-run worst case; a resume reloads the hold
-- does not read an API key and does not open a provider socket
+- does not read an API key and does not open a provider socket on the offline gate
 
 Run the offline gate with ``python -m tool_compression.amendment_s2x2_flight``.
-``--live`` is refused before a plan is built. The frozen ``amendment-s2x2``
-command is left unchanged so its packet hash stays the catalogue revision.
+``--live`` alone is refused before a plan is built. The authorized command is
+``--live --authorize-official-live``. The frozen ``amendment-s2x2`` command is
+left unchanged so its packet hash stays the catalogue revision.
 
 8192 is the next power of two above the #12 840-case ledger maximum of 7063
 output tokens (p99 1010; three calls above 2048). It is a wire limit, not a
@@ -45,9 +46,10 @@ that same attempt is noted. Another try is a separate attempt and is counted
 too. The hard ceiling is ¥80.00 across both passes. Reaching it stops further
 sends and writes ``ceiling-notice.json``. About ¥10 is a comfortable
 expectation, not a stop. The sender does not reserve the next request and
-does not stop early on a remaining-run worst case. ``--live`` still returns
-before a plan is built. This module does not read a provider key and does not
-open a provider socket. Official live dispatch stays refused.
+does not stop early on a remaining-run worst case. ``--live`` alone returns
+before a plan is built and does not read a key. ``--live
+--authorize-official-live`` builds the frozen plan and uses the provider
+client. Official settlement stays false. Human review was not performed.
 """
 
 from __future__ import annotations
@@ -1166,6 +1168,21 @@ def preflight(bfcl_root: Path, out: Path, clock, repo: Path | None = None) -> di
     return gate
 
 
+def _is_official_provider_client(client) -> bool:
+    """True only for the official 840 provider client. A test double stays false."""
+    return type(client).__module__ == "tool_compression.official_840_provider"
+
+
+def _official_provider_client():
+    """Official provider client for the authorized live command.
+
+    Called only when that command is selected.
+    """
+    import tool_compression.official_840 as official_runner
+
+    return official_runner.build_live_client()
+
+
 # Request-by-request sender.
 # Spend is recorded after a request completes. Nothing here reserves the next
 # request or stops early because a remaining-run worst case would not fit.
@@ -1257,7 +1274,7 @@ def load_attempts(out: Path) -> list[dict]:
     return rows
 
 
-def _recorded_frozen(out: Path) -> bool | None:
+def _load_sender_status(out: Path) -> dict | None:
     path = _sender_status_path(out)
     if not path.is_file():
         return None
@@ -1265,9 +1282,49 @@ def _recorded_frozen(out: Path) -> bool | None:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         raise AmendmentFlightRefused("sender status is corrupt") from exc
-    if not isinstance(payload, dict) or not isinstance(payload.get("frozen_official"), bool):
+    if not isinstance(payload, dict):
+        raise AmendmentFlightRefused("sender status is corrupt")
+    return payload
+
+
+def _recorded_frozen(out: Path) -> bool | None:
+    payload = _load_sender_status(out)
+    if payload is None:
+        return None
+    if not isinstance(payload.get("frozen_official"), bool):
         raise AmendmentFlightRefused("sender status is corrupt")
     return payload["frozen_official"]
+
+
+def _recorded_authorized(out: Path) -> bool | None:
+    """Authorization recorded for this output directory.
+
+    A status written before this flag existed counts as not authorized.
+    A status whose dispatch fields disagree is corrupt and is not treated as zero.
+    """
+    payload = _load_sender_status(out)
+    if payload is None:
+        return None
+    allowed = payload.get("provider_call_authorized")
+    if not isinstance(allowed, bool):
+        raise AmendmentFlightRefused("sender status is corrupt")
+    if "authorized_official_live" not in payload:
+        if allowed is False:
+            return False
+        raise AmendmentFlightRefused("sender status is corrupt")
+    authorized = payload.get("authorized_official_live")
+    if not isinstance(authorized, bool) or authorized is not allowed:
+        raise AmendmentFlightRefused("sender status is corrupt")
+    expected = "authorized" if authorized else "refused"
+    if payload.get("live_dispatch") != expected:
+        raise AmendmentFlightRefused("sender status is corrupt")
+    return authorized
+
+
+def _require_explicit_authorization(value) -> bool:
+    if value is True or value is False:
+        return value
+    raise AmendmentFlightRefused("official live authorization must be explicit")
 
 
 def _attempt_evidence(body: dict, schedule: str) -> Decimal:
@@ -1296,7 +1353,14 @@ def _confirmed_charge(payload, schedule: str) -> tuple[dict | None, Decimal | No
     return bill, amount
 
 
-def _sender_status(plans: list[dict], rows: list[dict], frozen_official: bool) -> dict:
+def _sender_status(
+    plans: list[dict],
+    rows: list[dict],
+    frozen_official: bool,
+    *,
+    authorize_official_live: bool = False,
+) -> dict:
+    authorize_official_live = _require_explicit_authorization(authorize_official_live)
     slots = wire_slots(plans)
     latest = _latest_by_attempt(rows)
     confirmed_rows = [row for row in latest.values() if row["charge"] == "confirmed"]
@@ -1318,6 +1382,8 @@ def _sender_status(plans: list[dict], rows: list[dict], frozen_official: bool) -
     notice = None
     if ceiling:
         notice = CEILING_NOTICE_TEXT if full else f"{CEILING_NOTICE_TEXT} This run is not the full 840."
+    provider_called = any(row.get("provider_called") is True for row in latest.values())
+    provider_network = any(row.get("provider_network") is True for row in latest.values())
     return {
         "purpose": SENDER_PURPOSE,
         "catalogue_tip": CATALOGUE_TIP,
@@ -1348,19 +1414,32 @@ def _sender_status(plans: list[dict], rows: list[dict], frozen_official: bool) -
         "human_review": HUMAN_REVIEW,
         "flight_ready": False,
         "paid_flight_ready": False,
-        "provider_call_authorized": False,
-        "provider_called": False,
-        "provider_network": False,
+        "authorized_official_live": authorize_official_live,
+        "provider_call_authorized": authorize_official_live,
+        "provider_called": provider_called,
+        "provider_network": provider_network,
         "api_key_in_record": False,
-        "live_dispatch": "refused",
+        "live_dispatch": "authorized" if authorize_official_live else "refused",
         "max_tokens": MAX_TOKENS,
         "thinking_passes": list(PASSES),
         "model": MODEL,
     }
 
 
-def _publish_sender(out: Path, plans: list[dict], rows: list[dict], frozen_official: bool) -> dict:
-    status = _sender_status(plans, rows, frozen_official)
+def _publish_sender(
+    out: Path,
+    plans: list[dict],
+    rows: list[dict],
+    frozen_official: bool,
+    *,
+    authorize_official_live: bool = False,
+) -> dict:
+    status = _sender_status(
+        plans,
+        rows,
+        frozen_official,
+        authorize_official_live=authorize_official_live,
+    )
     _atomic_json(_sender_status_path(out), status)
     notice_path = _ceiling_notice_path(out)
     if status["hard_ceiling_reached"]:
@@ -1380,9 +1459,11 @@ def _publish_sender(out: Path, plans: list[dict], rows: list[dict], frozen_offic
                 "official_settlement": False,
                 "official_v1_1": OFFICIAL_V11,
                 "human_review": HUMAN_REVIEW,
-                "provider_called": False,
-                "provider_call_authorized": False,
-                "live_dispatch": "refused",
+                "authorized_official_live": status["authorized_official_live"],
+                "provider_called": status["provider_called"],
+                "provider_network": status["provider_network"],
+                "provider_call_authorized": status["provider_call_authorized"],
+                "live_dispatch": status["live_dispatch"],
             },
         )
     elif notice_path.is_file():
@@ -1390,10 +1471,12 @@ def _publish_sender(out: Path, plans: list[dict], rows: list[dict], frozen_offic
     return status
 
 
-def _require_sender_client(client) -> None:
+def _require_sender_client(client, *, authorize_official_live: bool = False) -> None:
+    authorize_official_live = _require_explicit_authorization(authorize_official_live)
     if client is None or not callable(getattr(client, "complete", None)):
         raise AmendmentFlightRefused(LIVE_STOP)
-    _refuse_live_client(client)
+    if authorize_official_live is not True:
+        _refuse_live_client(client)
 
 
 def _check_wire_body(slot: dict) -> dict:
@@ -1418,7 +1501,11 @@ def _attempt_row(
     schedule: str,
     moment,
     reason: str,
+    *,
+    provider: bool = False,
 ) -> dict:
+    if provider is not True and provider is not False:
+        raise AmendmentFlightRefused("provider marker must be explicit")
     return {
         "kind": "attempt",
         "attempt_id": f"{slot['slot_id']}#{index}",
@@ -1433,8 +1520,8 @@ def _attempt_row(
         "schedule": schedule,
         "clock": moment.isoformat(),
         "reason": reason,
-        "provider_called": False,
-        "provider_network": False,
+        "provider_called": provider,
+        "provider_network": provider,
     }
 
 
@@ -1464,6 +1551,8 @@ def note_confirmed_charge(
     recorded = _recorded_frozen(out)
     if recorded is not None and recorded is not frozen_official:
         raise AmendmentFlightRefused("sender record does not match this plan")
+    recorded_auth = _recorded_authorized(out)
+    authorize_official_live = False if recorded_auth is None else recorded_auth
     rows = load_attempts(out)
     prior = _latest_by_attempt(rows).get(attempt_id)
     if prior is None:
@@ -1471,7 +1560,14 @@ def note_confirmed_charge(
     if prior["charge"] == "confirmed":
         if Decimal(prior["spend_cny"]) != spend:
             raise AmendmentFlightRefused("confirmed charge already recorded")
-        return _publish_sender(out, plans, rows, frozen_official)
+        return _publish_sender(
+            out,
+            plans,
+            rows,
+            frozen_official,
+            authorize_official_live=authorize_official_live,
+        )
+    kept_provider = prior.get("provider_called") is True
     row = {
         "kind": "settlement",
         "attempt_id": attempt_id,
@@ -1486,22 +1582,38 @@ def note_confirmed_charge(
         "schedule": prior.get("schedule"),
         "clock": prior.get("clock"),
         "reason": "confirmed charge noted",
-        "provider_called": False,
-        "provider_network": False,
+        "provider_called": kept_provider,
+        "provider_network": prior.get("provider_network") is True,
     }
     rows.append(row)
     _append_ledger(_attempt_ledger_path(out), row)
-    return _publish_sender(out, plans, rows, frozen_official)
+    return _publish_sender(
+        out,
+        plans,
+        rows,
+        frozen_official,
+        authorize_official_live=authorize_official_live,
+    )
 
 
-def send_evaluation(plans: list[dict], out: Path, client, clock, *, frozen_official: bool = False) -> dict:
+def send_evaluation(
+    plans: list[dict],
+    out: Path,
+    client,
+    clock,
+    *,
+    frozen_official: bool = False,
+    authorize_official_live: bool = False,
+) -> dict:
     """Send plan slots one request at a time and record each charge after it completes.
 
     The hard ceiling is ¥80.00 of recorded spend across both thinking passes.
     About ¥10 is reported as a comfortable expectation and does not stop the
-    run. A partial run is not labeled as the full 840.
+    run. A partial run is not labeled as the full 840. A provider client is
+    refused unless ``authorize_official_live`` is true.
     """
-    _require_sender_client(client)
+    authorize_official_live = _require_explicit_authorization(authorize_official_live)
+    _require_sender_client(client, authorize_official_live=authorize_official_live)
     if not plans:
         raise AmendmentFlightRefused("no plans")
     _assert_passes_distinct(plans)
@@ -1510,6 +1622,9 @@ def send_evaluation(plans: list[dict], out: Path, client, clock, *, frozen_offic
     recorded = _recorded_frozen(out)
     if recorded is not None and recorded is not frozen_official:
         raise AmendmentFlightRefused("sender record does not match this plan")
+    recorded_auth = _recorded_authorized(out)
+    if recorded_auth is not None and recorded_auth is not authorize_official_live:
+        raise AmendmentFlightRefused("sender record does not match this authorization")
     slots = wire_slots(plans)
     rows = load_attempts(out)
     plan_ids = {slot["slot_id"] for slot in slots}
@@ -1526,6 +1641,7 @@ def send_evaluation(plans: list[dict], out: Path, client, clock, *, frozen_offic
         if row["kind"] == "attempt":
             counts[row["slot_id"]] = counts.get(row["slot_id"], 0) + 1
     total = _attempt_total(rows)
+    provider_attempt = _is_official_provider_client(client)
     status = None
     try:
         for slot in slots:
@@ -1544,50 +1660,93 @@ def send_evaluation(plans: list[dict], out: Path, client, clock, *, frozen_offic
             except Exception as exc:
                 spend = _attempt_evidence(body, schedule)
                 reason = "timeout" if _is_timeout(exc) else "unresolved"
-                row = _attempt_row(slot, index, "unresolved", spend, False, schedule, moment, reason)
+                row = _attempt_row(
+                    slot, index, "unresolved", spend, False, schedule, moment, reason, provider=provider_attempt
+                )
                 usable = False
             else:
                 bill, spend = _confirmed_charge(payload, schedule)
                 if spend is None:
                     spend = _attempt_evidence(body, schedule)
-                    row = _attempt_row(slot, index, "unresolved", spend, False, schedule, moment, "unresolved")
+                    row = _attempt_row(
+                        slot, index, "unresolved", spend, False, schedule, moment, "unresolved", provider=provider_attempt
+                    )
                     usable = False
                 else:
                     usable = _acceptable(slot, payload, bill)
-                    row = _attempt_row(slot, index, "confirmed", spend, usable, schedule, moment, "confirmed")
+                    row = _attempt_row(
+                        slot, index, "confirmed", spend, usable, schedule, moment, "confirmed", provider=provider_attempt
+                    )
             rows.append(row)
             _append_ledger(_attempt_ledger_path(out), row)
             counts[slot["slot_id"]] = index
             total = _attempt_total(rows)
             if usable:
                 done.add(slot["slot_id"])
-            status = _publish_sender(out, plans, rows, frozen_official)
+            status = _publish_sender(
+                out, plans, rows, frozen_official, authorize_official_live=authorize_official_live
+            )
     finally:
-        status = _publish_sender(out, plans, rows, frozen_official)
+        status = _publish_sender(
+            out, plans, rows, frozen_official, authorize_official_live=authorize_official_live
+        )
     return status
 
 
-def send_frozen_plan(bfcl_root: Path, out: Path, client, clock, repo: Path | None = None) -> dict:
+def send_frozen_plan(
+    bfcl_root: Path,
+    out: Path,
+    client,
+    clock,
+    repo: Path | None = None,
+    *,
+    authorize_official_live: bool = False,
+) -> dict:
     """Send the frozen 840-case U/S2/X2/SX2 plan from catalogue tip 96795322.
 
-    The caller supplies the client. A provider client is refused before the
-    plan is built. This does not read a provider key.
+    The caller supplies the client. Unless ``authorize_official_live`` is
+    true, a provider client is refused before the plan is built. This
+    function does not read a key.
     """
-    _require_sender_client(client)
+    authorize_official_live = _require_explicit_authorization(authorize_official_live)
+    _require_sender_client(client, authorize_official_live=authorize_official_live)
     flight = build_flight(bfcl_root, repo)
     if flight.get("catalogue_tip") != CATALOGUE_TIP:
         raise AmendmentFlightRefused("catalogue tip is not the frozen 96795322 catalogues")
-    return send_evaluation(flight["plans"], out, client, clock, frozen_official=True)
+    return send_evaluation(
+        flight["plans"],
+        out,
+        client,
+        clock,
+        frozen_official=True,
+        authorize_official_live=authorize_official_live,
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Offline gate. ``--live`` is refused and does not read a key or open a socket."""
+    """Offline gate, unless official live dispatch is explicitly authorized.
+
+    ``--live`` alone is refused and does not read a key or open a socket.
+    ``--live --authorize-official-live`` builds the frozen plan and sends it.
+    """
     parser = argparse.ArgumentParser(prog="tool_compression.amendment_s2x2_flight")
     parser.add_argument("--bfcl-root", type=Path)
     parser.add_argument("--out", type=Path)
-    parser.add_argument("--live", action="store_true")
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Refused unless --authorize-official-live is also set.",
+    )
+    parser.add_argument(
+        "--authorize-official-live",
+        action="store_true",
+        help="With --live, build the frozen 840-case plan and send it with the provider client.",
+    )
     args = parser.parse_args(argv)
-    if args.live:
+    if args.authorize_official_live and not args.live:
+        print("authorized official live dispatch requires --live")
+        return 2
+    if args.live and not args.authorize_official_live:
         try:
             refuse_provider_call()
         except AmendmentFlightRefused as exc:
@@ -1599,6 +1758,47 @@ def main(argv: list[str] | None = None) -> int:
 
     def clock():
         return datetime.now(SHANGHAI)
+
+    if args.live:
+        try:
+            client = _official_provider_client()
+            status = send_frozen_plan(
+                args.bfcl_root,
+                args.out,
+                client,
+                clock,
+                authorize_official_live=True,
+            )
+        except UsxFlightRefused as exc:
+            print(str(exc))
+            return 1
+        print(
+            json.dumps(
+                {
+                    "authorized_official_live": status["authorized_official_live"],
+                    "provider_call_authorized": status["provider_call_authorized"],
+                    "provider_called": status["provider_called"],
+                    "provider_network": status["provider_network"],
+                    "live_dispatch": status["live_dispatch"],
+                    "full_840_labeled": status["full_840_labeled"],
+                    "labeled_case_count": status["labeled_case_count"],
+                    "spend_cny": status["spend_cny"],
+                    "hard_ceiling_reached": status["hard_ceiling_reached"],
+                    "further_sends_stopped": status["further_sends_stopped"],
+                    "slots_usable": status["slots_usable"],
+                    "slots_planned": status["slots_planned"],
+                    "official_settlement": status["official_settlement"],
+                    "official_v1_1": status["official_v1_1"],
+                    "human_review": status["human_review"],
+                    "catalogue_tip": status["catalogue_tip"],
+                    "operator_notice": status["operator_notice"],
+                },
+                sort_keys=True,
+            )
+        )
+        if status["full_840_labeled"]:
+            return 0
+        return 1
 
     try:
         gate = preflight(args.bfcl_root, args.out, clock)
