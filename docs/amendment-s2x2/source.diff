@@ -1,7 +1,7 @@
 # Offline amendment source diff against 62bab379f0dae60599378162f2322f03be5d56f9
 --- a/src/tool_compression/__main__.py
 +++ b/src/tool_compression/__main__.py
-@@ -73,6 +73,11 @@
+@@ -73,6 +73,16 @@
      official.add_argument("--out", required=True, type=Path)
      official.add_argument("--no-api", action="store_true")
      official.add_argument("--live", action="store_true")
@@ -10,16 +10,37 @@
 +    mode = amendment.add_mutually_exclusive_group(required=True)
 +    mode.add_argument("--check", action="store_true")
 +    mode.add_argument("--freeze", action="store_true")
++
++    child = sub.add_parser("child-revision")
++    child_mode = child.add_mutually_exclusive_group(required=True)
++    child_mode.add_argument("--check", action="store_true")
++    child_mode.add_argument("--freeze", action="store_true")
  
      args = parser.parse_args(argv)
      if args.command == "characterize":
-@@ -93,7 +98,22 @@
+@@ -93,7 +103,38 @@
          return _usx_flight(args)
      if args.command == "usx-840":
          return _usx_840(args)
 +    if args.command == "amendment-s2x2":
 +        return _amendment_s2x2(args)
++    if args.command == "child-revision":
++        return _child_revision(args)
      return 2
++
++
++def _child_revision(args) -> int:
++    """Offline blinded-packet check. This command has no live path and no API key."""
++    from tool_compression.amendment_bundle import AmendmentFailure
++    from tool_compression.child_revision import ChildRevisionFailure, check, freeze
++
++    try:
++        result = freeze() if args.freeze else check()
++    except (ChildRevisionFailure, AmendmentFailure) as exc:
++        print(exc)
++        return 1
++    print(json.dumps(result))
++    return 0
 +
 +
 +def _amendment_s2x2(args) -> int:
