@@ -173,9 +173,12 @@ def _pin_tokenizer_cache() -> None:
 
 @contextmanager
 def _network_denied():
+    # Load these before replacing socket.socket. ssl.SSLSocket subclasses it
+    # at import time. Do not delete the http.client attribute: later tests
+    # still use that module.
     import http.client
     import ssl
-    del http.client, ssl
+    del http, ssl
     original_socket = socket.socket
     original_create = socket.create_connection
 
@@ -910,23 +913,23 @@ def _ledger_x2(row: dict) -> dict:
 
 def _source_diff(root: Path) -> str:
     parts = [f"# Offline amendment source diff against {BASE_COMMIT}\n"]
-    tracked = root / "src" / "tool_compression" / "__main__.py"
-    shown = subprocess.run(
-        ["git", "show", f"{BASE_COMMIT}:src/tool_compression/__main__.py"],
-        cwd=root,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if shown.returncode != 0:
-        raise AmendmentFailure("could not read the base __main__.py for the revision diff")
-    parts.append(_unified(shown.stdout, tracked.read_text(encoding="utf-8"), f"a/src/tool_compression/__main__.py", f"b/src/tool_compression/__main__.py"))
+    base_main = root / "src" / "tool_compression" / "revision_pins" / "__main__.py.at-62bab379"
+    current_main = root / "src" / "tool_compression" / "__main__.py"
+    if not base_main.is_file():
+        raise AmendmentFailure("the pinned base __main__.py is missing")
+    parts.append(_unified(
+        base_main.read_text(encoding="utf-8"),
+        current_main.read_text(encoding="utf-8"),
+        "a/src/tool_compression/__main__.py",
+        "b/src/tool_compression/__main__.py",
+    ))
     for relative in (
         "src/tool_compression/amendment_s2.py",
         "src/tool_compression/amendment_x2.py",
         "src/tool_compression/amendment_bundle.py",
         "tests/test_amendment_s2x2.py",
         "src/tool_compression/tiktoken_cache/README.md",
+        "src/tool_compression/revision_pins/__main__.py.at-62bab379",
     ):
         text = (root / relative).read_text(encoding="utf-8")
         parts.append(_unified("", text, "/dev/null", f"b/{relative}"))
@@ -975,6 +978,7 @@ def _revision(root: Path, budget: TiktokenCounter, sensitivity: TiktokenCounter)
             "src/tool_compression/amendment_x2.py": pin("src/tool_compression/amendment_x2.py"),
             "src/tool_compression/amendment_bundle.py": pin("src/tool_compression/amendment_bundle.py"),
             "src/tool_compression/__main__.py": pin("src/tool_compression/__main__.py"),
+            "src/tool_compression/revision_pins/__main__.py.at-62bab379": pin("src/tool_compression/revision_pins/__main__.py.at-62bab379"),
             "tests/test_amendment_s2x2.py": pin("tests/test_amendment_s2x2.py"),
             "src/tool_compression/tiktoken_cache/README.md": pin("src/tool_compression/tiktoken_cache/README.md"),
             "src/tool_compression/tiktoken_cache/fb374d419588a4632f3f557e76b4b70aebbca790": TOKENIZER_CACHE["o200k_base"]["sha256"],
