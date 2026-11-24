@@ -1,11 +1,12 @@
 """Offline checks for the U/S2/X2/SX2 runner. No provider call and no API key."""
 
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, ROUND_CEILING
 from pathlib import Path
 import json
 import socket
 import subprocess
+import threading
 import urllib.request
 
 import pytest
@@ -30,12 +31,13 @@ from tool_compression.amendment_s2x2_flight import (
     refuse_provider_call,
     summarize_flight,
     wire_body,
+    wire_manifest,
     wire_slots,
     worst_case_cny,
 )
 from tool_compression.count import dump_request
 from tool_compression.official_840 import generation_body as official_generation_body
-from tool_compression.usx_flight import SHANGHAI, rate_card, schedule_at, spend_cny
+from tool_compression.usx_flight import SHANGHAI, rate_card, request_sha256, schedule_at, spend_cny
 
 ROOT = Path(__file__).resolve().parents[1]
 PIN = Path("/tmp/bfcl-pin")
@@ -137,6 +139,48 @@ class TimeoutThen:
 
 def _read(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _deny_network(monkeypatch) -> None:
+    def deny(*_args, **_kwargs):
+        raise AssertionError("socket opened")
+
+    monkeypatch.setattr(socket, "create_connection", deny)
+    monkeypatch.setattr(socket.socket, "connect", deny)
+    monkeypatch.setattr(urllib.request, "urlopen", deny)
+
+
+def _install_manifest(out: Path, plans: list[dict]) -> None:
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "wire-manifest.json").write_text(
+        json.dumps(wire_manifest(plans), indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _usage(prompt: int, output: int = 4) -> dict:
+    return {
+        "choices": [{"message": {"role": "assistant", "content": "ok"}}],
+        "usage": {
+            "prompt_tokens": prompt,
+            "completion_tokens": output,
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": prompt,
+        },
+    }
+
+
+class _HoldClient:
+    def __init__(self):
+        self.started = threading.Event()
+        self.release = threading.Event()
+        self.bodies = []
+
+    def complete(self, body):
+        self.bodies.append(body)
+        self.started.set()
+        assert self.release.wait(10)
+        return _usage(10)
 
 
 def test_schedule_examples_match_the_offpeak_rule():
@@ -262,6 +306,7 @@ def test_in_flight_hold_is_reloaded_and_blocks_a_resume(tmp_path):
     slots, total = _slot_total(plans)
     out = tmp_path / "crash"
     out.mkdir()
+    _install_manifest(out, plans)
     amount = worst_case_cny(slots[0]["body"])
     (out / "cap-hold.json").write_text(
         json.dumps(
@@ -297,6 +342,7 @@ def test_settled_spend_is_reloaded_and_not_forgotten(tmp_path):
     slots, total = _slot_total(plans)
     out = tmp_path / "settled"
     out.mkdir()
+    _install_manifest(out, plans)
     row = {"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "1.00"}}
     (out / "calls-ledger.jsonl").write_text(json.dumps(row) + "\n", encoding="utf-8")
     client = Scripted()
@@ -308,6 +354,368 @@ def test_settled_spend_is_reloaded_and_not_forgotten(tmp_path):
     assert stop["calls_already_settled"] == 1
     assert stop["complete"] is False
     assert not (out / "live.json").exists()
+
+
+def test_resume_refuses_a_missing_ledger_instead_of_zeroing_spend(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    _, total = _slot_total(plans)
+    out = tmp_path / "missing-ledger"
+    _install_manifest(out, plans)
+    hold = {
+        "settled_spend_cny": "1.00",
+        "outstanding_unknown_timeout_cny": "0",
+        "timeout_events": [],
+        "pending_call": None,
+    }
+    (out / "cap-hold.json").write_text(json.dumps(hold), encoding="utf-8")
+    client = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="calls ledger is missing"):
+        execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert not (out / "live.json").exists()
+    assert _read(out / "cap-hold.json")["settled_spend_cny"] == "1.00"
+
+    bare = tmp_path / "missing-ledger-and-manifest"
+    bare.mkdir()
+    (bare / "cap-hold.json").write_text(json.dumps(hold), encoding="utf-8")
+    with pytest.raises(AmendmentFlightRefused, match="calls ledger is missing"):
+        execute_scripted(plans, bare, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert _read(bare / "cap-hold.json")["settled_spend_cny"] == "1.00"
+    assert not (bare / "live.json").exists()
+    assert not (bare / "wire-manifest.json").exists()
+
+    claimed = tmp_path / "live-without-ledger"
+    _install_manifest(claimed, plans)
+    (claimed / "live.json").write_text(
+        json.dumps({"spend_cny": "0.50", "complete": True}),
+        encoding="utf-8",
+    )
+    with pytest.raises(AmendmentFlightRefused, match="calls ledger is missing"):
+        execute_scripted(plans, claimed, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert not (claimed / "live.json").exists()
+
+
+def test_resume_refuses_cap_state_above_the_ledger(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    out = tmp_path / "thinner-ledger"
+    _install_manifest(out, plans)
+    (out / "calls-ledger.jsonl").write_text(
+        json.dumps({"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "0.10"}}) + "\n",
+        encoding="utf-8",
+    )
+    (out / "cap-hold.json").write_text(
+        json.dumps({"settled_spend_cny": "1.00", "timeout_events": [], "pending_call": None}),
+        encoding="utf-8",
+    )
+    client = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="refusing to reset settled spend"):
+        execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert not (out / "live.json").exists()
+    assert _read(out / "cap-hold.json")["settled_spend_cny"] == "1.00"
+
+    counted = tmp_path / "short-count"
+    _install_manifest(counted, plans)
+    (counted / "calls-ledger.jsonl").write_text(
+        json.dumps({"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "0.10"}}) + "\n",
+        encoding="utf-8",
+    )
+    (counted / "cap-hold.json").write_text(
+        json.dumps({"settled_spend_cny": "0.10", "timeout_events": [], "pending_call": None}),
+        encoding="utf-8",
+    )
+    (counted / "stop.json").write_text(
+        json.dumps({"spend_cny": "0.10", "calls_already_settled": 2}),
+        encoding="utf-8",
+    )
+    before = (counted / "calls-ledger.jsonl").read_bytes()
+    with pytest.raises(AmendmentFlightRefused, match="refusing to reset settled spend"):
+        execute_scripted(plans, counted, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert (counted / "calls-ledger.jsonl").read_bytes() == before
+    assert not (counted / "live.json").exists()
+
+
+def test_torn_final_ledger_entry_is_not_dropped_or_appended(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    out = tmp_path / "torn"
+    _install_manifest(out, plans)
+    intact = json.dumps({"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "1.00"}})
+    (out / "calls-ledger.jsonl").write_text(intact + "\n" + "{\"slot_id\":\"torn\"", encoding="utf-8")
+    (out / "cap-hold.json").write_text(
+        json.dumps({"settled_spend_cny": "1.00", "timeout_events": [], "pending_call": None}),
+        encoding="utf-8",
+    )
+    before = (out / "calls-ledger.jsonl").read_bytes()
+    client = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="torn and cannot be repaired"):
+        execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert (out / "calls-ledger.jsonl").read_bytes() == before
+    assert _read(out / "cap-hold.json")["settled_spend_cny"] == "1.00"
+    assert not (out / "live.json").exists()
+
+
+def test_missing_newline_is_repaired_before_a_later_append(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    out = tmp_path / "newline"
+    _install_manifest(out, plans)
+    planted = json.dumps({"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "0.000001"}})
+    (out / "calls-ledger.jsonl").write_bytes(planted.encode("utf-8"))
+    client = Scripted()
+    record = execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert len(client.bodies) == 3
+    assert request_sha256(client.bodies[0]) == slots[1]["request_sha256"]
+    text = (out / "calls-ledger.jsonl").read_text(encoding="utf-8")
+    assert text.startswith(planted + "\n")
+    assert "}{" not in text
+    lines = text.splitlines()
+    assert len(lines) == 4
+    assert [json.loads(line)["slot_id"] for line in lines] == [slot["slot_id"] for slot in slots]
+    assert record["complete"] is True
+    assert record["provider_called"] is False
+    assert Decimal(record["spend_cny"]) >= Decimal("0.000001")
+
+
+def test_in_flight_ledger_line_is_kept_and_not_sent_again(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    out = tmp_path / "crash-after-append"
+    _install_manifest(out, plans)
+    (out / "calls-ledger.jsonl").write_text(
+        json.dumps({"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "0.010000"}}) + "\n",
+        encoding="utf-8",
+    )
+    (out / "cap-hold.json").write_text(
+        json.dumps(
+            {
+                "settled_spend_cny": "0",
+                "outstanding_unknown_timeout_cny": "0",
+                "timeout_events": [],
+                "pending_call": {
+                    "slot_id": slots[0]["slot_id"],
+                    "request_sha256": slots[0]["request_sha256"],
+                    "case_id": slots[0]["case_id"],
+                    "thinking": slots[0]["thinking"],
+                    "held_worst_case_cny": format(worst_case_cny(slots[0]["body"]), "f"),
+                    "clock": _offpeak().isoformat(),
+                    "reason": "in flight",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    client = Scripted()
+    record = execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert [request_sha256(body) for body in client.bodies] == [slot["request_sha256"] for slot in slots[1:]]
+    assert record["complete"] is True
+    assert record["provider_called"] is False
+    assert Decimal(record["outstanding_unknown_timeout_cny"]) == 0
+    assert Decimal(record["spend_cny"]) > Decimal("0.01")
+    assert not any(request_sha256(body) == slots[0]["request_sha256"] for body in client.bodies)
+
+
+def test_resume_is_bound_to_the_frozen_wire_manifest(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    out = tmp_path / "manifest"
+    with pytest.raises(AmendmentFlightRefused, match="unknown charge held"):
+        execute_scripted(plans, out, total, _offpeak, TimeoutThen(), dispatch=True)
+    manifest = out / "wire-manifest.json"
+    frozen = manifest.read_bytes()
+    stored = _read(manifest)
+    assert stored["entire_original_plan"] is True
+    assert stored["slot_count"] == len(slots) == 4
+    partial = _plans([("tiny_a", "a", _shared("alpha", "One short claim."))])
+    client = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="frozen wire manifest"):
+        execute_scripted(partial, out, total, _offpeak, client, dispatch=True)
+    changed = _plans(
+        [
+            ("tiny_a", "a different question", _shared("alpha", "One short claim.")),
+            ("tiny_b", "b", _shared("beta", "A different claim.")),
+        ]
+    )
+    with pytest.raises(AmendmentFlightRefused, match="frozen wire manifest"):
+        execute_scripted(changed, out, total, _offpeak, client, dispatch=True)
+    assert client.bodies == []
+    assert manifest.read_bytes() == frozen
+    assert not (out / "live.json").exists()
+    assert _read(out / "stop.json")["complete"] is False
+
+
+def test_second_operator_cannot_resume_the_same_run(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    _, total = _slot_total(plans)
+    out = tmp_path / "owner"
+    holder = _HoldClient()
+    errors = []
+
+    def run():
+        try:
+            execute_scripted(plans, out, total, _offpeak, holder, dispatch=True)
+        except Exception as exc:
+            errors.append(exc)
+
+    thread = threading.Thread(target=run)
+    thread.start()
+    try:
+        assert holder.started.wait(10)
+        second = Scripted()
+        with pytest.raises(AmendmentFlightRefused, match="another operator"):
+            execute_scripted(plans, out, total, _offpeak, second, dispatch=True)
+        assert second.bodies == []
+        assert not (out / "live.json").exists()
+    finally:
+        holder.release.set()
+        thread.join(10)
+    assert not thread.is_alive()
+    assert errors == []
+    assert holder.bodies
+
+
+def test_billed_input_above_the_local_estimate_stops_at_the_ceiling(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    local = local_input_tokens(slots[0]["body"])
+    billed = local * 200
+    actual = spend_cny("off-peak", billed, 0, 4)
+    ratio = Decimal(billed) / Decimal(local)
+    inflated = Decimal("0")
+    for slot in slots[1:]:
+        scaled = int((Decimal(local_input_tokens(slot["body"])) * ratio).to_integral_value(rounding=ROUND_CEILING))
+        inflated += spend_cny("off-peak", scaled, 0, 8192)
+    uninflated = sum((worst_case_cny(slot["body"]) for slot in slots[1:]), Decimal("0"))
+    assert actual < worst_case_cny(slots[0]["body"])
+    assert actual + uninflated <= total
+    assert actual + inflated > total
+    assert total < Decimal("80.00")
+
+    out = tmp_path / "hot-input"
+    client = Scripted(_usage(billed))
+    with pytest.raises(AmendmentFlightRefused, match="billed input exceeded the local token estimate"):
+        execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert len(client.bodies) == 1
+    assert not (out / "live.json").exists()
+    stop = _read(out / "stop.json")
+    assert stop["complete"] is False
+    assert stop["would_label_complete"] is False
+    assert stop["provider_called"] is False
+    assert stop["hard_cap_cny"] == "80.00"
+    assert stop["ceiling_is_hard_stop"] is True
+    assert stop["local_estimate_is_not_an_invoice"] is True
+    assert stop["input_above_local_estimate"] is True
+    assert stop["billed_input_tokens"] == billed
+    assert stop["local_input_tokens"] == local
+    assert Decimal(stop["spend_cny"]) == actual
+    assert Decimal(stop["spend_cny"]) + Decimal(stop["uninflated_remaining_worst_case_cny"]) <= total
+    assert Decimal(stop["spend_cny"]) + Decimal(stop["remaining_worst_case_cny"]) > Decimal(stop["ceiling_cny"])
+    row = json.loads((out / "calls-ledger.jsonl").read_text(encoding="utf-8"))
+    assert row["input_above_local_estimate"] is True
+    assert Decimal(row["bill"]["spend_cny"]) == actual
+
+    again = Scripted(_usage(billed))
+    with pytest.raises(AmendmentFlightRefused, match="billed input exceeded the local token estimate"):
+        execute_scripted(plans, out, total, _offpeak, again, dispatch=True)
+    assert again.bodies == []
+    assert not (out / "live.json").exists()
+    reloaded = _read(out / "stop.json")
+    assert Decimal(reloaded["spend_cny"]) == actual
+    assert json.loads((out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines()[0])["bill"]["spend_cny"] == reloaded[
+        "spend_cny"
+    ]
+
+
+def test_provider_bill_over_the_eighty_yuan_ceiling_is_kept_and_not_completed(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    local = local_input_tokens(slots[0]["body"])
+    billed = 80_000_001
+    actual = spend_cny("off-peak", billed, 0, 1)
+    assert total < Decimal("80.00")
+    assert actual > Decimal("80.00")
+    out = tmp_path / "over-eighty"
+    client = Scripted(_usage(billed, output=1))
+    with pytest.raises(AmendmentFlightRefused, match="billed input exceeded the local token estimate"):
+        execute_scripted(plans, out, Decimal("80.00"), _offpeak, client, dispatch=True)
+    assert len(client.bodies) == 1
+    assert client.bodies[0]["max_tokens"] == 8192
+    assert not (out / "live.json").exists()
+    stop = _read(out / "stop.json")
+    assert stop["complete"] is False
+    assert stop["would_label_complete"] is False
+    assert stop["hard_cap_cny"] == "80.00"
+    assert Decimal(stop["ceiling_cny"]) == Decimal("80.00")
+    assert Decimal(stop["spend_cny"]) == actual
+    assert Decimal(stop["spend_cny"]) > Decimal("80.00")
+    assert stop["billed_input_tokens"] == billed
+    assert stop["local_input_tokens"] == local
+    assert stop["ceiling_is_hard_stop"] is True
+    ledger = (out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(ledger) == 1
+    assert Decimal(json.loads(ledger[0])["bill"]["spend_cny"]) == actual
+
+    again = Scripted(_usage(billed, output=1))
+    with pytest.raises(AmendmentFlightRefused, match="billed input exceeded the local token estimate"):
+        execute_scripted(plans, out, Decimal("80.00"), _offpeak, again, dispatch=True)
+    assert again.bodies == []
+    assert (out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines() == ledger
+    assert not (out / "live.json").exists()
+    assert Decimal(_read(out / "stop.json")["spend_cny"]) == actual
+
+
+def test_billed_input_above_the_estimate_can_finish_only_inside_the_ceiling(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots, total = _slot_total(plans)
+    local = local_input_tokens(slots[0]["body"])
+    billed = local + 1
+    per_call = spend_cny("off-peak", billed, 0, 4)
+    out = tmp_path / "hot-but-inside"
+    client = Scripted(_usage(billed))
+    record = execute_scripted(plans, out, total, _offpeak, client, dispatch=True)
+    assert len(client.bodies) == len(slots)
+    assert record["complete"] is True
+    assert record["provider_called"] is False
+    assert record["flight_ready"] is False
+    assert Decimal(record["spend_cny"]) == per_call * len(slots)
+    assert Decimal(record["spend_cny"]) < total
+    assert Decimal(record["spend_cny"]) < Decimal("80.00")
+    assert Decimal(record["hard_cap_cny"]) == Decimal("80.00")
+    rows = [json.loads(line) for line in (out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == len(slots)
+    assert all(row["input_above_local_estimate"] is True for row in rows)
+    assert all(row["billed_input_tokens"] == billed for row in rows)
+    assert all(row["local_input_tokens"] == local for row in rows)
+    assert sum((Decimal(row["bill"]["spend_cny"]) for row in rows), Decimal("0")) == Decimal(record["spend_cny"])
+
+
+def test_resume_note_states_the_eighty_yuan_hard_stop():
+    note = (MODULE.parent / "amendment_s2x2_flight_resume.md").read_text(encoding="utf-8")
+    assert "71.751836" in note
+    assert "80.00" in note
+    assert "prompt_tokens" in note
+    assert "live.json" in note
+    assert "partial run is not labeled complete" in note
+    assert "The paid flight is not ready." in note
+    assert "not a provider invoice" in note
+    plans = _tiny_plans()
+    _, total = _slot_total(plans)
+    assert total < Decimal("80.00")
 
 
 def test_corrupt_hold_does_not_resume_as_zero(tmp_path):

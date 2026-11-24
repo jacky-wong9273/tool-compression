@@ -21,7 +21,18 @@ What this runner does:
 - after a timeout, or any call whose charge is unknown, holds that call's
   worst case and will not send further calls unless the ceiling still covers
   the hold plus the remaining-run worst case; a resume reloads the hold
+- refuses a resume whose ledger is missing, whose final ledger entry is torn,
+  or whose cap summary would reset settled spend to zero
+- freezes the entire wire manifest on the first open and refuses a later plan
+  that is not that manifest
+- lets only one process own the run directory; a second resume is refused
+- prices a returned call at provider ``prompt_tokens`` when that count exceeds
+  the local o200k estimate, reprices every remaining slot with that ratio, and
+  treats the supplied ceiling (at most ¥80.00) as the hard stop
 - does not read an API key and does not open a provider socket
+
+Resume and ceiling notes are in ``amendment_s2x2_flight_resume.md`` beside this
+file. The paid flight is not ready.
 
 Run the offline gate with ``python -m tool_compression.amendment_s2x2_flight``.
 ``--live`` is refused before a plan is built. The frozen ``amendment-s2x2``
@@ -42,10 +53,12 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, InvalidOperation, ROUND_CEILING
 from functools import lru_cache
 from pathlib import Path
+from typing import NoReturn
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -116,6 +129,16 @@ REMAINING_RUN_NOTE = (
 CAP_STOP = "remaining worst-case would pass the supplied ceiling"
 TIMEOUT_STOP = "provider timed out; unknown charge held at this call's worst-case bound"
 UNKNOWN_STOP = "provider call failed; unknown charge held at this call's worst-case bound"
+LEDGER_MISSING = "calls ledger is missing; refusing to reset settled spend to zero"
+LEDGER_TORN = "calls ledger final entry is torn and cannot be repaired"
+LEDGER_INCONSISTENT = "cap state does not match the calls ledger; refusing to reset settled spend"
+MANIFEST_MISMATCH = "resumed plans do not match the frozen wire manifest"
+MANIFEST_MISSING = "resume is missing the frozen wire manifest for this run"
+OWNER_HELD = "another operator holds this run directory"
+BILLED_INPUT_STOP = "billed input exceeded the local token estimate; the ceiling stops the run"
+ACCOUNTING_NAMES = ("calls-ledger.jsonl", "cap-hold.json", "stop.json", "live.json")
+MANIFEST_NAME = "wire-manifest.json"
+LOCK_NAME = "run.lock"
 LIVE_STOP = (
     "provider call refused; this dig does not authorize a flight; "
     "official settlement stays false; human review was not performed"
@@ -531,6 +554,31 @@ class CapState:
         self.pending = pending
         self.loaded_events = loaded_events
         self.sticky: str | None = None
+        # Greatest observed provider-prompt / local-o200k ratio. 1/1 means no overrun.
+        self.ratio_num = 1
+        self.ratio_den = 1
+        self.input_unbounded = False
+
+    @property
+    def input_ratio(self) -> Decimal:
+        if self.input_unbounded or self.ratio_den <= 0:
+            return Decimal("Infinity")
+        return Decimal(self.ratio_num) / Decimal(self.ratio_den)
+
+    def note_input(self, local_tokens: int, billed_tokens: int) -> None:
+        """Remember a provider input count above the local estimate. A later slot is repriced from it."""
+        if isinstance(local_tokens, bool) or isinstance(billed_tokens, bool):
+            raise AmendmentFlightRefused("input token count is corrupt")
+        if local_tokens < 0 or billed_tokens < 0:
+            raise AmendmentFlightRefused("input token count is corrupt")
+        if billed_tokens <= local_tokens:
+            return
+        if local_tokens == 0:
+            self.input_unbounded = True
+            return
+        if billed_tokens * self.ratio_den > self.ratio_num * local_tokens:
+            self.ratio_num = billed_tokens
+            self.ratio_den = local_tokens
 
     @property
     def unknown(self) -> Decimal:
@@ -608,6 +656,12 @@ def _discard_live(out: Path) -> None:
         path.unlink()
 
 
+def _fail_accounting(out: Path, reason: str) -> NoReturn:
+    """A resume cannot prove its spend. Drop any completion marker and stop."""
+    _discard_live(out)
+    raise AmendmentFlightRefused(reason)
+
+
 def _hold_payload(state: CapState) -> dict:
     return {
         "purpose": PURPOSE,
@@ -623,6 +677,10 @@ def _hold_payload(state: CapState) -> dict:
         "timeout_events": state.events,
         "pending_call": state.pending,
         "sticky_stop_reason": state.sticky,
+        "input_ratio_numerator": state.ratio_num,
+        "input_ratio_denominator": state.ratio_den,
+        "input_ratio_unbounded": state.input_unbounded,
+        "local_token_estimate_is_provider_bill": False,
         "note": REMAINING_RUN_NOTE,
     }
 
@@ -664,25 +722,130 @@ def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra
 
 
 def _load_ledger(path: Path) -> list[dict]:
+    """Load settled calls. A torn final line is refused. A missing newline on a valid line is repaired.
+
+    Skipping a torn tail would drop its spend and, on the next append, glue that
+    fragment onto the following record. The newline repair happens before any
+    later append. An invalid final fragment is not truncated and is not ignored.
+    """
     if not path.is_file():
         return []
-    lines = path.read_text(encoding="utf-8").splitlines()
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        _fail_accounting(path.parent, "calls ledger is corrupt")
+    needs_newline = bool(text) and not text.endswith("\n")
+    if needs_newline:
+        last = text.splitlines()[-1]
+        if last.strip():
+            try:
+                json.loads(last)
+            except json.JSONDecodeError:
+                _fail_accounting(path.parent, LEDGER_TORN)
+    lines = text.splitlines()
     calls = []
+    last_index = len(lines) - 1
     for index, line in enumerate(lines):
         if not line.strip():
             continue
         try:
             item = json.loads(line)
         except json.JSONDecodeError:
-            if index == len(lines) - 1:
-                break
-            raise AmendmentFlightRefused("calls ledger is corrupt")
+            reason = LEDGER_TORN if index == last_index else "calls ledger is corrupt"
+            _fail_accounting(path.parent, reason)
         bill = item.get("bill") if isinstance(item, dict) else None
         if not isinstance(bill, dict) or "spend_cny" not in bill:
-            raise AmendmentFlightRefused("calls ledger is corrupt")
-        _decimal_field(bill["spend_cny"], "ledger spend")
+            _fail_accounting(path.parent, "calls ledger is corrupt")
+        try:
+            _decimal_field(bill["spend_cny"], "ledger spend")
+        except AmendmentFlightRefused:
+            _discard_live(path.parent)
+            raise
         calls.append(item)
+    if needs_newline:
+        with path.open("ab") as handle:
+            handle.write(b"\n")
+            handle.flush()
+            os.fsync(handle.fileno())
     return calls
+
+
+def _read_json_object(path: Path, label: str) -> dict | None:
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        if path.name != MANIFEST_NAME:
+            _discard_live(path.parent)
+        raise AmendmentFlightRefused(f"{label} is corrupt") from exc
+    if not isinstance(payload, dict):
+        if path.name != MANIFEST_NAME:
+            _discard_live(path.parent)
+        raise AmendmentFlightRefused(f"{label} is corrupt")
+    return payload
+
+
+def _claimed_settled(hold: dict | None, stop: dict | None, live: dict | None) -> Decimal | None:
+    """The highest settled spend a summary still claims. A missing key is not a zero."""
+    found: list[Decimal] = []
+    if hold is not None and "settled_spend_cny" in hold and hold.get("settled_spend_cny") is not None:
+        found.append(_decimal_field(hold["settled_spend_cny"], "settled spend"))
+    if stop is not None and "spend_cny" in stop and stop.get("spend_cny") is not None:
+        found.append(_decimal_field(stop["spend_cny"], "stop spend"))
+    if live is not None and "spend_cny" in live and live.get("spend_cny") is not None:
+        found.append(_decimal_field(live["spend_cny"], "live spend"))
+    if not found:
+        return None
+    return max(found)
+
+
+def _claimed_calls(stop: dict | None) -> int:
+    if stop is None or "calls_already_settled" not in stop or stop.get("calls_already_settled") is None:
+        return 0
+    value = stop["calls_already_settled"]
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise AmendmentFlightRefused("stop record is corrupt")
+    return value
+
+
+def _note_recorded_inputs(state: CapState, calls: list[dict], hold: dict | None) -> None:
+    for row in calls:
+        if "local_input_tokens" not in row and "billed_input_tokens" not in row:
+            continue
+        local = row.get("local_input_tokens")
+        billed = row.get("billed_input_tokens")
+        if (
+            isinstance(local, bool)
+            or isinstance(billed, bool)
+            or not isinstance(local, int)
+            or not isinstance(billed, int)
+            or local < 0
+            or billed < 0
+        ):
+            raise AmendmentFlightRefused("calls ledger is corrupt")
+        state.note_input(local, billed)
+    if hold is None:
+        return
+    unbounded = hold.get("input_ratio_unbounded")
+    if unbounded is True:
+        state.input_unbounded = True
+    elif unbounded not in (None, False):
+        raise AmendmentFlightRefused("cap hold is corrupt")
+    if "input_ratio_numerator" not in hold and "input_ratio_denominator" not in hold:
+        return
+    numerator = hold.get("input_ratio_numerator")
+    denominator = hold.get("input_ratio_denominator")
+    if (
+        isinstance(numerator, bool)
+        or isinstance(denominator, bool)
+        or not isinstance(numerator, int)
+        or not isinstance(denominator, int)
+        or numerator < 0
+        or denominator <= 0
+    ):
+        raise AmendmentFlightRefused("cap hold is corrupt")
+    state.note_input(denominator, numerator)
 
 
 def _events_from_hold(hold: dict) -> list[dict]:
@@ -709,31 +872,48 @@ def _events_from_hold(hold: dict) -> list[dict]:
 
 
 def load_cap_state(out: Path) -> CapState:
-    """Reload settled spend and unknown holds. An in-flight call becomes a hold."""
+    """Reload settled spend and unknown holds. An in-flight call becomes a hold.
+
+    A missing ledger is a fresh run only when no summary claims spend. A summary
+    that is higher than the itemized ledger is refused, so spend cannot come
+    back as zero. A summary that is lower can be a stop file left from before a
+    later settled call; the ledger is kept.
+    """
     out = Path(out)
-    calls = _load_ledger(_ledger_path(out))
+    ledger_path = _ledger_path(out)
+    ledger_exists = ledger_path.is_file()
+    calls = _load_ledger(ledger_path) if ledger_exists else []
     settled = Decimal("0")
     settled_slots: set[str] = set()
     for row in calls:
         settled += Decimal(row["bill"]["spend_cny"])
         slot_id = row.get("slot_id")
         if not isinstance(slot_id, str) or slot_id == "":
-            raise AmendmentFlightRefused("calls ledger is missing slot_id")
+            _fail_accounting(out, "calls ledger is missing slot_id")
         if slot_id in settled_slots:
-            raise AmendmentFlightRefused("calls ledger repeats a slot")
+            _fail_accounting(out, "calls ledger repeats a slot")
         settled_slots.add(slot_id)
+    hold_path = _hold_path(out)
+    hold = _read_json_object(hold_path, "cap hold")
+    stop = _read_json_object(_stop_path(out), "stop record")
+    live = _read_json_object(_live_path(out), "live record")
+    floor = _claimed_settled(hold, stop, live)
+    claimed = _claimed_calls(stop)
+    if not ledger_exists:
+        if live is not None or claimed > 0 or (floor is not None and floor > 0):
+            _fail_accounting(out, LEDGER_MISSING)
+    elif floor is not None and floor > settled:
+        _fail_accounting(out, LEDGER_INCONSISTENT)
+    elif claimed > len(calls):
+        _fail_accounting(out, LEDGER_INCONSISTENT)
+    elif live is not None and live.get("spend_cny") is not None:
+        if _decimal_field(live["spend_cny"], "live spend") != settled:
+            _fail_accounting(out, LEDGER_INCONSISTENT)
     events: list[dict] = []
     pending = None
     stored_unknown = Decimal("0")
     sticky = None
-    path = _hold_path(out)
-    if path.is_file():
-        try:
-            hold = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            raise AmendmentFlightRefused("cap hold is corrupt") from exc
-        if not isinstance(hold, dict):
-            raise AmendmentFlightRefused("cap hold is corrupt")
+    if hold is not None:
         events = _events_from_hold(hold)
         pending = hold.get("pending_call")
         stored_unknown = _optional_decimal(hold.get("outstanding_unknown_timeout_cny"), "outstanding hold")
@@ -774,7 +954,12 @@ def load_cap_state(out: Path) -> CapState:
         )
     state = CapState(settled, calls, events, None, loaded_events)
     state.sticky = sticky
-    if path.is_file():
+    try:
+        _note_recorded_inputs(state, calls, hold)
+    except AmendmentFlightRefused:
+        _discard_live(out)
+        raise
+    if hold_path.is_file():
         _write_hold(out, state)
     return state
 
@@ -824,6 +1009,49 @@ def _remaining(slots: list[dict], incomplete: set[str], costs: dict[str, Decimal
     return sum((costs[slot["request_sha256"]] for slot in slots if slot["slot_id"] in incomplete), Decimal("0"))
 
 
+def _scaled_input(local_tokens: int, ratio: Decimal) -> int:
+    scaled = (Decimal(local_tokens) * ratio).to_integral_value(rounding=ROUND_CEILING)
+    return int(scaled)
+
+
+def _enforced_slot_cost(slot: dict, costs: dict[str, Decimal], state: CapState) -> Decimal:
+    """Local worst case, or the same output allowance with input scaled by the observed billed ratio.
+
+    An unbounded ratio has no finite scale. Callers stop before relying on this figure.
+    """
+    if state.input_unbounded or state.input_ratio <= 1:
+        return costs[slot["request_sha256"]]
+    local = local_input_tokens(slot["body"])
+    return spend_cny(OFFPEAK, _scaled_input(local, state.input_ratio), 0, MAX_TOKENS)
+
+
+def _enforced_remaining(slots: list[dict], incomplete: set[str], costs: dict[str, Decimal], state: CapState) -> Decimal:
+    if state.input_unbounded or state.input_ratio <= 1:
+        return _remaining(slots, incomplete, costs)
+    return sum(
+        (_enforced_slot_cost(slot, costs, state) for slot in slots if slot["slot_id"] in incomplete),
+        Decimal("0"),
+    )
+
+
+def _ceiling_reason(state: CapState) -> str:
+    if state.input_unbounded or state.input_ratio > 1:
+        return BILLED_INPUT_STOP
+    return CAP_STOP
+
+
+def _budget_exceeds(
+    state: CapState,
+    slots: list[dict],
+    incomplete: set[str],
+    costs: dict[str, Decimal],
+    ceiling: Decimal,
+) -> bool:
+    if state.input_unbounded and incomplete:
+        return True
+    return state.exposure_base + _enforced_remaining(slots, incomplete, costs, state) > ceiling
+
+
 def _cap_extra(state: CapState, remaining: Decimal, slots: list[dict], incomplete: set[str]) -> dict:
     return {
         "remaining_worst_case_cny": _money(remaining),
@@ -861,6 +1089,10 @@ def _acceptable(slot: dict, payload, bill: dict | None) -> bool:
 
 
 def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
+    if state.pending is not None:
+        raise AmendmentFlightRefused("in-flight hold is still open")
+    if state.settled + state.unknown > ceiling or state.settled + state.unknown > HARD_CAP_CNY:
+        raise AmendmentFlightRefused("settled spend plus unknown holds would pass the supplied ceiling")
     record = {
         "purpose": PURPOSE,
         "catalogue_tip": CATALOGUE_TIP,
@@ -897,6 +1129,138 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
     return record
 
 
+def wire_manifest(plans: list[dict]) -> dict:
+    """Identity of one entire wire plan. A resume has to match this manifest."""
+    slots = wire_slots(plans)
+    if len({slot["slot_id"] for slot in slots}) != len(slots):
+        raise AmendmentFlightRefused("wire slots are not unique")
+    entries = []
+    for index, slot in enumerate(slots):
+        if slot["body"].get(MAX_TOKENS_FIELD) != MAX_TOKENS:
+            raise AmendmentFlightRefused("frozen manifest requires the explicit max_tokens wire body")
+        entries.append(
+            {
+                "index": index,
+                "slot_id": slot["slot_id"],
+                "request_sha256": slot["request_sha256"],
+                "arms": list(slot["arms"]),
+                "case_id": slot["case_id"],
+                "category": slot["category"],
+                "thinking": slot["thinking"],
+                "cell": slot["cell"],
+                "max_tokens": MAX_TOKENS,
+            }
+        )
+    encoded = json.dumps(entries, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    digest = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return {
+        "purpose": PURPOSE,
+        "catalogue_tip": CATALOGUE_TIP,
+        "frozen": True,
+        "entire_original_plan": True,
+        "slot_count": len(entries),
+        "manifest_sha256": digest,
+        "slots": entries,
+    }
+
+
+def _manifest_path(out: Path) -> Path:
+    return Path(out) / MANIFEST_NAME
+
+
+def _accounting_present(out: Path) -> bool:
+    return any((Path(out) / name).exists() for name in ACCOUNTING_NAMES)
+
+
+def _peek_accounting(out: Path) -> None:
+    """Refuse unreadable records before a resume is allowed to adopt a plan."""
+    _read_json_object(_hold_path(out), "cap hold")
+    _read_json_object(_stop_path(out), "stop record")
+    _read_json_object(_live_path(out), "live record")
+    ledger = _ledger_path(out)
+    if ledger.is_file():
+        _load_ledger(ledger)
+
+
+def _refuse_if_spend_would_reset(out: Path) -> None:
+    """Refuse before a resume can treat a missing or thinner ledger as zero spend."""
+    ledger_path = _ledger_path(out)
+    ledger_exists = ledger_path.is_file()
+    calls = _load_ledger(ledger_path) if ledger_exists else []
+    settled = Decimal("0")
+    seen: set[str] = set()
+    for row in calls:
+        settled += Decimal(row["bill"]["spend_cny"])
+        slot_id = row.get("slot_id")
+        if not isinstance(slot_id, str) or slot_id == "":
+            _fail_accounting(out, "calls ledger is missing slot_id")
+        if slot_id in seen:
+            _fail_accounting(out, "calls ledger repeats a slot")
+        seen.add(slot_id)
+    hold = _read_json_object(_hold_path(out), "cap hold")
+    stop = _read_json_object(_stop_path(out), "stop record")
+    live = _read_json_object(_live_path(out), "live record")
+    floor = _claimed_settled(hold, stop, live)
+    claimed = _claimed_calls(stop)
+    if not ledger_exists:
+        if live is not None or claimed > 0 or (floor is not None and floor > 0):
+            _fail_accounting(out, LEDGER_MISSING)
+        return
+    if floor is not None and floor > settled:
+        _fail_accounting(out, LEDGER_INCONSISTENT)
+    if claimed > len(calls):
+        _fail_accounting(out, LEDGER_INCONSISTENT)
+    if live is not None and live.get("spend_cny") is not None:
+        if _decimal_field(live["spend_cny"], "live spend") != settled:
+            _fail_accounting(out, LEDGER_INCONSISTENT)
+
+
+def _bind_wire_manifest(out: Path, plans: list[dict]) -> dict:
+    expected = wire_manifest(plans)
+    _peek_accounting(out)
+    _refuse_if_spend_would_reset(out)
+    path = _manifest_path(out)
+    if path.is_file():
+        stored = _read_json_object(path, "frozen wire manifest")
+        if stored is None:
+            raise AmendmentFlightRefused("frozen wire manifest is corrupt")
+        if stored.get("catalogue_tip") != CATALOGUE_TIP or stored.get("entire_original_plan") is not True:
+            raise AmendmentFlightRefused(MANIFEST_MISMATCH)
+        if stored.get("manifest_sha256") != expected["manifest_sha256"] or stored.get("slots") != expected["slots"]:
+            raise AmendmentFlightRefused(MANIFEST_MISMATCH)
+        if stored.get("slot_count") != expected["slot_count"]:
+            raise AmendmentFlightRefused(MANIFEST_MISMATCH)
+        return stored
+    if _accounting_present(out):
+        raise AmendmentFlightRefused(MANIFEST_MISSING)
+    _atomic_json(path, expected)
+    return expected
+
+
+def _acquire_run(out: Path) -> int:
+    """Exclusive owner of one run directory. The lock dies with this process."""
+    out.mkdir(parents=True, exist_ok=True)
+    fd = os.open(out / LOCK_NAME, os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError as exc:
+        os.close(fd)
+        raise AmendmentFlightRefused(OWNER_HELD) from exc
+    try:
+        os.ftruncate(fd, 0)
+        os.write(fd, f"pid={os.getpid()}\n".encode())
+    except OSError:
+        pass
+    return fd
+
+
+def _release_run(fd: int) -> None:
+    try:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+    finally:
+        os.close(fd)
+
+
 def execute_scripted(
     plans: list[dict],
     out: Path,
@@ -910,7 +1274,8 @@ def execute_scripted(
     """Run cap checks. Dispatch only a scripted non-official sample when asked.
 
     The official 840 sample is never dispatched. ``dispatch`` false never calls
-    ``client``. A partial run does not write ``live.json``.
+    ``client``. A partial run does not write ``live.json``. A second process
+    that resumes the same directory is refused.
     """
     if counter is not None and counter.name != "o200k_base":
         raise AmendmentFlightRefused("local bound requires o200k_base")
@@ -919,11 +1284,17 @@ def execute_scripted(
         raise AmendmentFlightRefused("no plans")
     _assert_passes_distinct(plans)
     out = Path(out)
-    out.mkdir(parents=True, exist_ok=True)
+    owner = _acquire_run(out)
+    try:
+        return _execute_owned(plans, out, ceiling, clock, client, dispatch=dispatch)
+    finally:
+        _release_run(owner)
+
+
+def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client, *, dispatch: bool) -> dict:
     _pin_tokenizer_cache()
+    _bind_wire_manifest(out, plans)
     slots = wire_slots(plans)
-    if len({slot["slot_id"] for slot in slots}) != len(slots):
-        raise AmendmentFlightRefused("wire slots are not unique")
     costs: dict[str, Decimal] = {}
     for slot in slots:
         digest = slot["request_sha256"]
@@ -933,12 +1304,20 @@ def execute_scripted(
     plan_ids = {slot["slot_id"] for slot in slots}
     for row in state.calls:
         if row["slot_id"] not in plan_ids:
-            raise AmendmentFlightRefused("calls ledger does not match these plans")
+            _fail_accounting(out, "calls ledger does not match these plans")
     incomplete = {slot["slot_id"] for slot in slots} - {row["slot_id"] for row in state.calls}
-    remaining = _remaining(slots, incomplete, costs)
 
     def stop(reason: str, extra: dict | None = None) -> None:
-        payload = _cap_extra(state, _remaining(slots, incomplete, costs), slots, incomplete)
+        enforced = _enforced_remaining(slots, incomplete, costs, state)
+        payload = _cap_extra(state, enforced, slots, incomplete)
+        if state.input_unbounded or state.input_ratio > 1:
+            payload["uninflated_remaining_worst_case_cny"] = _money(_remaining(slots, incomplete, costs))
+            payload["input_above_local_estimate"] = True
+            payload["input_ratio_numerator"] = state.ratio_num
+            payload["input_ratio_denominator"] = state.ratio_den
+            payload["input_ratio_unbounded"] = state.input_unbounded
+            payload["local_estimate_is_not_an_invoice"] = True
+            payload["ceiling_is_hard_stop"] = True
         if extra:
             payload.update(extra)
         _write_stop(out, state, ceiling, reason, payload)
@@ -946,9 +1325,13 @@ def execute_scripted(
     if state.sticky:
         stop(state.sticky)
         raise AmendmentFlightRefused(state.sticky)
-    if state.exposure_base + remaining > ceiling:
-        stop(CAP_STOP)
-        raise AmendmentFlightRefused(CAP_STOP)
+    if _budget_exceeds(state, slots, incomplete, costs, ceiling):
+        if not incomplete and not state.input_unbounded and state.input_ratio <= 1:
+            reason = "settled spend plus unknown holds would pass the supplied ceiling"
+        else:
+            reason = _ceiling_reason(state)
+        stop(reason)
+        raise AmendmentFlightRefused(reason)
     if not incomplete:
         if is_official_sample(plans):
             stop(OFFICIAL_DISPATCH_STOP)
@@ -982,11 +1365,14 @@ def execute_scripted(
             raise AmendmentFlightRefused("refusing a wire body that drops temperature 0.001 or store false")
         if body["thinking"] != thinking_body(slot["thinking"]):
             raise AmendmentFlightRefused("thinking field does not match the pass")
-        cost = costs[slot["request_sha256"]]
-        remaining = _remaining(slots, incomplete, costs)
-        if state.exposure_base + remaining > ceiling or state.exposure_base + cost > ceiling:
-            stop(CAP_STOP, {"next_call_worst_case_cny": _money(cost)})
-            raise AmendmentFlightRefused(CAP_STOP)
+        if _budget_exceeds(state, slots, incomplete, costs, ceiling):
+            extra = None
+            if not state.input_unbounded:
+                extra = {"next_call_worst_case_cny": _money(_enforced_slot_cost(slot, costs, state))}
+            reason = _ceiling_reason(state)
+            stop(reason, extra)
+            raise AmendmentFlightRefused(reason)
+        cost = _enforced_slot_cost(slot, costs, state)
         state.pending = _pending_record(slot, cost, moment)
         _write_hold(out, state)
         try:
@@ -1003,9 +1389,20 @@ def execute_scripted(
             stop(stop_reason, {"timed_out_request_sha256": slot["request_sha256"]})
             raise AmendmentFlightRefused(stop_reason) from None
         bill, actual = _response_bill(payload)
+        local_in = local_input_tokens(body)
+        billed_in = bill.get("T") if isinstance(bill, dict) else None
+        if isinstance(billed_in, bool) or not isinstance(billed_in, int) or billed_in < 0:
+            billed_in = None
+        if billed_in is not None:
+            state.note_input(local_in, billed_in)
+        input_gap = {
+            "local_input_tokens": local_in,
+            "billed_input_tokens": billed_in,
+            "input_above_local_estimate": billed_in is not None and billed_in > local_in,
+        }
         if not _acceptable(slot, payload, bill):
             _hold_pending(state, "response was not a settled off-peak completion", actual)
-            stop(UNKNOWN_STOP)
+            stop(UNKNOWN_STOP, input_gap)
             raise AmendmentFlightRefused(UNKNOWN_STOP)
         state.settled += actual
         state.pending = None
@@ -1021,6 +1418,9 @@ def execute_scripted(
             "max_tokens": MAX_TOKENS,
             "clock": moment.isoformat(),
             "bill": bill,
+            "local_input_tokens": local_in,
+            "billed_input_tokens": billed_in,
+            "input_above_local_estimate": billed_in is not None and billed_in > local_in,
             "provider_called": False,
             "provider_network": False,
             "scripted": True,
@@ -1029,15 +1429,23 @@ def execute_scripted(
         _append_ledger(_ledger_path(out), observation)
         _write_hold(out, state)
         incomplete.discard(slot["slot_id"])
-        if state.settled > ceiling or state.settled + state.unknown > ceiling:
-            stop("settled spend passed the supplied ceiling")
-            raise AmendmentFlightRefused("settled spend passed the supplied ceiling")
+        if _budget_exceeds(state, slots, incomplete, costs, ceiling):
+            if state.input_unbounded or state.input_ratio > 1:
+                reason = BILLED_INPUT_STOP
+            else:
+                reason = "settled spend passed the supplied ceiling"
+            stop(reason, input_gap)
+            raise AmendmentFlightRefused(reason)
     if incomplete:
         stop("run ended with incomplete slots")
         raise AmendmentFlightRefused("run ended with incomplete slots")
     if state.settled + state.unknown > ceiling:
-        stop("settled spend plus unknown holds would pass the supplied ceiling")
-        raise AmendmentFlightRefused("settled spend plus unknown holds would pass the supplied ceiling")
+        if state.input_unbounded or state.input_ratio > 1:
+            reason = BILLED_INPUT_STOP
+        else:
+            reason = "settled spend plus unknown holds would pass the supplied ceiling"
+        stop(reason)
+        raise AmendmentFlightRefused(reason)
     return _write_live(out, state, ceiling)
 
 
@@ -1114,7 +1522,15 @@ def _gate(summary: dict, moment, funded: bool) -> dict:
 def preflight(bfcl_root: Path, out: Path, clock, repo: Path | None = None) -> dict:
     """Write the offline gate for the ¥80 cap. Does not call a provider."""
     out = Path(out)
-    for name in ("calls-ledger.jsonl", "cap-hold.json", "live.json", "stop.json"):
+    owner = _acquire_run(out)
+    try:
+        return _preflight_owned(bfcl_root, out, clock, repo)
+    finally:
+        _release_run(owner)
+
+
+def _preflight_owned(bfcl_root: Path, out: Path, clock, repo: Path | None) -> dict:
+    for name in (*ACCOUNTING_NAMES, MANIFEST_NAME):
         if (out / name).exists():
             raise AmendmentFlightRefused("preflight directory already has a run record; refusing to relabel it")
     flight = build_flight(bfcl_root, repo)
