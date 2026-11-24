@@ -1,0 +1,35 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_257",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "identify_color_rgb",
+        "description": "This function identifies the RGB values of a named color.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "color_name": {
+              "type": "string",
+              "description": "Name of the color."
+            },
+            "standard": {
+              "type": "string",
+              "description": "The color standard (e.g. basic, pantone). Default is 'basic'"
+            }
+          },
+          "required": [
+            "color_name"
+          ]
+        }
+      }
+    }
+  ]
+}

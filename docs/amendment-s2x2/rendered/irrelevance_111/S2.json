@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_111",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geo_location_based_products_fetch_eco_friendly_products",
+        "description": "Locate eco-friendly products near a specific geographic location based on product category and shopping preferences.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Your city or the geographical location you're interested in shopping from. e.g., Seattle, WA"
+            },
+            "product_category": {
+              "type": "string",
+              "description": "The category of product that you're interested in. e.g., Yoga Mats, Bamboo toothbrush, etc"
+            },
+            "availability": {
+              "type": "string",
+              "description": "Your preferred method of getting the product - Instore, Online, or Both."
+            }
+          },
+          "required": [
+            "location",
+            "product_category"
+          ],
+          "default": "location"
+        }
+      }
+    }
+  ]
+}

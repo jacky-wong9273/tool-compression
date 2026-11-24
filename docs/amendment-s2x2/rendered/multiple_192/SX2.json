@@ -1,0 +1,98 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_192",
+  "category": "multiple",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "currency_conversion_convert",
+        "description": "Convert a value from one currency to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "integer",
+              "description": "The amount to be converted."
+            },
+            "from_currency": {
+              "type": "string",
+              "description": "The currency to convert from."
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The currency to convert to."
+            }
+          },
+          "required": [
+            "amount",
+            "from_currency",
+            "to_currency"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calc_absolute_pressure",
+        "description": "Calculates the absolute pressure from gauge and atmospheric pressures.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "atm_pressure": {
+              "type": "number",
+              "description": "The atmospheric pressure in atmospheres (atm). Default is 1 atm if not provided.",
+              "format": "float"
+            },
+            "gauge_pressure": {
+              "type": "number",
+              "description": "The gauge pressure in atmospheres (atm). Must be provided.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "gauge_pressure"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_displacement",
+        "description": "Calculates the displacement of an object in motion given initial velocity, time, and acceleration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "number",
+              "description": "The initial velocity of the object in m/s.",
+              "format": "float"
+            },
+            "time": {
+              "type": "number",
+              "description": "The time in seconds that the object has been in motion.",
+              "format": "float"
+            },
+            "acceleration": {
+              "type": "number",
+              "description": "The acceleration of the object in m/s^2.",
+              "default": 0,
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_velocity",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

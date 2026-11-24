@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_39",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_population_growth",
+        "description": "Calculate the population growth of an animal based on the current population, birth rate and death rate.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "current_population": {
+              "type": "integer",
+              "description": "The current population of the animal."
+            },
+            "birth_rate": {
+              "type": "number",
+              "description": "The birth rate of the animal. This is a float type value.",
+              "format": "float"
+            },
+            "death_rate": {
+              "type": "number",
+              "description": "The death rate of the animal. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "current_population",
+            "birth_rate",
+            "death_rate"
+          ]
+        }
+      }
+    }
+  ]
+}

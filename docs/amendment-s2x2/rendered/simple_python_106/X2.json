@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_106",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "train_random_forest_classifier",
+        "description": "Train a Random Forest classifier with the specified parameters.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset": {
+              "type": "string",
+              "description": "The dataset to train the classifier on."
+            },
+            "max_depth": {
+              "type": "integer",
+              "description": "The maximum depth of the trees in the forest."
+            },
+            "n_estimators": {
+              "type": "integer",
+              "description": "The number of trees in the forest."
+            }
+          },
+          "required": [
+            "dataset",
+            "max_depth",
+            "n_estimators"
+          ]
+        }
+      }
+    }
+  ]
+}

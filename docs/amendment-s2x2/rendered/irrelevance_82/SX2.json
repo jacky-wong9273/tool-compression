@@ -1,0 +1,48 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_82",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_capital_gains",
+        "description": "Calculate the capital gains or losses based on purchase price, sale price, and number of shares.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "purchase_price": {
+              "type": "number",
+              "description": "The price at which the shares were bought.",
+              "format": "float"
+            },
+            "sale_price": {
+              "type": "number",
+              "description": "The price at which the shares were sold.",
+              "format": "float"
+            },
+            "shares": {
+              "type": "integer",
+              "description": "The number of shares sold."
+            },
+            "tax_rate": {
+              "type": "number",
+              "description": "The capital gains tax rate. Default is 0.15.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "purchase_price",
+            "sale_price",
+            "shares"
+          ]
+        }
+      }
+    }
+  ]
+}

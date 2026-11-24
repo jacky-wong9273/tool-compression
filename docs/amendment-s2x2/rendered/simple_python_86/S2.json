@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_86",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "city_distance_find_shortest",
+        "description": "Calculates the shortest distance between two cities via available public transportation.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_city": {
+              "type": "string",
+              "description": "The city you are starting from. The parameter is in the format of city name."
+            },
+            "end_city": {
+              "type": "string",
+              "description": "The city you are heading to.The parameter is in the format of city name."
+            },
+            "transportation": {
+              "type": "string",
+              "description": "Preferred mode of public transportation. Default is 'bus'."
+            },
+            "allow_transfer": {
+              "type": "boolean",
+              "description": "Allows transfer between different transportation if true. Default is false."
+            }
+          },
+          "required": [
+            "start_city",
+            "end_city"
+          ]
+        }
+      }
+    }
+  ]
+}

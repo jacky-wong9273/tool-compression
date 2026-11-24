@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_64",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "probability_coin_toss_heads",
+        "description": "Calculate the probability of getting a specific number of heads after tossing a coin multiple times.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coin_tosses": {
+              "type": "integer",
+              "description": "The number of times the coin is tossed."
+            },
+            "heads_needed": {
+              "type": "integer",
+              "description": "The specific number of heads you want to get after coin tosses."
+            },
+            "coin_type": {
+              "type": "string",
+              "default": "fair",
+              "description": "The type of the coin.",
+              "enum": [
+                "fair",
+                "double_heads",
+                "double_tails"
+              ]
+            }
+          },
+          "required": [
+            "coin_tosses",
+            "heads_needed"
+          ]
+        }
+      }
+    }
+  ]
+}

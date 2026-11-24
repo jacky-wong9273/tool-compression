@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_5",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "solve_quadratic_equation",
+        "description": "Solves a quadratic equation and returns the possible solutions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number",
+              "description": "Coefficient of the x-squared term in the quadratic equation.",
+              "format": "float"
+            },
+            "b": {
+              "type": "number",
+              "description": "Coefficient of the x term in the quadratic equation.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "Constant term in the quadratic equation.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    }
+  ]
+}

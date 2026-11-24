@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_143",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_price",
+        "description": "Retrieve the stock price for a specific company and time frame.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The ticker symbol of the company."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of past days for which the stock price is required."
+            },
+            "exchange": {
+              "type": "string",
+              "description": "The stock exchange where the company is listed, default is NYSE"
+            }
+          },
+          "required": [
+            "company",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

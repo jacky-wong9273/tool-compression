@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_107",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_bmi",
+        "description": "Calculate the Body Mass Index (BMI) for a person based on their weight and height.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "description": "The weight of the person in kilograms."
+            },
+            "height": {
+              "type": "integer",
+              "description": "The height of the person in centimeters."
+            },
+            "system": {
+              "type": "string",
+              "description": "The system of units to be used, 'metric' or 'imperial'. Default is 'metric'."
+            }
+          },
+          "required": [
+            "weight",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

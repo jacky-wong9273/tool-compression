@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_300",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "music_calculate_note_duration",
+        "description": "Calculate the duration between two notes based on their frequencies and harmonic rhythm.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "first_note_frequency": {
+              "type": "integer",
+              "description": "The frequency of the first note in Hz."
+            },
+            "second_note_frequency": {
+              "type": "integer",
+              "description": "The frequency of the second note in Hz."
+            },
+            "tempo": {
+              "type": "integer",
+              "description": "The tempo of the music in beats per minute. Defaults to 120 beats per minute."
+            }
+          },
+          "required": [
+            "first_note_frequency",
+            "second_note_frequency"
+          ]
+        }
+      }
+    }
+  ]
+}

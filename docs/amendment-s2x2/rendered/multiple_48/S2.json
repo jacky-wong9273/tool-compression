@@ -1,0 +1,78 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_48",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "store_find_nearby",
+        "description": "Locate nearby stores based on specific preferences such as being pet-friendly and having disabled access facilities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city, for example, New York City, NY"
+            },
+            "preferences": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Pet-friendly",
+                  "Disabled Access",
+                  "24 hours",
+                  "Cafe Inside"
+                ]
+              },
+              "description": "Your preferences for the store."
+            }
+          },
+          "required": [
+            "location",
+            "preferences"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "library_find_nearby",
+        "description": "Locate nearby libraries based on specific preferences such as being pet-friendly and having disabled access facilities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city, for example, New York City, NY"
+            },
+            "preferences": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Pet-friendly",
+                  "Disabled Access",
+                  "24 hours",
+                  "Cafe Inside"
+                ]
+              },
+              "description": "Your preferences for the library."
+            }
+          },
+          "required": [
+            "location",
+            "preferences"
+          ]
+        }
+      }
+    }
+  ]
+}

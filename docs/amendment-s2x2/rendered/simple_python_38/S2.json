@@ -1,0 +1,49 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_38",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_electrostatic_potential",
+        "description": "Calculate the electrostatic potential between two charged bodies using the principle of Coulomb's Law.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "charge1": {
+              "type": "number",
+              "description": "The quantity of charge on the first body.",
+              "format": "float"
+            },
+            "charge2": {
+              "type": "number",
+              "description": "The quantity of charge on the second body.",
+              "format": "float"
+            },
+            "distance": {
+              "type": "number",
+              "description": "The distance between the two bodies.",
+              "format": "float"
+            },
+            "constant": {
+              "type": "number",
+              "description": "The value of the electrostatic constant. Default is 8.99e9.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "charge1",
+            "charge2",
+            "distance"
+          ]
+        }
+      }
+    }
+  ]
+}

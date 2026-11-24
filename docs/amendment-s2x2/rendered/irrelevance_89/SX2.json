@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_89",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "generate_contract",
+        "description": "Generate a specific type of legal contract based on provided details.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "contract_type": {
+              "type": "string",
+              "description": "The type of contract to generate."
+            },
+            "parties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The parties involved in the contract."
+            },
+            "additional_details": {
+              "type": "object",
+              "description": "Any additional details or provisions that should be included in the contract.",
+              "default": "None"
+            }
+          },
+          "required": [
+            "contract_type",
+            "parties"
+          ]
+        }
+      }
+    }
+  ]
+}

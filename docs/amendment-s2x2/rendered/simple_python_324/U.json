@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_324",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "team_score_get_latest",
+        "description": "Retrieve the score of the most recent game for a specified sports team.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "Name of the sports team."
+            },
+            "include_opponent": {
+              "type": "boolean",
+              "description": "Include the name of the opponent team in the return.",
+              "default": false
+            }
+          },
+          "required": [
+            "team"
+          ]
+        }
+      }
+    }
+  ]
+}

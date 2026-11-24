@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_329",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "monopoly_odds_calculator",
+        "description": "Calculates the probability of rolling a certain sum with two dice, commonly used in board game like Monopoly.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "The number for which the odds are calculated."
+            },
+            "dice_number": {
+              "type": "integer",
+              "description": "The number of dice involved in the roll."
+            },
+            "dice_faces": {
+              "type": "integer",
+              "description": "The number of faces on a single die. Default is 6 for standard six-faced die."
+            }
+          },
+          "required": [
+            "number",
+            "dice_number"
+          ]
+        }
+      }
+    }
+  ]
+}

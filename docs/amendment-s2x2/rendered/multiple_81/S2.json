@@ -1,0 +1,84 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_81",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "concert_book_ticket",
+        "description": "Book a ticket for a concert at a specific location with various add-ons like backstage pass.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "artist": {
+              "type": "string",
+              "description": "Name of the artist for the concert."
+            },
+            "location": {
+              "type": "string",
+              "description": "City where the concert will take place."
+            },
+            "add_ons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Backstage Pass",
+                  "VIP Seating",
+                  "Parking Pass"
+                ]
+              },
+              "description": "Add-ons for the concert. Default empty array"
+            }
+          },
+          "required": [
+            "artist",
+            "location"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "festival_book_ticket",
+        "description": "Book a ticket for a festival at a specific location with various add-ons like camping access.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "festival": {
+              "type": "string",
+              "description": "Name of the festival."
+            },
+            "location": {
+              "type": "string",
+              "description": "City where the festival will take place."
+            },
+            "add_ons": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Camping Pass",
+                  "VIP Seating",
+                  "Parking Pass"
+                ]
+              },
+              "description": "Add-ons for the festival. Default empty array"
+            }
+          },
+          "required": [
+            "festival",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

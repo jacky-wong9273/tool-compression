@@ -1,0 +1,64 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_79",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_info",
+        "description": "Get restaurant information for a specific area.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Location for which to find restaurants."
+            },
+            "food_type": {
+              "type": "string",
+              "description": "Type of cuisine for which to find restaurants. Default 'any'",
+              "enum": [
+                "Italian",
+                "Chinese",
+                "Mexican",
+                "American"
+              ]
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "exhibition_info",
+        "description": "Get exhibition information for a specific museum.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "museum_name": {
+              "type": "string",
+              "description": "Name of the museum for which to find exhibitions."
+            },
+            "month": {
+              "type": "integer",
+              "description": "Number of upcoming months for which to retrieve exhibition details. Default 1"
+            }
+          },
+          "required": [
+            "museum_name"
+          ]
+        }
+      }
+    }
+  ]
+}

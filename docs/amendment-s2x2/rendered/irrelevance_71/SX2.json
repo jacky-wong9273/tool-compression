@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_71",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_ROI",
+        "description": "Calculate the Return on Investment (ROI) for a given investment amount and net profit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "investment_amount": {
+              "type": "number",
+              "description": "The initial amount of money invested.",
+              "format": "float"
+            },
+            "net_profit": {
+              "type": "number",
+              "description": "The profit made from the investment.",
+              "format": "float"
+            },
+            "duration_years": {
+              "type": "integer",
+              "description": "The duration of the investment in years.",
+              "default": 1
+            }
+          },
+          "required": [
+            "investment_amount",
+            "net_profit"
+          ]
+        }
+      }
+    }
+  ]
+}

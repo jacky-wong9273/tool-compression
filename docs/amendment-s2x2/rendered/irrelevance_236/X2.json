@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_236",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_flight_duration",
+        "description": "Retrieves the quickest flight duration between two cities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_city": {
+              "type": "string",
+              "description": "The city you are starting your journey from."
+            },
+            "destination_city": {
+              "type": "string",
+              "description": "The city you wish to travel to."
+            },
+            "flight_type": {
+              "type": "string",
+              "description": "The type of flight you want to find duration for. Choices include: non-stop, direct, and multi-stop."
+            }
+          },
+          "required": [
+            "start_city",
+            "destination_city",
+            "flight_type"
+          ]
+        }
+      }
+    }
+  ]
+}

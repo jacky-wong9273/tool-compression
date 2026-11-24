@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_72",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_fitness",
+        "description": "Calculate the expected evolutionary fitness of a creature based on the individual values and contributions of its traits.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "trait_values": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "List of trait values, which are decimal numbers between 0 and 1, where 1 represents the trait maximally contributing to fitness."
+            },
+            "trait_contributions": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "List of the percentage contributions of each trait to the overall fitness, which must sum to 1."
+            }
+          },
+          "required": [
+            "trait_values",
+            "trait_contributions"
+          ]
+        }
+      }
+    }
+  ]
+}

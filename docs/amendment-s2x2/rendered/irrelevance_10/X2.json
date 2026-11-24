@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_10",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculus_compute_definite_integral",
+        "description": "Compute the definite integral of a function within a given interval.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "description": "The function to be integrated."
+            },
+            "interval": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "The interval within which the definite integral needs to be computed."
+            },
+            "num_of_partitions": {
+              "type": "integer",
+              "description": "The number of partitions for approximation. Default is 1000."
+            }
+          },
+          "required": [
+            "function",
+            "interval"
+          ]
+        }
+      }
+    }
+  ]
+}

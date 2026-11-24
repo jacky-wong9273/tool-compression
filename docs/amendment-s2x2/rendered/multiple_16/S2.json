@@ -1,0 +1,102 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_16",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "species_distribution_modeling_project_range_shift",
+        "description": "Predict the potential future geographic distribution of a species under a specified climate change scenario.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species of animal."
+            },
+            "climate_scenario": {
+              "type": "string",
+              "description": "The name of the climate change scenario."
+            },
+            "future_time": {
+              "type": "integer",
+              "description": "The future time in years for the prediction.",
+              "default": 100
+            }
+          },
+          "required": [
+            "species",
+            "climate_scenario"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "population_genetics_calculate_ne",
+        "description": "Calculate the effective population size necessary to maintain genetic diversity in a wild animal population for a specified number of generations with a given probability.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "species": {
+              "type": "string",
+              "description": "The species of wild animal."
+            },
+            "generations": {
+              "type": "integer",
+              "description": "The number of generations."
+            },
+            "probability": {
+              "type": "number",
+              "description": "The probability of maintaining genetic diversity.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "species",
+            "generations",
+            "probability"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "ecology_calculate_carrying_capacity",
+        "description": "Calculate the maximum population size of the species that the environment can sustain indefinitely.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "habitat_area": {
+              "type": "number",
+              "description": "The area of the habitat in square kilometers.",
+              "format": "float"
+            },
+            "species": {
+              "type": "string",
+              "description": "The species of animal."
+            },
+            "productivity": {
+              "type": "number",
+              "description": "The biological productivity of the habitat in animals per square kilometer per year.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "habitat_area",
+            "species",
+            "productivity"
+          ]
+        }
+      }
+    }
+  ]
+}

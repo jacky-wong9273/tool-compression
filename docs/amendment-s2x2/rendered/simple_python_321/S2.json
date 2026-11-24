@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_321",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking",
+        "description": "Get the ranking of a team in a given sports league and season.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "The name of the team."
+            },
+            "league": {
+              "type": "string",
+              "description": "The name of the sports league."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season for which ranking needs to be obtained."
+            }
+          },
+          "required": [
+            "team",
+            "league",
+            "season"
+          ]
+        }
+      }
+    }
+  ]
+}

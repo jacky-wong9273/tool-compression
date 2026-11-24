@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_144",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "search_holy_books",
+        "description": "Search content, chapters or authors of holy books.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "book": {
+              "type": "string",
+              "description": "The name of the holy book."
+            },
+            "chapter": {
+              "type": "integer",
+              "description": "The chapter number, if relevant. Default: 3"
+            },
+            "content": {
+              "type": "string",
+              "description": "Specific content to look for, if relevant.",
+              "default": "book"
+            }
+          },
+          "required": [
+            "book"
+          ]
+        }
+      }
+    }
+  ]
+}

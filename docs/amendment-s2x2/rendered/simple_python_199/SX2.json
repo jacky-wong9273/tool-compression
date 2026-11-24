@@ -1,0 +1,35 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_199",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "environmental_data_air_quality_index",
+        "description": "Retrieves Air Quality Index (AQI) for specified location over a number of days.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Name of the city or town to retrieve air quality index for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days for which to retrieve data. If not provided, default to today."
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

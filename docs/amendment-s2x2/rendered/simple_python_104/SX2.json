@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_104",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_area_triangle",
+        "description": "Calculate the area of a triangle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "integer",
+              "description": "The length of the base of the triangle."
+            },
+            "height": {
+              "type": "integer",
+              "description": "The height of the triangle from the base."
+            },
+            "unit": {
+              "type": "string",
+              "description": "The measurement unit for the area. Defaults to square meters."
+            }
+          },
+          "required": [
+            "base",
+            "height"
+          ]
+        }
+      }
+    }
+  ]
+}

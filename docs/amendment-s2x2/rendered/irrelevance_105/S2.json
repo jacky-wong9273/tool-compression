@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_105",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "plot_elevation",
+        "description": "Plots the elevation profile along a route.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_point": {
+              "type": "string",
+              "description": "The start point of the route."
+            },
+            "end_point": {
+              "type": "string",
+              "description": "The end point of the route."
+            },
+            "resolution": {
+              "type": "string",
+              "description": "The resolution of the elevation data, 'High', 'Medium', or 'Low'. Default is 'Medium'."
+            }
+          },
+          "required": [
+            "start_point",
+            "end_point"
+          ]
+        }
+      }
+    }
+  ]
+}

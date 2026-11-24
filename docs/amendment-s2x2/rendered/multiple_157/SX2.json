@@ -1,0 +1,67 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_157",
+  "category": "multiple",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_current",
+        "description": "Retrieve the current ranking of a specific team in a particular league.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "The name of the team whose ranking is sought."
+            },
+            "league": {
+              "type": "string",
+              "description": "The league in which the team participates."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season for which the ranking is sought. Defaults to the current season if not provided."
+            }
+          },
+          "required": [
+            "team",
+            "league"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_earliest_reference",
+        "description": "Retrieve the earliest historical reference of a person.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the person."
+            },
+            "source": {
+              "type": "string",
+              "enum": [
+                "scriptures",
+                "historical records"
+              ],
+              "description": "Source to fetch the reference. Default is 'scriptures'"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        }
+      }
+    }
+  ]
+}

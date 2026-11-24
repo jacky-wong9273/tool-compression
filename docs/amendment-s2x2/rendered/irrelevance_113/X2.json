@@ -1,0 +1,50 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_113",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_pois",
+        "description": "Locate points of interest (pois) based on specified criteria.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city or region, e.g. London, UK"
+            },
+            "category": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Restaurants",
+                  "Hotels",
+                  "Tourist spots"
+                ]
+              },
+              "description": "Type of points of interest."
+            },
+            "rating": {
+              "type": "number",
+              "description": "Minimum rating to consider This is a float type value.",
+              "default": "0.3",
+              "format": "float"
+            }
+          },
+          "required": [
+            "location",
+            "category"
+          ]
+        }
+      }
+    }
+  ]
+}

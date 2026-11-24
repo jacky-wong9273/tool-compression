@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_292",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "compose_melody",
+        "description": "Compose a melody using the specified chord progression for a certain number of measures on specified instrument.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "progression": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The progression of chords."
+            },
+            "measures": {
+              "type": "integer",
+              "description": "The number of measures of the melody."
+            },
+            "instrument": {
+              "type": "string",
+              "description": "The instrument for the composition. Default is 'Piano'."
+            }
+          },
+          "required": [
+            "progression",
+            "measures"
+          ]
+        }
+      }
+    }
+  ]
+}

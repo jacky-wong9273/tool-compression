@@ -1,0 +1,45 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_69",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "regression_model_predict",
+        "description": "Predict the target variable based on input features using a trained regression model.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Input features to make predictions with."
+            },
+            "model": {
+              "type": "object",
+              "description": "Trained regression model object."
+            },
+            "scaler": {
+              "type": "number",
+              "description": "Fitted Scaler object for input features scaling. This is a float type value.",
+              "default": "1.2",
+              "format": "float"
+            }
+          },
+          "required": [
+            "features",
+            "model"
+          ]
+        }
+      }
+    }
+  ]
+}

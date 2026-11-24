@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_369",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "grocery_store_find_nearby",
+        "description": "Locate nearby grocery stores based on specific criteria like organic fruits and vegetables.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. Houston, TX"
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Organic",
+                  "Vegetables",
+                  "Fruits",
+                  "Dairy",
+                  "Seafood",
+                  "Bakery"
+                ]
+              },
+              "description": "Categories of items to be found in the grocery store. Default is all if not specified."
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

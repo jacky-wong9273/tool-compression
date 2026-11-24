@@ -1,0 +1,71 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_21",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "play_sound_wave",
+        "description": "This function is for playing a sound wave file.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "wave_file": {
+              "type": "string",
+              "description": "The filename of the sound wave file to be played."
+            },
+            "volume": {
+              "type": "number",
+              "description": "The volume level at which the sound is to be played (1 is 100%). This is a float type value.",
+              "default": 1,
+              "format": "float"
+            }
+          },
+          "required": [
+            "wave_file"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "generate_sound_wave",
+        "description": "This function is for generating a sinusoidal sound wave file of a certain frequency for a specific duration and save it to a WAV file.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "type": "integer",
+              "description": "The frequency of the sound wave in Hz."
+            },
+            "duration": {
+              "type": "integer",
+              "description": "The duration of the sound in seconds."
+            },
+            "wave_type": {
+              "type": "string",
+              "enum": [
+                "sine",
+                "square",
+                "sawtooth"
+              ],
+              "description": "The waveform to be used to generate the sound.",
+              "default": "sine"
+            }
+          },
+          "required": [
+            "frequency",
+            "duration"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_92",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "safeway_vegan_products",
+        "description": "Get available vegan products at specified Safeway store",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the Safeway store is located, e.g. Denver, CO"
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vegan",
+                  "gluten-free"
+                ]
+              },
+              "description": "Product categories to search within. Default empty array"
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "wholefoods_vegan_products",
+        "description": "Get available vegan products at specified Whole Foods store",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the Whole Foods store is located, e.g. Denver, CO"
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vegan",
+                  "gluten-free"
+                ]
+              },
+              "description": "Product categories to search within. Default empty array"
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "walmart_vegan_products",
+        "description": "Get available vegan products at specified Walmart store",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the Walmart store is located, e.g. Denver, CO"
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "vegan",
+                  "gluten-free"
+                ]
+              },
+              "description": "Product categories to search within. Default empty array"
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

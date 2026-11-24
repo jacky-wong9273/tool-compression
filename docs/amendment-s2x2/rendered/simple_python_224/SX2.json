@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_224",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "social_media_analytics_most_followed",
+        "description": "Find the most followed Twitter user related to certain topics.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "The main topic of interest."
+            },
+            "sub_topics": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Sub-topics related to main topic. Default is empty."
+            },
+            "region": {
+              "type": "string",
+              "description": "Region of interest for twitter search. Default is 'all'."
+            }
+          },
+          "required": [
+            "topic"
+          ]
+        }
+      }
+    }
+  ]
+}

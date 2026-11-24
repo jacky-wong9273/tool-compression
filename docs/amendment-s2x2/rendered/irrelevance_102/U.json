@@ -1,0 +1,44 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_102",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_sunrise_and_sunset",
+        "description": "Calculate the sunrise and sunset time of a location for the given date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location in city, state format."
+            },
+            "date": {
+              "type": "string",
+              "description": "The date for which the sunrise and sunset needs to be calculated in yyyy-mm-dd format."
+            },
+            "output_format": {
+              "type": "string",
+              "description": "The desired output time format.",
+              "enum": [
+                "24-hour",
+                "12-hour"
+              ],
+              "default": "12-hour"
+            }
+          },
+          "required": [
+            "location",
+            "date"
+          ]
+        }
+      }
+    }
+  ]
+}

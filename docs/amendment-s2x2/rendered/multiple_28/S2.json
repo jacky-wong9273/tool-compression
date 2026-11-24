@@ -1,0 +1,89 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_28",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "solve_quadratic_equation",
+        "description": "Solve a quadratic equation with given coefficients a, b, and c.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "integer",
+              "description": "Coefficient of x^2."
+            },
+            "b": {
+              "type": "integer",
+              "description": "Coefficient of x."
+            },
+            "c": {
+              "type": "integer",
+              "description": "Constant term."
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "convert_rgb_to_hex",
+        "description": "Converts RGB values to Hexadecimal color code.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "r": {
+              "type": "integer",
+              "description": "The Red component."
+            },
+            "g": {
+              "type": "integer",
+              "description": "The Green component."
+            },
+            "b": {
+              "type": "integer",
+              "description": "The Blue component."
+            }
+          },
+          "required": [
+            "r",
+            "g",
+            "b"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "perform_string_reverse",
+        "description": "Reverses a given string.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "input_string": {
+              "type": "string",
+              "description": "The string to be reversed."
+            }
+          },
+          "required": [
+            "input_string"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_399",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_search",
+        "description": "Locates top rated restaurants based on specific criteria such as type of cuisine, ratings, and facilities.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. New York City, NY"
+            },
+            "cuisine": {
+              "type": "string",
+              "description": "Preferred type of cuisine e.g., Italian, Indian, American, etc."
+            },
+            "rating": {
+              "type": "integer",
+              "description": "Minimum average customer rating out of 5"
+            },
+            "accepts_credit_cards": {
+              "type": "boolean",
+              "description": "If the restaurant should accept credit cards."
+            }
+          },
+          "required": [
+            "location",
+            "cuisine",
+            "rating",
+            "accepts_credit_cards"
+          ]
+        }
+      }
+    }
+  ]
+}

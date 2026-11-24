@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_147",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_prices",
+        "description": "Retrieves stock prices for specified companies and duration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "companies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of companies to retrieve stock prices for."
+            },
+            "duration": {
+              "type": "string",
+              "description": "Time duration to retrieve stock prices for. E.g., '1 week', '2 weeks', '1 month', etc."
+            }
+          },
+          "required": [
+            "companies",
+            "duration"
+          ]
+        }
+      }
+    }
+  ]
+}

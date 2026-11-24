@@ -1,0 +1,52 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_129",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "personality_assessment_evaluate",
+        "description": "Evaluate and categorize a user's personality type based on a given array of personality trait percentages.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "traits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "trait": {
+                    "type": "string",
+                    "description": "The personality trait being evaluated."
+                  },
+                  "percentage": {
+                    "type": "integer",
+                    "description": "The percentage representation of the trait in the user's personality."
+                  }
+                },
+                "required": [
+                  "trait",
+                  "percentage"
+                ]
+              }
+            },
+            "detailed_output": {
+              "type": "boolean",
+              "description": "Determines whether the output should include a detailed explanation of the personality type. This is optional.",
+              "default": "True"
+            }
+          },
+          "required": [
+            "traits"
+          ]
+        }
+      }
+    }
+  ]
+}

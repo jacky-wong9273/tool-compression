@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_175",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawyer_get_experience",
+        "description": "Retrieve months of experience of a Lawyer on handling certain type of law cases.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The full name of the Lawyer."
+            },
+            "law_type": {
+              "type": "string",
+              "description": "The type of law case. eg. Bankruptcy"
+            }
+          },
+          "required": [
+            "name",
+            "law_type"
+          ]
+        }
+      }
+    }
+  ]
+}

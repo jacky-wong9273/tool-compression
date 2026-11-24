@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_159",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_act_details",
+        "description": "Retrieve the details of a particular legal act based on its name and year of amendment if any.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "act_name": {
+              "type": "string",
+              "description": "The name of the act."
+            },
+            "amendment_year": {
+              "type": "integer",
+              "description": "Year of amendment if any. If not provided, the latest amendment year will be considered."
+            }
+          },
+          "required": [
+            "act_name",
+            "amendment_year"
+          ]
+        }
+      }
+    }
+  ]
+}

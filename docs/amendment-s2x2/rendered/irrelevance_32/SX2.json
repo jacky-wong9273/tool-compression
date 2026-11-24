@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_32",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "cellBiology_getCellType",
+        "description": "Return the type of the cell based on it's characteristics.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "nucleus_count": {
+              "type": "integer",
+              "description": "The number of nucleus in the cell."
+            },
+            "organism_type": {
+              "type": "string",
+              "description": "The type of organism the cell belongs to."
+            },
+            "membrane_type": {
+              "type": "string",
+              "description": "Type of membrane in the cell, default value is 'Phospholipid bi-layer'",
+              "default": "Phospholipid bi-layer"
+            }
+          },
+          "required": [
+            "nucleus_count",
+            "organism_type"
+          ]
+        }
+      }
+    }
+  ]
+}

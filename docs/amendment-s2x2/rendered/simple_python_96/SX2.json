@@ -1,0 +1,65 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_96",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "database_query",
+        "description": "Query the database based on certain conditions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "description": "Name of the table to query."
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "type": "string",
+                    "description": "The field to apply the condition."
+                  },
+                  "operation": {
+                    "type": "string",
+                    "description": "The operation to be performed.",
+                    "enum": [
+                      "<",
+                      ">",
+                      "=",
+                      ">=",
+                      "<="
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "The value to be compared."
+                  }
+                },
+                "required": [
+                  "field",
+                  "operation",
+                  "value"
+                ]
+              },
+              "description": "Conditions for the query."
+            }
+          },
+          "required": [
+            "table",
+            "conditions"
+          ]
+        }
+      }
+    }
+  ]
+}

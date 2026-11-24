@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_122",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_neural_activity",
+        "description": "Get the neural activity of the brain by given timeframe.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "patient_id": {
+              "type": "string",
+              "description": "The identification of the patient."
+            },
+            "start_time": {
+              "type": "string",
+              "description": "Start time for the period (YYYY-MM-DD HH:MM:SS)"
+            },
+            "end_time": {
+              "type": "string",
+              "description": "End time for the period (YYYY-MM-DD HH:MM:SS)"
+            },
+            "filter_frequency": {
+              "type": "boolean",
+              "description": "Optional flag to filter out low frequency brain wave.",
+              "default": "False"
+            }
+          },
+          "required": [
+            "patient_id",
+            "start_time",
+            "end_time"
+          ]
+        }
+      }
+    }
+  ]
+}

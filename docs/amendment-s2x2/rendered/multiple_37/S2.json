@@ -1,0 +1,97 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_37",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "physics_wave_velocity",
+        "description": "Calculate the velocity of a wave based on its frequency and wavelength.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "frequency": {
+              "type": "number",
+              "description": "The frequency of the wave in Hz.",
+              "format": "float"
+            },
+            "wavelength": {
+              "type": "number",
+              "description": "The wavelength of the wave in m.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "frequency",
+            "wavelength"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "kinematics_final_velocity",
+        "description": "Find the final velocity of an object moving under constant acceleration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "integer",
+              "description": "The initial velocity of the object in m/s."
+            },
+            "time": {
+              "type": "integer",
+              "description": "The time in seconds the object has been moving."
+            },
+            "acceleration": {
+              "type": "number",
+              "description": "The acceleration of the object in m/s^2. Default value is -9.81 (Earth's gravity)",
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_velocity",
+            "time"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "kinematics_distance",
+        "description": "Find the distance traveled by an object moving under constant acceleration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "initial_velocity": {
+              "type": "number",
+              "description": "The initial velocity of the object in m/s.",
+              "format": "float"
+            },
+            "time": {
+              "type": "integer",
+              "description": "The time in seconds the object has been moving."
+            },
+            "acceleration": {
+              "type": "number",
+              "description": "The acceleration of the object in m/s^2. Default value is -9.81 (Earth's gravity)",
+              "format": "float"
+            }
+          },
+          "required": [
+            "initial_velocity",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_156",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "generate_architecture_plan",
+        "description": "Generate a custom architecture plan for a building based on given parameters.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "style": {
+              "type": "string",
+              "description": "The architecture style, e.g. Gothic, Roman."
+            },
+            "building_type": {
+              "type": "string",
+              "description": "The type of the building e.g. Church, Residential."
+            },
+            "extra_features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Pool",
+                  "Garage",
+                  "Garden",
+                  "Elevator"
+                ]
+              },
+              "description": "Additional features to be added in the design.",
+              "default": [
+                "Garage"
+              ]
+            }
+          },
+          "required": [
+            "style",
+            "building_type"
+          ]
+        }
+      }
+    }
+  ]
+}

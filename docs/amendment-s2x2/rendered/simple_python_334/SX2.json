@@ -1,0 +1,47 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_334",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "blackjack_check_winner",
+        "description": "Checks and determines the winner in a game of blackjack.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_cards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Cards held by the player."
+            },
+            "dealer_cards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Cards held by the dealer."
+            },
+            "ace_value": {
+              "type": "integer",
+              "description": "The value considered for the ace card, can be either 1 or 11.",
+              "default": 11
+            }
+          },
+          "required": [
+            "player_cards",
+            "dealer_cards"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_91",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_law_categories",
+        "description": "Retrieves the list of categories within a specified type of law.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "law_type": {
+              "type": "string",
+              "description": "The type of law to be searched."
+            },
+            "country": {
+              "type": "string",
+              "description": "The country where the law is applicable."
+            },
+            "specific_category": {
+              "type": "string",
+              "description": "Specific category within the type of law (Optional). Default: 'business'"
+            }
+          },
+          "required": [
+            "law_type",
+            "country"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_100",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "light_travel_time",
+        "description": "Calculate the time taken for light to travel from a celestial body to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "distance_in_light_years": {
+              "type": "integer",
+              "description": "The distance between the two celestial bodies in light years."
+            },
+            "speed_of_light": {
+              "type": "integer",
+              "description": "The speed of light in vacuum, in m/s. Default value is 299792458 m/s."
+            }
+          },
+          "required": [
+            "distance_in_light_years"
+          ]
+        }
+      }
+    }
+  ]
+}

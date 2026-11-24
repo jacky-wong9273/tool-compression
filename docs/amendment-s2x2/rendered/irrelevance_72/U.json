@@ -1,0 +1,38 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_72",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_internal_rate_of_return",
+        "description": "Calculate the internal rate of return for a project given its cash flows.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cash_flows": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The cash flows for the project. Cash outflows should be represented as negative values."
+            },
+            "guess": {
+              "type": "number",
+              "description": "The guess for the IRR. Default is 0.1. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "cash_flows"
+          ]
+        }
+      }
+    }
+  ]
+}

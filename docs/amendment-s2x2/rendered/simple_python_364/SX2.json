@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_364",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_restaurant",
+        "description": "Locate nearby restaurants based on user defined criteria",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location where user wants to search for a restaurant."
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of the cuisine/restaurant."
+            },
+            "diet_option": {
+              "type": "string",
+              "description": "Special dietary preferences."
+            }
+          },
+          "required": [
+            "location",
+            "type",
+            "diet_option"
+          ]
+        }
+      }
+    }
+  ]
+}

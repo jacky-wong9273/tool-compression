@@ -1,0 +1,50 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_252",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_religion_history",
+        "description": "Retrieves significant religious events, including the details of the event, its historical context, and its impacts.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "religion": {
+              "type": "string",
+              "description": "Name of the religion to be queried."
+            },
+            "century": {
+              "type": "integer",
+              "description": "The century in which the event(s) took place."
+            },
+            "sort_by": {
+              "type": "string",
+              "enum": [
+                "importance",
+                "chronological"
+              ],
+              "default": "chronological",
+              "description": "Order of sorting the events. Default is chronological."
+            },
+            "count": {
+              "type": "integer",
+              "default": 5,
+              "description": "Number of events to return. Default is 5."
+            }
+          },
+          "required": [
+            "religion",
+            "century"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "sample": "official-840",
+  "case_id": "multiple_44",
+  "category": "multiple",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "unit_conversion_convert",
+        "description": "Convert a value from one unit to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "description": "The value to be converted. This is a float type value.",
+              "format": "float"
+            },
+            "from_unit": {
+              "type": "string",
+              "description": "The unit to convert from."
+            },
+            "to_unit": {
+              "type": "string",
+              "description": "The unit to convert to."
+            }
+          },
+          "required": [
+            "value",
+            "from_unit",
+            "to_unit"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "currency_conversion",
+        "description": "Convert a value from one currency to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "number",
+              "description": "The amount to be converted. This is a float type value.",
+              "format": "float"
+            },
+            "from_currency": {
+              "type": "string",
+              "description": "The currency to convert from."
+            },
+            "to_currency": {
+              "type": "string",
+              "description": "The currency to convert to."
+            }
+          },
+          "required": [
+            "amount",
+            "from_currency",
+            "to_currency"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_weight_in_space",
+        "description": "Calculate your weight on different planets given your weight on earth",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight_earth_kg": {
+              "type": "integer",
+              "description": "Your weight on Earth in Kilograms."
+            },
+            "planet": {
+              "type": "string",
+              "description": "The planet you want to know your weight on."
+            }
+          },
+          "required": [
+            "weight_earth_kg",
+            "planet"
+          ]
+        }
+      }
+    }
+  ]
+}

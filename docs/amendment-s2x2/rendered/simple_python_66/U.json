@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_66",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "ecology_data_precipitation_stats",
+        "description": "Retrieve precipitation data for a specified location and time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The name of the location, e.g., 'Amazon rainforest'."
+            },
+            "time_frame": {
+              "type": "string",
+              "enum": [
+                "six_months",
+                "year",
+                "five_years"
+              ],
+              "description": "The time period for which data is required."
+            }
+          },
+          "required": [
+            "location",
+            "time_frame"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_201",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "game_guide",
+        "description": "A video game guide which provides guidance and tips for completing levels, solving puzzles or defeating bosses.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "level": {
+              "type": "integer",
+              "description": "The level number of the game."
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "puzzle",
+                "boss",
+                "traps",
+                "missions"
+              ],
+              "description": "The type of help you're seeking. Defaults to all types."
+            }
+          },
+          "required": [
+            "game_name",
+            "level"
+          ]
+        }
+      }
+    }
+  ]
+}

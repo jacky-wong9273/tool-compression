@@ -1,0 +1,52 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_136",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "compound_interest",
+        "description": "Calculate compound interest for a certain time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "principal": {
+              "type": "integer",
+              "description": "The initial amount of money that was invested or loaned out."
+            },
+            "annual_rate": {
+              "type": "number",
+              "description": "The interest rate for a year as a percentage.",
+              "format": "float"
+            },
+            "compounding_freq": {
+              "type": "string",
+              "enum": [
+                "monthly",
+                "quarterly",
+                "annually"
+              ],
+              "description": "The number of times that interest is compounded per unit period."
+            },
+            "time_in_years": {
+              "type": "integer",
+              "description": "The time the money is invested for in years."
+            }
+          },
+          "required": [
+            "principal",
+            "annual_rate",
+            "compounding_freq",
+            "time_in_years"
+          ]
+        }
+      }
+    }
+  ]
+}

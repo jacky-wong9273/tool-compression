@@ -1,0 +1,76 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_15",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "solarFarm_potential",
+        "description": "Estimate the energy output of a solar farm given its location and panel area for a particular month.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographic coordinates of the location of the solar farm."
+            },
+            "panelArea": {
+              "type": "integer",
+              "description": "The total solar panel area in square feet at the location."
+            },
+            "month": {
+              "type": "string",
+              "description": "The month for which to calculate the potential energy output. Default to January",
+              "optional": true
+            }
+          },
+          "required": [
+            "coordinates",
+            "panelArea"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "windFarm_potential",
+        "description": "Estimate the energy output of a wind farm given its location and turbine count for a particular month.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographic coordinates of the location of the wind farm."
+            },
+            "turbineCount": {
+              "type": "integer",
+              "description": "The total number of wind turbines at the location."
+            },
+            "month": {
+              "type": "string",
+              "description": "The month for which to calculate the potential energy output. Default to January",
+              "optional": true
+            }
+          },
+          "required": [
+            "coordinates",
+            "turbineCount"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_105",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "math_power",
+        "description": "Calculate the power of one number raised to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "base": {
+              "type": "integer",
+              "description": "The base number."
+            },
+            "exponent": {
+              "type": "integer",
+              "description": "The exponent."
+            },
+            "mod": {
+              "type": "integer",
+              "description": "The modulus. Default is 1. Calculates pow(base, exponent) % mod when provided."
+            }
+          },
+          "required": [
+            "base",
+            "exponent"
+          ]
+        }
+      }
+    }
+  ]
+}

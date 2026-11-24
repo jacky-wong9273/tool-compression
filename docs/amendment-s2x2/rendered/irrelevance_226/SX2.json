@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_226",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_local_time",
+        "description": "Retrieve the current local time in a specified time zone.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "timezone": {
+              "type": "string",
+              "description": "The timezone for which local time needs to be calculated."
+            },
+            "date_format": {
+              "type": "string",
+              "description": "The format in which the date and time should be returned. Default is 'YYYY-MM-DD HH:mm:ss'."
+            }
+          },
+          "required": [
+            "timezone",
+            "date_format"
+          ]
+        }
+      }
+    }
+  ]
+}

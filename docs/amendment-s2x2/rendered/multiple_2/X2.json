@@ -1,0 +1,69 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_2",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "country_info_largest_city",
+        "description": "Fetch the largest city of a specified country. Unlike country_info_capital, which fetches the capital city, this fetches the largest city.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "Name of the country."
+            }
+          },
+          "required": [
+            "country"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "country_info_capital",
+        "description": "Fetch the capital city of a specified country. Unlike country_info_largest_city, which fetches the largest city, this fetches the capital city.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "Name of the country."
+            }
+          },
+          "required": [
+            "country"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "country_info_population",
+        "description": "Fetch the current population of a specified country.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "description": "Name of the country."
+            }
+          },
+          "required": [
+            "country"
+          ]
+        }
+      }
+    }
+  ]
+}

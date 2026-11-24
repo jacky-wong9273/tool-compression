@@ -1,0 +1,91 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_0",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "triangle_properties_get",
+        "description": "Retrieve the dimensions, such as area and perimeter, of a triangle if lengths of three sides are given.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "side1": {
+              "type": "integer",
+              "description": "The length of first side of the triangle."
+            },
+            "side2": {
+              "type": "integer",
+              "description": "The length of second side of the triangle."
+            },
+            "side3": {
+              "type": "integer",
+              "description": "The length of third side of the triangle."
+            },
+            "get_area": {
+              "type": "boolean",
+              "description": "Whether to calculate the area",
+              "default": true,
+              "optional": true
+            },
+            "get_perimeter": {
+              "type": "boolean",
+              "description": "Whether to calculate the perimeter",
+              "default": true,
+              "optional": true
+            },
+            "get_angles": {
+              "type": "boolean",
+              "description": "Whether to calculate the internal angles",
+              "default": true,
+              "optional": true
+            }
+          },
+          "required": [
+            "side1",
+            "side2",
+            "side3"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "circle_properties_get",
+        "description": "Retrieve the dimensions, such as area and circumference, of a circle if radius is given.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "number",
+              "description": "The length of radius of the circle.",
+              "format": "float"
+            },
+            "get_area": {
+              "type": "boolean",
+              "description": "Whether to calculate the area",
+              "default": true,
+              "optional": true
+            },
+            "get_circumference": {
+              "type": "boolean",
+              "description": "Whether to calculate the circumference",
+              "default": true,
+              "optional": true
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

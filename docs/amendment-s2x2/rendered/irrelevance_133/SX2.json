@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_133",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_battle_details",
+        "description": "Retrieve the details of a historical battle, including the participants and the winner.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "battle_name": {
+              "type": "string",
+              "description": "The name of the battle."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year the battle took place."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the battle took place. This is an optional parameter.",
+              "default": "NY"
+            }
+          },
+          "required": [
+            "battle_name",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

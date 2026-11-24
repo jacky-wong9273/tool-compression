@@ -1,0 +1,49 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_358",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "recipe_search",
+        "description": "Search for a cooking recipe based on specific dietary needs and time constraint.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "diet": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Gluten Free",
+                  "Dairy Free",
+                  "Vegan",
+                  "Vegetarian"
+                ]
+              },
+              "description": "Specific dietary need."
+            },
+            "time_limit": {
+              "type": "integer",
+              "description": "The maximum time to prepare the recipe in minutes. Default is 60 minutes."
+            },
+            "dish": {
+              "type": "string",
+              "description": "The name of the dish to search for. Default is not use if not specified."
+            }
+          },
+          "required": [
+            "dish",
+            "diet"
+          ]
+        }
+      }
+    }
+  ]
+}

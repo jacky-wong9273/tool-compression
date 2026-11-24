@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_134",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_battle_outcome",
+        "description": "Predicts the outcome of a historical battle based on the strategies, army size and other influencing factors.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "battle_name": {
+              "type": "string",
+              "description": "The name of the historical battle."
+            },
+            "strategy_type": {
+              "type": "string",
+              "description": "The strategy employed in the battle."
+            },
+            "weather_condition": {
+              "type": "string",
+              "description": "Weather condition during the battle.",
+              "default": "snowing"
+            }
+          },
+          "required": [
+            "battle_name",
+            "strategy_type"
+          ]
+        }
+      }
+    }
+  ]
+}

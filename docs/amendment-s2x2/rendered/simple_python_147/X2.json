@@ -1,0 +1,39 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_147",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_stock_prices",
+        "description": "Retrieves stock prices for specified companies and duration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "companies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of companies to retrieve stock prices for."
+            },
+            "duration": {
+              "type": "string",
+              "description": "Time duration to retrieve stock prices for. E.g., '1 week', '2 weeks', '1 month', etc."
+            }
+          },
+          "required": [
+            "companies",
+            "duration"
+          ]
+        }
+      }
+    }
+  ]
+}

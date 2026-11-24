@@ -1,0 +1,51 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_34",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "travel_itinerary_generator",
+        "description": "Generate a travel itinerary based on specific destination, duration and daily budget, with preferred exploration type.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "destination": {
+              "type": "string",
+              "description": "Destination city of the trip."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days for the trip."
+            },
+            "daily_budget": {
+              "type": "integer",
+              "description": "The maximum daily budget for the trip."
+            },
+            "exploration_type": {
+              "type": "string",
+              "enum": [
+                "nature",
+                "urban",
+                "history",
+                "culture"
+              ],
+              "description": "The preferred exploration type.",
+              "default": "urban"
+            }
+          },
+          "required": [
+            "destination",
+            "days",
+            "daily_budget"
+          ]
+        }
+      }
+    }
+  ]
+}

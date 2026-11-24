@@ -1,0 +1,34 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_8",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "geometry_area_circle",
+        "description": "Calculate the area of a circle given the radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "radius": {
+              "type": "integer",
+              "description": "The radius of the circle."
+            },
+            "units": {
+              "type": "string",
+              "description": "The units in which the radius is measured (defaults to 'meters')."
+            }
+          },
+          "required": [
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

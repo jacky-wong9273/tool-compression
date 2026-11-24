@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_98",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_settlement_estimate",
+        "description": "Calculate an estimated lawsuit settlement amount based on inputs.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "damage_amount": {
+              "type": "number",
+              "description": "Amount of damages in USD.",
+              "format": "float"
+            },
+            "incident_type": {
+              "type": "string",
+              "description": "Type of incident leading to the lawsuit."
+            },
+            "defendant_assets": {
+              "type": "number",
+              "description": "Amount of defendant's assets in USD. Default: 0.1",
+              "format": "float"
+            }
+          },
+          "required": [
+            "damage_amount",
+            "incident_type"
+          ]
+        }
+      }
+    }
+  ]
+}

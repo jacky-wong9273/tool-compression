@@ -74,6 +74,11 @@ def main(argv: list[str] | None = None) -> int:
     official.add_argument("--no-api", action="store_true")
     official.add_argument("--live", action="store_true")
 
+    amendment = sub.add_parser("amendment-s2x2")
+    mode = amendment.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--freeze", action="store_true")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -93,7 +98,22 @@ def main(argv: list[str] | None = None) -> int:
         return _usx_flight(args)
     if args.command == "usx-840":
         return _usx_840(args)
+    if args.command == "amendment-s2x2":
+        return _amendment_s2x2(args)
     return 2
+
+
+def _amendment_s2x2(args) -> int:
+    """Offline S2/X2/SX2 check. This command has no live path and no API key."""
+    from tool_compression.amendment_bundle import AmendmentFailure, check, freeze
+
+    try:
+        result = freeze() if args.freeze else check()
+    except AmendmentFailure as exc:
+        print(exc)
+        return 1
+    print(json.dumps(result))
+    return 0
 
 
 def _characterize(args) -> int:

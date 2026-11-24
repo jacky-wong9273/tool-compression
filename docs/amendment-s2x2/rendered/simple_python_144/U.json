@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_144",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "market_performance_get_data",
+        "description": "Retrieve the market performance data for specified indexes over a specified time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "indexes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of stock market indexes. Supported indexes are 'S&P 500', 'Dow Jones', 'NASDAQ', 'FTSE 100', 'DAX' etc."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of days in the past for which the performance data is required."
+            },
+            "detailed": {
+              "type": "boolean",
+              "description": "Whether to return detailed performance data. If set to true, returns high, low, opening, and closing prices. If false, returns only closing prices. Default is false."
+            }
+          },
+          "required": [
+            "indexes",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_159",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "artwork_search",
+        "description": "Find details about an artwork given its name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "artwork_name": {
+              "type": "string",
+              "description": "The name of the artwork."
+            },
+            "museum_location": {
+              "type": "string",
+              "description": "The location of the museum, e.g., Paris, France."
+            },
+            "specific_details": {
+              "type": "string",
+              "description": "Specific details wanted such as 'artist', 'year', etc.",
+              "default": "all details"
+            }
+          },
+          "required": [
+            "artwork_name",
+            "museum_location"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_225",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "psych_research_get_preference",
+        "description": "Gathers research data on public preference between two options, based on societal category.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "type": "string",
+              "description": "The societal category the preference data is about. E.g. reading, transportation, food"
+            },
+            "option_one": {
+              "type": "string",
+              "description": "The first option people could prefer."
+            },
+            "option_two": {
+              "type": "string",
+              "description": "The second option people could prefer."
+            },
+            "demographic": {
+              "type": "string",
+              "description": "Specific demographic of society to narrow down the research.",
+              "default": "all"
+            }
+          },
+          "required": [
+            "category",
+            "option_one",
+            "option_two"
+          ]
+        }
+      }
+    }
+  ]
+}
