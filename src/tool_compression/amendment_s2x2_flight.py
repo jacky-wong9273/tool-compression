@@ -14,22 +14,24 @@ What this runner does:
   and keeps that body, without ``max_tokens``, as the plan-hash identity
 - sends a wire body that is the plan body plus explicit ``max_tokens`` 8192
 - shares one payload only inside one case and one thinking pass
-- bills a remaining-run worst case of off-peak all-miss local o200k tokens of
-  each still-unsettled wire send, plus ``max_tokens`` output
-- refuses to start when settled spend + unknown-timeout holds + that remaining
-  sum would pass the ceiling, and never writes ``live.json`` for a partial run
-- after a timeout, or any call whose charge is unknown, holds that call's
-  worst case and will not send further calls unless the ceiling still covers
-  the hold plus the remaining-run worst case; a resume reloads the hold
-- refuses a resume whose ledger is missing, whose final ledger entry is torn,
-  or whose cap summary would reset settled spend to zero
-- freezes the entire wire manifest on the first open and refuses a later plan
-  that is not that manifest
-- lets only one process own the run directory; a second resume is refused
-- prices a returned call at provider ``prompt_tokens`` when that count exceeds
-  the local o200k estimate, reprices every remaining slot with that ratio, and
-  treats the supplied ceiling (at most ¥80.00) as the hard stop
+- reports the local off-peak o200k model (¥71.751836 for the full wire plan)
+  as estimated to fit ¥80; that figure is not a spending cap and not an invoice
+- before any send, reserves a documented per-call upper bound (context window,
+  maximum output, and the higher published tariff) and does not send when
+  settled spend, unknown holds, and those reservations would pass the ceiling
+- keeps an unknown charge reserved until it is reconciled, and does not delete
+  the last record of exposure when a resume is refused
+- refuses a resume whose ledger, hold, stop, and completion records disagree
+  about exposure, whose ledger is missing while a summary claims spend, or
+  whose final ledger entry is torn
+- pins the wire manifest before a funded or unfunded preflight returns, rehashes
+  the body before sending, and matches settlements to that manifest before
+  completion
+- lets only one process own the run directory; accounting writes require that
+  lock, and the public recovery read does not rewrite the files
 - does not read an API key and does not open a provider socket
+- does not claim a provider-enforced ¥80 spend limit; the public DeepSeek Flash
+  chat API does not expose one this run can set
 
 Resume and ceiling notes are in ``amendment_s2x2_flight_resume.md`` beside this
 file. The paid flight is not ready.
@@ -44,20 +46,22 @@ retune of official r or lambda. Plan hashes omit the field on purpose. Wire
 hashes differ because the field is present; it is not dropped to preserve the
 plan hash.
 
-Jacky set the hard cap at ¥80.00 for this runner dig. That is not authorization
-to fly. Official settlement stays false. Human review was not performed.
-The paid flight is not ready. Local o200k counts are not provider T.
+Jacky's ceiling for this dig is ¥80.00. The local model is estimated to fit
+¥80. That estimate is not a cap. Official settlement stays false. Human review
+was not performed. The paid flight is not ready. Local o200k counts are not
+provider T. This module does not authorize a paid flight.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime
-from decimal import Decimal, InvalidOperation, ROUND_CEILING
+from decimal import Decimal, InvalidOperation
 from functools import lru_cache
 from pathlib import Path
 from typing import NoReturn
 import argparse
+import contextvars
 import fcntl
 import hashlib
 import json
@@ -93,7 +97,13 @@ ARMS = ("U", "S2", "X2", "SX2")
 MAX_TOKENS = 8192
 MAX_TOKENS_FIELD = "max_tokens"
 HARD_CAP_CNY = Decimal("80.00")
+# Documented deepseek-flash caps from the public list-models example and the
+# pricing page, checked 2026-11-24. Not a live /models call. Input and output
+# share the context window; reserving both caps overstates one call on purpose.
+DOCUMENTED_CONTEXT_TOKENS = 1_048_576
+DOCUMENTED_MAX_OUTPUT_TOKENS = 384 * 1024
 OFFPEAK = "off-peak"
+RESERVE_SCHEDULE = "peak"
 HUMAN_REVIEW = "not performed (not passed)"
 OFFICIAL_V11 = "closed"
 SAMPLE = "official-840"
@@ -114,28 +124,40 @@ MAX_TOKENS_NOTE = (
     "the plan hash."
 )
 HARD_CAP_NOTE = (
-    "Jacky set a hard spending cap of ¥80.00 for this runner dig. The cap is "
-    "not authorization to fly. Official v1.1 stays closed. Human review was "
-    "not performed. The paid flight is not ready."
+    "Jacky's ceiling for this dig is ¥80.00. The local o200k model is "
+    "estimated to fit ¥80. That estimate is not a spending cap and not a "
+    "provider invoice. No provider-enforced spend limit is available for this "
+    "run. The runner reserves the documented per-call bound and does not send "
+    "when that reservation would pass the ceiling. The ceiling is not "
+    "authorization to fly. Official v1.1 stays closed. Human review was not "
+    "performed. The paid flight is not ready."
 )
 REMAINING_RUN_NOTE = (
-    "Remaining-run worst case sums every not-yet-settled within-cell wire "
-    "send: off-peak all-miss local o200k tokens of that wire body, plus "
-    "max_tokens output. Identical payloads are shared only inside one case "
-    "and one thinking pass, so a repeated hash in another cell is another "
-    "send. A timed-out call stays incomplete and is also held as an unknown "
-    "charge. Local tokens are not provider T."
+    "The local estimate prices every not-yet-settled wire send as off-peak "
+    "all-miss o200k tokens of that body plus max_tokens output. It is "
+    "estimated to fit ¥80 for the full plan and is not a cap. Before a send, "
+    "the runner reserves the documented context window and maximum output at "
+    "the higher published tariff. A timed-out call stays incomplete and keeps "
+    "that reservation until the charge is reconciled. Local tokens are not "
+    "provider T."
 )
+ESTIMATED_TO_FIT = "estimated to fit ¥80"
 CAP_STOP = "remaining worst-case would pass the supplied ceiling"
-TIMEOUT_STOP = "provider timed out; unknown charge held at this call's worst-case bound"
-UNKNOWN_STOP = "provider call failed; unknown charge held at this call's worst-case bound"
+TIMEOUT_STOP = "provider timed out; unknown charge held at this call's documented reserve"
+UNKNOWN_STOP = "provider call failed; unknown charge held at this call's documented reserve"
 LEDGER_MISSING = "calls ledger is missing; refusing to reset settled spend to zero"
 LEDGER_TORN = "calls ledger final entry is torn and cannot be repaired"
 LEDGER_INCONSISTENT = "cap state does not match the calls ledger; refusing to reset settled spend"
+EXPOSURE_UNRESOLVED = "unresolved exposure is not itemized; refusing to reset it to zero"
+EXPOSURE_DISAGREE = "ledger, hold, stop, or completion records disagree about exposure"
 MANIFEST_MISMATCH = "resumed plans do not match the frozen wire manifest"
+HASH_LABEL_MISMATCH = "wire body does not match its stored hash label"
+SEND_HASH_MISMATCH = "refusing to send a body that does not match the frozen manifest"
+SETTLEMENT_MISMATCH = "settled call does not match the frozen manifest"
+OWNER_WRITE = "accounting write requires the run owner lock"
+OVER_RESERVE_STOP = "returned bill exceeded the documented per-call reserve"
 MANIFEST_MISSING = "resume is missing the frozen wire manifest for this run"
 OWNER_HELD = "another operator holds this run directory"
-BILLED_INPUT_STOP = "billed input exceeded the local token estimate; the ceiling stops the run"
 ACCOUNTING_NAMES = ("calls-ledger.jsonl", "cap-hold.json", "stop.json", "live.json")
 MANIFEST_NAME = "wire-manifest.json"
 LOCK_NAME = "run.lock"
@@ -144,7 +166,8 @@ LIVE_STOP = (
     "official settlement stays false; human review was not performed"
 )
 OFFICIAL_DISPATCH_STOP = "refusing to dispatch the official 840 sample; the paid flight is not authorized"
-OVER_CAP_STOP = "ceiling exceeds the ¥80.00 hard cap"
+OVER_CAP_STOP = "supplied ceiling exceeds ¥80.00"
+_RUN_OWNER: contextvars.ContextVar[str | None] = contextvars.ContextVar("amendment_s2x2_run_owner", default=None)
 
 
 class AmendmentFlightRefused(UsxFlightRefused):
@@ -205,14 +228,39 @@ def local_input_tokens(body: dict) -> int:
 
 
 def worst_case_cny(body: dict) -> Decimal:
-    """Off-peak all-miss input of the wire body, plus max_tokens output."""
+    """Local off-peak estimate: all-miss o200k input of the wire body, plus max_tokens output.
+
+    This is the ¥71.751836 model when summed over the official wire plan. It is
+    estimated to fit ¥80. It is not the pre-send reservation and not an invoice.
+    """
     if body.get(MAX_TOKENS_FIELD) != MAX_TOKENS:
         raise AmendmentFlightRefused("worst case requires the explicit max_tokens wire body")
     return spend_cny(OFFPEAK, local_input_tokens(body), 0, MAX_TOKENS)
 
 
+def documented_call_reserve_cny() -> Decimal:
+    """Upper bound reserved before one send, under the published peak card.
+
+    There is no verified provider-enforced spend limit on this chat API that
+    this run can set. The bound is the documented context window at the peak
+    miss rate plus the documented maximum output at the peak output rate.
+    Chat completions say input and generated tokens together cannot exceed the
+    context length, so adding both caps overstates one call and stays an upper
+    bound. ``max_tokens`` 8192 is still sent, but the chat-completions text does
+    not explicitly put reasoning tokens inside that field, so the output cap
+    used here is the model's documented maximum output (384K). DeepSeek says
+    prices may change; this reservation is not a contractual freeze and is not
+    a spending guarantee.
+    """
+    return spend_cny(RESERVE_SCHEDULE, DOCUMENTED_CONTEXT_TOKENS, 0, DOCUMENTED_MAX_OUTPUT_TOKENS)
+
+
 def accept_run_ceiling(value: Decimal) -> Decimal:
-    """A positive Decimal at or under the ¥80.00 hard cap. Floats are refused."""
+    """A positive Decimal at or under ¥80.00. Floats are refused.
+
+    This only bounds the ceiling the caller supplied. It is not a claim that
+    provider spend cannot pass ¥80.
+    """
     if isinstance(value, bool) or not isinstance(value, Decimal):
         raise AmendmentFlightRefused("ceiling must be a Decimal")
     if not value.is_finite() or value <= 0:
@@ -618,7 +666,14 @@ def _money(amount: Decimal) -> str:
     return format(amount, "f")
 
 
+def _require_owner(out: Path) -> None:
+    owned = _RUN_OWNER.get()
+    if owned != str(Path(out).resolve()):
+        raise AmendmentFlightRefused(OWNER_WRITE)
+
+
 def _atomic_json(path: Path, payload: dict) -> None:
+    _require_owner(path.parent)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.tmp")
     text = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
@@ -651,14 +706,20 @@ def _live_path(out: Path) -> Path:
 
 
 def _discard_live(out: Path) -> None:
+    """Drop a completion marker only after a stop record has kept the spend."""
+    _require_owner(out)
     path = _live_path(out)
     if path.is_file():
         path.unlink()
 
 
 def _fail_accounting(out: Path, reason: str) -> NoReturn:
-    """A resume cannot prove its spend. Drop any completion marker and stop."""
-    _discard_live(out)
+    """Refuse without rewriting or deleting evidence.
+
+    A completion marker can be the last surviving record of spend. Deleting it
+    on the way out would make the next restart look like a fresh run.
+    """
+    del out
     raise AmendmentFlightRefused(reason)
 
 
@@ -690,7 +751,7 @@ def _write_hold(out: Path, state: CapState) -> None:
 
 
 def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra: dict | None = None) -> None:
-    _discard_live(out)
+    _require_owner(out)
     _write_hold(out, state)
     record = {
         "purpose": PURPOSE,
@@ -715,18 +776,23 @@ def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra
         "calls_already_settled": len(state.calls),
         "live_json_written": False,
         "max_tokens": MAX_TOKENS,
+        "spending_guarantee": False,
+        "provider_enforced_spend_limit": False,
+        "money_limit": ESTIMATED_TO_FIT,
+        "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
     }
     if extra:
         record.update(extra)
     _atomic_json(_stop_path(out), record)
+    _discard_live(out)
 
 
 def _load_ledger(path: Path) -> list[dict]:
-    """Load settled calls. A torn final line is refused. A missing newline on a valid line is repaired.
+    """Load settled calls. A torn final line is refused. This read does not repair or delete.
 
-    Skipping a torn tail would drop its spend and, on the next append, glue that
-    fragment onto the following record. The newline repair happens before any
-    later append. An invalid final fragment is not truncated and is not ignored.
+    Skipping a torn tail would drop its spend. The newline repair is an accounting
+    write, so it happens under the owner lock in ``_append_ledger``, before the
+    next record is added. An invalid final fragment is not truncated and is not ignored.
     """
     if not path.is_file():
         return []
@@ -756,17 +822,8 @@ def _load_ledger(path: Path) -> list[dict]:
         bill = item.get("bill") if isinstance(item, dict) else None
         if not isinstance(bill, dict) or "spend_cny" not in bill:
             _fail_accounting(path.parent, "calls ledger is corrupt")
-        try:
-            _decimal_field(bill["spend_cny"], "ledger spend")
-        except AmendmentFlightRefused:
-            _discard_live(path.parent)
-            raise
+        _decimal_field(bill["spend_cny"], "ledger spend")
         calls.append(item)
-    if needs_newline:
-        with path.open("ab") as handle:
-            handle.write(b"\n")
-            handle.flush()
-            os.fsync(handle.fileno())
     return calls
 
 
@@ -776,12 +833,8 @@ def _read_json_object(path: Path, label: str) -> dict | None:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        if path.name != MANIFEST_NAME:
-            _discard_live(path.parent)
         raise AmendmentFlightRefused(f"{label} is corrupt") from exc
     if not isinstance(payload, dict):
-        if path.name != MANIFEST_NAME:
-            _discard_live(path.parent)
         raise AmendmentFlightRefused(f"{label} is corrupt")
     return payload
 
@@ -795,6 +848,22 @@ def _claimed_settled(hold: dict | None, stop: dict | None, live: dict | None) ->
         found.append(_decimal_field(stop["spend_cny"], "stop spend"))
     if live is not None and "spend_cny" in live and live.get("spend_cny") is not None:
         found.append(_decimal_field(live["spend_cny"], "live spend"))
+    if not found:
+        return None
+    return max(found)
+
+
+def _claimed_unresolved(stop: dict | None, live: dict | None) -> Decimal | None:
+    """Highest unresolved amount a stop or completion record still claims.
+
+    The hold is not included. Its own outstanding figure is folded into the
+    events loaded from that file. A missing key is not a claim of zero.
+    """
+    found: list[Decimal] = []
+    if stop is not None and "outstanding_unknown_timeout_cny" in stop and stop.get("outstanding_unknown_timeout_cny") is not None:
+        found.append(_decimal_field(stop["outstanding_unknown_timeout_cny"], "stop unresolved"))
+    if live is not None and "outstanding_unknown_timeout_cny" in live and live.get("outstanding_unknown_timeout_cny") is not None:
+        found.append(_decimal_field(live["outstanding_unknown_timeout_cny"], "live unresolved"))
     if not found:
         return None
     return max(found)
@@ -872,12 +941,14 @@ def _events_from_hold(hold: dict) -> list[dict]:
 
 
 def load_cap_state(out: Path) -> CapState:
-    """Reload settled spend and unknown holds. An in-flight call becomes a hold.
+    """Read settled spend and unknown holds. This does not write the run directory.
 
     A missing ledger is a fresh run only when no summary claims spend. A summary
     that is higher than the itemized ledger is refused, so spend cannot come
     back as zero. A summary that is lower can be a stop file left from before a
-    later settled call; the ledger is kept.
+    later settled call; the ledger is kept. A missing hold is not a zero when a
+    stop or completion record still claims unresolved exposure. Disagreement is
+    refused and the files are left as they were.
     """
     out = Path(out)
     ledger_path = _ledger_path(out)
@@ -952,20 +1023,31 @@ def load_cap_state(out: Path) -> CapState:
                 "reason": "unitemized outstanding hold reloaded",
             }
         )
+    reconstructed = sum((Decimal(event["held_worst_case_cny"]) for event in events), Decimal("0"))
+    claimed_unknown = _claimed_unresolved(stop, live)
+    if claimed_unknown is not None and claimed_unknown > reconstructed:
+        _fail_accounting(out, EXPOSURE_UNRESOLVED)
+    if live is not None and live.get("outstanding_unknown_timeout_cny") is not None:
+        if _decimal_field(live["outstanding_unknown_timeout_cny"], "live unresolved") != reconstructed:
+            _fail_accounting(out, EXPOSURE_DISAGREE)
+    if hold is None and reconstructed == 0 and claimed_unknown is not None and claimed_unknown > 0:
+        _fail_accounting(out, EXPOSURE_UNRESOLVED)
     state = CapState(settled, calls, events, None, loaded_events)
     state.sticky = sticky
-    try:
-        _note_recorded_inputs(state, calls, hold)
-    except AmendmentFlightRefused:
-        _discard_live(out)
-        raise
-    if hold_path.is_file():
-        _write_hold(out, state)
+    _note_recorded_inputs(state, calls, hold)
     return state
 
 
 def _append_ledger(path: Path, row: dict) -> None:
+    _require_owner(path.parent)
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_file():
+        existing = path.read_bytes()
+        if existing and not existing.endswith(b"\n"):
+            with path.open("ab") as handle:
+                handle.write(b"\n")
+                handle.flush()
+                os.fsync(handle.fileno())
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
         handle.flush()
@@ -1009,56 +1091,35 @@ def _remaining(slots: list[dict], incomplete: set[str], costs: dict[str, Decimal
     return sum((costs[slot["request_sha256"]] for slot in slots if slot["slot_id"] in incomplete), Decimal("0"))
 
 
-def _scaled_input(local_tokens: int, ratio: Decimal) -> int:
-    scaled = (Decimal(local_tokens) * ratio).to_integral_value(rounding=ROUND_CEILING)
-    return int(scaled)
+def _reserved_remaining(incomplete: set[str]) -> Decimal:
+    return documented_call_reserve_cny() * len(incomplete)
 
 
-def _enforced_slot_cost(slot: dict, costs: dict[str, Decimal], state: CapState) -> Decimal:
-    """Local worst case, or the same output allowance with input scaled by the observed billed ratio.
-
-    An unbounded ratio has no finite scale. Callers stop before relying on this figure.
-    """
-    if state.input_unbounded or state.input_ratio <= 1:
-        return costs[slot["request_sha256"]]
-    local = local_input_tokens(slot["body"])
-    return spend_cny(OFFPEAK, _scaled_input(local, state.input_ratio), 0, MAX_TOKENS)
+def _budget_exceeds(state: CapState, incomplete: set[str], ceiling: Decimal) -> bool:
+    """True when settled spend, unknown holds, and documented reservations pass the ceiling."""
+    return state.exposure_base + _reserved_remaining(incomplete) > ceiling
 
 
-def _enforced_remaining(slots: list[dict], incomplete: set[str], costs: dict[str, Decimal], state: CapState) -> Decimal:
-    if state.input_unbounded or state.input_ratio <= 1:
-        return _remaining(slots, incomplete, costs)
-    return sum(
-        (_enforced_slot_cost(slot, costs, state) for slot in slots if slot["slot_id"] in incomplete),
-        Decimal("0"),
-    )
-
-
-def _ceiling_reason(state: CapState) -> str:
-    if state.input_unbounded or state.input_ratio > 1:
-        return BILLED_INPUT_STOP
-    return CAP_STOP
-
-
-def _budget_exceeds(
+def _cap_extra(
     state: CapState,
+    reserved: Decimal,
+    local_remaining: Decimal,
     slots: list[dict],
     incomplete: set[str],
-    costs: dict[str, Decimal],
-    ceiling: Decimal,
-) -> bool:
-    if state.input_unbounded and incomplete:
-        return True
-    return state.exposure_base + _enforced_remaining(slots, incomplete, costs, state) > ceiling
-
-
-def _cap_extra(state: CapState, remaining: Decimal, slots: list[dict], incomplete: set[str]) -> dict:
+) -> dict:
     return {
-        "remaining_worst_case_cny": _money(remaining),
-        "held_plus_remaining_cny": _money(state.exposure_base + remaining),
+        "remaining_worst_case_cny": _money(reserved),
+        "local_estimate_remaining_cny": _money(local_remaining),
+        "held_plus_remaining_cny": _money(state.exposure_base + reserved),
         "slots_remaining": len(incomplete),
         "slots_planned": len(slots),
         "loaded_timeout_events": state.loaded_events,
+        "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
+        "spending_guarantee": False,
+        "provider_enforced_spend_limit": False,
+        "ceiling_is_hard_stop": False,
+        "local_estimate_is_not_an_invoice": True,
+        "money_limit": ESTIMATED_TO_FIT,
     }
 
 
@@ -1089,6 +1150,7 @@ def _acceptable(slot: dict, payload, bill: dict | None) -> bool:
 
 
 def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
+    _require_owner(out)
     if state.pending is not None:
         raise AmendmentFlightRefused("in-flight hold is still open")
     if state.settled + state.unknown > ceiling or state.settled + state.unknown > HARD_CAP_CNY:
@@ -1115,10 +1177,15 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
         "slots_settled": len(state.calls),
         "max_tokens": MAX_TOKENS,
         "arms": list(ARMS),
+        "spending_guarantee": False,
+        "provider_enforced_spend_limit": False,
+        "money_limit": ESTIMATED_TO_FIT,
+        "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
         "note": (
-            "Scripted completion of a non-official sample whose ceiling covered "
-            "settled spend, unknown timeout holds, and the remaining-run worst case. "
-            "This is not a provider call and not a paid flight."
+            "Scripted completion whose ceiling covered settled spend, unknown holds, "
+            "and the documented per-call reservation. The local model is estimated "
+            "to fit ¥80 and is not a spending cap. This is not a provider call and "
+            "not a paid flight."
         ),
     }
     _write_hold(out, state)
@@ -1138,11 +1205,14 @@ def wire_manifest(plans: list[dict]) -> dict:
     for index, slot in enumerate(slots):
         if slot["body"].get(MAX_TOKENS_FIELD) != MAX_TOKENS:
             raise AmendmentFlightRefused("frozen manifest requires the explicit max_tokens wire body")
+        fresh = request_sha256(slot["body"])
+        if fresh != slot["request_sha256"]:
+            raise AmendmentFlightRefused(HASH_LABEL_MISMATCH)
         entries.append(
             {
                 "index": index,
                 "slot_id": slot["slot_id"],
-                "request_sha256": slot["request_sha256"],
+                "request_sha256": fresh,
                 "arms": list(slot["arms"]),
                 "case_id": slot["case_id"],
                 "category": slot["category"],
@@ -1183,36 +1253,11 @@ def _peek_accounting(out: Path) -> None:
 
 
 def _refuse_if_spend_would_reset(out: Path) -> None:
-    """Refuse before a resume can treat a missing or thinner ledger as zero spend."""
-    ledger_path = _ledger_path(out)
-    ledger_exists = ledger_path.is_file()
-    calls = _load_ledger(ledger_path) if ledger_exists else []
-    settled = Decimal("0")
-    seen: set[str] = set()
-    for row in calls:
-        settled += Decimal(row["bill"]["spend_cny"])
-        slot_id = row.get("slot_id")
-        if not isinstance(slot_id, str) or slot_id == "":
-            _fail_accounting(out, "calls ledger is missing slot_id")
-        if slot_id in seen:
-            _fail_accounting(out, "calls ledger repeats a slot")
-        seen.add(slot_id)
-    hold = _read_json_object(_hold_path(out), "cap hold")
-    stop = _read_json_object(_stop_path(out), "stop record")
-    live = _read_json_object(_live_path(out), "live record")
-    floor = _claimed_settled(hold, stop, live)
-    claimed = _claimed_calls(stop)
-    if not ledger_exists:
-        if live is not None or claimed > 0 or (floor is not None and floor > 0):
-            _fail_accounting(out, LEDGER_MISSING)
-        return
-    if floor is not None and floor > settled:
-        _fail_accounting(out, LEDGER_INCONSISTENT)
-    if claimed > len(calls):
-        _fail_accounting(out, LEDGER_INCONSISTENT)
-    if live is not None and live.get("spend_cny") is not None:
-        if _decimal_field(live["spend_cny"], "live spend") != settled:
-            _fail_accounting(out, LEDGER_INCONSISTENT)
+    """Refuse before a resume can treat missing evidence as zero spend.
+
+    The read is the public recovery path: it does not rewrite accounting.
+    """
+    load_cap_state(out)
 
 
 def _bind_wire_manifest(out: Path, plans: list[dict]) -> dict:
@@ -1237,8 +1282,9 @@ def _bind_wire_manifest(out: Path, plans: list[dict]) -> dict:
     return expected
 
 
-def _acquire_run(out: Path) -> int:
+def _acquire_run(out: Path) -> tuple[int, contextvars.Token]:
     """Exclusive owner of one run directory. The lock dies with this process."""
+    out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     fd = os.open(out / LOCK_NAME, os.O_CREAT | os.O_RDWR, 0o644)
     try:
@@ -1246,19 +1292,23 @@ def _acquire_run(out: Path) -> int:
     except BlockingIOError as exc:
         os.close(fd)
         raise AmendmentFlightRefused(OWNER_HELD) from exc
+    token = _RUN_OWNER.set(str(out.resolve()))
     try:
         os.ftruncate(fd, 0)
         os.write(fd, f"pid={os.getpid()}\n".encode())
     except OSError:
         pass
-    return fd
+    return fd, token
 
 
-def _release_run(fd: int) -> None:
+def _release_run(fd: int, token: contextvars.Token) -> None:
     try:
-        fcntl.flock(fd, fcntl.LOCK_UN)
+        _RUN_OWNER.reset(token)
     finally:
-        os.close(fd)
+        try:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
 
 
 def execute_scripted(
@@ -1288,12 +1338,55 @@ def execute_scripted(
     try:
         return _execute_owned(plans, out, ceiling, clock, client, dispatch=dispatch)
     finally:
-        _release_run(owner)
+        _release_run(*owner)
+
+
+def _manifest_index(manifest: dict) -> dict[str, dict]:
+    slots = manifest.get("slots")
+    if not isinstance(slots, list):
+        raise AmendmentFlightRefused("frozen wire manifest is corrupt")
+    index: dict[str, dict] = {}
+    for entry in slots:
+        if not isinstance(entry, dict) or not isinstance(entry.get("slot_id"), str) or entry["slot_id"] == "":
+            raise AmendmentFlightRefused("frozen wire manifest is corrupt")
+        if entry["slot_id"] in index:
+            raise AmendmentFlightRefused("frozen wire manifest is corrupt")
+        index[entry["slot_id"]] = entry
+    return index
+
+
+def _settlement_conflict(state: CapState, by_slot: dict[str, dict]) -> str | None:
+    """A stored hash that is not the manifest entry blocks another send."""
+    for row in state.calls:
+        entry = by_slot.get(row.get("slot_id"))
+        if entry is None:
+            return SETTLEMENT_MISMATCH
+        label = row.get("request_sha256")
+        if label is not None and label != entry.get("request_sha256"):
+            return SETTLEMENT_MISMATCH
+    return None
+
+
+def _completion_conflict(state: CapState, by_slot: dict[str, dict]) -> str | None:
+    """Completion requires every settlement to match one manifest entry."""
+    if len(state.calls) != len(by_slot):
+        return SETTLEMENT_MISMATCH
+    seen: set[str] = set()
+    for row in state.calls:
+        slot_id = row.get("slot_id")
+        entry = by_slot.get(slot_id)
+        if entry is None or row.get("request_sha256") != entry.get("request_sha256"):
+            return SETTLEMENT_MISMATCH
+        seen.add(slot_id)
+    if seen != set(by_slot):
+        return SETTLEMENT_MISMATCH
+    return None
 
 
 def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client, *, dispatch: bool) -> dict:
     _pin_tokenizer_cache()
-    _bind_wire_manifest(out, plans)
+    manifest = _bind_wire_manifest(out, plans)
+    by_slot = _manifest_index(manifest)
     slots = wire_slots(plans)
     costs: dict[str, Decimal] = {}
     for slot in slots:
@@ -1305,19 +1398,16 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     for row in state.calls:
         if row["slot_id"] not in plan_ids:
             _fail_accounting(out, "calls ledger does not match these plans")
+    conflict = _settlement_conflict(state, by_slot)
+    if conflict:
+        _fail_accounting(out, conflict)
     incomplete = {slot["slot_id"] for slot in slots} - {row["slot_id"] for row in state.calls}
+    reserve = documented_call_reserve_cny()
 
     def stop(reason: str, extra: dict | None = None) -> None:
-        enforced = _enforced_remaining(slots, incomplete, costs, state)
-        payload = _cap_extra(state, enforced, slots, incomplete)
-        if state.input_unbounded or state.input_ratio > 1:
-            payload["uninflated_remaining_worst_case_cny"] = _money(_remaining(slots, incomplete, costs))
-            payload["input_above_local_estimate"] = True
-            payload["input_ratio_numerator"] = state.ratio_num
-            payload["input_ratio_denominator"] = state.ratio_den
-            payload["input_ratio_unbounded"] = state.input_unbounded
-            payload["local_estimate_is_not_an_invoice"] = True
-            payload["ceiling_is_hard_stop"] = True
+        reserved = _reserved_remaining(incomplete)
+        local_remaining = _remaining(slots, incomplete, costs)
+        payload = _cap_extra(state, reserved, local_remaining, slots, incomplete)
         if extra:
             payload.update(extra)
         _write_stop(out, state, ceiling, reason, payload)
@@ -1325,11 +1415,11 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     if state.sticky:
         stop(state.sticky)
         raise AmendmentFlightRefused(state.sticky)
-    if _budget_exceeds(state, slots, incomplete, costs, ceiling):
-        if not incomplete and not state.input_unbounded and state.input_ratio <= 1:
+    if _budget_exceeds(state, incomplete, ceiling):
+        if not incomplete:
             reason = "settled spend plus unknown holds would pass the supplied ceiling"
         else:
-            reason = _ceiling_reason(state)
+            reason = CAP_STOP
         stop(reason)
         raise AmendmentFlightRefused(reason)
     if not incomplete:
@@ -1339,6 +1429,9 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         if state.settled + state.unknown > ceiling:
             stop("settled spend plus unknown holds would pass the supplied ceiling")
             raise AmendmentFlightRefused("settled spend plus unknown holds would pass the supplied ceiling")
+        completion = _completion_conflict(state, by_slot)
+        if completion:
+            _fail_accounting(out, completion)
         return _write_live(out, state, ceiling)
     if not dispatch:
         stop(LIVE_STOP)
@@ -1365,18 +1458,18 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
             raise AmendmentFlightRefused("refusing a wire body that drops temperature 0.001 or store false")
         if body["thinking"] != thinking_body(slot["thinking"]):
             raise AmendmentFlightRefused("thinking field does not match the pass")
-        if _budget_exceeds(state, slots, incomplete, costs, ceiling):
-            extra = None
-            if not state.input_unbounded:
-                extra = {"next_call_worst_case_cny": _money(_enforced_slot_cost(slot, costs, state))}
-            reason = _ceiling_reason(state)
-            stop(reason, extra)
-            raise AmendmentFlightRefused(reason)
-        cost = _enforced_slot_cost(slot, costs, state)
-        state.pending = _pending_record(slot, cost, moment)
+        if _budget_exceeds(state, incomplete, ceiling):
+            stop(CAP_STOP, {"next_call_reserve_cny": _money(reserve)})
+            raise AmendmentFlightRefused(CAP_STOP)
+        outgoing = deepcopy(body)
+        fresh = request_sha256(outgoing)
+        entry = by_slot.get(slot["slot_id"])
+        if entry is None or fresh != entry.get("request_sha256") or fresh != slot["request_sha256"]:
+            raise AmendmentFlightRefused(SEND_HASH_MISMATCH)
+        state.pending = _pending_record(slot, reserve, moment)
         _write_hold(out, state)
         try:
-            payload = client.complete(deepcopy(body))
+            payload = client.complete(outgoing)
         except AmendmentFlightRefused:
             _hold_pending(state, "call refused")
             stop(UNKNOWN_STOP)
@@ -1386,10 +1479,10 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
             reason = "timeout" if timeout else "call failed before a settled bill"
             _hold_pending(state, reason)
             stop_reason = TIMEOUT_STOP if timeout else UNKNOWN_STOP
-            stop(stop_reason, {"timed_out_request_sha256": slot["request_sha256"]})
+            stop(stop_reason, {"timed_out_request_sha256": fresh})
             raise AmendmentFlightRefused(stop_reason) from None
         bill, actual = _response_bill(payload)
-        local_in = local_input_tokens(body)
+        local_in = local_input_tokens(outgoing)
         billed_in = bill.get("T") if isinstance(bill, dict) else None
         if isinstance(billed_in, bool) or not isinstance(billed_in, int) or billed_in < 0:
             billed_in = None
@@ -1399,6 +1492,8 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
             "local_input_tokens": local_in,
             "billed_input_tokens": billed_in,
             "input_above_local_estimate": billed_in is not None and billed_in > local_in,
+            "documented_call_reserve_cny": _money(reserve),
+            "returned_bill_above_documented_reserve": actual is not None and actual > reserve,
         }
         if not _acceptable(slot, payload, bill):
             _hold_pending(state, "response was not a settled off-peak completion", actual)
@@ -1413,7 +1508,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
             "thinking": slot["thinking"],
             "arms": list(slot["arms"]),
             "shared": len(slot["arms"]) > 1,
-            "request_sha256": slot["request_sha256"],
+            "request_sha256": fresh,
             "schedule": OFFPEAK,
             "max_tokens": MAX_TOKENS,
             "clock": moment.isoformat(),
@@ -1429,9 +1524,11 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         _append_ledger(_ledger_path(out), observation)
         _write_hold(out, state)
         incomplete.discard(slot["slot_id"])
-        if _budget_exceeds(state, slots, incomplete, costs, ceiling):
-            if state.input_unbounded or state.input_ratio > 1:
-                reason = BILLED_INPUT_STOP
+        if actual > reserve or _budget_exceeds(state, incomplete, ceiling):
+            if actual > reserve:
+                reason = OVER_RESERVE_STOP
+            elif not incomplete:
+                reason = "settled spend plus unknown holds would pass the supplied ceiling"
             else:
                 reason = "settled spend passed the supplied ceiling"
             stop(reason, input_gap)
@@ -1440,18 +1537,19 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         stop("run ended with incomplete slots")
         raise AmendmentFlightRefused("run ended with incomplete slots")
     if state.settled + state.unknown > ceiling:
-        if state.input_unbounded or state.input_ratio > 1:
-            reason = BILLED_INPUT_STOP
-        else:
-            reason = "settled spend plus unknown holds would pass the supplied ceiling"
-        stop(reason)
-        raise AmendmentFlightRefused(reason)
+        stop("settled spend plus unknown holds would pass the supplied ceiling")
+        raise AmendmentFlightRefused("settled spend plus unknown holds would pass the supplied ceiling")
+    completion = _completion_conflict(state, by_slot)
+    if completion:
+        _fail_accounting(out, completion)
     return _write_live(out, state, ceiling)
 
 
-def _gate(summary: dict, moment, funded: bool) -> dict:
+def _gate(summary: dict, moment, reservation_fits: bool, manifest: dict, reservation: Decimal) -> dict:
     plan_totals = summary["token_totals_plan"]["all_840"]
     wire_totals = summary["token_totals_wire"]["all_840"]
+    estimate = summary["remaining_run_worst_case_cny"]
+    estimate_fits = estimate <= HARD_CAP_CNY
     return {
         "purpose": PURPOSE,
         "catalogue_tip": CATALOGUE_TIP,
@@ -1478,10 +1576,19 @@ def _gate(summary: dict, moment, funded: bool) -> dict:
         "max_tokens_note": MAX_TOKENS_NOTE,
         "hard_cap_cny": _money(HARD_CAP_CNY),
         "hard_cap_note": HARD_CAP_NOTE,
-        "hard_cap_funds_remaining_run": funded,
-        "start_refused": not funded,
+        "hard_cap_funds_remaining_run": reservation_fits,
+        "start_refused": not reservation_fits,
+        "spending_guarantee": False,
+        "provider_enforced_spend_limit": False,
+        "money_limit": ESTIMATED_TO_FIT if estimate_fits else "local estimate exceeds ¥80",
+        "local_estimate_fits_ceiling": estimate_fits,
+        "documented_reservation_fits_ceiling": reservation_fits,
+        "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
+        "documented_reservation_cny": _money(reservation),
+        "manifest_sha256": manifest["manifest_sha256"],
+        "manifest_persisted_before_send": True,
         "remaining_run_note": REMAINING_RUN_NOTE,
-        "remaining_run_worst_case_cny": _money(summary["remaining_run_worst_case_cny"]),
+        "remaining_run_worst_case_cny": _money(estimate),
         "unique_hash_worst_case_cny": _money(summary["unique_hash_worst_case_cny"]),
         "send_slots": summary["send_slots"],
         "cross_cell_duplicate_sends": summary["cross_cell_duplicate_sends"],
@@ -1520,13 +1627,13 @@ def _gate(summary: dict, moment, funded: bool) -> dict:
 
 
 def preflight(bfcl_root: Path, out: Path, clock, repo: Path | None = None) -> dict:
-    """Write the offline gate for the ¥80 cap. Does not call a provider."""
+    """Write the offline gate. Does not call a provider or authorize a flight."""
     out = Path(out)
     owner = _acquire_run(out)
     try:
         return _preflight_owned(bfcl_root, out, clock, repo)
     finally:
-        _release_run(owner)
+        _release_run(*owner)
 
 
 def _preflight_owned(bfcl_root: Path, out: Path, clock, repo: Path | None) -> dict:
@@ -1535,15 +1642,20 @@ def _preflight_owned(bfcl_root: Path, out: Path, clock, repo: Path | None) -> di
             raise AmendmentFlightRefused("preflight directory already has a run record; refusing to relabel it")
     flight = build_flight(bfcl_root, repo)
     summary = summarize_flight(flight["plans"], local_counter())
+    manifest = wire_manifest(flight["plans"])
+    # Pin the verified manifest before this function returns, including the
+    # path that would later be allowed to send if the reservation fit.
+    _atomic_json(_manifest_path(out), manifest)
     moment = clock()
-    funded = summary["remaining_run_worst_case_cny"] <= HARD_CAP_CNY
-    gate = _gate(summary, moment, funded)
+    reservation = documented_call_reserve_cny() * summary["send_slots"]
+    reservation_fits = reservation <= HARD_CAP_CNY
+    gate = _gate(summary, moment, reservation_fits, manifest, reservation)
     gate["control_cases"] = flight["control_cases"]
     gate["control_x2_equals_u"] = flight["control_x2_equals_u"]
     gate["control_sx2_equals_s2"] = flight["control_sx2_equals_s2"]
     gate["sample_cases"] = len(flight["order"])
     _atomic_json(out / "gate.json", gate)
-    if not funded:
+    if not reservation_fits:
         state = CapState(Decimal("0"), [], [], None, 0)
         _write_stop(
             out,
@@ -1551,11 +1663,13 @@ def _preflight_owned(bfcl_root: Path, out: Path, clock, repo: Path | None) -> di
             HARD_CAP_CNY,
             CAP_STOP,
             {
-                "remaining_worst_case_cny": _money(summary["remaining_run_worst_case_cny"]),
-                "held_plus_remaining_cny": _money(summary["remaining_run_worst_case_cny"]),
+                "remaining_worst_case_cny": _money(reservation),
+                "local_estimate_remaining_cny": _money(summary["remaining_run_worst_case_cny"]),
+                "held_plus_remaining_cny": _money(reservation),
                 "slots_remaining": summary["send_slots"],
                 "slots_planned": summary["send_slots"],
                 "unique_wire_hashes": summary["unique_wire_union"],
+                "documented_reservation_cny": _money(reservation),
             },
         )
     return gate
