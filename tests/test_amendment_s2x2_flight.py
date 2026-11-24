@@ -16,6 +16,7 @@ from tool_compression.amendment_s2x2_flight import (
     CATALOGUE_TIP,
     HARD_CAP_CNY,
     MAX_TOKENS,
+    SPENDING_ALERT_CNY,
     AmendmentFlightRefused,
     accept_run_ceiling,
     build_flight,
@@ -179,6 +180,13 @@ def _usage(prompt: int, output: int = 4) -> dict:
     }
 
 
+def _usage_priced(amount: Decimal, output: int = 1) -> dict:
+    """Off-peak miss-priced usage whose bill is exactly ``amount``."""
+    prompt = int(amount * Decimal(1_000_000)) - 4 * output
+    assert spend_cny("off-peak", prompt, 0, output) == amount
+    return _usage(prompt, output)
+
+
 class _HoldClient:
     def __init__(self):
         self.started = threading.Event()
@@ -279,8 +287,8 @@ def test_underfunded_synthetic_stops_before_any_call(tmp_path):
 
 def test_timeout_hold_blocks_an_unsafe_resume_and_keeps_the_secret_out(tmp_path):
     plans = _tiny_plans()
-    slots, _total = _slot_total(plans)
-    ceiling = _send_ceiling(slots)
+    # The unresolved peak reserve plus the next request no longer fits.
+    ceiling = documented_call_reserve_cny() * 2 - Decimal("0.000001")
     out = tmp_path / "timeout"
     secret = "sk-test-secret"
     first = TimeoutThen(secret)
@@ -353,7 +361,11 @@ def test_settled_spend_is_reloaded_and_not_forgotten(tmp_path):
     out = tmp_path / "settled"
     out.mkdir()
     _install_manifest(out, plans)
-    row = {"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "1.00"}}
+    row = {
+        "slot_id": slots[0]["slot_id"],
+        "request_sha256": slots[0]["request_sha256"],
+        "bill": {"spend_cny": "1.00"},
+    }
     (out / "calls-ledger.jsonl").write_text(json.dumps(row) + "\n", encoding="utf-8")
     client = Scripted()
     with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
@@ -671,7 +683,7 @@ def test_provider_bill_over_the_eighty_yuan_ceiling_is_kept_and_not_completed(tm
     assert Decimal(json.loads(ledger[0])["bill"]["spend_cny"]) == actual
 
     again = Scripted(_usage(billed, output=1))
-    with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
+    with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
         execute_scripted(plans, out, Decimal("80.00"), _offpeak, again, dispatch=True)
     assert again.bodies == []
     assert (out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines() == ledger
@@ -721,8 +733,19 @@ def test_resume_note_states_the_eighty_yuan_hard_stop():
     assert "capped at ¥80" not in note
     assert "not authorization to start a paid flight" in note
     assert "1,048,576" in note
+    assert "may stop short" in note
+    assert "not a forecast" in note
+    assert "5.00" in note
+    assert "next request" in note
+    assert "not the funding gate" in note
+    assert "not a spending guarantee" in note
     source = MODULE.read_text(encoding="utf-8")
     assert "capped at ¥80" not in source
+    assert 'documented_call_reserve_cny() * summary["send_slots"]' not in source
+    assert "documented_call_reserve_cny() * len(incomplete)" not in source
+    assert documented_call_reserve_cny() <= HARD_CAP_CNY
+    assert SPENDING_ALERT_CNY == Decimal("5.00")
+    assert SPENDING_ALERT_CNY < documented_call_reserve_cny()
     plans = _tiny_plans()
     _, total = _slot_total(plans)
     assert total < Decimal("80.00")
@@ -746,7 +769,7 @@ def test_funded_synthetic_completes_only_when_the_bound_fits(tmp_path):
     plans = _tiny_plans()
     slots, _total = _slot_total(plans)
     ceiling = _send_ceiling(slots)
-    short = ceiling - Decimal("0.000001")
+    short = documented_call_reserve_cny() - Decimal("0.000001")
     blocked = Scripted()
     with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
         execute_scripted(plans, tmp_path / "short", short, _offpeak, blocked, dispatch=True)
@@ -1043,7 +1066,7 @@ def test_documented_reserve_is_held_before_send(tmp_path, monkeypatch):
         execute_scripted(
             plans,
             tmp_path / "one-short",
-            reserve * len(slots) - Decimal("0.000001"),
+            reserve - Decimal("0.000001"),
             _offpeak,
             blocked,
             dispatch=True,
@@ -1053,6 +1076,214 @@ def test_documented_reserve_is_held_before_send(tmp_path, monkeypatch):
     assert "estimated to fit" in note
     assert "capped at ¥80" not in note
     assert "capped at ¥80" not in MODULE.read_text(encoding="utf-8")
+
+
+def test_charge_above_reservation_blocks_restarts_until_reconciled(tmp_path, monkeypatch):
+    """On cac42dd8 a restart after this bill made three further mock calls."""
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots = wire_slots(plans)
+    reserve = documented_call_reserve_cny()
+    amount = reserve + Decimal("0.01")
+    assert amount < HARD_CAP_CNY
+    assert amount + reserve * 3 < HARD_CAP_CNY
+    out = tmp_path / "over-reserve"
+    first = Scripted(_usage_priced(amount))
+    with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
+        execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, first, dispatch=True)
+    assert len(first.bodies) == 1
+    ledger = (out / "calls-ledger.jsonl").read_bytes()
+    assert Decimal(json.loads(ledger.decode().splitlines()[0])["bill"]["spend_cny"]) == amount
+    assert not (out / "live.json").exists()
+    assert not (out / "charge-reconciliation.json").exists()
+
+    hold = _read(out / "cap-hold.json")
+    hold["sticky_stop_reason"] = None
+    (out / "cap-hold.json").write_text(json.dumps(hold), encoding="utf-8")
+    for _ in range(2):
+        again = Scripted()
+        with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
+            execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, again, dispatch=True)
+        assert again.bodies == []
+    assert (out / "calls-ledger.jsonl").read_bytes() == ledger
+    assert not (out / "live.json").exists()
+
+    wrong = {
+        "entries": [
+            {"slot_id": slots[0]["slot_id"], "spend_cny": "1.00", "reconciled": True},
+        ]
+    }
+    (out / "charge-reconciliation.json").write_text(json.dumps(wrong), encoding="utf-8")
+    blocked = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
+        execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, blocked, dispatch=True)
+    assert blocked.bodies == []
+    assert (out / "calls-ledger.jsonl").read_bytes() == ledger
+
+    reconciled = {
+        "entries": [
+            {
+                "slot_id": slots[0]["slot_id"],
+                "spend_cny": format(amount, "f"),
+                "reconciled": True,
+            }
+        ]
+    }
+    (out / "charge-reconciliation.json").write_text(json.dumps(reconciled), encoding="utf-8")
+    resumed = Scripted()
+    record = execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, resumed, dispatch=True)
+    assert len(resumed.bodies) == 3
+    assert record["complete"] is True
+    assert record["spending_guarantee"] is False
+    assert record["provider_called"] is False
+    assert Decimal(record["spend_cny"]) > amount
+    assert json.loads((out / "calls-ledger.jsonl").read_text(encoding="utf-8").splitlines()[0])["bill"]["spend_cny"] == format(amount, "f")
+
+
+def test_unconfirmed_quote_above_the_reserve_blocks_restart(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    reserve = documented_call_reserve_cny()
+    amount = reserve + Decimal("0.01")
+    out = tmp_path / "unconfirmed-over"
+    payload = _usage_priced(amount)
+    payload["choices"] = []
+
+    class Bad:
+        def __init__(self):
+            self.bodies = []
+
+        def complete(self, body):
+            self.bodies.append(body)
+            return payload
+
+    bad = Bad()
+    with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
+        execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, bad, dispatch=True)
+    assert len(bad.bodies) == 1
+    assert Decimal(_read(out / "cap-hold.json")["outstanding_unknown_timeout_cny"]) == amount
+    again = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="documented per-call reserve"):
+        execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, again, dispatch=True)
+    assert again.bodies == []
+    assert not (out / "live.json").exists()
+    assert not (out / "calls-ledger.jsonl").exists()
+
+
+def test_missing_request_hash_blocks_before_another_send(tmp_path, monkeypatch):
+    """On cac42dd8 this ledger was sent three more times and rejected only at completion."""
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots = wire_slots(plans)
+    for label in (None, ""):
+        out = tmp_path / f"missing-hash-{label!r}"
+        _install_manifest(out, plans)
+        row = {"slot_id": slots[0]["slot_id"], "bill": {"spend_cny": "0.000001"}}
+        if label is not None:
+            row["request_sha256"] = label
+        ledger = out / "calls-ledger.jsonl"
+        ledger.write_text(json.dumps(row) + "\n", encoding="utf-8")
+        before = ledger.read_bytes()
+        client = Scripted()
+        with pytest.raises(AmendmentFlightRefused, match="does not match the frozen manifest"):
+            execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, client, dispatch=True)
+        assert client.bodies == []
+        with pytest.raises(AmendmentFlightRefused, match="does not match the frozen manifest"):
+            execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, client, dispatch=True)
+        assert client.bodies == []
+        assert ledger.read_bytes() == before
+        assert not (out / "live.json").exists()
+
+
+def test_unconfirmed_offpeak_quote_does_not_release_the_peak_reserve(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    reserve = documented_call_reserve_cny()
+    cheap = spend_cny("off-peak", 10, 0, 4)
+    assert cheap < reserve
+    ceiling = reserve + cheap
+    out = tmp_path / "unconfirmed"
+    bad_payload = {
+        "choices": [],
+        "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 4,
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 10,
+        },
+    }
+
+    class Bad:
+        def __init__(self):
+            self.bodies = []
+
+        def complete(self, body):
+            self.bodies.append(body)
+            return bad_payload
+
+    bad = Bad()
+    with pytest.raises(AmendmentFlightRefused, match="unknown charge held"):
+        execute_scripted(plans, out, ceiling, _offpeak, bad, dispatch=True)
+    assert len(bad.bodies) == 1
+    hold = _read(out / "cap-hold.json")
+    assert Decimal(hold["outstanding_unknown_timeout_cny"]) == reserve
+    assert Decimal(hold["settled_spend_cny"]) == 0
+    again = Scripted()
+    with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
+        execute_scripted(plans, out, ceiling, _offpeak, again, dispatch=True)
+    assert again.bodies == []
+    assert Decimal(_read(out / "cap-hold.json")["outstanding_unknown_timeout_cny"]) == reserve
+    assert not (out / "live.json").exists()
+
+
+def test_spending_alert_does_not_stop_a_run_under_the_eighty_yuan_ceiling(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    slots = wire_slots(plans)
+    reserve = documented_call_reserve_cny()
+    per_call = Decimal("5.10")
+    assert SPENDING_ALERT_CNY < per_call < reserve
+    out = tmp_path / "alert"
+    client = Scripted(_usage_priced(per_call))
+    record = execute_scripted(plans, out, HARD_CAP_CNY, _offpeak, client, dispatch=True)
+    assert len(client.bodies) == len(slots) == 4
+    assert record["complete"] is True
+    assert record["spending_guarantee"] is False
+    assert record["spending_alert_is_hard_cap"] is False
+    assert record["spending_alert_is_forecast"] is False
+    assert record["spending_alert_reached"] is True
+    assert Decimal(record["spending_alert_cny"]) == SPENDING_ALERT_CNY
+    assert Decimal(record["spend_cny"]) == per_call * len(slots)
+    assert Decimal(record["spend_cny"]) > SPENDING_ALERT_CNY
+    assert Decimal(record["spend_cny"]) < HARD_CAP_CNY
+    assert record["provider_called"] is False
+
+
+def test_run_stops_short_when_the_next_request_would_pass_the_ceiling(tmp_path, monkeypatch):
+    _deny_network(monkeypatch)
+    plans = _tiny_plans()
+    reserve = documented_call_reserve_cny()
+    per_call = Decimal("5.10")
+    assert per_call < reserve
+    ceiling = per_call + reserve - Decimal("0.000001")
+    assert ceiling < HARD_CAP_CNY
+    out = tmp_path / "short-run"
+    client = Scripted(_usage_priced(per_call))
+    with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
+        execute_scripted(plans, out, ceiling, _offpeak, client, dispatch=True)
+    assert len(client.bodies) == 1
+    stop = _read(out / "stop.json")
+    assert stop["complete"] is False
+    assert stop["would_label_complete"] is False
+    assert stop["spending_guarantee"] is False
+    assert stop["run_may_stop_short"] is True
+    assert Decimal(stop["spend_cny"]) == per_call
+    assert Decimal(stop["slots_remaining"]) == 3
+    assert not (out / "live.json").exists()
+    again = Scripted(_usage_priced(per_call))
+    with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
+        execute_scripted(plans, out, ceiling, _offpeak, again, dispatch=True)
+    assert again.bodies == []
 
 
 def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -1142,32 +1373,43 @@ def test_official_sample_refuses_when_underfunded_and_when_the_cap_would_fund_it
 
     monkeypatch.setattr(socket, "create_connection", deny)
     monkeypatch.setattr(urllib.request, "urlopen", deny)
+    reserve = documented_call_reserve_cny()
     under = Scripted()
     with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
-        execute_scripted(flight["plans"], tmp_path / "yen40", Decimal("40.00"), _offpeak, under, dispatch=True)
+        execute_scripted(flight["plans"], tmp_path / "yen1", Decimal("1.00"), _offpeak, under, dispatch=True)
     assert under.bodies == []
-    stop = _read(tmp_path / "yen40" / "stop.json")
+    stop = _read(tmp_path / "yen1" / "stop.json")
     assert stop["complete"] is False
     assert stop["would_label_complete"] is False
     assert stop["calls_already_settled"] == 0
     assert Decimal(stop["local_estimate_remaining_cny"]) == Decimal("71.751836")
-    assert Decimal(stop["remaining_worst_case_cny"]) > Decimal("80.00")
+    assert Decimal(stop["remaining_worst_case_cny"]) == reserve
+    assert Decimal(stop["remaining_worst_case_cny"]) > Decimal(stop["ceiling_cny"])
     assert stop["spending_guarantee"] is False
+    assert stop["full_run_peak_prereservation_is_funding_gate"] is False
     assert stop["ceiling_is_hard_stop"] is False
-    assert Decimal(stop["ceiling_cny"]) == Decimal("40.00")
-    assert not (tmp_path / "yen40" / "live.json").exists()
+    assert Decimal(stop["ceiling_cny"]) == Decimal("1.00")
+    assert not (tmp_path / "yen1" / "live.json").exists()
 
-    funded = Scripted()
-    with pytest.raises(AmendmentFlightRefused, match="remaining worst-case"):
-        execute_scripted(flight["plans"], tmp_path / "yen80", HARD_CAP_CNY, _offpeak, funded, dispatch=True)
-    assert funded.bodies == []
-    yen80 = _read(tmp_path / "yen80" / "stop.json")
-    assert yen80["complete"] is False
-    assert yen80["provider_call_authorized"] is False
-    assert yen80["spending_guarantee"] is False
-    assert Decimal(yen80["local_estimate_remaining_cny"]) == Decimal("71.751836")
-    assert Decimal(yen80["remaining_worst_case_cny"]) > Decimal("80.00")
-    assert not (tmp_path / "yen80" / "live.json").exists()
+    # ¥40 does not cover the local estimate. The next request still fits, so
+    # the refusal is the unauthorized official start, and the run is not
+    # described as guaranteed to finish.
+    for name, ceiling in (("yen40", Decimal("40.00")), ("yen80", HARD_CAP_CNY)):
+        client = Scripted()
+        with pytest.raises(AmendmentFlightRefused, match="paid flight is not authorized"):
+            execute_scripted(flight["plans"], tmp_path / name, ceiling, _offpeak, client, dispatch=True)
+        assert client.bodies == []
+        record = _read(tmp_path / name / "stop.json")
+        assert record["complete"] is False
+        assert record["provider_call_authorized"] is False
+        assert record["spending_guarantee"] is False
+        assert record["completion_guaranteed"] is False
+        assert record["run_may_stop_short"] is True
+        assert record["full_run_peak_prereservation_is_funding_gate"] is False
+        assert Decimal(record["local_estimate_remaining_cny"]) == Decimal("71.751836")
+        assert Decimal(record["remaining_worst_case_cny"]) == reserve
+        assert Decimal(record["remaining_worst_case_cny"]) <= ceiling
+        assert not (tmp_path / name / "live.json").exists()
     assert opened == []
 
 
@@ -1184,6 +1426,16 @@ def test_official_sample_stays_unauthorized_when_a_reservation_would_fit(officia
     assert client.bodies == []
     assert _read(tmp_path / "forced-fit" / "stop.json")["complete"] is False
     assert not (tmp_path / "forced-fit" / "live.json").exists()
+    # 2,174 sends at ¥0.01 would fit in ¥80. That used to be treated as a
+    # funded guaranteed start. It is still refused, and spending_guarantee stays false.
+    assert Decimal("0.01") * 2174 <= HARD_CAP_CNY
+    gate = preflight(PIN, tmp_path / "forced-gate", _offpeak)
+    assert gate["start_refused"] is True
+    assert gate["hard_cap_funds_remaining_run"] is False
+    assert gate["spending_guarantee"] is False
+    assert gate["completion_guaranteed"] is False
+    assert gate["official_plan_budgetable_under_hard_cap"] is True
+    assert gate["provider_call_authorized"] is False
 
 
 def test_preflight_reports_the_bound_and_does_not_call(official_flight, tmp_path, capsys):
@@ -1199,10 +1451,22 @@ def test_preflight_reports_the_bound_and_does_not_call(official_flight, tmp_path
     assert gate["start_refused"] is True
     assert gate["spending_guarantee"] is False
     assert gate["provider_enforced_spend_limit"] is False
+    assert gate["completion_guaranteed"] is False
+    assert gate["run_may_stop_short"] is True
     assert gate["money_limit"] == "estimated to fit ¥80"
     assert gate["local_estimate_fits_ceiling"] is True
-    assert gate["documented_reservation_fits_ceiling"] is False
-    assert Decimal(gate["documented_reservation_cny"]) > Decimal("80.00")
+    assert gate["documented_reservation_scope"] == "next request only"
+    assert gate["documented_reservation_fits_ceiling"] is True
+    assert gate["next_request_reserve_fits_ceiling"] is True
+    assert Decimal(gate["documented_reservation_cny"]) == documented_call_reserve_cny()
+    assert Decimal(gate["next_request_reserve_cny"]) == documented_call_reserve_cny()
+    assert Decimal(gate["documented_reservation_cny"]) < Decimal("80.00")
+    assert gate["full_run_peak_prereservation_is_funding_gate"] is False
+    assert gate["official_plan_budgetable_under_hard_cap"] is True
+    assert Decimal(gate["spending_alert_cny"]) == SPENDING_ALERT_CNY
+    assert gate["spending_alert_is_hard_cap"] is False
+    assert gate["spending_alert_is_forecast"] is False
+    assert gate["spending_alert_reached"] is False
     assert gate["manifest_sha256"] == ORDERED_SLOT_DIGEST
     assert gate["manifest_persisted_before_send"] is True
     assert gate["remaining_run_worst_case_cny"] == "71.751836"
@@ -1224,6 +1488,10 @@ def test_preflight_reports_the_bound_and_does_not_call(official_flight, tmp_path
     printed = json.loads(capsys.readouterr().out)
     assert printed["paid_flight_ready"] is False
     assert printed["hard_cap_funds_remaining_run"] is False
+    assert printed["official_plan_budgetable_under_hard_cap"] is True
+    assert printed["spending_guarantee"] is False
+    assert printed["completion_guaranteed"] is False
+    assert printed["next_request_reserve_fits_ceiling"] is True
     assert printed["remaining_run_worst_case_cny"] == "71.751836"
     assert printed["provider_called"] is False
     assert "capped at ¥80" not in json.dumps(gate)
