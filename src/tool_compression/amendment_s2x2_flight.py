@@ -36,6 +36,18 @@ plan hash.
 Jacky set the hard cap at ¥80.00 for this runner dig. That is not authorization
 to fly. Official settlement stays false. Human review was not performed.
 The paid flight is not ready. Local o200k counts are not provider T.
+
+``send_evaluation`` / ``send_frozen_plan`` send the frozen U/S2/X2/SX2 plan,
+both thinking passes, and record spend after each request completes. The
+confirmed charge is used when the response has one. An unresolved attempt,
+such as a timeout, stays in the running total until a confirmed charge for
+that same attempt is noted. Another try is a separate attempt and is counted
+too. The hard ceiling is ¥80.00 across both passes. Reaching it stops further
+sends and writes ``ceiling-notice.json``. About ¥10 is a comfortable
+expectation, not a stop. The sender does not reserve the next request and
+does not stop early on a remaining-run worst case. ``--live`` still returns
+before a plan is built. This module does not read a provider key and does not
+open a provider socket. Official live dispatch stays refused.
 """
 
 from __future__ import annotations
@@ -122,6 +134,15 @@ LIVE_STOP = (
 )
 OFFICIAL_DISPATCH_STOP = "refusing to dispatch the official 840 sample; the paid flight is not authorized"
 OVER_CAP_STOP = "ceiling exceeds the ¥80.00 hard cap"
+COMFORTABLE_EXPECTATION_CNY = Decimal("10.00")
+SENDER_PURPOSE = "amendment-s2x2-sender"
+ATTEMPT_LEDGER_NAME = "attempt-ledger.jsonl"
+SENDER_STATUS_NAME = "sender-status.json"
+CEILING_NOTICE_NAME = "ceiling-notice.json"
+CEILING_NOTICE_TEXT = (
+    "CNY ¥80.00 hard ceiling reached across both thinking passes. "
+    "Further sends are stopped. Tell the operator."
+)
 
 
 class AmendmentFlightRefused(UsxFlightRefused):
@@ -1143,6 +1164,420 @@ def preflight(bfcl_root: Path, out: Path, clock, repo: Path | None = None) -> di
             },
         )
     return gate
+
+
+# Request-by-request sender.
+# Spend is recorded after a request completes. Nothing here reserves the next
+# request or stops early because a remaining-run worst case would not fit.
+
+
+def _attempt_ledger_path(out: Path) -> Path:
+    return Path(out) / ATTEMPT_LEDGER_NAME
+
+
+def _sender_status_path(out: Path) -> Path:
+    return Path(out) / SENDER_STATUS_NAME
+
+
+def _ceiling_notice_path(out: Path) -> Path:
+    return Path(out) / CEILING_NOTICE_NAME
+
+
+def _latest_by_attempt(rows: list[dict]) -> dict[str, dict]:
+    latest: dict[str, dict] = {}
+    for row in rows:
+        latest[row["attempt_id"]] = row
+    return latest
+
+
+def _attempt_total(rows: list[dict]) -> Decimal:
+    return sum((Decimal(row["spend_cny"]) for row in _latest_by_attempt(rows).values()), Decimal("0"))
+
+
+def _validate_attempt_row(item) -> dict:
+    if not isinstance(item, dict):
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    attempt_id = item.get("attempt_id")
+    slot_id = item.get("slot_id")
+    kind = item.get("kind")
+    charge = item.get("charge")
+    usable = item.get("usable")
+    if not isinstance(attempt_id, str) or attempt_id == "":
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if not isinstance(slot_id, str) or slot_id == "":
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if kind not in ("attempt", "settlement"):
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if charge not in ("confirmed", "unresolved"):
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if kind == "settlement" and charge != "confirmed":
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if not isinstance(usable, bool):
+        raise AmendmentFlightRefused("attempt ledger is corrupt")
+    if kind == "attempt":
+        index = item.get("attempt_index")
+        if isinstance(index, bool) or not isinstance(index, int) or index < 1:
+            raise AmendmentFlightRefused("attempt ledger is corrupt")
+    _decimal_field(item.get("spend_cny"), "attempt spend")
+    return item
+
+
+def load_attempts(out: Path) -> list[dict]:
+    """Read the attempt ledger. A corrupt line refuses the resume.
+
+    The total is not reset to zero. Invalid JSON is not skipped.
+    """
+    path = _attempt_ledger_path(out)
+    if not path.is_file():
+        return []
+    rows = []
+    seen: set[str] = set()
+    latest: dict[str, dict] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise AmendmentFlightRefused("attempt ledger is corrupt") from exc
+        row = _validate_attempt_row(item)
+        if row["kind"] == "attempt":
+            if row["attempt_id"] in seen:
+                raise AmendmentFlightRefused("attempt ledger repeats an attempt")
+            seen.add(row["attempt_id"])
+        elif row["attempt_id"] not in seen:
+            raise AmendmentFlightRefused("attempt ledger is corrupt")
+        prior = latest.get(row["attempt_id"])
+        if prior is not None and prior["charge"] == "confirmed":
+            same = row["charge"] == "confirmed" and Decimal(row["spend_cny"]) == Decimal(prior["spend_cny"])
+            if not same:
+                raise AmendmentFlightRefused("attempt ledger is corrupt")
+        latest[row["attempt_id"]] = row
+        rows.append(row)
+    return rows
+
+
+def _recorded_frozen(out: Path) -> bool | None:
+    path = _sender_status_path(out)
+    if not path.is_file():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise AmendmentFlightRefused("sender status is corrupt") from exc
+    if not isinstance(payload, dict) or not isinstance(payload.get("frozen_official"), bool):
+        raise AmendmentFlightRefused("sender status is corrupt")
+    return payload["frozen_official"]
+
+
+def _attempt_evidence(body: dict, schedule: str) -> Decimal:
+    """All-miss local bound of an attempt that has already been sent.
+
+    The bound is stored only after the attempt fails to return a charge.
+    It is not consulted before the send, and it is not a peak-window reserve
+    of a later request.
+    """
+    if schedule not in ("off-peak", "peak"):
+        raise AmendmentFlightRefused(f"unknown schedule {schedule}")
+    if body.get(MAX_TOKENS_FIELD) != MAX_TOKENS:
+        raise AmendmentFlightRefused("unresolved evidence requires the wire body")
+    return spend_cny(schedule, local_input_tokens(body), 0, MAX_TOKENS)
+
+
+def _confirmed_charge(payload, schedule: str) -> tuple[dict | None, Decimal | None]:
+    usage = payload.get("usage") if isinstance(payload, dict) else None
+    try:
+        bill = usage_bill(schedule, usage)
+    except UsxFlightRefused:
+        return None, None
+    amount = Decimal(bill["spend_cny"])
+    if not amount.is_finite() or amount < 0:
+        return None, None
+    return bill, amount
+
+
+def _sender_status(plans: list[dict], rows: list[dict], frozen_official: bool) -> dict:
+    slots = wire_slots(plans)
+    latest = _latest_by_attempt(rows)
+    confirmed_rows = [row for row in latest.values() if row["charge"] == "confirmed"]
+    unresolved_rows = [row for row in latest.values() if row["charge"] != "confirmed"]
+    confirmed = sum((Decimal(row["spend_cny"]) for row in confirmed_rows), Decimal("0"))
+    unresolved = sum((Decimal(row["spend_cny"]) for row in unresolved_rows), Decimal("0"))
+    total = confirmed + unresolved
+    usable = {
+        row["slot_id"]
+        for row in confirmed_rows
+        if row["usable"] is True
+    }
+    planned = [slot["slot_id"] for slot in slots]
+    slots_usable = sum(1 for slot_id in planned if slot_id in usable)
+    official_shape = is_official_sample(plans)
+    evaluation_done = len(planned) > 0 and slots_usable == len(planned) and not unresolved_rows
+    full = bool(frozen_official and official_shape and evaluation_done)
+    ceiling = total >= HARD_CAP_CNY
+    notice = None
+    if ceiling:
+        notice = CEILING_NOTICE_TEXT if full else f"{CEILING_NOTICE_TEXT} This run is not the full 840."
+    return {
+        "purpose": SENDER_PURPOSE,
+        "catalogue_tip": CATALOGUE_TIP,
+        "frozen_official": frozen_official,
+        "official_840_plan": bool(frozen_official and official_shape),
+        "hard_ceiling_cny": _money(HARD_CAP_CNY),
+        "comfortable_expectation_cny": _money(COMFORTABLE_EXPECTATION_CNY),
+        "comfortable_expectation_is_a_stop_line": False,
+        "peak_rate_next_request_reserve": False,
+        "precharge_funding_gate": False,
+        "remaining_run_bound_used_as_stop": False,
+        "spend_cny": _money(total),
+        "confirmed_spend_cny": _money(confirmed),
+        "unresolved_spend_cny": _money(unresolved),
+        "attempts": sum(1 for row in rows if row["kind"] == "attempt"),
+        "unresolved_attempts": len(unresolved_rows),
+        "slots_planned": len(planned),
+        "slots_usable": slots_usable,
+        "cases_in_plan": len({plan["case_id"] for plan in plans}),
+        "evaluation_slots_complete": slots_usable == len(planned) and len(planned) > 0,
+        "full_840_labeled": full,
+        "labeled_case_count": sum(CATEGORY_COUNTS.values()) if full else None,
+        "hard_ceiling_reached": ceiling,
+        "further_sends_stopped": ceiling,
+        "operator_notice": notice,
+        "official_settlement": False,
+        "official_v1_1": OFFICIAL_V11,
+        "human_review": HUMAN_REVIEW,
+        "flight_ready": False,
+        "paid_flight_ready": False,
+        "provider_call_authorized": False,
+        "provider_called": False,
+        "provider_network": False,
+        "api_key_in_record": False,
+        "live_dispatch": "refused",
+        "max_tokens": MAX_TOKENS,
+        "thinking_passes": list(PASSES),
+        "model": MODEL,
+    }
+
+
+def _publish_sender(out: Path, plans: list[dict], rows: list[dict], frozen_official: bool) -> dict:
+    status = _sender_status(plans, rows, frozen_official)
+    _atomic_json(_sender_status_path(out), status)
+    notice_path = _ceiling_notice_path(out)
+    if status["hard_ceiling_reached"]:
+        _atomic_json(
+            notice_path,
+            {
+                "purpose": SENDER_PURPOSE,
+                "catalogue_tip": CATALOGUE_TIP,
+                "operator_notice": status["operator_notice"],
+                "hard_ceiling_cny": status["hard_ceiling_cny"],
+                "spend_cny": status["spend_cny"],
+                "confirmed_spend_cny": status["confirmed_spend_cny"],
+                "unresolved_spend_cny": status["unresolved_spend_cny"],
+                "full_840_labeled": status["full_840_labeled"],
+                "labeled_case_count": status["labeled_case_count"],
+                "further_sends_stopped": True,
+                "official_settlement": False,
+                "official_v1_1": OFFICIAL_V11,
+                "human_review": HUMAN_REVIEW,
+                "provider_called": False,
+                "provider_call_authorized": False,
+                "live_dispatch": "refused",
+            },
+        )
+    elif notice_path.is_file():
+        notice_path.unlink()
+    return status
+
+
+def _require_sender_client(client) -> None:
+    if client is None or not callable(getattr(client, "complete", None)):
+        raise AmendmentFlightRefused(LIVE_STOP)
+    _refuse_live_client(client)
+
+
+def _check_wire_body(slot: dict) -> dict:
+    body = slot["body"]
+    if body.get(MAX_TOKENS_FIELD) != MAX_TOKENS or body.get("model") != MODEL:
+        raise AmendmentFlightRefused("refusing to send a body without the explicit output-token limit")
+    if body.get("temperature") != BFCL_DEFAULT_TEMPERATURE or body.get("store") is not False:
+        raise AmendmentFlightRefused("refusing a wire body that drops temperature 0.001 or store false")
+    if body.get("thinking") != thinking_body(slot["thinking"]):
+        raise AmendmentFlightRefused("thinking field does not match the pass")
+    plan_fields = {key: value for key, value in body.items() if key != MAX_TOKENS_FIELD}
+    _assert_wire_is_plan_plus_limit(plan_fields, body)
+    return body
+
+
+def _attempt_row(
+    slot: dict,
+    index: int,
+    charge: str,
+    spend: Decimal,
+    usable: bool,
+    schedule: str,
+    moment,
+    reason: str,
+) -> dict:
+    return {
+        "kind": "attempt",
+        "attempt_id": f"{slot['slot_id']}#{index}",
+        "attempt_index": index,
+        "slot_id": slot["slot_id"],
+        "case_id": slot["case_id"],
+        "thinking": slot["thinking"],
+        "request_sha256": slot["request_sha256"],
+        "charge": charge,
+        "spend_cny": _money(spend),
+        "usable": usable,
+        "schedule": schedule,
+        "clock": moment.isoformat(),
+        "reason": reason,
+        "provider_called": False,
+        "provider_network": False,
+    }
+
+
+def note_confirmed_charge(
+    plans: list[dict],
+    out: Path,
+    attempt_id: str,
+    spend: Decimal,
+    *,
+    frozen_official: bool = False,
+) -> dict:
+    """Replace one unresolved attempt's evidence with a confirmed charge.
+
+    The ledger keeps the earlier row. The running total uses the confirmed
+    charge for that attempt. Other attempts are left as they are. This does
+    not send a request.
+    """
+    if isinstance(spend, bool) or not isinstance(spend, Decimal):
+        raise AmendmentFlightRefused("confirmed charge must be a Decimal")
+    if not spend.is_finite() or spend < 0:
+        raise AmendmentFlightRefused("confirmed charge must be a non-negative Decimal")
+    if not isinstance(attempt_id, str) or attempt_id == "":
+        raise AmendmentFlightRefused("unknown attempt")
+    if not plans:
+        raise AmendmentFlightRefused("no plans")
+    out = Path(out)
+    recorded = _recorded_frozen(out)
+    if recorded is not None and recorded is not frozen_official:
+        raise AmendmentFlightRefused("sender record does not match this plan")
+    rows = load_attempts(out)
+    prior = _latest_by_attempt(rows).get(attempt_id)
+    if prior is None:
+        raise AmendmentFlightRefused("unknown attempt")
+    if prior["charge"] == "confirmed":
+        if Decimal(prior["spend_cny"]) != spend:
+            raise AmendmentFlightRefused("confirmed charge already recorded")
+        return _publish_sender(out, plans, rows, frozen_official)
+    row = {
+        "kind": "settlement",
+        "attempt_id": attempt_id,
+        "attempt_index": prior.get("attempt_index"),
+        "slot_id": prior["slot_id"],
+        "case_id": prior.get("case_id"),
+        "thinking": prior.get("thinking"),
+        "request_sha256": prior.get("request_sha256"),
+        "charge": "confirmed",
+        "spend_cny": _money(spend),
+        "usable": prior["usable"],
+        "schedule": prior.get("schedule"),
+        "clock": prior.get("clock"),
+        "reason": "confirmed charge noted",
+        "provider_called": False,
+        "provider_network": False,
+    }
+    rows.append(row)
+    _append_ledger(_attempt_ledger_path(out), row)
+    return _publish_sender(out, plans, rows, frozen_official)
+
+
+def send_evaluation(plans: list[dict], out: Path, client, clock, *, frozen_official: bool = False) -> dict:
+    """Send plan slots one request at a time and record each charge after it completes.
+
+    The hard ceiling is ¥80.00 of recorded spend across both thinking passes.
+    About ¥10 is reported as a comfortable expectation and does not stop the
+    run. A partial run is not labeled as the full 840.
+    """
+    _require_sender_client(client)
+    if not plans:
+        raise AmendmentFlightRefused("no plans")
+    _assert_passes_distinct(plans)
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    recorded = _recorded_frozen(out)
+    if recorded is not None and recorded is not frozen_official:
+        raise AmendmentFlightRefused("sender record does not match this plan")
+    slots = wire_slots(plans)
+    rows = load_attempts(out)
+    plan_ids = {slot["slot_id"] for slot in slots}
+    for row in rows:
+        if row["slot_id"] not in plan_ids:
+            raise AmendmentFlightRefused("attempt ledger does not match these plans")
+    done = {
+        row["slot_id"]
+        for row in _latest_by_attempt(rows).values()
+        if row["charge"] == "confirmed" and row["usable"] is True
+    }
+    counts: dict[str, int] = {}
+    for row in rows:
+        if row["kind"] == "attempt":
+            counts[row["slot_id"]] = counts.get(row["slot_id"], 0) + 1
+    total = _attempt_total(rows)
+    status = None
+    try:
+        for slot in slots:
+            if total >= HARD_CAP_CNY:
+                break
+            if slot["slot_id"] in done:
+                continue
+            moment = clock()
+            schedule = schedule_at(moment)
+            body = _check_wire_body(slot)
+            index = counts.get(slot["slot_id"], 0) + 1
+            try:
+                payload = client.complete(deepcopy(body))
+            except AmendmentFlightRefused:
+                raise
+            except Exception as exc:
+                spend = _attempt_evidence(body, schedule)
+                reason = "timeout" if _is_timeout(exc) else "unresolved"
+                row = _attempt_row(slot, index, "unresolved", spend, False, schedule, moment, reason)
+                usable = False
+            else:
+                bill, spend = _confirmed_charge(payload, schedule)
+                if spend is None:
+                    spend = _attempt_evidence(body, schedule)
+                    row = _attempt_row(slot, index, "unresolved", spend, False, schedule, moment, "unresolved")
+                    usable = False
+                else:
+                    usable = _acceptable(slot, payload, bill)
+                    row = _attempt_row(slot, index, "confirmed", spend, usable, schedule, moment, "confirmed")
+            rows.append(row)
+            _append_ledger(_attempt_ledger_path(out), row)
+            counts[slot["slot_id"]] = index
+            total = _attempt_total(rows)
+            if usable:
+                done.add(slot["slot_id"])
+            status = _publish_sender(out, plans, rows, frozen_official)
+    finally:
+        status = _publish_sender(out, plans, rows, frozen_official)
+    return status
+
+
+def send_frozen_plan(bfcl_root: Path, out: Path, client, clock, repo: Path | None = None) -> dict:
+    """Send the frozen 840-case U/S2/X2/SX2 plan from catalogue tip 96795322.
+
+    The caller supplies the client. A provider client is refused before the
+    plan is built. This does not read a provider key.
+    """
+    _require_sender_client(client)
+    flight = build_flight(bfcl_root, repo)
+    if flight.get("catalogue_tip") != CATALOGUE_TIP:
+        raise AmendmentFlightRefused("catalogue tip is not the frozen 96795322 catalogues")
+    return send_evaluation(flight["plans"], out, client, clock, frozen_official=True)
 
 
 def main(argv: list[str] | None = None) -> int:
