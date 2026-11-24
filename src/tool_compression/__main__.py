@@ -79,6 +79,11 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--freeze", action="store_true")
 
+    child = sub.add_parser("child-revision")
+    child_mode = child.add_mutually_exclusive_group(required=True)
+    child_mode.add_argument("--check", action="store_true")
+    child_mode.add_argument("--freeze", action="store_true")
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -100,7 +105,23 @@ def main(argv: list[str] | None = None) -> int:
         return _usx_840(args)
     if args.command == "amendment-s2x2":
         return _amendment_s2x2(args)
+    if args.command == "child-revision":
+        return _child_revision(args)
     return 2
+
+
+def _child_revision(args) -> int:
+    """Offline blinded-packet check. This command has no live path and no API key."""
+    from tool_compression.amendment_bundle import AmendmentFailure
+    from tool_compression.child_revision import ChildRevisionFailure, check, freeze
+
+    try:
+        result = freeze() if args.freeze else check()
+    except (ChildRevisionFailure, AmendmentFailure) as exc:
+        print(exc)
+        return 1
+    print(json.dumps(result))
+    return 0
 
 
 def _amendment_s2x2(args) -> int:

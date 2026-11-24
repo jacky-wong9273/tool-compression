@@ -12,4 +12,6 @@ python -m tool_compression amendment-s2x2 --check
 
 The command rebuilds the edits in memory, compares them with these files, and repeats the mocked completion with socket construction denied. It does not accept `--live`. `--freeze` rewrites this directory and is not the check.
 
+Evidence ownership for the 30 cues, and the split of adopted S2 edits into suffix-only float-sentence removals and other adopted edits, are in `comparison/sheet.md`, `checks/evidence-ownership.json`, and `checks/s2-edit-split.json`. The blinded-sample protocol and the source-only packets are `docs/child-revision-evidence-ownership/`.
+
 Local token counts use `o200k_base`. `cl100k_base` is a recount only. Neither number is provider usage, a billed saving, or the closed 1/10 target. The BPE tables are the committed files in `src/tool_compression/tiktoken_cache`. The check does not download them.

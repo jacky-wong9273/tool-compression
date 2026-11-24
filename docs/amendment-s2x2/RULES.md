@@ -23,7 +23,7 @@ A candidate that is not strictly shorter, that changes only spacing or punctuati
 
 Qualify each target on the original ordered catalogue. S2 is hidden. A control, one tool, gets no cue. A rival has to serve one common user need, with evidence on both sides from the original function text, parameter text, or immutable schema. An unrelated tool does not veto another pair. The closest rival is the one with the longer shared wording, then the lower original index. At most one cue is appended to the target's function description. The cue names that rival once, states the supported axis, and does not say that only one tool can do the job. An unqualified target stays verbatim.
 
-The verified axes are a shared action with the same required parameter names and types and one short substitution, and named polynomial coefficients versus one ordered coefficient array.
+The verified axes are a shared action with the same required parameter names and types and one short substitution, and named polynomial coefficients versus one ordered coefficient array. Each citation records the tool index, the path, and the value on the tool that owns that text. The target cites its own parameters. The rival cites its own parameters.
 
 ## SX2
 

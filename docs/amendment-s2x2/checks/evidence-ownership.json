@@ -1,0 +1,587 @@
+{
+  "cues_checked": 30,
+  "directions": "target_and_rival",
+  "failures": [],
+  "cue_text_sha256": "4cb90884500b8a7de33b81127cb2c1be61dcfc6603681e6fd0bf51e5edc7f569",
+  "cue_text_changes": [],
+  "cues_with_no_value_change": 29,
+  "multiple_12": {
+    "cued": false,
+    "rule_added": false
+  },
+  "value_fixes": [
+    {
+      "case_id": "multiple_11",
+      "occurrence_id": "multiple_11:2:/function/description",
+      "target": {
+        "tool_index": 2,
+        "function_name": "math_roots_polynomial"
+      },
+      "rival": {
+        "tool_index": 0,
+        "function_name": "math_roots_quadratic"
+      },
+      "cue_text_changed": false,
+      "cue": "Unlike math_roots_quadratic, which takes named quadratic coefficients, this takes an ordered coefficient array.",
+      "audited_misattribution": {
+        "target_parameter_names": [
+          "a",
+          "b",
+          "c"
+        ],
+        "target_parameters_belong_to": "math_roots_quadratic",
+        "rival_parameter_names": [
+          "coefficients"
+        ],
+        "rival_parameters_belong_to": "math_roots_polynomial",
+        "order_support_side": "rival",
+        "order_support_belongs_to": "math_roots_polynomial"
+      },
+      "corrected": {
+        "target_parameter_names": [
+          "coefficients"
+        ],
+        "rival_parameter_names": [
+          "a",
+          "b",
+          "c"
+        ],
+        "order_support_side": "target",
+        "order_support_path": "/function/parameters/properties/coefficients/description",
+        "order_support": "Array of coefficients of the polynomial equation starting from highest degree term.",
+        "target_citations": [
+          {
+            "path": "/function/description",
+            "value": "Calculate the roots of a polynomial equation.",
+            "excerpt": "Calculate the roots of a polynomial equation.",
+            "tool_index": 2,
+            "function_name": "math_roots_polynomial"
+          },
+          {
+            "path": "/function/parameters/required",
+            "value": [
+              "coefficients"
+            ],
+            "tool_index": 2,
+            "function_name": "math_roots_polynomial"
+          },
+          {
+            "path": "/function/parameters/properties/coefficients/type",
+            "value": "array",
+            "tool_index": 2,
+            "function_name": "math_roots_polynomial"
+          },
+          {
+            "path": "/function/parameters/properties/coefficients/items/type",
+            "value": "number",
+            "tool_index": 2,
+            "function_name": "math_roots_polynomial"
+          },
+          {
+            "path": "/function/parameters/properties/coefficients/description",
+            "value": "Array of coefficients of the polynomial equation starting from highest degree term.",
+            "role": "order_support",
+            "tool_index": 2,
+            "function_name": "math_roots_polynomial"
+          }
+        ],
+        "rival_citations": [
+          {
+            "path": "/function/description",
+            "value": "Calculate the roots of a quadratic equation.",
+            "excerpt": "Calculate the roots of a quadratic equation.",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/required",
+            "value": [
+              "a",
+              "b",
+              "c"
+            ],
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/a/type",
+            "value": "integer",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/b/type",
+            "value": "integer",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/c/type",
+            "value": "integer",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/a/description",
+            "value": "Coefficient of the second-degree term.",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/b/description",
+            "value": "Coefficient of the first-degree term.",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          },
+          {
+            "path": "/function/parameters/properties/c/description",
+            "value": "Constant term.",
+            "tool_index": 0,
+            "function_name": "math_roots_quadratic"
+          }
+        ]
+      }
+    }
+  ],
+  "cues": [
+    {
+      "case_id": "multiple_2",
+      "occurrence_id": "multiple_2:0:/function/description",
+      "tool_index": 0,
+      "function_name": "country_info_largest_city",
+      "rival_tool_index": 1,
+      "rival_function_name": "country_info_capital",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_2",
+      "occurrence_id": "multiple_2:1:/function/description",
+      "tool_index": 1,
+      "function_name": "country_info_capital",
+      "rival_tool_index": 0,
+      "rival_function_name": "country_info_largest_city",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_11",
+      "occurrence_id": "multiple_11:0:/function/description",
+      "tool_index": 0,
+      "function_name": "math_roots_quadratic",
+      "rival_tool_index": 2,
+      "rival_function_name": "math_roots_polynomial",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [
+        "a",
+        "b",
+        "c"
+      ],
+      "rival_parameter_names": [
+        "coefficients"
+      ],
+      "order_support_side": "rival"
+    },
+    {
+      "case_id": "multiple_11",
+      "occurrence_id": "multiple_11:1:/function/description",
+      "tool_index": 1,
+      "function_name": "math_roots_cubic",
+      "rival_tool_index": 2,
+      "rival_function_name": "math_roots_polynomial",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "rival_parameter_names": [
+        "coefficients"
+      ],
+      "order_support_side": "rival"
+    },
+    {
+      "case_id": "multiple_11",
+      "occurrence_id": "multiple_11:2:/function/description",
+      "tool_index": 2,
+      "function_name": "math_roots_polynomial",
+      "rival_tool_index": 0,
+      "rival_function_name": "math_roots_quadratic",
+      "ownership": "pass",
+      "value_fix": true,
+      "cue_text_changed": false,
+      "target_parameter_names": [
+        "coefficients"
+      ],
+      "rival_parameter_names": [
+        "a",
+        "b",
+        "c"
+      ],
+      "order_support_side": "target"
+    },
+    {
+      "case_id": "multiple_19",
+      "occurrence_id": "multiple_19:0:/function/description",
+      "tool_index": 0,
+      "function_name": "religion_history_get_councils",
+      "rival_tool_index": 1,
+      "rival_function_name": "religion_history_get_reformations",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_19",
+      "occurrence_id": "multiple_19:1:/function/description",
+      "tool_index": 1,
+      "function_name": "religion_history_get_reformations",
+      "rival_tool_index": 0,
+      "rival_function_name": "religion_history_get_councils",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_19",
+      "occurrence_id": "multiple_19:2:/function/description",
+      "tool_index": 2,
+      "function_name": "religion_history_get_schisms",
+      "rival_tool_index": 0,
+      "rival_function_name": "religion_history_get_councils",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_34",
+      "occurrence_id": "multiple_34:0:/function/description",
+      "tool_index": 0,
+      "function_name": "math_gcd",
+      "rival_tool_index": 2,
+      "rival_function_name": "math_lcm",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_34",
+      "occurrence_id": "multiple_34:2:/function/description",
+      "tool_index": 2,
+      "function_name": "math_lcm",
+      "rival_tool_index": 0,
+      "rival_function_name": "math_gcd",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_35",
+      "occurrence_id": "multiple_35:0:/function/description",
+      "tool_index": 0,
+      "function_name": "calculate_lcm",
+      "rival_tool_index": 1,
+      "rival_function_name": "calculate_gcd",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_35",
+      "occurrence_id": "multiple_35:1:/function/description",
+      "tool_index": 1,
+      "function_name": "calculate_gcd",
+      "rival_tool_index": 0,
+      "rival_function_name": "calculate_lcm",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_48",
+      "occurrence_id": "multiple_48:0:/function/description",
+      "tool_index": 0,
+      "function_name": "store_find_nearby",
+      "rival_tool_index": 1,
+      "rival_function_name": "library_find_nearby",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_48",
+      "occurrence_id": "multiple_48:1:/function/description",
+      "tool_index": 1,
+      "function_name": "library_find_nearby",
+      "rival_tool_index": 0,
+      "rival_function_name": "store_find_nearby",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_53",
+      "occurrence_id": "multiple_53:0:/function/description",
+      "tool_index": 0,
+      "function_name": "linear_regression",
+      "rival_tool_index": 1,
+      "rival_function_name": "random_forest_regression",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_53",
+      "occurrence_id": "multiple_53:1:/function/description",
+      "tool_index": 1,
+      "function_name": "random_forest_regression",
+      "rival_tool_index": 0,
+      "rival_function_name": "linear_regression",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_63",
+      "occurrence_id": "multiple_63:0:/function/description",
+      "tool_index": 0,
+      "function_name": "air_quality_forecast",
+      "rival_tool_index": 1,
+      "rival_function_name": "weather_forecast",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_63",
+      "occurrence_id": "multiple_63:1:/function/description",
+      "tool_index": 1,
+      "function_name": "weather_forecast",
+      "rival_tool_index": 0,
+      "rival_function_name": "air_quality_forecast",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_64",
+      "occurrence_id": "multiple_64:0:/function/description",
+      "tool_index": 0,
+      "function_name": "uv_index_get_future",
+      "rival_tool_index": 1,
+      "rival_function_name": "rainfall_prediction",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_64",
+      "occurrence_id": "multiple_64:1:/function/description",
+      "tool_index": 1,
+      "function_name": "rainfall_prediction",
+      "rival_tool_index": 0,
+      "rival_function_name": "uv_index_get_future",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_64",
+      "occurrence_id": "multiple_64:2:/function/description",
+      "tool_index": 2,
+      "function_name": "snowfall_prediction",
+      "rival_tool_index": 0,
+      "rival_function_name": "uv_index_get_future",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_68",
+      "occurrence_id": "multiple_68:1:/function/description",
+      "tool_index": 1,
+      "function_name": "google_books_search",
+      "rival_tool_index": 2,
+      "rival_function_name": "openlibrary_books_search",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_68",
+      "occurrence_id": "multiple_68:2:/function/description",
+      "tool_index": 2,
+      "function_name": "openlibrary_books_search",
+      "rival_tool_index": 1,
+      "rival_function_name": "google_books_search",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_72",
+      "occurrence_id": "multiple_72:0:/function/description",
+      "tool_index": 0,
+      "function_name": "us_history_population_by_state_year",
+      "rival_tool_index": 1,
+      "rival_function_name": "us_economy_gdp_by_state_year",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_72",
+      "occurrence_id": "multiple_72:1:/function/description",
+      "tool_index": 1,
+      "function_name": "us_economy_gdp_by_state_year",
+      "rival_tool_index": 0,
+      "rival_function_name": "us_history_population_by_state_year",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_85",
+      "occurrence_id": "multiple_85:0:/function/description",
+      "tool_index": 0,
+      "function_name": "basketball_scores_get_scores",
+      "rival_tool_index": 1,
+      "rival_function_name": "soccer_scores_get_scores",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_85",
+      "occurrence_id": "multiple_85:1:/function/description",
+      "tool_index": 1,
+      "function_name": "soccer_scores_get_scores",
+      "rival_tool_index": 0,
+      "rival_function_name": "basketball_scores_get_scores",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_92",
+      "occurrence_id": "multiple_92:0:/function/description",
+      "tool_index": 0,
+      "function_name": "safeway_vegan_products",
+      "rival_tool_index": 1,
+      "rival_function_name": "wholefoods_vegan_products",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_92",
+      "occurrence_id": "multiple_92:1:/function/description",
+      "tool_index": 1,
+      "function_name": "wholefoods_vegan_products",
+      "rival_tool_index": 0,
+      "rival_function_name": "safeway_vegan_products",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    },
+    {
+      "case_id": "multiple_92",
+      "occurrence_id": "multiple_92:2:/function/description",
+      "tool_index": 2,
+      "function_name": "walmart_vegan_products",
+      "rival_tool_index": 0,
+      "rival_function_name": "safeway_vegan_products",
+      "ownership": "pass",
+      "value_fix": false,
+      "cue_text_changed": false,
+      "target_parameter_names": [],
+      "rival_parameter_names": [],
+      "order_support_side": null
+    }
+  ]
+}
