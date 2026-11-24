@@ -1,0 +1,45 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_88",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "detect_forgery",
+        "description": "Detect if the given set of documents are forged or not",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "documents": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of document paths on the disk."
+            },
+            "machine_learning_model": {
+              "type": "string",
+              "description": "The machine learning model to be used."
+            },
+            "confidence_threshold": {
+              "type": "number",
+              "default": 0.8,
+              "description": "The confidence threshold for deciding if a document is forged or not.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "documents",
+            "machine_learning_model"
+          ]
+        }
+      }
+    }
+  ]
+}

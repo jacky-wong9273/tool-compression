@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_103",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "mathematics_calculate_area_under_curve",
+        "description": "Calculate the area under the curve for a given polynomial function within a specified interval.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "polynomial": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The coefficients of the polynomial, in decreasing order of exponent, where the first element is the coefficient for x^n, the second element is the coefficient for x^(n-1), and so on. The last element is the constant term."
+            },
+            "limits": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of two numbers specifying the lower and upper limit for the integration interval."
+            }
+          },
+          "required": [
+            "polynomial",
+            "limits"
+          ]
+        }
+      }
+    }
+  ]
+}

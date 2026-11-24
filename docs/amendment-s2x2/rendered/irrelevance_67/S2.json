@@ -1,0 +1,52 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_67",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "hypothesis_testing_get_p_value",
+        "description": "Performs a one-sample binomial test and returns the calculated p-value.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "successes": {
+              "type": "integer",
+              "description": "The number of successful outcomes observed in the experiment."
+            },
+            "n": {
+              "type": "integer",
+              "description": "The total number of trials conducted in the experiment."
+            },
+            "prob_null": {
+              "type": "number",
+              "description": "The hypothesized probability of success under the null hypothesis.",
+              "format": "float"
+            },
+            "alternative": {
+              "type": "string",
+              "enum": [
+                "less",
+                "greater",
+                "two_sided"
+              ],
+              "description": "Specifies the alternative hypothesis. 'less' means the true probability of success is less than prob_null, 'greater' means it is greater than prob_null, and 'two_sided' means it is different from prob_null.",
+              "default": "less"
+            }
+          },
+          "required": [
+            "successes",
+            "n",
+            "prob_null"
+          ]
+        }
+      }
+    }
+  ]
+}

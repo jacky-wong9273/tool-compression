@@ -1,0 +1,90 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_78",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "tourist_spot_info",
+        "description": "Retrieve information about a specific tourist spot.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "spot": {
+              "type": "string",
+              "description": "The name of the tourist spot you want to get information for."
+            },
+            "city": {
+              "type": "string",
+              "description": "The city where the tourist spot is located."
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "timing",
+                  "attractions",
+                  "tickets",
+                  "accessibility",
+                  "history"
+                ]
+              },
+              "description": "Details of the tourist spot to get information on. For multiple details, separate them by comma.",
+              "default": "timing, attractions"
+            }
+          },
+          "required": [
+            "spot",
+            "city"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "museum_info",
+        "description": "Retrieve information about a specific museum.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "museum": {
+              "type": "string",
+              "description": "The name of the museum you want to get information for."
+            },
+            "city": {
+              "type": "string",
+              "description": "The city where the museum is located."
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "timings",
+                  "exhibitions",
+                  "accessibility",
+                  "events",
+                  "history"
+                ]
+              },
+              "description": "Features of the museum to get information on. For multiple features, separate them by comma.",
+              "default": "timings, exhibitions"
+            }
+          },
+          "required": [
+            "museum",
+            "city"
+          ]
+        }
+      }
+    }
+  ]
+}

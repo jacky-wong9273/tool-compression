@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_197",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "board_game_possible_moves",
+        "description": "Calculate the total possible moves for a specific board game based on the current state of the game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "Name of the board game."
+            },
+            "current_state": {
+              "type": "string",
+              "description": "The current state of the board game, including pieces on the board and their positions."
+            },
+            "include_repetitions": {
+              "type": "boolean",
+              "description": "Include repetitive moves in the count or not. Default is false."
+            }
+          },
+          "required": [
+            "game_name",
+            "current_state"
+          ]
+        }
+      }
+    }
+  ]
+}

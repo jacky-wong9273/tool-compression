@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_186",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_MVP",
+        "description": "Retrieve the most valuable player of a particular sport season",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "season": {
+              "type": "string",
+              "description": "The season to look for MVP."
+            },
+            "sport_type": {
+              "type": "string",
+              "description": "The type of sport to look for MVP."
+            },
+            "team": {
+              "type": "string",
+              "description": "Specific team to look for MVP, Default is all teams"
+            }
+          },
+          "required": [
+            "season",
+            "sport_type"
+          ]
+        }
+      }
+    }
+  ]
+}

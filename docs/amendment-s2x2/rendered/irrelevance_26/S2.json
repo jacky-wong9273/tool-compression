@@ -1,0 +1,49 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_26",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "thermodynamics_calc_gas_pressure",
+        "description": "Calculate gas pressure in a closed chamber due to heating",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "volume": {
+              "type": "number",
+              "description": "The volume of the chamber in cubic meters.",
+              "format": "float"
+            },
+            "initial_temperature": {
+              "type": "number",
+              "description": "The initial temperature of the gas in degree Celsius.",
+              "format": "float"
+            },
+            "final_temperature": {
+              "type": "number",
+              "description": "The final temperature of the gas in degree Celsius.",
+              "format": "float"
+            },
+            "initial_pressure": {
+              "type": "number",
+              "description": "The initial pressure of the gas in Pascal. Default is standard atmospheric pressure.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "volume",
+            "initial_temperature",
+            "final_temperature"
+          ]
+        }
+      }
+    }
+  ]
+}

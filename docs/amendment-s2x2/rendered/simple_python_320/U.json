@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_320",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_team_position",
+        "description": "Retrieve a team's position and stats in the basketball league for a given season.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "The name of the team."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season for which data should be fetched."
+            },
+            "detailed": {
+              "type": "boolean",
+              "description": "Flag to retrieve detailed stats or just the position.",
+              "default": false
+            }
+          },
+          "required": [
+            "team",
+            "season"
+          ]
+        }
+      }
+    }
+  ]
+}

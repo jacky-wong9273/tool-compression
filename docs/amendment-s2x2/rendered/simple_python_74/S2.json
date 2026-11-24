@@ -1,0 +1,45 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_74",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_bacteria_evolution_rate",
+        "description": "Calculate the evolution rate of bacteria given the starting number, duplication frequency and total duration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_population": {
+              "type": "integer",
+              "description": "The starting population of bacteria."
+            },
+            "duplication_frequency": {
+              "type": "integer",
+              "description": "The frequency of bacteria duplication per hour."
+            },
+            "duration": {
+              "type": "integer",
+              "description": "Total duration in hours."
+            },
+            "generation_time": {
+              "type": "integer",
+              "description": "The average generation time of the bacteria in minutes. Default is 20 minutes"
+            }
+          },
+          "required": [
+            "start_population",
+            "duplication_frequency",
+            "duration"
+          ]
+        }
+      }
+    }
+  ]
+}

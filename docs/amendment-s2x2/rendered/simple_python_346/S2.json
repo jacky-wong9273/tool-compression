@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_346",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_collectables_in_season",
+        "description": "Retrieve a list of collectable items in a specific game during a specified season.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "Name of the game."
+            },
+            "season": {
+              "type": "string",
+              "description": "The season."
+            },
+            "item_type": {
+              "type": "string",
+              "description": "The type of item to search for. Default is 'all'. Possible values: 'all', 'bug', 'fish', 'sea creatures', etc."
+            }
+          },
+          "required": [
+            "game_name",
+            "season"
+          ]
+        }
+      }
+    }
+  ]
+}

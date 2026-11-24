@@ -1,0 +1,81 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_53",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "linear_regression",
+        "description": "Applies linear regression to a given set of independent variables to make a prediction. Unlike random_forest_regression, which applies Random Forest Regression, this applies linear regression.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "independent_var": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The independent variables."
+            },
+            "dependent_var": {
+              "type": "string",
+              "description": "The dependent variable."
+            },
+            "forecast_period": {
+              "type": "integer",
+              "description": "The number of years to forecast the prices. Default 1",
+              "optional": true
+            }
+          },
+          "required": [
+            "independent_var",
+            "dependent_var"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "random_forest_regression",
+        "description": "Applies Random Forest Regression to a given set of independent variables to make a prediction. Unlike linear_regression, which applies linear regression, this applies Random Forest Regression.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "independent_var": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The independent variables."
+            },
+            "dependent_var": {
+              "type": "string",
+              "description": "The dependent variable."
+            },
+            "n_estimators": {
+              "type": "integer",
+              "description": "The number of trees in the forest. Default 1",
+              "optional": true
+            },
+            "forecast_period": {
+              "type": "integer",
+              "description": "The number of years to forecast the prices. Default 1",
+              "optional": true
+            }
+          },
+          "required": [
+            "independent_var",
+            "dependent_var"
+          ]
+        }
+      }
+    }
+  ]
+}

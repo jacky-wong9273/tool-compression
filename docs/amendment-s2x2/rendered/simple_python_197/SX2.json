@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_197",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_air_quality_index",
+        "description": "Retrieve the air quality index at a specified location and time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to get the air quality index for."
+            },
+            "time": {
+              "type": "string",
+              "description": "The specific time to check the air quality. Default is the current time."
+            }
+          },
+          "required": [
+            "location",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

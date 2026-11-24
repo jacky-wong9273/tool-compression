@@ -1,0 +1,74 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_59",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "car_rental",
+        "description": "Rent a car near you based on your preference.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Your location"
+            },
+            "car_type": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Type of cars that you want to rent."
+            },
+            "fuel_type": {
+              "type": "string",
+              "description": "Preferred fuel type of car. Gas, diesel, electric, hybrid etc. Default 'gas'"
+            }
+          },
+          "required": [
+            "location",
+            "car_type"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "lawyer_finder",
+        "description": "Locate lawyers near you based on their specialization.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Your location"
+            },
+            "specialization": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Specializations of lawyer that you are looking for."
+            },
+            "experience": {
+              "type": "integer",
+              "description": "Experience in years that lawyer has. Default 1"
+            }
+          },
+          "required": [
+            "location",
+            "specialization"
+          ]
+        }
+      }
+    }
+  ]
+}

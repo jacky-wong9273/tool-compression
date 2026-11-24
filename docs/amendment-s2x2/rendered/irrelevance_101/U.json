@@ -1,0 +1,35 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_101",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_average_monthly_temperature",
+        "description": "Retrieve the average monthly temperature of a location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location that you want to get the average monthly temperature for."
+            },
+            "month": {
+              "type": "string",
+              "description": "Month for which the average temperature needs to be fetched."
+            }
+          },
+          "required": [
+            "location",
+            "month"
+          ]
+        }
+      }
+    }
+  ]
+}

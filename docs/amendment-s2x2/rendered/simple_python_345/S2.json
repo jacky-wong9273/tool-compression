@@ -1,0 +1,47 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_345",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "game_valuation",
+        "description": "Get the current market value of a vintage video game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game_name": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "release_year": {
+              "type": "integer",
+              "description": "The year the game was released."
+            },
+            "condition": {
+              "type": "string",
+              "enum": [
+                "New",
+                "Like New",
+                "Used",
+                "Fair",
+                "Poor"
+              ],
+              "description": "The condition of the game. Default is 'Used'."
+            }
+          },
+          "required": [
+            "game_name",
+            "release_year"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_182",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_info",
+        "description": "Retrieves details of a lawsuit given a case number",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case_number": {
+              "type": "string",
+              "description": "The unique identifier of the lawsuit case"
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year in which the lawsuit case was initiated. Default is 2023 if not specified.",
+              "optional": true,
+              "default": 2023
+            },
+            "location": {
+              "type": "string",
+              "description": "The location or court jurisdiction where the case was filed. Default is 'all'.",
+              "optional": true
+            }
+          },
+          "required": [
+            "case_number"
+          ]
+        }
+      }
+    }
+  ]
+}

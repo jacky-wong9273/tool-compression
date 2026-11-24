@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_33",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_directions",
+        "description": "Retrieve directions from one location to another.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_location": {
+              "type": "string",
+              "description": "The starting point of the journey."
+            },
+            "end_location": {
+              "type": "string",
+              "description": "The destination point of the journey."
+            },
+            "route_type": {
+              "type": "string",
+              "description": "Type of route to use (e.g., 'fastest', 'scenic'). Default is 'fastest'.",
+              "enum": [
+                "fastest",
+                "scenic"
+              ]
+            }
+          },
+          "required": [
+            "start_location",
+            "end_location"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_8",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "property_valuation_get",
+        "description": "Get estimated value of a property based on location, specifications and age",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the property is located, e.g. San Diego, CA."
+            },
+            "propertyType": {
+              "type": "string",
+              "description": "Type of property such as villa, condo, apartment, etc."
+            },
+            "bedrooms": {
+              "type": "integer",
+              "description": "Number of bedrooms required in the property."
+            },
+            "age": {
+              "type": "integer",
+              "description": "Age of the property in years."
+            }
+          },
+          "required": [
+            "location",
+            "propertyType",
+            "bedrooms",
+            "age"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "realestate_find_properties",
+        "description": "Find properties based on location, budget, and specifications",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "City and state where the property is located, e.g. San Diego, CA."
+            },
+            "propertyType": {
+              "type": "string",
+              "description": "Type of property such as villa, condo, apartment, etc."
+            },
+            "bedrooms": {
+              "type": "integer",
+              "description": "Number of bedrooms required in the property."
+            },
+            "budget": {
+              "type": "object",
+              "properties": {
+                "min": {
+                  "type": "number",
+                  "description": "Minimum budget limit.",
+                  "format": "float"
+                },
+                "max": {
+                  "type": "number",
+                  "description": "Maximum budget limit.",
+                  "format": "float"
+                }
+              },
+              "description": "Budget range for the property."
+            }
+          },
+          "required": [
+            "location",
+            "propertyType",
+            "bedrooms",
+            "budget"
+          ]
+        }
+      }
+    }
+  ]
+}

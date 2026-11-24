@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_177",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_song_chord_progression",
+        "description": "Retrieve the chord progression for a specific song.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "song_name": {
+              "type": "string",
+              "description": "The name of the song."
+            },
+            "artist_name": {
+              "type": "string",
+              "description": "The name of the artist/band."
+            },
+            "capo_position": {
+              "type": "integer",
+              "description": "The capo position on the guitar, if applicable. Defaults to 0 (no capo)."
+            }
+          },
+          "required": [
+            "song_name",
+            "artist_name"
+          ]
+        }
+      }
+    }
+  ]
+}

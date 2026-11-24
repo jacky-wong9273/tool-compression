@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_229",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "book_hotel",
+        "description": "Book a hotel room in a specified location for certain dates.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city where the hotel is located."
+            },
+            "check_in_date": {
+              "type": "string",
+              "description": "The date when the guest will check into the hotel."
+            },
+            "check_out_date": {
+              "type": "string",
+              "description": "The date when the guest will check out from the hotel."
+            },
+            "room_type": {
+              "type": "string",
+              "optional": true,
+              "description": "The type of room the guest would prefer. Default: 'double'"
+            }
+          },
+          "required": [
+            "location",
+            "check_in_date",
+            "check_out_date"
+          ]
+        }
+      }
+    }
+  ]
+}

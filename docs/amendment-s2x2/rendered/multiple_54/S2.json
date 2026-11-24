@@ -1,0 +1,68 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_54",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "corporate_finance_dividend_data",
+        "description": "Get historical dividend data of a specific company within a particular duration.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company that you want to get the dividend data for."
+            },
+            "years": {
+              "type": "integer",
+              "description": "Number of past years for which to retrieve the data."
+            },
+            "frequency": {
+              "type": "string",
+              "enum": [
+                "quarterly",
+                "annually"
+              ],
+              "description": "The frequency of the dividend payment. Default annually"
+            }
+          },
+          "required": [
+            "company",
+            "years"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "stock_market_data",
+        "description": "Retrieve stock market data for a specific company and time frame.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "The company that you want to get the stock market data for."
+            },
+            "days": {
+              "type": "integer",
+              "description": "Number of past days for which to retrieve the data."
+            }
+          },
+          "required": [
+            "company",
+            "days"
+          ]
+        }
+      }
+    }
+  ]
+}

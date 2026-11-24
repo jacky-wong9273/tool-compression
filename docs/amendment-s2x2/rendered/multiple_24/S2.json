@@ -1,0 +1,75 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_24",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "route_planner_calculate_route",
+        "description": "Determines the best route between two points.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "description": "The starting point of the journey."
+            },
+            "destination": {
+              "type": "string",
+              "description": "The destination of the journey."
+            },
+            "method": {
+              "type": "string",
+              "enum": [
+                "fastest",
+                "shortest",
+                "balanced"
+              ],
+              "description": "The method to use when calculating the route.",
+              "default": "fastest"
+            }
+          },
+          "required": [
+            "start",
+            "destination"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "chess_club_details_find",
+        "description": "Provides details about a chess club, including location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the chess club."
+            },
+            "city": {
+              "type": "string",
+              "description": "The city in which the chess club is located."
+            },
+            "event": {
+              "type": "string",
+              "description": "The event hosted by the club.",
+              "default": "null"
+            }
+          },
+          "required": [
+            "name",
+            "city"
+          ]
+        }
+      }
+    }
+  ]
+}

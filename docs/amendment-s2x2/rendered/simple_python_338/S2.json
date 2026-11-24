@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_338",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "card_game_probability_calculate",
+        "description": "Calculate the probability of drawing a certain card or suit from a deck of cards.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "total_cards": {
+              "type": "integer",
+              "description": "Total number of cards in the deck."
+            },
+            "desired_cards": {
+              "type": "integer",
+              "description": "Number of cards in the deck that satisfy the conditions."
+            },
+            "cards_drawn": {
+              "type": "integer",
+              "default": 1,
+              "description": "Number of cards drawn from the deck."
+            }
+          },
+          "required": [
+            "total_cards",
+            "desired_cards"
+          ]
+        }
+      }
+    }
+  ]
+}

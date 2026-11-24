@@ -1,0 +1,43 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_161",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "crime_statute_lookup",
+        "description": "Look up the criminal statutes in a specific jurisdiction to find possible punishments for a specific crime.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "jurisdiction": {
+              "type": "string",
+              "description": "The jurisdiction to search in, usually a state or country."
+            },
+            "crime": {
+              "type": "string",
+              "description": "The crime to search for."
+            },
+            "detail_level": {
+              "type": "string",
+              "enum": [
+                "basic",
+                "detailed"
+              ],
+              "description": "How detailed of a report to return. Optional, default is 'basic'."
+            }
+          },
+          "required": [
+            "jurisdiction",
+            "crime"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_262",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "modify_painting",
+        "description": "Modify an existing painting's attributes such as size, medium, and color.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "type": "string",
+              "description": "The size of the painting in inches, width by height."
+            },
+            "medium": {
+              "type": "string",
+              "description": "The medium of the painting, such as oil, acrylic, etc."
+            },
+            "dominant_color": {
+              "type": "string",
+              "description": "The dominant color of the painting. Default to 'black'."
+            }
+          },
+          "required": [
+            "size",
+            "medium"
+          ]
+        }
+      }
+    }
+  ]
+}

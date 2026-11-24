@@ -1,0 +1,86 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_68",
+  "category": "multiple",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "library_search_books",
+        "description": "Search for a book in a given library with optional parameters",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "Name or city of library"
+            },
+            "genre": {
+              "type": "string",
+              "description": "Genre of the book"
+            },
+            "title": {
+              "type": "string",
+              "description": "Title of the book. Default ''"
+            }
+          },
+          "required": [
+            "location",
+            "genre"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "google_books_search",
+        "description": "Search for a book in the Google Books library with optional parameters Unlike openlibrary_books_search, which searches for a book in the Open Library, this searches for a book in the Google Books library.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "genre": {
+              "type": "string",
+              "description": "Genre of the book"
+            },
+            "title": {
+              "type": "string",
+              "description": "Title of the book. Default ''"
+            }
+          },
+          "required": [
+            "genre"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "openlibrary_books_search",
+        "description": "Search for a book in the Open Library with optional parameters Unlike google_books_search, which searches for a book in the Google Books library, this searches for a book in the Open Library.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "genre": {
+              "type": "string",
+              "description": "Genre of the book"
+            },
+            "title": {
+              "type": "string",
+              "description": "Title of the book. Default ''"
+            }
+          },
+          "required": [
+            "genre"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_21",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_wave_amplitude",
+        "description": "Calculate the amplitude of an electromagnetic wave based on its maximum electric field strength.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "max_electric_field_strength": {
+              "type": "number",
+              "description": "The maximum electric field strength of the electromagnetic wave.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "The speed of light in vacuum, usually denoted as 'c'. Default is 3 * 10^8 m/s",
+              "format": "float"
+            },
+            "wave_frequency": {
+              "type": "number",
+              "description": "The frequency of the electromagnetic wave. Default is 1 Hz",
+              "format": "float"
+            }
+          },
+          "required": [
+            "max_electric_field_strength"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_33",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_derivative",
+        "description": "Calculate the derivative of a single-variable function.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "func": {
+              "type": "string",
+              "description": "The function to be differentiated."
+            },
+            "x_value": {
+              "type": "integer",
+              "description": "The x-value at which the derivative should be calculated."
+            },
+            "order": {
+              "type": "integer",
+              "description": "The order of the derivative (optional). Default is 1st order.",
+              "default": 1
+            }
+          },
+          "required": [
+            "func",
+            "x_value"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_integral",
+        "description": "Calculate the definite integral of a single-variable function.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "func": {
+              "type": "string",
+              "description": "The function to be integrated."
+            },
+            "a": {
+              "type": "integer",
+              "description": "The lower bound of the integration."
+            },
+            "b": {
+              "type": "integer",
+              "description": "The upper bound of the integration."
+            }
+          },
+          "required": [
+            "func",
+            "a",
+            "b"
+          ]
+        }
+      }
+    }
+  ]
+}

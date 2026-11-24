@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_135",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_return_on_investment",
+        "description": "Calculate the return on investment for a given stock based on its purchase price, sale price, and any dividends received.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "purchase_price": {
+              "type": "integer",
+              "description": "The price the stock was bought at."
+            },
+            "sale_price": {
+              "type": "integer",
+              "description": "The price the stock was sold at."
+            },
+            "dividend": {
+              "type": "integer",
+              "description": "Any dividends received from the stock.",
+              "default": 0
+            }
+          },
+          "required": [
+            "purchase_price",
+            "sale_price"
+          ]
+        }
+      }
+    }
+  ]
+}

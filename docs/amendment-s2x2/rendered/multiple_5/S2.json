@@ -1,0 +1,91 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_5",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_get_by_city_date",
+        "description": "Retrieves the historical weather data based on city and date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "description": "The city for which to retrieve the weather."
+            },
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "The date for which to retrieve the historical weather data in the format YYYY-MM-DD."
+            }
+          },
+          "required": [
+            "city",
+            "date"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_get_forecast_by_coordinates",
+        "description": "Get the weather forecast for a specific geographical coordinates.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographical coordinates for which to retrieve the weather. The first element of the tuple is the latitude and the second is the longitude."
+            },
+            "days_ahead": {
+              "type": "integer",
+              "description": "Number of days to forecast from current date (optional, default is 7)."
+            }
+          },
+          "required": [
+            "coordinates"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "weather_get_by_coordinates_date",
+        "description": "Retrieves the historical weather data based on coordinates and date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coordinates": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The geographical coordinates for which to retrieve the weather. The first element of the tuple is the latitude and the second is the longitude."
+            },
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "The date for which to retrieve the historical weather data in the format YYYY-MM-DD."
+            }
+          },
+          "required": [
+            "coordinates",
+            "date"
+          ]
+        }
+      }
+    }
+  ]
+}

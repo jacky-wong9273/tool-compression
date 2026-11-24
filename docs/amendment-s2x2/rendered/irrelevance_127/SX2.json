@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_127",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sentiment_analysis_twitter",
+        "description": "Analyzes the overall sentiment of twitter towards a certain topic.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "The topic you want to analyze the sentiment for."
+            },
+            "language": {
+              "type": "string",
+              "description": "The language of the tweets."
+            },
+            "num_tweets": {
+              "type": "integer",
+              "description": "Number of tweets to analyze. Default: 0"
+            }
+          },
+          "required": [
+            "topic",
+            "language"
+          ]
+        }
+      }
+    }
+  ]
+}

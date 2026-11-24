@@ -1,0 +1,40 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_164",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "search_music_instrument_players",
+        "description": "Searches for top music instrument players in a specified music genre.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "instrument": {
+              "type": "string",
+              "description": "The type of musical instrument, e.g. trumpet"
+            },
+            "genre": {
+              "type": "string",
+              "description": "The musical genre, e.g. Jazz"
+            },
+            "top": {
+              "type": "integer",
+              "default": 5,
+              "description": "Number of top players to return. Default is 5."
+            }
+          },
+          "required": [
+            "instrument",
+            "genre"
+          ]
+        }
+      }
+    }
+  ]
+}

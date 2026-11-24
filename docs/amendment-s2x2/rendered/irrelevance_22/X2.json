@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_22",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "magnetic_field_intensity",
+        "description": "Calculates the magnetic field intensity at a point located at a given distance from a current carrying wire",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "current": {
+              "type": "number",
+              "description": "The current flowing through the wire in Amperes. This is a float type value.",
+              "format": "float"
+            },
+            "distance": {
+              "type": "number",
+              "description": "The distance from the wire at which magnetic field intensity is required, in meters. This is a float type value.",
+              "format": "float"
+            },
+            "permeability": {
+              "type": "number",
+              "description": "The permeability of free space, optional, default value is 4*pi*10^-7. This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "current",
+            "distance"
+          ]
+        }
+      }
+    }
+  ]
+}

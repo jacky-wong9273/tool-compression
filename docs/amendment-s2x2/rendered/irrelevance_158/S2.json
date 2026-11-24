@@ -1,0 +1,50 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_158",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_construction_cost",
+        "description": "Calculate the estimated cost of construction for a particular building project.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "building_type": {
+              "type": "string",
+              "description": "The type of the building. E.g. skyscraper, house, warehouse"
+            },
+            "location": {
+              "type": "string",
+              "description": "The location of the building."
+            },
+            "materials": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The list of materials to be used in the construction."
+            },
+            "labor_cost": {
+              "type": "number",
+              "default": 0,
+              "description": "The cost of labor per day.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "building_type",
+            "location",
+            "materials"
+          ]
+        }
+      }
+    }
+  ]
+}

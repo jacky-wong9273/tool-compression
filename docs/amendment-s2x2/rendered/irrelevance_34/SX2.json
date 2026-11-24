@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_34",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "genetics_get_variant_frequency",
+        "description": "Retrieve the frequency of a gene variant in a specific population.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "variant_id": {
+              "type": "string",
+              "description": "The id of the gene variant."
+            },
+            "population": {
+              "type": "string",
+              "description": "The population to retrieve the frequency for."
+            }
+          },
+          "required": [
+            "variant_id",
+            "population"
+          ]
+        }
+      }
+    }
+  ]
+}

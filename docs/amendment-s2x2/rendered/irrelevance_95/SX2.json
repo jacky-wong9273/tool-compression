@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_95",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "case_review_retrieve_case_outcome",
+        "description": "Retrieve the outcome of a specific law case.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case_name": {
+              "type": "string",
+              "description": "The full case name (including vs.)."
+            },
+            "case_year": {
+              "type": "integer",
+              "description": "The year the case was tried."
+            },
+            "location": {
+              "type": "string",
+              "description": "The location (City, State) of where the case was tried.",
+              "optional": "true",
+              "default": "CA"
+            }
+          },
+          "required": [
+            "case_name",
+            "case_year"
+          ]
+        }
+      }
+    }
+  ]
+}

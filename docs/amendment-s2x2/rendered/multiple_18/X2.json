@@ -1,0 +1,69 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_18",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_war_details",
+        "description": "Get details of a specific historical European war.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "war": {
+              "type": "string",
+              "description": "Name of the war"
+            }
+          },
+          "required": [
+            "war"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_leader_info",
+        "description": "Get information about a specific historical leader in European history.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "leader": {
+              "type": "string",
+              "description": "Name of the leader"
+            }
+          },
+          "required": [
+            "leader"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "european_history_battle_details",
+        "description": "Get details of a specific historical European battle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "battle": {
+              "type": "string",
+              "description": "Name of the battle"
+            }
+          },
+          "required": [
+            "battle"
+          ]
+        }
+      }
+    }
+  ]
+}

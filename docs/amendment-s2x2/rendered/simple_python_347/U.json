@@ -1,0 +1,34 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_347",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "soccer_get_last_match",
+        "description": "Retrieve the details of the last match played by a specified soccer club.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team_name": {
+              "type": "string",
+              "description": "The name of the soccer club."
+            },
+            "include_stats": {
+              "type": "boolean",
+              "description": "If true, include match statistics like possession, shots on target etc. Default is false."
+            }
+          },
+          "required": [
+            "team_name"
+          ]
+        }
+      }
+    }
+  ]
+}

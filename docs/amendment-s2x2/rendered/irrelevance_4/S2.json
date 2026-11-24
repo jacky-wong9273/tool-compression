@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_4",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_roots",
+        "description": "Find the roots of a quadratic equation ax^2 + bx + c = 0.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number",
+              "description": "Coefficient of x^2.",
+              "format": "float"
+            },
+            "b": {
+              "type": "number",
+              "description": "Coefficient of x.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "Constant term.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    }
+  ]
+}

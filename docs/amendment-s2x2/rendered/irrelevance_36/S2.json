@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_36",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_dominant_trait",
+        "description": "Calculate the dominant genetic trait of an organism based on its genetic makeup.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "allele1": {
+              "type": "string",
+              "description": "The first allele of the organism."
+            },
+            "allele2": {
+              "type": "string",
+              "description": "The second allele of the organism."
+            },
+            "inheritance_pattern": {
+              "type": "string",
+              "description": "The type of inheritance pattern (could be dominant, recessive, or co-dominant). Default is 'dominant'."
+            }
+          },
+          "required": [
+            "allele1",
+            "allele2"
+          ]
+        }
+      }
+    }
+  ]
+}

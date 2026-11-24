@@ -1,0 +1,42 @@
+{
+  "sample": "official-840",
+  "case_id": "irrelevance_3",
+  "category": "irrelevance",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_critical_points",
+        "description": "Finds the critical points of the function.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "function": {
+              "type": "string",
+              "description": "The function to find the critical points for."
+            },
+            "variable": {
+              "type": "string",
+              "description": "The variable in the function."
+            },
+            "range": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "The range to consider for finding critical points. Optional. Default is [0.0, 3.4]."
+            }
+          },
+          "required": [
+            "function",
+            "variable"
+          ]
+        }
+      }
+    }
+  ]
+}

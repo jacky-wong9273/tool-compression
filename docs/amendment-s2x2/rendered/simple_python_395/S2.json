@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_395",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "parking_lot_find_nearest",
+        "description": "Locate the nearest parking lot based on a specific location and radius.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The reference location e.g. Central Park, NY"
+            },
+            "radius": {
+              "type": "integer",
+              "description": "The maximum distance from the location in miles. Default is 5 miles"
+            },
+            "type": {
+              "type": "string",
+              "description": "The type of parking lot. Default is 'public'."
+            }
+          },
+          "required": [
+            "location",
+            "radius"
+          ]
+        }
+      }
+    }
+  ]
+}

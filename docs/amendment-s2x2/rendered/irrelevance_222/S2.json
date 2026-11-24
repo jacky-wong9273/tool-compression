@@ -1,0 +1,45 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_222",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "grocery_store_item_details",
+        "description": "Retrieve detailed information about a specific grocery item.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "item_name": {
+              "type": "string",
+              "description": "The name of the grocery item."
+            },
+            "store_location": {
+              "type": "string",
+              "description": "The city or area where the grocery store is located."
+            },
+            "details_level": {
+              "type": "string",
+              "enum": [
+                "simple",
+                "detailed"
+              ],
+              "description": "Level of details required, 'simple' gives basic details, while 'detailed' provides comprehensive info about the item.",
+              "default": "simple"
+            }
+          },
+          "required": [
+            "item_name",
+            "store_location"
+          ]
+        }
+      }
+    }
+  ]
+}

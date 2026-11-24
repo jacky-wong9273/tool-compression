@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_146",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_prophet_details",
+        "description": "Get detailed information about a prophet in a given religion.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "religion": {
+              "type": "string",
+              "description": "The religion that the prophet is associated with."
+            },
+            "prophet": {
+              "type": "string",
+              "description": "The name of the prophet."
+            },
+            "historical_context": {
+              "type": "boolean",
+              "description": "Whether or not to include information about the historical context in which the prophet lived. Default is false."
+            }
+          },
+          "required": [
+            "religion",
+            "prophet"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_30",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "kinematics_final_velocity_from_distance",
+        "description": "Calculate the final velocity of an object given the acceleration and distance travelled, assuming initial velocity is 0.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "acceleration": {
+              "type": "integer",
+              "description": "Acceleration of the object, m/s^2."
+            },
+            "distance": {
+              "type": "integer",
+              "description": "Distance traveled by the object, m."
+            },
+            "initial_velocity": {
+              "type": "number",
+              "description": "Initial velocity of the object. Default is 0, m/s",
+              "format": "float"
+            }
+          },
+          "required": [
+            "acceleration",
+            "distance"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_99",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "plot_sine_wave",
+        "description": "Plot a sine wave for a given frequency in a given range.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "start_range": {
+              "type": "number",
+              "description": "Start of the range in radians. Four decimal places. This is a float type value.",
+              "format": "float"
+            },
+            "end_range": {
+              "type": "number",
+              "description": "End of the range in radians. Four decimal places. This is a float type value.",
+              "format": "float"
+            },
+            "frequency": {
+              "type": "integer",
+              "description": "Frequency of the sine wave in Hz."
+            },
+            "amplitude": {
+              "type": "integer",
+              "description": "Amplitude of the sine wave. Default is 1."
+            },
+            "phase_shift": {
+              "type": "integer",
+              "description": "Phase shift of the sine wave in radians. Default is 0."
+            }
+          },
+          "required": [
+            "start_range",
+            "end_range",
+            "frequency"
+          ]
+        }
+      }
+    }
+  ]
+}

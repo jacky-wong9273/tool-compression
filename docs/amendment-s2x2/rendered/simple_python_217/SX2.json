@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_217",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "fMRI_analyze",
+        "description": "Take in fMRI data to output analyzed data.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "data_source": {
+              "type": "string",
+              "description": "The path where the data is stored."
+            },
+            "sequence_type": {
+              "type": "string",
+              "description": "Type of fMRI sequence"
+            },
+            "smooth": {
+              "type": "integer",
+              "description": "Spatial smoothing FWHM. In mm."
+            },
+            "voxel_size": {
+              "type": "integer",
+              "description": "Size of isotropic voxels in mm.",
+              "default": 3
+            }
+          },
+          "required": [
+            "data_source",
+            "sequence_type",
+            "smooth"
+          ]
+        }
+      }
+    }
+  ]
+}

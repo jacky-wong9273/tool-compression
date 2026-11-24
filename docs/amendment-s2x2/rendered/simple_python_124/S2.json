@@ -1,0 +1,47 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_124",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "t_test",
+        "description": "Perform a statistical t-test to check if the means of two independent datasets are statistically different.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dataset_A": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Dataset A for comparison."
+            },
+            "dataset_B": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Dataset B for comparison."
+            },
+            "alpha": {
+              "type": "number",
+              "description": "Significance level for the test. Default is 0.05.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "dataset_A",
+            "dataset_B"
+          ]
+        }
+      }
+    }
+  ]
+}

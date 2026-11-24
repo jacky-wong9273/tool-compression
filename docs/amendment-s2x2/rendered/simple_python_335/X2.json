@@ -1,0 +1,51 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_335",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_card_in_deck",
+        "description": "Locate a particular card in a deck based on rank and suit.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "rank": {
+              "type": "string",
+              "description": "Rank of the card (e.g. Ace, Two, King)."
+            },
+            "suit": {
+              "type": "string",
+              "description": "Suit of the card (e.g. Hearts, Spades, Diamonds, Clubs)."
+            },
+            "deck": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "rank": {
+                    "type": "string"
+                  },
+                  "suit": {
+                    "type": "string"
+                  }
+                }
+              },
+              "description": "Deck of cards. If not provided, the deck will be a standard 52 card deck"
+            }
+          },
+          "required": [
+            "rank",
+            "suit"
+          ]
+        }
+      }
+    }
+  ]
+}

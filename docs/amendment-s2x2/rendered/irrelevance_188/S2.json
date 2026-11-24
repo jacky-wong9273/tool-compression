@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_188",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_ranking_get_champion",
+        "description": "Retrieve the champion of a specific sports event for a given year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "event": {
+              "type": "string",
+              "description": "The sports event."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year of the sports event."
+            }
+          },
+          "required": [
+            "event",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

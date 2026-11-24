@@ -1,0 +1,76 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_62",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "nature_park_find_nearby",
+        "description": "Locate nearby nature parks based on specific criteria like camping availability and scenic views.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. Boston, MA."
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Camping",
+                  "Scenic View",
+                  "Trails",
+                  "Picnic Areas"
+                ]
+              },
+              "description": "Preferred features in nature park."
+            }
+          },
+          "required": [
+            "location",
+            "features"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "restaurant_find_nearby",
+        "description": "Locate nearby restaurants based on specific criteria.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The city and state, e.g. Boston, MA."
+            },
+            "amenities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Delivery",
+                  "Outdoor Seating",
+                  "Vegetarian Options"
+                ]
+              },
+              "description": "Preferred amenities in restaurant. Default empty array []"
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

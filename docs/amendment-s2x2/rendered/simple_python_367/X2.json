@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_367",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_recipe",
+        "description": "Find a recipe based on the dietary restrictions, recipe type, and time constraints.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dietary_restrictions": {
+              "type": "string",
+              "description": "Dietary restrictions e.g. vegan, vegetarian, gluten free, dairy free."
+            },
+            "recipe_type": {
+              "type": "string",
+              "description": "Type of the recipe. E.g. dessert, main course, breakfast."
+            },
+            "time": {
+              "type": "integer",
+              "description": "Time limit in minutes to prep the meal."
+            }
+          },
+          "required": [
+            "dietary_restrictions",
+            "recipe_type",
+            "time"
+          ]
+        }
+      }
+    }
+  ]
+}

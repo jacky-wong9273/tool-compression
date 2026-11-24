@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_264",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sculpture_get_details",
+        "description": "Retrieve details of a sculpture based on the artist and the title of the sculpture.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "artist": {
+              "type": "string",
+              "description": "The artist who made the sculpture."
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the sculpture."
+            },
+            "detail": {
+              "type": "string",
+              "description": "The specific detail wanted about the sculpture. Default is 'general information'."
+            }
+          },
+          "required": [
+            "artist",
+            "title"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_139",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "estimate_mutual_fund_return",
+        "description": "Calculate the estimated return on a mutual fund given the yearly yield, the investment amount and the time period.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "yearly_yield": {
+              "type": "number",
+              "description": "The yearly yield of the mutual fund as a percentage.",
+              "format": "float"
+            },
+            "investment_amount": {
+              "type": "integer",
+              "description": "The initial investment amount in the mutual fund."
+            },
+            "years": {
+              "type": "integer",
+              "description": "The time period for which the investment is made in years."
+            }
+          },
+          "required": [
+            "yearly_yield",
+            "investment_amount",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

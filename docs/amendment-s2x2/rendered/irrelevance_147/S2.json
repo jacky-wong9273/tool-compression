@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_147",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "color_mix_mix_two_colors",
+        "description": "Mix two colors together based on specific proportions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "color1": {
+              "type": "string",
+              "description": "The hex code of the first color, e.g. #FAEBD7"
+            },
+            "color2": {
+              "type": "string",
+              "description": "The hex code of the second color, e.g. #00FFFF"
+            },
+            "ratio": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "The proportion of the two colors in the mix, default is [1, 1]."
+            }
+          },
+          "required": [
+            "color1",
+            "color2"
+          ]
+        }
+      }
+    }
+  ]
+}

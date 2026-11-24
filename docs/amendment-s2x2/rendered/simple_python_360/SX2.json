@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_360",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "find_recipe",
+        "description": "Locate a recipe based on name and its calorie content",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "recipeName": {
+              "type": "string",
+              "description": "The recipe's name."
+            },
+            "maxCalories": {
+              "type": "integer",
+              "description": "The maximum calorie content of the recipe.",
+              "default": 1000
+            }
+          },
+          "required": [
+            "recipeName"
+          ]
+        }
+      }
+    }
+  ]
+}

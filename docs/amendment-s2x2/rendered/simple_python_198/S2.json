@@ -1,0 +1,39 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_198",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_daily_water_intake",
+        "description": "Calculate the recommended daily water intake for a person based on their weight.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "integer",
+              "description": "The weight of the person in kilograms."
+            },
+            "activity_level": {
+              "type": "string",
+              "description": "The level of physical activity of the person. Default is 'moderate'."
+            },
+            "climate": {
+              "type": "string",
+              "description": "The climate of the area where the person lives. Default is 'temperate'."
+            }
+          },
+          "required": [
+            "weight"
+          ]
+        }
+      }
+    }
+  ]
+}

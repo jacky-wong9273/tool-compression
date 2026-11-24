@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_200",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_emissions",
+        "description": "Calculates the annual carbon dioxide emissions produced by a vehicle based on the distance traveled, the fuel type and the fuel efficiency of the vehicle.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "distance": {
+              "type": "integer",
+              "description": "The distance travelled in miles."
+            },
+            "fuel_type": {
+              "type": "string",
+              "description": "Type of fuel used by the vehicle."
+            },
+            "fuel_efficiency": {
+              "type": "number",
+              "description": "The vehicle's fuel efficiency in miles per gallon.",
+              "format": "float"
+            },
+            "efficiency_reduction": {
+              "type": "integer",
+              "description": "The percentage decrease in fuel efficiency per year (optional). Default is 0"
+            }
+          },
+          "required": [
+            "distance",
+            "fuel_type",
+            "fuel_efficiency"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_178",
+  "category": "simple_python",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_lawsuit_details",
+        "description": "Retrieve the detailed information about a lawsuit based on its case number and the court location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case_number": {
+              "type": "string",
+              "description": "The case number of the lawsuit."
+            },
+            "court_location": {
+              "type": "string",
+              "description": "The location of the court where the case is filed."
+            },
+            "additional_details": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "attorneys",
+                  "plaintiffs",
+                  "defendants",
+                  "charges",
+                  "court_updates"
+                ]
+              },
+              "description": "Optional. Array containing additional details to be fetched. Default is all."
+            }
+          },
+          "required": [
+            "case_number",
+            "court_location"
+          ]
+        }
+      }
+    }
+  ]
+}

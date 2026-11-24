@@ -1,0 +1,70 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_85",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "basketball_scores_get_scores",
+        "description": "Retrieve basketball scores for a specific team and league within a certain range of rounds.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "The basketball team whose scores are to be retrieved."
+            },
+            "league": {
+              "type": "string",
+              "description": "The league in which the team competes."
+            },
+            "rounds": {
+              "type": "integer",
+              "description": "Number of past rounds for which to retrieve the scores."
+            }
+          },
+          "required": [
+            "team",
+            "league",
+            "rounds"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "soccer_scores_get_scores",
+        "description": "Retrieve soccer scores for a specific team and league within a certain range of rounds.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "team": {
+              "type": "string",
+              "description": "The soccer team whose scores are to be retrieved."
+            },
+            "league": {
+              "type": "string",
+              "description": "The league in which the team competes."
+            },
+            "rounds": {
+              "type": "integer",
+              "description": "Number of past rounds for which to retrieve the scores."
+            }
+          },
+          "required": [
+            "team",
+            "league",
+            "rounds"
+          ]
+        }
+      }
+    }
+  ]
+}

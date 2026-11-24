@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_38",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "retrieve_scientific_paper",
+        "description": "Fetches the details of scientific research paper based on its topic.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "topic": {
+              "type": "string",
+              "description": "Topic of the research paper"
+            },
+            "year": {
+              "type": "string",
+              "description": "Year of publishing of the research paper. If not specified, fetches the most recent paper"
+            },
+            "author": {
+              "type": "string",
+              "description": "Author of the research paper. If not specified, fetches the paper with most citations",
+              "default": "None"
+            }
+          },
+          "required": [
+            "topic",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

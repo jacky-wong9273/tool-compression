@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_171",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "music_search_composer",
+        "description": "Search the composer of a specific musical piece",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the musical piece."
+            },
+            "epoch": {
+              "type": "string",
+              "description": "The historical period or style of the musical piece."
+            },
+            "performer": {
+              "type": "string",
+              "description": "The performer of the musical piece, Default: 'vivian'"
+            }
+          },
+          "required": [
+            "title",
+            "epoch"
+          ]
+        }
+      }
+    }
+  ]
+}

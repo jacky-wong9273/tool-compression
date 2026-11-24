@@ -1,0 +1,47 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_77",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_investment_value",
+        "description": "Calculate the future value of an investment given the principal, interest rate and term.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "principal": {
+              "type": "number",
+              "description": "The initial amount of the investment. This is a float type value.",
+              "format": "float"
+            },
+            "interest_rate": {
+              "type": "number",
+              "description": "The annual interest rate in percentage. Enter as a decimal (for 5%, enter 0.05). This is a float type value.",
+              "format": "float"
+            },
+            "term": {
+              "type": "integer",
+              "description": "The term of the investment in years."
+            },
+            "compounding": {
+              "type": "integer",
+              "description": "The number of times that interest is compounded per year. Default is 1 (annually)."
+            }
+          },
+          "required": [
+            "principal",
+            "interest_rate",
+            "term"
+          ]
+        }
+      }
+    }
+  ]
+}

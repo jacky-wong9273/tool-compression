@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_68",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "forest_growth_forecast",
+        "description": "Predicts the forest growth over the next N years based on current trends.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location where you want to predict forest growth."
+            },
+            "years": {
+              "type": "integer",
+              "description": "The number of years for the forecast."
+            },
+            "include_human_impact": {
+              "type": "boolean",
+              "description": "Whether or not to include the impact of human activities in the forecast. If not provided, defaults to false."
+            }
+          },
+          "required": [
+            "location",
+            "years"
+          ]
+        }
+      }
+    }
+  ]
+}

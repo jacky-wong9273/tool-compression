@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_115",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_distance",
+        "description": "Calculate the distance between two geographical coordinates in miles.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "origin": {
+              "type": "object",
+              "description": "The origin coordinate with latitude and longitude as decimal values."
+            },
+            "destination": {
+              "type": "object",
+              "description": "The destination coordinate with latitude and longitude as decimal values."
+            },
+            "speed": {
+              "type": "number",
+              "description": "The speed of travel in mph.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "origin",
+            "destination",
+            "speed"
+          ]
+        }
+      }
+    }
+  ]
+}

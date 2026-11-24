@@ -1,0 +1,105 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_11",
+  "category": "multiple",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_quadratic",
+        "description": "Calculate the roots of a quadratic equation. Unlike math_roots_polynomial, which takes an ordered coefficient array, this takes named quadratic coefficients.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "integer",
+              "description": "Coefficient of the second-degree term."
+            },
+            "b": {
+              "type": "integer",
+              "description": "Coefficient of the first-degree term."
+            },
+            "c": {
+              "type": "integer",
+              "description": "Constant term."
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_cubic",
+        "description": "Calculate the roots of a cubic equation. Unlike math_roots_polynomial, which takes an ordered coefficient array, this takes named cubic coefficients.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "a": {
+              "type": "number",
+              "description": "Coefficient of the third-degree term.",
+              "format": "float"
+            },
+            "b": {
+              "type": "number",
+              "description": "Coefficient of the second-degree term.",
+              "format": "float"
+            },
+            "c": {
+              "type": "number",
+              "description": "Coefficient of the first-degree term.",
+              "format": "float"
+            },
+            "d": {
+              "type": "number",
+              "description": "Constant term.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "math_roots_polynomial",
+        "description": "Calculate the roots of a polynomial equation. Unlike math_roots_quadratic, which takes named quadratic coefficients, this takes an ordered coefficient array.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "coefficients": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Array of coefficients of the polynomial equation starting from highest degree term."
+            },
+            "degree": {
+              "type": "integer",
+              "description": "Degree of the polynomial equation. Default 0"
+            }
+          },
+          "required": [
+            "coefficients"
+          ]
+        }
+      }
+    }
+  ]
+}

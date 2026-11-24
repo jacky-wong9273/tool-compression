@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_245",
+  "category": "simple_python",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "discoverer_get",
+        "description": "Retrieve the name of the discoverer of an element based on its name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "element_name": {
+              "type": "string",
+              "description": "The name of the element."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Optional parameter that refers to the year of discovery. It could be helpful in case an element was discovered more than once. Default to 0, which means not use it."
+            },
+            "first": {
+              "type": "boolean",
+              "default": true,
+              "description": "Optional parameter indicating if the first discoverer's name should be retrieved."
+            }
+          },
+          "required": [
+            "element_name"
+          ]
+        }
+      }
+    }
+  ]
+}

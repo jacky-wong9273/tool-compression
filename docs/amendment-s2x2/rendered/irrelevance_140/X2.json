@@ -1,0 +1,43 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_140",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_electric_current",
+        "description": "Calculate the electric current through a conductor given voltage and resistance.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "voltage": {
+              "type": "number",
+              "description": "The voltage across the conductor in Volts. This is a float type value.",
+              "format": "float"
+            },
+            "resistance": {
+              "type": "number",
+              "description": "The resistance of the conductor in Ohms. This is a float type value.",
+              "format": "float"
+            },
+            "conductance": {
+              "type": "number",
+              "description": "The conductance of the conductor in Siemens. Optional if resistance is provided. Default: 0.3 This is a float type value.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "voltage",
+            "resistance"
+          ]
+        }
+      }
+    }
+  ]
+}

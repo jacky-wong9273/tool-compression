@@ -1,0 +1,46 @@
+{
+  "sample": "official-840",
+  "case_id": "simple_python_334",
+  "category": "simple_python",
+  "condition": "U",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "note": "Fresh conversion of the pinned BFCL record. No question, gold call, or stored response.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "blackjack_check_winner",
+        "description": "Checks and determines the winner in a game of blackjack.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "player_cards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Cards held by the player."
+            },
+            "dealer_cards": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Cards held by the dealer."
+            },
+            "ace_value": {
+              "type": "integer",
+              "description": "The value considered for the ace card, can be either 1 or 11.",
+              "default": 11
+            }
+          },
+          "required": [
+            "player_cards",
+            "dealer_cards"
+          ]
+        }
+      }
+    }
+  ]
+}

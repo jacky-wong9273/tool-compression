@@ -1,0 +1,69 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_22",
+  "category": "multiple",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_single_season",
+        "description": "Returns the record for the most points scored by a single player in one season of NBA, including the player name, points scored, and season.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_career",
+        "description": "Returns the record for the most points scored by a player in his career in NBA, including the player name, total points scored, and career span.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "sports_data_basketball_most_points_single_game",
+        "description": "Returns the record for the most points scored by a single player in one game of NBA, including the player name, points scored, and game date.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "league": {
+              "type": "string",
+              "description": "The specific basketball league for which to fetch the record. In this case, 'NBA'."
+            }
+          },
+          "required": [
+            "league"
+          ]
+        }
+      }
+    }
+  ]
+}

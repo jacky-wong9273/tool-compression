@@ -1,0 +1,44 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_60",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculateFinalPrice",
+        "description": "Calculate the final price of a product after a certain discount has been applied and then sales tax added. Price should be positive and the rates can range from 0-1",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "price": {
+              "type": "number",
+              "description": "Original price of the product.",
+              "format": "float"
+            },
+            "discount_rate": {
+              "type": "number",
+              "description": "The discount rate in percentage, must be from 0 to 1.",
+              "format": "float"
+            },
+            "sales_tax": {
+              "type": "number",
+              "description": "The sales tax in percentage, must be from 0 to 1.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "price",
+            "discount_rate",
+            "sales_tax"
+          ]
+        }
+      }
+    }
+  ]
+}

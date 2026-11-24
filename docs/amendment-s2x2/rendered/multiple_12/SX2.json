@@ -1,0 +1,103 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_12",
+  "category": "multiple",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "corporate_finance_calculate_YOY_growth_rate",
+        "description": "Calculate the year over year (YOY) growth rate for a company.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company."
+            },
+            "year1": {
+              "type": "integer",
+              "description": "The initial year."
+            },
+            "year1_revenue": {
+              "type": "integer",
+              "description": "The revenue for the initial year."
+            },
+            "year2": {
+              "type": "integer",
+              "description": "The subsequent year."
+            },
+            "year2_revenue": {
+              "type": "integer",
+              "description": "The revenue for the subsequent year."
+            }
+          },
+          "required": [
+            "company_name",
+            "year1",
+            "year1_revenue",
+            "year2",
+            "year2_revenue"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "financial_ratios_calculate_ROE",
+        "description": "Calculate the return on equity (ROE) for a company.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "net_income": {
+              "type": "number",
+              "description": "Net income for the period.",
+              "format": "float"
+            },
+            "shareholder_equity": {
+              "type": "number",
+              "description": "Average shareholder equity for the period.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "net_income",
+            "shareholder_equity"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "financial_ratios_calculate_ROA",
+        "description": "Calculate the return on assets (ROA) for a company.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "net_income": {
+              "type": "number",
+              "description": "Net income for the period.",
+              "format": "float"
+            },
+            "total_assets": {
+              "type": "number",
+              "description": "Total average assets for the period.",
+              "format": "float"
+            }
+          },
+          "required": [
+            "net_income",
+            "total_assets"
+          ]
+        }
+      }
+    }
+  ]
+}

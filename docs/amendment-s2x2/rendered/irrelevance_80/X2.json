@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_80",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "stock_ticker",
+        "description": "Retrieves the latest stock ticker information for a specified company.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company_name": {
+              "type": "string",
+              "description": "The name of the company for which the stock ticker information should be retrieved."
+            },
+            "ticker_symbol": {
+              "type": "string",
+              "description": "The ticker symbol of the company's stock. This field is optional.",
+              "default": "symbol"
+            },
+            "exchange": {
+              "type": "string",
+              "description": "The name of the exchange on which the company's stock is listed. This field is optional. Default: 'AAPL'"
+            }
+          },
+          "required": [
+            "company_name"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_354",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "get_vegan_recipe",
+        "description": "Retrieve a vegan soup recipe based on the provided cooking time.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "dish_type": {
+              "type": "string",
+              "description": "The type of dish, e.g. soup, dessert, etc.",
+              "enum": [
+                "soup",
+                "main dish",
+                "dessert",
+                "salad"
+              ]
+            },
+            "cooking_time": {
+              "type": "integer",
+              "description": "The maximum cooking time for the recipe in minutes."
+            },
+            "ingredient_preference": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Preferred ingredients to be included in the recipe, if any. Default to not use it if not provided."
+            }
+          },
+          "required": [
+            "dish_type",
+            "cooking_time"
+          ]
+        }
+      }
+    }
+  ]
+}

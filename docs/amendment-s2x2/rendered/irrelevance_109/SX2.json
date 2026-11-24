@@ -1,0 +1,46 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_109",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_water_needs",
+        "description": "Calculate the weekly watering needs of a plant based on its type, location, and time of year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "plant_type": {
+              "type": "string",
+              "description": "The type of plant, e.g. 'cactus'"
+            },
+            "location": {
+              "type": "string",
+              "description": "The location where the plant is situated, e.g. 'Arizona'"
+            },
+            "season": {
+              "type": "string",
+              "enum": [
+                "spring",
+                "summer",
+                "autumn",
+                "winter"
+              ],
+              "description": "The current season. Default: 'winter'"
+            }
+          },
+          "required": [
+            "plant_type",
+            "location"
+          ]
+        }
+      }
+    }
+  ]
+}

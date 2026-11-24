@@ -1,0 +1,87 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "multiple_87",
+  "category": "multiple",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "games_reviews_find",
+        "description": "Find reviews for a specific game.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "region": {
+              "type": "string",
+              "description": "The region where the reviews are coming from (optional, default is 'global')"
+            }
+          },
+          "required": [
+            "game"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "games_update_find",
+        "description": "Find the latest updates or patches for a specific game on a specified gaming platform.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "platform": {
+              "type": "string",
+              "description": "The gaming platform, e.g. Xbox, Playstation, PC."
+            },
+            "region": {
+              "type": "string",
+              "description": "The region of the update (optional, default is 'global')"
+            }
+          },
+          "required": [
+            "game",
+            "platform"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "games_price_find",
+        "description": "Find the current price for a specific game on a specified gaming platform.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "game": {
+              "type": "string",
+              "description": "The name of the game."
+            },
+            "platform": {
+              "type": "string",
+              "description": "The gaming platform, e.g. Xbox, Playstation, PC."
+            }
+          },
+          "required": [
+            "game",
+            "platform"
+          ]
+        }
+      }
+    }
+  ]
+}

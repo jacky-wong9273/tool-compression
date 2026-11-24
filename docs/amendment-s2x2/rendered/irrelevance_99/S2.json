@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_99",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lawsuit_search",
+        "description": "Search for lawsuits related to a particular subject matter in a certain location.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "location": {
+              "type": "string",
+              "description": "The location to perform the search in."
+            },
+            "subject": {
+              "type": "string",
+              "description": "The subject matter of the lawsuits."
+            },
+            "year": {
+              "type": "integer",
+              "description": "Optional. The year in which the lawsuit was filed. Default: 2024"
+            }
+          },
+          "required": [
+            "location",
+            "subject"
+          ]
+        }
+      }
+    }
+  ]
+}

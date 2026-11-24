@@ -1,0 +1,42 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_214",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_tip",
+        "description": "Calculate the total tip amount for a given total bill and tip percentage.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "bill_total": {
+              "type": "number",
+              "description": "The total bill amount.",
+              "format": "float"
+            },
+            "tip_percentage": {
+              "type": "number",
+              "description": "The tip percentage.",
+              "format": "float"
+            },
+            "split": {
+              "type": "integer",
+              "description": "Number of people the tip is split between. Default is 1."
+            }
+          },
+          "required": [
+            "bill_total",
+            "tip_percentage"
+          ]
+        }
+      }
+    }
+  ]
+}

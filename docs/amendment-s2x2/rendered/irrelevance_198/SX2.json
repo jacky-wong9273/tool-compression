@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_198",
+  "category": "irrelevance",
+  "condition": "SX2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "cards_shuffle_deck",
+        "description": "Shuffles a deck of cards.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "deck": {
+              "type": "string",
+              "description": "The deck of cards to be shuffled."
+            },
+            "times": {
+              "type": "integer",
+              "description": "The number of times to shuffle the deck."
+            },
+            "deck_type": {
+              "type": "string",
+              "description": "The type of card deck. E.g. 'Poker', 'Uno'. Default is 'Poker'."
+            }
+          },
+          "required": [
+            "deck",
+            "times"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_31",
+  "category": "irrelevance",
+  "condition": "X2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "cell_divide",
+        "description": "Simulate the division of a cell into two daughter cells.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "cell_id": {
+              "type": "string",
+              "description": "The unique ID of the parent cell."
+            },
+            "method": {
+              "type": "string",
+              "description": "The method of cell division, i.e., 'mitosis' or 'meiosis'."
+            },
+            "times": {
+              "type": "integer",
+              "description": "The number of times the cell will divide. Defaults to 1 if not provided."
+            }
+          },
+          "required": [
+            "cell_id",
+            "method"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_112",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calculate_probability",
+        "description": "Calculate the probability of an event.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "total_outcomes": {
+              "type": "integer",
+              "description": "Total number of possible outcomes."
+            },
+            "favorable_outcomes": {
+              "type": "integer",
+              "description": "Number of outcomes considered as 'successful'."
+            },
+            "round_to": {
+              "type": "integer",
+              "description": "Number of decimal places to round the result to.",
+              "default": 2
+            }
+          },
+          "required": [
+            "total_outcomes",
+            "favorable_outcomes"
+          ]
+        }
+      }
+    }
+  ]
+}

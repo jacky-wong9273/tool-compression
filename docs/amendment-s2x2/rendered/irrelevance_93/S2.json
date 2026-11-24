@@ -1,0 +1,40 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "irrelevance_93",
+  "category": "irrelevance",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "law_firm_get_impactful_cases",
+        "description": "Retrieve impactful cases handled by a specific law firm within a given year.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "firm_name": {
+              "type": "string",
+              "description": "Name of the law firm."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The year for which the cases are needed."
+            },
+            "top_n": {
+              "type": "integer",
+              "description": "Number of top impactful cases. Default is 5."
+            }
+          },
+          "required": [
+            "firm_name",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}

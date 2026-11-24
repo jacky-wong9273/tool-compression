@@ -1,0 +1,36 @@
+{
+  "sample": "amendment-s2x2",
+  "case_id": "simple_python_238",
+  "category": "simple_python",
+  "condition": "S2",
+  "gorilla_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "conversion": "to_openai_completions_tools",
+  "base_commit": "62bab379f0dae60599378162f2322f03be5d56f9",
+  "note": "Offline S2/X2/SX2 amendment render. No question, gold call, stored response, or provider call.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "us_history_get_president",
+        "description": "Retrieve the U.S. president during a specific event in American history.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "event": {
+              "type": "string",
+              "description": "The event in U.S. history."
+            },
+            "year": {
+              "type": "integer",
+              "description": "The specific year of the event."
+            }
+          },
+          "required": [
+            "event",
+            "year"
+          ]
+        }
+      }
+    }
+  ]
+}
