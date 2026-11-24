@@ -39,6 +39,9 @@ from tool_compression.usx_flight import SHANGHAI, rate_card, schedule_at, spend_
 
 ROOT = Path(__file__).resolve().parents[1]
 PIN = Path("/tmp/bfcl-pin")
+# Subtree of docs/amendment-s2x2 at catalogue tip 96795322fc12c27f0eebe538448666588b573176.
+# A one-commit checkout contains this tree. Matching ids means the directory is unchanged.
+CATALOGUE_TREE = "20fc64601bb74bca5330ae0a2a63faf01ae9e473"
 MODULE = ROOT / "src" / "tool_compression" / "amendment_s2x2_flight.py"
 PLAN_TOTALS = {"U": 184011, "S2": 181119, "X2": 184649, "SX2": 181757}
 WIRE_TOTALS = {"U": 189051, "S2": 186159, "X2": 189689, "SX2": 186797}
@@ -419,22 +422,24 @@ def test_identical_payloads_are_not_shared_across_cells():
     assert is_official_sample(plans) is False
 
 
+def _git(args: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True)
+
+
 def test_frozen_amendment_catalogues_are_unchanged_vs_the_catalogue_tip():
-    status = subprocess.run(
-        ["git", "status", "--porcelain", "--", "docs/amendment-s2x2"],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    diff = subprocess.run(
-        ["git", "diff", "--exit-code", CATALOGUE_TIP, "--", "docs/amendment-s2x2"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-    )
+    status = _git(["status", "--porcelain", "--", "docs/amendment-s2x2"])
+    assert status.returncode == 0, status.stderr
     assert status.stdout == ""
-    assert diff.returncode == 0, diff.stdout
+    current = _git(["rev-parse", "HEAD:docs/amendment-s2x2"])
+    assert current.returncode == 0, current.stderr
+    assert current.stdout.strip() == CATALOGUE_TREE
+    # This object is absent from a depth-1 push or pull_request checkout.
+    if _git(["cat-file", "-e", f"{CATALOGUE_TIP}^{{commit}}"]).returncode == 0:
+        recorded = _git(["rev-parse", f"{CATALOGUE_TIP}:docs/amendment-s2x2"])
+        assert recorded.returncode == 0, recorded.stderr
+        assert recorded.stdout.strip() == CATALOGUE_TREE
+        diff = _git(["diff", "--exit-code", CATALOGUE_TIP, "--", "docs/amendment-s2x2"])
+        assert diff.returncode == 0, diff.stderr or diff.stdout
 
 
 @pytest.fixture(scope="module")
