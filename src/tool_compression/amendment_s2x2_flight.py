@@ -15,12 +15,18 @@ What this runner does:
 - sends a wire body that is the plan body plus explicit ``max_tokens`` 8192
 - shares one payload only inside one case and one thinking pass
 - reports the local off-peak o200k model (¥71.751836 for the full wire plan)
-  as estimated to fit ¥80; that figure is not a spending cap and not an invoice
-- before any send, reserves a documented per-call upper bound (context window,
-  maximum output, and the higher published tariff) and does not send when
-  settled spend, unknown holds, and those reservations would pass the ceiling
-- keeps an unknown charge reserved until it is reconciled, and does not delete
-  the last record of exposure when a resume is refused
+  as estimated to fit ¥80; that figure is not a spending cap, not a forecast
+  of normal usage, and not an invoice
+- before each send, reserves the next request only, at the documented per-call
+  upper bound (context window, maximum output, and the higher published
+  tariff), and counts settled spend and every unresolved charge; it does not
+  pre-reserve that bound for every remaining official send
+- allows the run to stop short when the next request would pass the ceiling;
+  completion of all 840 cases is not required before starting and is not
+  guaranteed; a start that requires that guarantee is refused
+- keeps an unknown charge at its peak-rate reserve until it is reconciled, and
+  does not release that reserve against an unconfirmed off-peak quote
+- does not delete the last record of exposure when a resume is refused
 - refuses a resume whose ledger, hold, stop, and completion records disagree
   about exposure, whose ledger is missing while a summary claims spend, or
   whose final ledger entry is torn
@@ -46,8 +52,11 @@ retune of official r or lambda. Plan hashes omit the field on purpose. Wire
 hashes differ because the field is present; it is not dropped to preserve the
 plan hash.
 
-Jacky's ceiling for this dig is ¥80.00. The local model is estimated to fit
-¥80. That estimate is not a cap. Official settlement stays false. Human review
+Jacky's ceiling for this dig is ¥80.00 across both thinking passes. The local
+model is estimated to fit ¥80. That estimate is not a cap and not a forecast.
+The official run may stop short. ``spending_guarantee`` stays false: there is
+no provider-enforced spend limit. CNY ¥5.00 is an operator spending alert, not
+a second cap and not a forecast. Official settlement stays false. Human review
 was not performed. The paid flight is not ready. Local o200k counts are not
 provider T. This module does not authorize a paid flight.
 """
@@ -97,6 +106,9 @@ ARMS = ("U", "S2", "X2", "SX2")
 MAX_TOKENS = 8192
 MAX_TOKENS_FIELD = "max_tokens"
 HARD_CAP_CNY = Decimal("80.00")
+# Report-only operator alert. Not a forecast, not a second cap, and not a
+# substitute for the ¥80 ceiling the runner checks before each send.
+SPENDING_ALERT_CNY = Decimal("5.00")
 # Documented deepseek-flash caps from the public list-models example and the
 # pricing page, checked 2026-11-24. Not a live /models call. Input and output
 # share the context window; reserving both caps overstates one call on purpose.
@@ -124,22 +136,28 @@ MAX_TOKENS_NOTE = (
     "the plan hash."
 )
 HARD_CAP_NOTE = (
-    "Jacky's ceiling for this dig is ¥80.00. The local o200k model is "
-    "estimated to fit ¥80. That estimate is not a spending cap and not a "
-    "provider invoice. No provider-enforced spend limit is available for this "
-    "run. The runner reserves the documented per-call bound and does not send "
-    "when that reservation would pass the ceiling. The ceiling is not "
+    "Jacky's ceiling for this dig is ¥80.00 across both thinking passes. The "
+    "local o200k model is estimated to fit ¥80. That estimate is not a "
+    "spending cap, not a forecast of normal usage, and not a provider invoice. "
+    "No provider-enforced spend limit is available, so spending_guarantee "
+    "stays false. Before each send the runner reserves the next request only. "
+    "The official run may stop short. A start that requires guaranteed "
+    "completion of the official plan is refused. CNY ¥5.00 is an operator "
+    "spending alert, not a second cap and not a forecast. The ceiling is not "
     "authorization to fly. Official v1.1 stays closed. Human review was not "
     "performed. The paid flight is not ready."
 )
 REMAINING_RUN_NOTE = (
     "The local estimate prices every not-yet-settled wire send as off-peak "
     "all-miss o200k tokens of that body plus max_tokens output. It is "
-    "estimated to fit ¥80 for the full plan and is not a cap. Before a send, "
-    "the runner reserves the documented context window and maximum output at "
-    "the higher published tariff. A timed-out call stays incomplete and keeps "
-    "that reservation until the charge is reconciled. Local tokens are not "
-    "provider T."
+    "estimated to fit ¥80 for the full plan and is not a cap or a forecast. "
+    "Before a send, the runner reserves one next request at the documented "
+    "context window and maximum output on the higher published tariff, and "
+    "counts settled spend and every unresolved charge. It does not pre-reserve "
+    "that peak bound for every remaining official send. A timed-out call stays "
+    "unconfirmed and keeps its peak-rate reserve; an off-peak quote does not "
+    "release it. If the next request would pass the ceiling, the run stops "
+    "short. Local tokens are not provider T."
 )
 ESTIMATED_TO_FIT = "estimated to fit ¥80"
 CAP_STOP = "remaining worst-case would pass the supplied ceiling"
@@ -158,8 +176,13 @@ OWNER_WRITE = "accounting write requires the run owner lock"
 OVER_RESERVE_STOP = "returned bill exceeded the documented per-call reserve"
 MANIFEST_MISSING = "resume is missing the frozen wire manifest for this run"
 OWNER_HELD = "another operator holds this run directory"
+OFFICIAL_START_STOP = (
+    "official run may stop short; a start that requires guaranteed completion "
+    "is refused; the paid flight is not authorized"
+)
 ACCOUNTING_NAMES = ("calls-ledger.jsonl", "cap-hold.json", "stop.json", "live.json")
 MANIFEST_NAME = "wire-manifest.json"
+RECONCILIATION_NAME = "charge-reconciliation.json"
 LOCK_NAME = "run.lock"
 LIVE_STOP = (
     "provider call refused; this dig does not authorize a flight; "
@@ -750,6 +773,16 @@ def _write_hold(out: Path, state: CapState) -> None:
     _atomic_json(_hold_path(out), _hold_payload(state))
 
 
+def _alert_fields(settled: Decimal, unknown: Decimal) -> dict:
+    """CNY ¥5 is an operator alert. It does not stop a send and it is not a forecast."""
+    return {
+        "spending_alert_cny": _money(SPENDING_ALERT_CNY),
+        "spending_alert_reached": settled + unknown >= SPENDING_ALERT_CNY,
+        "spending_alert_is_hard_cap": False,
+        "spending_alert_is_forecast": False,
+    }
+
+
 def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra: dict | None = None) -> None:
     _require_owner(out)
     _write_hold(out, state)
@@ -778,11 +811,15 @@ def _write_stop(out: Path, state: CapState, ceiling: Decimal, reason: str, extra
         "max_tokens": MAX_TOKENS,
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
+        "completion_guaranteed": False,
+        "run_may_stop_short": True,
         "money_limit": ESTIMATED_TO_FIT,
         "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
+        "full_run_peak_prereservation_is_funding_gate": False,
     }
     if extra:
         record.update(extra)
+    record.update(_alert_fields(state.settled, state.unknown))
     _atomic_json(_stop_path(out), record)
     _discard_live(out)
 
@@ -940,6 +977,49 @@ def _events_from_hold(hold: dict) -> list[dict]:
     return events
 
 
+def _reconciliation_entries(out: Path) -> list:
+    """Operator acknowledgement of one over-reserve charge. This runner does not write it."""
+    payload = _read_json_object(Path(out) / RECONCILIATION_NAME, "charge reconciliation")
+    if payload is None:
+        return []
+    entries = payload.get("entries", [])
+    if not isinstance(entries, list):
+        raise AmendmentFlightRefused("charge reconciliation is corrupt")
+    return entries
+
+
+def _charge_reconciled(entries: list, slot_id: object, amount: Decimal) -> bool:
+    if not isinstance(slot_id, str) or slot_id == "":
+        return False
+    for entry in entries:
+        if not isinstance(entry, dict) or entry.get("reconciled") is not True:
+            continue
+        if entry.get("slot_id") != slot_id:
+            continue
+        if _decimal_field(entry.get("spend_cny"), "reconciled spend") == amount:
+            return True
+    return False
+
+
+def _open_over_reserve(out: Path, calls: list, events: list) -> bool:
+    """True when a settled bill or unresolved hold is above the per-call reserve and unreconciled.
+
+    Clearing ``sticky_stop_reason`` does not reconcile the charge. The ledger
+    bill stays either way.
+    """
+    reserve = documented_call_reserve_cny()
+    entries = _reconciliation_entries(out)
+    for row in calls:
+        amount = Decimal(row["bill"]["spend_cny"])
+        if amount > reserve and not _charge_reconciled(entries, row.get("slot_id"), amount):
+            return True
+    for event in events:
+        amount = Decimal(event["held_worst_case_cny"])
+        if amount > reserve and not _charge_reconciled(entries, event.get("slot_id"), amount):
+            return True
+    return False
+
+
 def load_cap_state(out: Path) -> CapState:
     """Read settled spend and unknown holds. This does not write the run directory.
 
@@ -1033,6 +1113,10 @@ def load_cap_state(out: Path) -> CapState:
     if hold is None and reconstructed == 0 and claimed_unknown is not None and claimed_unknown > 0:
         _fail_accounting(out, EXPOSURE_UNRESOLVED)
     state = CapState(settled, calls, events, None, loaded_events)
+    if _open_over_reserve(out, calls, events):
+        sticky = OVER_RESERVE_STOP
+    elif sticky == OVER_RESERVE_STOP:
+        sticky = None
     state.sticky = sticky
     _note_recorded_inputs(state, calls, hold)
     return state
@@ -1073,31 +1157,53 @@ def _pending_record(slot: dict, amount: Decimal, moment) -> dict:
     }
 
 
+def _retained_unconfirmed_hold(reserved: Decimal, offpeak_quote: Decimal | None) -> Decimal:
+    """Keep a peak-rate reserve. An unconfirmed off-peak quote does not release it.
+
+    A quote above the reserve raises the hold. A smaller quote leaves the
+    reserve in place for later budget decisions.
+    """
+    if offpeak_quote is None or offpeak_quote <= reserved:
+        return reserved
+    return offpeak_quote
+
+
 def _hold_pending(state: CapState, reason: str, actual: Decimal | None = None) -> None:
     pending = state.pending
     if not isinstance(pending, dict):
         raise AmendmentFlightRefused("missing in-flight hold")
-    amount = Decimal(pending["held_worst_case_cny"])
-    if actual is not None and actual > amount:
-        amount = actual
+    amount = _retained_unconfirmed_hold(Decimal(pending["held_worst_case_cny"]), actual)
     event = dict(pending)
     event["held_worst_case_cny"] = _money(amount)
     event["reason"] = reason
     state.events.append(event)
     state.pending = None
+    if amount > documented_call_reserve_cny():
+        state.sticky = OVER_RESERVE_STOP
 
 
 def _remaining(slots: list[dict], incomplete: set[str], costs: dict[str, Decimal]) -> Decimal:
     return sum((costs[slot["request_sha256"]] for slot in slots if slot["slot_id"] in incomplete), Decimal("0"))
 
 
-def _reserved_remaining(incomplete: set[str]) -> Decimal:
-    return documented_call_reserve_cny() * len(incomplete)
+def _next_request_reserve(incomplete: set[str]) -> Decimal:
+    """Verified peak bound for one next send. Nothing is reserved when no send is left.
+
+    This is not a peak-window pre-reservation of every remaining official send.
+    """
+    if not incomplete:
+        return Decimal("0")
+    return documented_call_reserve_cny()
 
 
 def _budget_exceeds(state: CapState, incomplete: set[str], ceiling: Decimal) -> bool:
-    """True when settled spend, unknown holds, and documented reservations pass the ceiling."""
-    return state.exposure_base + _reserved_remaining(incomplete) > ceiling
+    """True when settled spend, unresolved charges, and the next request pass the ceiling.
+
+    Unresolved charges stay at the amount recorded for them. For an unconfirmed
+    call that amount is the peak-rate reserve, and an off-peak quote does not
+    reduce it. Remaining sends are not pre-reserved.
+    """
+    return state.exposure_base + _next_request_reserve(incomplete) > ceiling
 
 
 def _cap_extra(
@@ -1115,6 +1221,10 @@ def _cap_extra(
         "slots_planned": len(slots),
         "loaded_timeout_events": state.loaded_events,
         "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
+        "reservation_scope": "next request" if incomplete else "none",
+        "full_run_peak_prereservation_is_funding_gate": False,
+        "completion_guaranteed": False,
+        "run_may_stop_short": True,
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
         "ceiling_is_hard_stop": False,
@@ -1131,6 +1241,11 @@ def _refuse_live_client(client) -> None:
 
 
 def _response_bill(payload) -> tuple[dict | None, Decimal | None]:
+    """Price a returned usage at the off-peak card.
+
+    The quote settles a confirmed completion. It does not replace a peak-rate
+    reserve on an unconfirmed charge.
+    """
     usage = payload.get("usage") if isinstance(payload, dict) else None
     try:
         bill = usage_bill(OFFPEAK, usage)
@@ -1155,6 +1270,8 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
         raise AmendmentFlightRefused("in-flight hold is still open")
     if state.settled + state.unknown > ceiling or state.settled + state.unknown > HARD_CAP_CNY:
         raise AmendmentFlightRefused("settled spend plus unknown holds would pass the supplied ceiling")
+    if _open_over_reserve(out, state.calls, state.events):
+        raise AmendmentFlightRefused(OVER_RESERVE_STOP)
     record = {
         "purpose": PURPOSE,
         "catalogue_tip": CATALOGUE_TIP,
@@ -1179,15 +1296,20 @@ def _write_live(out: Path, state: CapState, ceiling: Decimal) -> dict:
         "arms": list(ARMS),
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
+        "completion_guaranteed": False,
+        "run_may_stop_short": True,
         "money_limit": ESTIMATED_TO_FIT,
         "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
+        "full_run_peak_prereservation_is_funding_gate": False,
         "note": (
-            "Scripted completion whose ceiling covered settled spend, unknown holds, "
-            "and the documented per-call reservation. The local model is estimated "
-            "to fit ¥80 and is not a spending cap. This is not a provider call and "
-            "not a paid flight."
+            "Scripted completion. Each send reserved the next request against "
+            "verified pricing and counted settled spend and unresolved charges. "
+            "The local model is estimated to fit ¥80 and is not a spending cap. "
+            "spending_guarantee is false. The official run may stop short. This "
+            "is not a provider call and not a paid flight."
         ),
     }
+    record.update(_alert_fields(state.settled, state.unknown))
     _write_hold(out, state)
     stop_file = _stop_path(out)
     if stop_file.is_file():
@@ -1356,13 +1478,16 @@ def _manifest_index(manifest: dict) -> dict[str, dict]:
 
 
 def _settlement_conflict(state: CapState, by_slot: dict[str, dict]) -> str | None:
-    """A stored hash that is not the manifest entry blocks another send."""
+    """A missing hash, or a hash that is not the manifest entry, blocks another send.
+
+    The check runs before a later slot is sent. It is not delayed until completion.
+    """
     for row in state.calls:
         entry = by_slot.get(row.get("slot_id"))
         if entry is None:
             return SETTLEMENT_MISMATCH
         label = row.get("request_sha256")
-        if label is not None and label != entry.get("request_sha256"):
+        if not isinstance(label, str) or label == "" or label != entry.get("request_sha256"):
             return SETTLEMENT_MISMATCH
     return None
 
@@ -1405,7 +1530,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     reserve = documented_call_reserve_cny()
 
     def stop(reason: str, extra: dict | None = None) -> None:
-        reserved = _reserved_remaining(incomplete)
+        reserved = _next_request_reserve(incomplete)
         local_remaining = _remaining(slots, incomplete, costs)
         payload = _cap_extra(state, reserved, local_remaining, slots, incomplete)
         if extra:
@@ -1497,6 +1622,9 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         }
         if not _acceptable(slot, payload, bill):
             _hold_pending(state, "response was not a settled off-peak completion", actual)
+            if state.sticky == OVER_RESERVE_STOP:
+                stop(OVER_RESERVE_STOP, input_gap)
+                raise AmendmentFlightRefused(OVER_RESERVE_STOP)
             stop(UNKNOWN_STOP, input_gap)
             raise AmendmentFlightRefused(UNKNOWN_STOP)
         state.settled += actual
@@ -1524,13 +1652,17 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
         _append_ledger(_ledger_path(out), observation)
         _write_hold(out, state)
         incomplete.discard(slot["slot_id"])
-        if actual > reserve or _budget_exceeds(state, incomplete, ceiling):
-            if actual > reserve:
-                reason = OVER_RESERVE_STOP
-            elif not incomplete:
+        if actual > reserve:
+            state.sticky = OVER_RESERVE_STOP
+            stop(OVER_RESERVE_STOP, input_gap)
+            raise AmendmentFlightRefused(OVER_RESERVE_STOP)
+        if _budget_exceeds(state, incomplete, ceiling):
+            if not incomplete:
                 reason = "settled spend plus unknown holds would pass the supplied ceiling"
-            else:
+            elif state.exposure_base > ceiling:
                 reason = "settled spend passed the supplied ceiling"
+            else:
+                reason = CAP_STOP
             stop(reason, input_gap)
             raise AmendmentFlightRefused(reason)
     if incomplete:
@@ -1545,7 +1677,7 @@ def _execute_owned(plans: list[dict], out: Path, ceiling: Decimal, clock, client
     return _write_live(out, state, ceiling)
 
 
-def _gate(summary: dict, moment, reservation_fits: bool, manifest: dict, reservation: Decimal) -> dict:
+def _gate(summary: dict, moment, next_fits: bool, manifest: dict, next_reserve: Decimal) -> dict:
     plan_totals = summary["token_totals_plan"]["all_840"]
     wire_totals = summary["token_totals_wire"]["all_840"]
     estimate = summary["remaining_run_worst_case_cny"]
@@ -1576,15 +1708,33 @@ def _gate(summary: dict, moment, reservation_fits: bool, manifest: dict, reserva
         "max_tokens_note": MAX_TOKENS_NOTE,
         "hard_cap_cny": _money(HARD_CAP_CNY),
         "hard_cap_note": HARD_CAP_NOTE,
-        "hard_cap_funds_remaining_run": reservation_fits,
-        "start_refused": not reservation_fits,
+        "hard_cap_funds_remaining_run": False,
+        "start_refused": True,
+        "start_refused_reason": OFFICIAL_START_STOP,
         "spending_guarantee": False,
         "provider_enforced_spend_limit": False,
+        "completion_guaranteed": False,
+        "run_may_stop_short": True,
         "money_limit": ESTIMATED_TO_FIT if estimate_fits else "local estimate exceeds ¥80",
         "local_estimate_fits_ceiling": estimate_fits,
-        "documented_reservation_fits_ceiling": reservation_fits,
-        "documented_call_reserve_cny": _money(documented_call_reserve_cny()),
-        "documented_reservation_cny": _money(reservation),
+        "next_request_reserve_cny": _money(next_reserve),
+        "next_request_reserve_fits_ceiling": next_fits,
+        "documented_reservation_fits_ceiling": next_fits,
+        "documented_reservation_scope": "next request only",
+        "documented_call_reserve_cny": _money(next_reserve),
+        "documented_reservation_cny": _money(next_reserve),
+        "full_run_peak_prereservation_is_funding_gate": False,
+        "official_plan_budgetable_under_hard_cap": next_fits,
+        "official_plan_budget_note": (
+            "Budgeting this plan under ¥80 reserves the next request only and "
+            "counts settled spend and unresolved charges. spending_guarantee is "
+            "false. The official run may stop short. A full-run peak "
+            "pre-reservation is not the funding gate."
+        ),
+        "spending_alert_cny": _money(SPENDING_ALERT_CNY),
+        "spending_alert_reached": False,
+        "spending_alert_is_hard_cap": False,
+        "spending_alert_is_forecast": False,
         "manifest_sha256": manifest["manifest_sha256"],
         "manifest_persisted_before_send": True,
         "remaining_run_note": REMAINING_RUN_NOTE,
@@ -1643,35 +1793,40 @@ def _preflight_owned(bfcl_root: Path, out: Path, clock, repo: Path | None) -> di
     flight = build_flight(bfcl_root, repo)
     summary = summarize_flight(flight["plans"], local_counter())
     manifest = wire_manifest(flight["plans"])
-    # Pin the verified manifest before this function returns, including the
-    # path that would later be allowed to send if the reservation fit.
+    # Pin the verified manifest before this function returns. A full-run peak
+    # pre-reservation is not the funding gate, and this command does not start
+    # a flight that would require every official send to finish.
     _atomic_json(_manifest_path(out), manifest)
     moment = clock()
-    reservation = documented_call_reserve_cny() * summary["send_slots"]
-    reservation_fits = reservation <= HARD_CAP_CNY
-    gate = _gate(summary, moment, reservation_fits, manifest, reservation)
+    next_reserve = documented_call_reserve_cny()
+    next_fits = next_reserve <= HARD_CAP_CNY
+    gate = _gate(summary, moment, next_fits, manifest, next_reserve)
     gate["control_cases"] = flight["control_cases"]
     gate["control_x2_equals_u"] = flight["control_x2_equals_u"]
     gate["control_sx2_equals_s2"] = flight["control_sx2_equals_s2"]
     gate["sample_cases"] = len(flight["order"])
     _atomic_json(out / "gate.json", gate)
-    if not reservation_fits:
-        state = CapState(Decimal("0"), [], [], None, 0)
-        _write_stop(
-            out,
-            state,
-            HARD_CAP_CNY,
-            CAP_STOP,
-            {
-                "remaining_worst_case_cny": _money(reservation),
-                "local_estimate_remaining_cny": _money(summary["remaining_run_worst_case_cny"]),
-                "held_plus_remaining_cny": _money(reservation),
-                "slots_remaining": summary["send_slots"],
-                "slots_planned": summary["send_slots"],
-                "unique_wire_hashes": summary["unique_wire_union"],
-                "documented_reservation_cny": _money(reservation),
-            },
-        )
+    state = CapState(Decimal("0"), [], [], None, 0)
+    _write_stop(
+        out,
+        state,
+        HARD_CAP_CNY,
+        OFFICIAL_START_STOP,
+        {
+            "remaining_worst_case_cny": _money(next_reserve),
+            "local_estimate_remaining_cny": _money(summary["remaining_run_worst_case_cny"]),
+            "held_plus_remaining_cny": _money(next_reserve),
+            "slots_remaining": summary["send_slots"],
+            "slots_planned": summary["send_slots"],
+            "unique_wire_hashes": summary["unique_wire_union"],
+            "next_request_reserve_cny": _money(next_reserve),
+            "reservation_scope": "next request only",
+            "documented_reservation_cny": _money(next_reserve),
+            "full_run_peak_prereservation_is_funding_gate": False,
+            "completion_guaranteed": False,
+            "run_may_stop_short": True,
+        },
+    )
     return gate
 
 
@@ -1709,6 +1864,10 @@ def main(argv: list[str] | None = None) -> int:
                 "paid_flight_ready": gate["paid_flight_ready"],
                 "hard_cap_cny": gate["hard_cap_cny"],
                 "hard_cap_funds_remaining_run": gate["hard_cap_funds_remaining_run"],
+                "official_plan_budgetable_under_hard_cap": gate["official_plan_budgetable_under_hard_cap"],
+                "spending_guarantee": gate["spending_guarantee"],
+                "completion_guaranteed": gate["completion_guaranteed"],
+                "next_request_reserve_fits_ceiling": gate["next_request_reserve_fits_ceiling"],
                 "remaining_run_worst_case_cny": gate["remaining_run_worst_case_cny"],
                 "send_slots": gate["send_slots"],
                 "unique_plan_union": gate["plan_hash_identity"]["unique_union"],
@@ -1719,7 +1878,9 @@ def main(argv: list[str] | None = None) -> int:
             sort_keys=True,
         )
     )
-    if not gate["hard_cap_funds_remaining_run"]:
+    # A start that requires guaranteed completion stays refused. The next
+    # request can still fit under ¥80; that is not a spending guarantee.
+    if gate["start_refused"] or not gate["hard_cap_funds_remaining_run"]:
         return 1
     return 0
 
