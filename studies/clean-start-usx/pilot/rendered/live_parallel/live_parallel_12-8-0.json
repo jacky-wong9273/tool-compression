@@ -1,0 +1,203 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "case_id": "live_parallel_12-8-0",
+  "category": "live_parallel",
+  "editable": true,
+  "sendable": true,
+  "unmodified_reason": null,
+  "limitations": [
+    "language_hint_is_official_preparation",
+    "x_qualifies_under_the_language_hint"
+  ],
+  "held_out_functions": [],
+  "excluded_function_present": [],
+  "changes": [
+    {
+      "arm": "S",
+      "function": "log_food",
+      "pointer": "/function/parameters/properties/portion_amount/description",
+      "before": "The amount of the food item that was consumed, in specified units. This is a float type value.",
+      "after": "The amount of the food item that was consumed, in specified units.",
+      "change_class": "schema_guaranteed"
+    }
+  ],
+  "arms": {
+    "U": [
+      {
+        "type": "function",
+        "function": {
+          "name": "log_food",
+          "description": "Logs a food item with details about the portion size and the meal it is associated with. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "food_name",
+              "portion_amount",
+              "meal_name"
+            ],
+            "properties": {
+              "food_name": {
+                "type": "string",
+                "description": "The name of the food to log."
+              },
+              "portion_amount": {
+                "type": "number",
+                "description": "The amount of the food item that was consumed, in specified units. This is a float type value.",
+                "format": "float"
+              },
+              "portion_unit": {
+                "type": "string",
+                "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.",
+                "enum": [
+                  "grams",
+                  "ounces",
+                  "pieces",
+                  "cups",
+                  "tablespoons"
+                ],
+                "default": "grams"
+              },
+              "meal_name": {
+                "type": "string",
+                "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "S": [
+      {
+        "type": "function",
+        "function": {
+          "name": "log_food",
+          "description": "Logs a food item with details about the portion size and the meal it is associated with. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "food_name",
+              "portion_amount",
+              "meal_name"
+            ],
+            "properties": {
+              "food_name": {
+                "type": "string",
+                "description": "The name of the food to log."
+              },
+              "portion_amount": {
+                "type": "number",
+                "description": "The amount of the food item that was consumed, in specified units.",
+                "format": "float"
+              },
+              "portion_unit": {
+                "type": "string",
+                "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.",
+                "enum": [
+                  "grams",
+                  "ounces",
+                  "pieces",
+                  "cups",
+                  "tablespoons"
+                ],
+                "default": "grams"
+              },
+              "meal_name": {
+                "type": "string",
+                "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "X": [
+      {
+        "type": "function",
+        "function": {
+          "name": "log_food",
+          "description": "Logs a food item with details about the portion size and the meal it is associated with. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "food_name",
+              "portion_amount",
+              "meal_name"
+            ],
+            "properties": {
+              "food_name": {
+                "type": "string",
+                "description": "The name of the food to log."
+              },
+              "portion_amount": {
+                "type": "number",
+                "description": "The amount of the food item that was consumed, in specified units. This is a float type value.",
+                "format": "float"
+              },
+              "portion_unit": {
+                "type": "string",
+                "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.",
+                "enum": [
+                  "grams",
+                  "ounces",
+                  "pieces",
+                  "cups",
+                  "tablespoons"
+                ],
+                "default": "grams"
+              },
+              "meal_name": {
+                "type": "string",
+                "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "SX": [
+      {
+        "type": "function",
+        "function": {
+          "name": "log_food",
+          "description": "Logs a food item with details about the portion size and the meal it is associated with. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "required": [
+              "food_name",
+              "portion_amount",
+              "meal_name"
+            ],
+            "properties": {
+              "food_name": {
+                "type": "string",
+                "description": "The name of the food to log."
+              },
+              "portion_amount": {
+                "type": "number",
+                "description": "The amount of the food item that was consumed, in specified units.",
+                "format": "float"
+              },
+              "portion_unit": {
+                "type": "string",
+                "description": "The unit of measure for the portion amount. Choose a unit such as 'grams', 'ounces', 'pieces', 'cups', or 'tablespoons'.",
+                "enum": [
+                  "grams",
+                  "ounces",
+                  "pieces",
+                  "cups",
+                  "tablespoons"
+                ],
+                "default": "grams"
+              },
+              "meal_name": {
+                "type": "string",
+                "description": "The name of the meal with which the food item is associated. Options include 'breakfast', 'lunch', 'dinner', or 'snack'."
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
