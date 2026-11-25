@@ -8,16 +8,57 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint",
+    "x_compares_action_sentences_of_the_u_catalogue",
     "response_descriptions_left_unmodified",
     "memory_prereq_required_for_a_full_score",
-    "memory_instruction_prompt_not_invented",
+    "memory_instruction_prompt_from_pinned_bfcl",
     "agentic_format_prompt_left_unmodified",
     "trajectory_requires_official_backend"
   ],
   "held_out_functions": [],
   "excluded_function_present": [],
-  "changes": [],
+  "changes": [
+    {
+      "arm": "S",
+      "function": "memory_append",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the memory suite. Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "memory_clear",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "memory_replace",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the memory suite. Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "memory_retrieve",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the memory suite. Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "memory_update",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the memory suite. Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    }
+  ],
   "arms": {
     "U": [
       {
@@ -157,7 +198,7 @@
         "type": "function",
         "function": {
           "name": "memory_append",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -185,7 +226,7 @@
         "type": "function",
         "function": {
           "name": "memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -206,7 +247,7 @@
         "type": "function",
         "function": {
           "name": "memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -239,7 +280,7 @@
         "type": "function",
         "function": {
           "name": "memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -260,7 +301,7 @@
         "type": "function",
         "function": {
           "name": "memory_update",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -423,7 +464,7 @@
         "type": "function",
         "function": {
           "name": "memory_append",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -451,7 +492,7 @@
         "type": "function",
         "function": {
           "name": "memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -472,7 +513,7 @@
         "type": "function",
         "function": {
           "name": "memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -505,7 +546,7 @@
         "type": "function",
         "function": {
           "name": "memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -526,7 +567,7 @@
         "type": "function",
         "function": {
           "name": "memory_update",
-          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite. Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
