@@ -1,10 +1,12 @@
 # Independent review and revision of S, X, SX and the runner (2026-11-25)
 
+> The c47b186c flight (25 Nov, 16:46–17:22 HKT) is diagnosed in `REVISION-c47b186c.md`. That document also describes the current editors (`s-rules-2026-11-25.2`, `x-rules-2026-11-25.3`) and the two contract changes: S sees which verbatim suite elaborations earlier tools already carry, and X decides cues on the catalogue already presented. Sections 3, 4 and 8 below are updated to those editors. The rest of this review describes the editors as they were reviewed at `0c0284d`.
+
 Base: `0c0284d5c3ca76d77b11a4db304d46953844ec66` (PR #27, stacked on #25 and #24). `official_settlement` stays false. Nothing in this review sent a provider request, read a key, retried, resumed, or re-ran the pilot. The archived pilot outcomes were read as regression and diagnosis evidence only; no editor rule reads a question, a gold answer, or a score, and none special-cases a case id.
 
 ## Outcome in one paragraph
 
-The pilot on 25 Nov measured almost nothing about the editors. At the pilot tip, X sent byte-identical tools to U in all 22 cases that reached the provider, so SX was identical to S, and S changed only 3 of 20 single-turn requests (25 local tokens in total). The billed differences between arms are send-order cache effects, and the archived accuracy is depressed by a scoring registration defect (`underscore_to_dot=False`) that hits every arm equally: rescoring the same result files with the pinned DeepSeek FC flags gives U 20/22, S 21/22, X 21/22, SX 20/21 instead of 14/22, 14/22, 14/22, 13/21. The runner would also have crashed on the first memory trajectory and diverged from the pinned BFCL loop on memory, held-out documents and step limits. This PR fixes the runner and scoring, rewrites S and X on a structural parse of each description, and freezes an offline package. The revised editors, on the 14-category population below, cut 24.3% of editable description tokens (10.8% of the tools array) across the 3127 in-scope questions under local counting; X adds cues to 762 questions at 1.6% field-token cost. None of this is a measured provider saving or an accuracy result. The largest S saving (suite preamble removal on multi-turn and memory catalogues) has no empirical test yet.
+The pilot on 25 Nov measured almost nothing about the editors. At the pilot tip, X sent byte-identical tools to U in all 22 cases that reached the provider, so SX was identical to S, and S changed only 3 of 20 single-turn requests (25 local tokens in total). The billed differences between arms are send-order cache effects, and the archived accuracy is depressed by a scoring registration defect (`underscore_to_dot=False`) that hits every arm equally: rescoring the same result files with the pinned DeepSeek FC flags gives U 20/22, S 21/22, X 21/22, SX 20/21 instead of 14/22, 14/22, 14/22, 13/21. The runner would also have crashed on the first memory trajectory and diverged from the pinned BFCL loop on memory, held-out documents and step limits. This PR fixes the runner and scoring, rewrites S and X on a structural parse of each description, and freezes an offline package. The editors this review shipped, on the 14-category population below, cut 24.3% of editable description tokens (10.8% of the tools array) across the 3127 in-scope questions under local counting; X added cues to 762 questions at 1.6% field-token cost. After the c47b186c revision (`REVISION-c47b186c.md`) the figures are 22.9% (10.2% of the tools array) and 1.5% on the same 762 questions; section 4 shows the current editors. None of this is a measured provider saving or an accuracy result. The largest S saving (suite preamble removal on multi-turn and memory catalogues) has no empirical test yet.
 
 On 25 Nov 2026 at 16:23 HKT the study dropped `web_search_base` and `web_search_no_snippet` (200 questions, 6 frozen pilot ids). Both sets are multi-tool; they leave because the pinned executor calls billable SerpAPI, which is outside the DeepSeek ceiling. The other 41 pilot ids are unchanged and stay in the same order. Memory backends stay, including the local `all-MiniLM-L6-v2` weight file. The vendored BFCL prompts and the archived 25 Nov flight, whose plan still listed those web cases, are unchanged. Editors S and X are unchanged.
 
@@ -91,18 +93,18 @@ Rejected:
 
 ## 3. Editor revisions
 
-**S (`s-rules-2026-11-25`).** S sees one complete original tool and nothing else. Each description is split into spans; every span is kept unless one of these rules proves a shorter version faithful:
-- `schema_guaranteed`: drop a clause the unchanged schema already states (the pinned float suffix with `format: float`, an enum list equal to `enum`, a prose default equal to `default`).
-- `suite_context`: when the text labels itself `Tool description:`, keep `This tool belongs to <suite>.` and the tool's own description, and drop the suite elaboration and the label.
+**S (`s-rules-2026-11-25.2`).** S edits one complete original tool at a time, in request order. Besides the tool, it sees only which verbatim suite elaborations earlier tools in the same request still carry. Each description is split into spans; every span is kept unless one of these rules proves a shorter version faithful:
+- `schema_guaranteed`: drop a clause the unchanged schema already states. That covers the pinned float suffix with `format: float`, an enum list equal to `enum` that glosses none of its values, and a prose default equal to `default`.
+- `suite_context`: when the text labels itself `Tool description:`, the first tool in the request that carries a given suite elaboration keeps it unchanged. A later tool with the byte-identical elaboration keeps `This tool belongs to <suite>.` and its own description, and drops the elaboration and the label. (At `0c0284d` and `c47b186c` every tool dropped it; see `REVISION-c47b186c.md` D4.)
 - `direct_action`: drop a leading `This function` subject frame.
 - `within_tool_duplicate`: drop a clause the function description already states.
-- `flag_normalization`: rewrite a boolean `A flag to determine whether to ...` or `Indicates if X should be included in the result.` as a `Whether to ...` clause when its prose default equals the schema default. A trailing `of <noun>` is dropped only when that noun is in the function description, so the clause can lose context such as `of triangle` that the function description restates.
+- `flag_normalization`: rewrite a boolean `A flag to determine whether to ...` or `Indicates if X should be included in the result.` as a `Whether to ...` clause (with its closing period) when its prose default equals the schema default. A trailing `of <noun>` is dropped only when that noun is in the function description, so the clause can lose context such as `of triangle` that the function description restates.
 
-The language hint, names, negations, numbers, units, quoted literals and every non-description field are protected. Each changed field has a ledger row with every span, its decision and the reason (`package/s_ledger.jsonl`, 771 rows). Fields left alone are counted by reason in `s_keep_reasons.json`: 8135 already minimal, 464 with no shorter faithful candidate, and 20 ambiguous.
+The language hint, names, negations, numbers, units, quoted literals and every non-description field are protected. Each changed field has a ledger row with every span, its decision and the reason (`package/s_ledger.jsonl`, 756 rows). Rows record `suite_context_state`, and dropped elaborations record `carried_by_tool_index`. Fields left alone are counted by reason in `s_keep_reasons.json`: 8144 already minimal, 484 with no shorter faithful candidate, and 20 ambiguous.
 
-**X (`x-rules-2026-11-25.2`).** X sees the original U catalogue, never S. For each target, a rival qualifies when the two action sentences share their verb and differ in one short window (at most four words a side, at least one content word each, no negation), and the shared wording is at least as long as that window and contains a content word beyond the verb. Alternatively, the rival qualifies on interface when the required parameters differ in numeric shape. The cue is one sentence, `For <rival's own differing phrase>, use <rival>.`. It never says the target cannot do something, and banned words (`only`, `cannot`, `exclusively`, `unable`) are tested. One unrelated tool never blocks a pair, and a tool can stay uncued while its neighbours get cues. A one-tool catalogue gets no cue (X == U and SX == S on controls). Cues whose content words the rival's name already spells are dropped. `package/x_ledger.jsonl` records, for each catalogue, every cue with evidence from both sides, and the reason for each uncued tool (most often a different verb).
+**X (`x-rules-2026-11-25.3`).** X sees the original U catalogue, never S. A pair is refused when the target's own differing words end in `or`/`and` joined to the shared wording, because the target's text then claims the object the rival's phrase names. A rival phrase after `of`/`on` keeps its head noun. Cues are decided on the catalogue already presented, so held-out tools never change a tool already sent. For each target, a rival qualifies when the two action sentences share their verb and differ in one short window (at most four words a side, at least one content word each, no negation), and the shared wording is at least as long as that window and contains a content word beyond the verb. Alternatively, the rival qualifies on interface when the required parameters differ in numeric shape. The cue is one sentence, `For <rival's own differing phrase>, use <rival>.`. It never says the target cannot do something, and banned words (`only`, `cannot`, `exclusively`, `unable`) are tested. One unrelated tool never blocks a pair, and a tool can stay uncued while its neighbours get cues. A one-tool catalogue gets no cue (X == U and SX == S on controls). Cues whose content words the rival's name already spells are dropped. `package/x_ledger.jsonl` records, for each catalogue, every cue with evidence from both sides, and the reason for each uncued tool (most often a different verb).
 
-**SX.** SX is the exact S bytes plus the exact X cue bytes at `/function/description`, separated by one space. `integrity.json` checks, on all 3127 questions: membership and order unchanged, every non-description field identical, uncued X == U, uncued SX == S, cued X == U + cue, and cued SX == S + cue. All six checks pass on every question.
+**SX.** SX is the exact S bytes plus the exact X cue bytes at `/function/description`, separated by one space. `integrity.json` checks, on all 3127 questions: membership and order unchanged, every non-description field identical, uncued X == U, uncued SX == S, cued X == U + cue, cued SX == S + cue, the cue's rival phrase is in the rival's U and S text, every dropped suite elaboration is still in the S request, and held-out tools keep the sent bytes of earlier tools. All nine checks pass on every question.
 
 Rejected for X: per-arm `user_id` KV-cache isolation, because it adds a request field outside the BFCL request and its effect on generation is unverified. Rotating arm order addresses the same confound with no new field.
 
@@ -113,32 +115,34 @@ Rejected for X: per-arm `user_id` KV-cache isolation, because it adds a request 
 | file | content |
 | --- | --- |
 | `token_tables.json` | field and tools tokens per arm and deltas S−U, X−U, SX−S, SX−X, SX−U, overall, excluding the pilot draw, and per category; changed questions; cued tools; cue tokens |
-| `integrity.json` | the six SX and immutability checks over 3127 questions and 1020 distinct catalogues |
+| `integrity.json` | the nine SX, coherence and immutability checks over 3127 questions and 1020 distinct catalogues |
 | `s_ledger.jsonl`, `s_keep_reasons.json` | S provenance |
 | `x_ledger.jsonl` | X cues and evidence on both sides, and the reason for each uncued tool |
 | `examples.json`, `EXAMPLES.md` | edited and unchanged examples per in-scope set, with cases the rules cannot change marked |
-| `pilot_2026_11_25_analysis.json` | paired tables from the archived pilot (section 5) |
+| `pilot_2026_11_25_analysis.json` | paired tables from the archived pilot (section 5); `revised_*` fields count the current editors on the same cases |
+| `pilot_2026_11_25_revised_analysis.json` | the c47b186c flight: sent-byte audit, matched accuracy, identical-tools noise, billed tokens and USD parts, first-request deltas, runner checks (`REVISION-c47b186c.md`) |
+| `revision_vs_c47b186c.json` | current editors against the flown editors over the 3127 questions: tokens, S edits no longer made, cues removed or reworded |
 
 Local counts use tiktoken `o200k_base`. "Field" means the editable description strings; "tools" means the compact JSON of the whole tools array. Neither is provider-billed usage. The initial catalogue of each question is counted once; held-out `miss_func` turns are not included.
 
 | set | questions | S changed | X changed | U field | S−U field | X−U field | SX−S field | SX−X field | SX−U field | cue tokens | S−U tools | SX−U tools |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| multiple | 200 | 86 | 19 | 31608 | −1447 (−4.6%) | +405 (+1.3%) | +405 (+1.3%) | −1447 (−4.5%) | −1042 (−3.3%) | 405 | −2.1% | −1.5% |
-| parallel_multiple | 200 | 74 | 21 | 28032 | −1359 (−4.8%) | +451 (+1.6%) | +451 (+1.7%) | −1359 (−4.8%) | −908 (−3.2%) | 451 | −2.2% | −1.5% |
-| live_multiple | 1053 | 369 | 21 | 442912 | −3173 (−0.7%) | +539 (+0.1%) | +539 (+0.1%) | −3173 (−0.7%) | −2634 (−0.6%) | 539 | −0.4% | −0.3% |
+| multiple | 200 | 86 | 19 | 31608 | −1442 (−4.6%) | +414 (+1.3%) | +414 (+1.4%) | −1442 (−4.5%) | −1028 (−3.3%) | 414 | −2.1% | −1.5% |
+| parallel_multiple | 200 | 74 | 21 | 28032 | −1359 (−4.8%) | +460 (+1.6%) | +460 (+1.7%) | −1359 (−4.8%) | −899 (−3.2%) | 460 | −2.2% | −1.4% |
+| live_multiple | 1053 | 358 | 21 | 442912 | −2984 (−0.7%) | +539 (+0.1%) | +539 (+0.1%) | −2984 (−0.7%) | −2445 (−0.6%) | 539 | −0.3% | −0.3% |
 | live_parallel | 2 | 0 | 0 | 294 | 0 | 0 | 0 | 0 | 0 | 0 | 0.0% | 0.0% |
 | live_parallel_multiple | 24 | 12 | 0 | 9395 | −87 (−0.9%) | 0 | 0 | −87 (−0.9%) | −87 (−0.9%) | 0 | −0.5% | −0.5% |
-| live_irrelevance | 372 | 128 | 11 | 157597 | −1552 (−1.0%) | +273 (+0.2%) | +273 (+0.2%) | −1552 (−1.0%) | −1279 (−0.8%) | 273 | −0.5% | −0.4% |
+| live_irrelevance | 372 | 125 | 11 | 157597 | −1497 (−0.9%) | +273 (+0.2%) | +273 (+0.2%) | −1497 (−0.9%) | −1224 (−0.8%) | 273 | −0.5% | −0.4% |
 | live_relevance | 11 | 5 | 0 | 4226 | −29 (−0.7%) | 0 | 0 | −29 (−0.7%) | −29 (−0.7%) | 0 | −0.3% | −0.3% |
-| multi_turn_base | 200 | 200 | 95 | 397294 | −134656 (−33.9%) | +2700 (+0.7%) | +2700 (+1.0%) | −134656 (−33.7%) | −131956 (−33.2%) | 2700 | −14.3% | −14.0% |
-| multi_turn_miss_func | 200 | 200 | 95 | 379202 | −128936 (−34.0%) | +2550 (+0.7%) | +2550 (+1.0%) | −128936 (−33.8%) | −126386 (−33.3%) | 2550 | −14.4% | −14.1% |
-| multi_turn_miss_param | 200 | 200 | 95 | 397294 | −134656 (−33.9%) | +2700 (+0.7%) | +2700 (+1.0%) | −134656 (−33.7%) | −131956 (−33.2%) | 2700 | −14.3% | −14.0% |
-| multi_turn_long_context | 200 | 200 | 95 | 397294 | −134656 (−33.9%) | +2700 (+0.7%) | +2700 (+1.0%) | −134656 (−33.7%) | −131956 (−33.2%) | 2700 | −14.3% | −14.0% |
-| memory_kv | 155 | 155 | 155 | 159185 | −37200 (−23.4%) | +24800 (+15.6%) | +24800 (+20.3%) | −37200 (−20.2%) | −12400 (−7.8%) | 24800 | −11.5% | −3.8% |
-| memory_vector | 155 | 155 | 155 | 100285 | −29760 (−29.7%) | +3720 (+3.7%) | +3720 (+5.3%) | −29760 (−28.6%) | −26040 (−26.0%) | 3720 | −11.4% | −10.0% |
-| memory_rec_sum | 155 | 155 | 0 | 42625 | −11625 (−27.3%) | 0 | 0 | −11625 (−27.3%) | −11625 (−27.3%) | 0 | −13.0% | −13.0% |
-| **all in scope** | 3127 | 1939 | 762 | 2547243 | −619136 (−24.3%) | +40838 (+1.6%) | +40838 (+2.1%) | −619136 (−23.9%) | −578298 (−22.7%) | 40838 | −10.8% | −10.1% |
-| excluding pilot draw | 3086 | 1915 | 751 | 2508743 | −609127 (−24.3%) | +40107 (+1.6%) | +40107 (+2.1%) | −609127 (−23.9%) | −569020 (−22.7%) | 40107 | −10.8% | −10.1% |
+| multi_turn_base | 200 | 200 | 95 | 397294 | −127447 (−32.1%) | +2150 (+0.5%) | +2150 (+0.8%) | −127447 (−31.9%) | −125297 (−31.5%) | 2150 | −13.5% | −13.3% |
+| multi_turn_miss_func | 200 | 200 | 95 | 379202 | −121727 (−32.1%) | +2022 (+0.5%) | +2022 (+0.8%) | −121727 (−31.9%) | −119705 (−31.6%) | 2022 | −13.6% | −13.3% |
+| multi_turn_miss_param | 200 | 200 | 95 | 397294 | −127447 (−32.1%) | +2150 (+0.5%) | +2150 (+0.8%) | −127447 (−31.9%) | −125297 (−31.5%) | 2150 | −13.5% | −13.3% |
+| multi_turn_long_context | 200 | 200 | 95 | 397294 | −127447 (−32.1%) | +2150 (+0.5%) | +2150 (+0.8%) | −127447 (−31.9%) | −125297 (−31.5%) | 2150 | −13.5% | −13.3% |
+| memory_kv | 155 | 155 | 155 | 159185 | −34720 (−21.8%) | +24800 (+15.6%) | +24800 (+19.9%) | −34720 (−18.9%) | −9920 (−6.2%) | 24800 | −10.7% | −3.1% |
+| memory_vector | 155 | 155 | 155 | 100285 | −27280 (−27.2%) | +3720 (+3.7%) | +3720 (+5.1%) | −27280 (−26.2%) | −23560 (−23.5%) | 3720 | −10.4% | −9.0% |
+| memory_rec_sum | 155 | 155 | 0 | 42625 | −9300 (−21.8%) | 0 | 0 | −9300 (−21.8%) | −9300 (−21.8%) | 0 | −10.4% | −10.4% |
+| **all in scope** | 3127 | 1925 | 762 | 2547243 | −582766 (−22.9%) | +38678 (+1.5%) | +38678 (+2.0%) | −582766 (−22.5%) | −544088 (−21.4%) | 38678 | −10.2% | −9.5% |
+| excluding pilot draw | 3086 | 1901 | 751 | 2508743 | −573356 (−22.9%) | +37980 (+1.5%) | +37980 (+2.0%) | −573356 (−22.5%) | −535376 (−21.3%) | 37980 | −10.2% | −9.5% |
 
 X−U equals the cue cost exactly, as composition requires. The figures excluding the 41-case pilot draw match the overall figures to within 0.03 percentage points.
 
@@ -154,7 +158,7 @@ Where the rules cannot act, the table shows it. X has no cue on `live_parallel`,
 - **Caching.** Cache-hit share by send position was 0.07, 0.71, 0.82 and 0.82. The USD deltas (S−U −$0.00412, X−U −$0.00481) come from send order, not editors.
 - **Trajectories.** Billed steps per turn on `multi_turn_base_120` were U [3,2,3], S [3,2,3], X [3,2,2], SX [3,2,2]. On `multi_turn_base_86` they were U [5,3,2], S [5,3,3], X [5,3,3], and SX stopped after 9 steps. Provider prompt totals differ by path length, not by description.
 - **Accuracy.** Archived scores (`underscore_to_dot=False`) were U 14/22, S 14/22, X 14/22, SX 13/21. Rescored with the pinned flags: U 20/22, S 21/22, X 21/22, SX 20/21. The only remaining failures are `live_parallel_multiple_8-7-0` (all arms) and `live_parallel_multiple_3-2-1` (U only, with tools identical to X).
-- **Local tokens on the 47 pilot cases.** As sent at the pilot tip: U 39748, S 39027, X 43960, SX 43239 field tokens. With the revised editors: U 39748, S 29535, X 40479, SX 30266.
+- **Local tokens on the 47 pilot cases.** As sent at the pilot tip: U 39748, S 39027, X 43960, SX 43239 field tokens. With the editors this review shipped (`c47b186c`): S 29535, X 40479, SX 30266. With the current editors (`s-rules-2026-11-25.2`, `x-rules-2026-11-25.3`): S 30224, X 40446, SX 30922.
 
 None of this is a measured saving or an accuracy finding about the revised editors, which have never been sent.
 
@@ -169,8 +173,10 @@ python -m tool_compression.clean_start manifest        # BFCL package byte ident
 python -m tool_compression.clean_start freeze          # pilot renders and limitations
 python -m tool_compression.clean_start package         # this package, byte for byte
 python -m tool_compression.clean_start report-pilot    # pilot analysis from archived evidence
+python -m tool_compression.clean_start report-pilot --revised   # the c47b186c flight (REVISION-c47b186c.md)
 python -m tool_compression.clean_start run --pilot --thinking off --memory-prereqs matched --out /tmp/plan   # dry plan, 380 slots, no key, no socket
 (cd studies/clean-start-usx/evidence/pilot-2026-11-25-thinking-off/original && sha256sum -c ../SHA256SUMS)
+(cd studies/clean-start-usx/evidence/pilot-2026-11-25-revised-c47b186c/original && sha256sum -c ../SHA256SUMS)
 ```
 
 Official scoring and the pinned-executor tests need the Gorilla checkout at `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8` and its Python dependencies. In a virtual environment, `pip install -e <gorilla>/berkeley-function-call-leaderboard` installs them. This review's VM had no `ensurepip`, so the same pinned packages were installed with `pip install --target /tmp/bfcl-deps` and put on `PYTHONPATH`.
@@ -220,17 +226,20 @@ python -m tool_compression.clean_start evaluate --out <same dir> --bfcl-root /tm
 - The pilot report regenerates and its summary holds.
 - The sent-render digest matches `git show 0c0284d` (when the commit is present).
 - Official rescoring reproduces the committed scores (gated).
+- The c47b186c revised analysis and `revision_vs_c47b186c.json` regenerate byte for byte, and the nine integrity checks pass on 3127 questions.
+
+`tests/test_clean_start_revision.py` covers the c47b186c evidence and the revised editor rules (`REVISION-c47b186c.md` section 9).
 
 Existing tests in `tests/test_clean_start_usx.py` keep checking arm isolation of result files, snapshots and instances, schema, membership and order immutability, and that the dry pilot stays offline.
 
 ## 8. Blockers and limitations
 
-- **No empirical result for the revised editors.** Nothing here says S, X or SX preserves accuracy or saves billed tokens. The authorised pilot is the next step, and its n is too small for anything beyond a pipeline check and gross-regression screen.
-- **Suite-context deletion is the main semantic risk** (M4). If the pilot shows multi-turn or memory regressions, this rule is the first suspect and can be dropped on its own; it is a separate `change_class` in the ledger.
+- **No empirical result for the revised editors.** Nothing here says S, X or SX preserves accuracy or saves billed tokens. The c47b186c flight was too small and too noisy to say either way (`REVISION-c47b186c.md` D1), and the current editors have not been sent.
+- **Suite-context deletion was the main semantic risk** (M4). The current S keeps each suite elaboration on its first carrier in the request and drops only later copies (`REVISION-c47b186c.md` D4, C1). Whether the shortened later copies matter is still unmeasured. The rule remains a separate `change_class` in the ledger.
 - **Memory prerequisites cost.** The authorised pilot uses `--memory-prereqs matched`: 54 prerequisite conversations, 466 user turns, 216 of the 380 thinking-off slots. `none` is still a legal flag and leaves memory scores uninterpretable.
 - **Local weights, not a billable web service.** `web_search_base` and `web_search_no_snippet` are out of this study. The supported run does not read `SERPAPI_API_KEY` and does not import `serpapi`, `bs4`, or `html2text`. A web-search slot, if one were present, would still be refused without that key. `memory_vector` still imports `sentence_transformers`, `faiss`, and `numpy`. The pinned backend constructs `SentenceTransformer("all-MiniLM-L6-v2")` from the local cache at import, and preflight does not check that the weight file is present. Cache it before the first vector slot. That download is a free local file, not a billable service.
 - **Thinking on** uses the provider's default effort, and reasoning content is passed back on tool turns. Both differ from a stock BFCL handler.
-- **Provider tokenizer.** Local `o200k_base` counts track the provider on the three changed pilot cases (−25 vs −26), which is far too few to calibrate. The provider's rendering of float-suffixed and enum-bearing schemas is unverified.
+- **Provider tokenizer.** Local `o200k_base` counts tracked the provider on the three changed cases of the first flight (−25 vs −26). On the 32 matched first requests of the c47b186c flight, they agree within 10 tokens: S −8473 local vs −8483 billed, X +179 vs +187, SX −8294 vs −8296. The provider's rendering of float-suffixed and enum-bearing schemas is still unverified one by one.
 - **Cache.** Rotation balances send position across arms; it does not remove cache sharing. Per-arm `user_id` isolation was not adopted (section 3).
 - **Uncertain charge.** The timed-out 25 Nov request may have been billed without a bill row; its cost is not in $0.040170708.
 - **No official settlement.** `official_settlement` is false everywhere, and this package is not READY for a claim.
