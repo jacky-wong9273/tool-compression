@@ -191,10 +191,10 @@ def render_document(case: dict) -> dict:
     if case.get("held_out") and compiled["sendable"]:
         from tool_compression.clean_start.runner import arm_tools
 
-        cumulative: list[dict] = []
+        cumulative: list[list[dict]] = []
         turns = {}
         for turn in sorted(case["held_out"], key=int):
-            cumulative = cumulative + list(case["held_out"][turn])
+            cumulative = cumulative + [list(case["held_out"][turn])]
             turns[turn] = {
                 "held_out_functions": [doc.get("name") for doc in case["held_out"][turn]],
                 "arms": {arm: arm_tools(case["function"], case["category"], arm, cumulative) for arm in ARMS},

@@ -20,6 +20,19 @@ The cue is one positive sentence naming one rival:
 fits and does not say the target cannot do it. A text cue is dropped, and the
 next rival tried, when the rival's name already spells every content word of
 its differing window: the name is in the request, so such a cue says nothing new.
+
+A pair is also refused when the target's own text claims the object the rival's
+phrase names: the target's differing words end in ``or``/``and`` joined to the
+shared wording (``Remove a file or directory`` against ``Remove a directory ...``).
+A cue there would send a use the target documents to the rival.
+
+The rival's phrase starts at its determiner. When the differing words follow
+``of`` or ``on`` with no determiner, the phrase keeps the head noun that the
+preposition belongs to (``the return on equity (ROE)``, not ``equity (ROE)``).
+
+Cues are decided on the catalogue the model has been shown. ``render_tools``
+passes the presented prefixes, so a tool already sent keeps its cue when
+held-out tools are appended later.
 """
 
 from __future__ import annotations
@@ -28,7 +41,7 @@ import re
 
 from tool_compression.clean_start.descriptions import action_sentence
 
-X_RULES_VERSION = "x-rules-2026-11-25.2"
+X_RULES_VERSION = "x-rules-2026-11-25.3"
 CUE_POINTER = "/function/description"
 CUE_SEPARATOR = " "
 BANNED = ("only this", "cannot", "can't", "exclusively", "unable to", "does not handle", "can't handle")
@@ -50,6 +63,8 @@ _JOINERS = {" ", "-", " (", ") "}
 _NOT_A_VERB = {"a", "an", "the", "this", "that", "these", "those", "it", "its"}
 _NEGATION = {"not", "no", "never", "without", "only", "cannot", "except"}
 _NUMERIC = {"integer", "number"}
+_COORDINATORS = {"or", "and"}
+_HEAD_PREPOSITIONS = {"of", "on"}
 
 
 def qualify_catalogue(tools: list[dict]) -> list[dict]:
@@ -134,6 +149,18 @@ def qualify_catalogue(tools: list[dict]) -> list[dict]:
     return rows
 
 
+def qualify_presented(tools: list[dict], presented: tuple[int, ...] = ()) -> list[dict]:
+    """Decisions where each tool is qualified on the first presented prefix that holds it.
+
+    ``presented`` lists catalogue lengths the model has already been sent, in
+    any order. Tools past the last one are qualified on the whole catalogue.
+    """
+    rows = qualify_catalogue(tools)
+    for bound in sorted({n for n in presented if 0 < n < len(tools)}, reverse=True):
+        rows[:bound] = qualify_catalogue(tools[:bound])
+    return rows
+
+
 def _closeness(item: dict) -> tuple:
     return (0 if item["kind"] == "interface" else 1, -item["shared_words"], item["tool_index"])
 
@@ -179,7 +206,11 @@ def _pair(target: dict, rival: dict) -> tuple[dict | None, str]:
         return None, "The action texts are identical and the interfaces do not differ in shape."
     if window is not None:
         prefix, mid_t, mid_r, suffix = window
-        problem = _window_problem(mid_t, mid_r) or _context_problem(target_words, prefix, suffix, mid_t, mid_r)
+        problem = (
+            _window_problem(mid_t, mid_r)
+            or _context_problem(target_words, prefix, suffix, mid_t, mid_r)
+            or _scope_problem(mid_t, suffix)
+        )
         if problem:
             return None, problem
         shared_words = prefix + suffix
@@ -263,12 +294,24 @@ def _context_problem(words: list, prefix: int, suffix: int, mid_t: list, mid_r: 
     return None
 
 
+def _scope_problem(mid_t: list, suffix: int) -> str | None:
+    """The target's own text must not claim what the rival's phrase names."""
+    words_t = [word.lower() for word, _span in mid_t]
+    if suffix and words_t and words_t[-1] in _COORDINATORS:
+        return (
+            "The target's differing words end in a coordinator joined to the shared wording, so the "
+            "target's own text claims the object the rival's phrase names."
+        )
+    return None
+
+
 def _rival_span(text: str, words: list, start: int, mid: list) -> str | None:
     """The rival's own phrase for the axis, copied verbatim.
 
     Determiner, the differing words, and the shared words that finish the noun
-    phrase. A trailing function word or participle is trimmed. A phrase that
-    would need more than ``MAX_SPAN_WORDS`` words is refused, not cut.
+    phrase. A bare noun after ``of``/``on`` keeps the head noun and determiner
+    before the preposition. A trailing function word or participle is trimmed.
+    A phrase that would need more than ``MAX_SPAN_WORDS`` words is refused, not cut.
     """
     lowered = [word.lower() for word, _span in words]
     end = start + len(mid) - 1
@@ -279,6 +322,15 @@ def _rival_span(text: str, words: list, start: int, mid: list) -> str | None:
         if lowered[back] in _DETERMINERS:
             first = back
             break
+    if (
+        first == start
+        and start >= 3
+        and lowered[start - 1] in _HEAD_PREPOSITIONS
+        and lowered[start - 2] not in _STOP
+    ):
+        first = start - 2
+        if first - 1 >= 1 and lowered[first - 1] in _DETERMINERS:
+            first -= 1
     def trailing(index: int) -> bool:
         if lowered[index] in _PHRASE_BREAK:
             return True

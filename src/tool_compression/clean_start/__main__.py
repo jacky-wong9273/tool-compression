@@ -39,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     report = sub.add_parser("report-pilot")
     report.add_argument("--evidence", type=Path)
     report.add_argument("--out", type=Path)
+    report.add_argument("--revised", action="store_true", help="the c47b186c flight instead of the 0c0284d one")
     evaluate = sub.add_parser("evaluate")
     evaluate.add_argument("--out", required=True, type=Path)
     evaluate.add_argument("--bfcl-root", required=True, type=Path)
@@ -74,6 +75,15 @@ def main(argv: list[str] | None = None) -> int:
         from tool_compression.clean_start.package import build_package
 
         summary = build_package(args.out or study_dir() / "package")
+        print(json.dumps(summary, sort_keys=True))
+        return 0
+    if args.command == "report-pilot" and args.revised:
+        from tool_compression.clean_start.report import REVISED_EVIDENCE, write_revised_pilot_report
+
+        summary = write_revised_pilot_report(
+            args.evidence or study_dir() / REVISED_EVIDENCE,
+            args.out or study_dir() / "package" / "pilot_2026_11_25_revised_analysis.json",
+        )
         print(json.dumps(summary, sort_keys=True))
         return 0
     if args.command == "report-pilot":

@@ -239,14 +239,23 @@ def turn_messages(case: dict, turn_index: int, question: list[list[dict]] | None
     return [dict(item) for item in turn]
 
 
-def arm_tools(functions: list[dict], category: str, arm: str, held_out: list[dict] | None = None) -> list[dict]:
-    """Model-facing tools for one arm. Held-out docs are converted without the hint."""
+def arm_tools(
+    functions: list[dict], category: str, arm: str, held_out_batches: list[list[dict]] | None = None
+) -> list[dict]:
+    """Model-facing tools for one arm.
+
+    ``held_out_batches`` are the held-out docs added so far, one list per turn
+    that added them, in order. They are converted without the hint and appended.
+    Tools sent before a batch arrived keep their bytes in every arm.
+    """
     facing = model_facing_tools(functions, category)
-    if held_out:
-        facing = facing + to_openai_completions_tools(deepcopy(held_out))
+    presented = []
+    for batch in held_out_batches or []:
+        presented.append(len(facing))
+        facing = facing + to_openai_completions_tools(deepcopy(list(batch)))
     if arm == "U":
         return facing
-    return render_tools(facing)["arms"][arm]
+    return render_tools(facing, tuple(presented))["arms"][arm]
 
 
 def arm_order(position: int) -> tuple[str, ...]:
@@ -752,14 +761,14 @@ def _run_trajectory(case: dict, slot: dict, out_dir: Path, send, executor, sidec
         question = memory_prompt(question, case, instances)
     sidecar["stage"] = "turns"
     messages: list[dict] = []
-    held_out: list[dict] = []
+    held_out: list[list[dict]] = []
     turns: list[list] = []
     input_counts: list[list[int]] = []
     output_counts: list[list[int]] = []
     forced = False
     for turn_index in range(len(question)):
         if str(turn_index) in case.get("held_out", {}):
-            held_out = held_out + list(case["held_out"][str(turn_index)])
+            held_out = held_out + [list(case["held_out"][str(turn_index)])]
         messages.extend(turn_messages(case, turn_index, question))
         steps: list = []
         turn_in: list[int] = []

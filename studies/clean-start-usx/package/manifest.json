@@ -35,8 +35,8 @@
   "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
   "vendored_manifest_sha256": "bf2d151cbb2eff669ec47907710e1c9e4e18a3dd51b39723e8840c24ce9c30d4",
   "rules": {
-    "S": "s-rules-2026-11-25",
-    "X": "x-rules-2026-11-25.2"
+    "S": "s-rules-2026-11-25.2",
+    "X": "x-rules-2026-11-25.3"
   },
   "tokenizer": {
     "encoding": "o200k_base",
@@ -47,16 +47,21 @@
     "freeze": "python -m tool_compression.clean_start freeze",
     "package": "python -m tool_compression.clean_start package",
     "pilot_report": "python -m tool_compression.clean_start report-pilot",
+    "revised_pilot_report": "python -m tool_compression.clean_start report-pilot --revised",
+    "before_summary": "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py population",
+    "flown_sent_digest": "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py conversations",
     "score_existing_results": "python -m tool_compression.clean_start evaluate --out <run dir> --bfcl-root <pinned gorilla checkout> --thinking off"
   },
   "files": {
-    "EXAMPLES.md": "1d01087b5233abc1d3e1a85c031cad85c0e372684b9ac2f07eec7b7232301d20",
-    "examples.json": "6f35625b537c950144f95020b20d4eb7e59d624ee0b1e0dc52ed7b9c5dc33645",
-    "integrity.json": "b4b7e65bb57bce106d4690154fe2786e236f16b02d6ee23e289420e12e898a12",
-    "pilot_2026_11_25_analysis.json": "6331a44acaaa58aab0c924c74db7a3981ea6a18412507559b5fdaaed3649978e",
-    "s_keep_reasons.json": "74bcda1af593022da3d8595bc43bfa6880902bb4a7c747deaa126c4d62023a7b",
-    "s_ledger.jsonl": "1ac2b6d0e427ff5eec1d1c882b065c5fef2408904ba644ff2747b832e011ecd2",
-    "token_tables.json": "903cef03086afbfd038be34c0bd48a863c861b2b942c33072e05a63b2f437274",
-    "x_ledger.jsonl": "0ca73a0c62600e5f5b8048523b304cfab00e4c0b127383e2dd705d4983317c11"
+    "EXAMPLES.md": "14dba22f2a99427c021df3a2cd27ad17772ed46e74d3d3c6f428e7f4d4565ed5",
+    "examples.json": "8a8225710b4f5bcc9cde5c5ba7c44ae5eeda503b826eabd7448861c5989dd954",
+    "integrity.json": "103c2803c73c1b5024aae2cd761d1e19a6a4296a1e52b38862f5cb80bee8114d",
+    "pilot_2026_11_25_analysis.json": "cae2ebcd5c29105623fac2fde0601e174ea2d3252379c073f4ebff59152e2244",
+    "pilot_2026_11_25_revised_analysis.json": "5c6d006fb46984764daddbc894a37d070c2cc66597fa82fb1205feaa6319836b",
+    "revision_vs_c47b186c.json": "6ae3849d7b0e8e81f32dbf87e8261c48d3ed53e73d82e81191c1f8593f4b2587",
+    "s_keep_reasons.json": "bba8d79607009ea54e19ee04fe2840125c7baf01fd5d371b5735dbb480e55aba",
+    "s_ledger.jsonl": "5849a78da0778c409a1dba76816933eecfb8ea2bf032f5c49f2a0d7e55ce5287",
+    "token_tables.json": "b45089af9d591689dc079565c5a096d122a35ccd6741bacefb065aa15b464c4a",
+    "x_ledger.jsonl": "19a1ee300fc29a37dc489ad9b8f6d7a8c93b83ef8b8c9683d2983d0d3a6defe3"
   }
 }

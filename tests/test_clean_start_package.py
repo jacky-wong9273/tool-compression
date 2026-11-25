@@ -60,6 +60,7 @@ def test_package_regenerates_byte_identical(tmp_path):
     for name in (
         "token_tables.json", "integrity.json", "s_ledger.jsonl", "x_ledger.jsonl",
         "s_keep_reasons.json", "examples.json", "EXAMPLES.md", "pilot_2026_11_25_analysis.json",
+        "pilot_2026_11_25_revised_analysis.json", "revision_vs_c47b186c.json",
     ):
         assert (tmp_path / name).read_bytes() == (PACKAGE / name).read_bytes(), name
     committed = json.loads((PACKAGE / "manifest.json").read_text(encoding="utf-8"))

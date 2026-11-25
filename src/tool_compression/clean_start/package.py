@@ -16,18 +16,22 @@ import json
 import platform
 
 from tool_compression.adapter import description_slots
-from tool_compression.clean_start.editor_s import S_RULES_VERSION, context_id, edit_tool
+from tool_compression.clean_start.descriptions import suite_context
+from tool_compression.clean_start.editor_s import S_RULES_VERSION, context_id, edit_catalogue
 from tool_compression.clean_start.editor_x import X_RULES_VERSION, qualify_catalogue
 from tool_compression.clean_start.load import prompt_manifest
 from tool_compression.clean_start.pilot import study_dir
 from tool_compression.clean_start.pin import ARMS, OFFICIAL_SETTLEMENT, STUDY_ID, study_manifest
 from tool_compression.clean_start.prepare import model_facing_tools
 from tool_compression.clean_start.render import render_tools
+from tool_compression.clean_start.revision import population_summary, revision_diff
+from tool_compression.clean_start.runner import arm_tools
 from tool_compression.clean_start.scope import in_scope_questions, study_categories
 from tool_compression.config import LOCAL_TOKENIZER
 from tool_compression.count import TiktokenCounter, dump_request
 
 PAIRS = (("S", "U"), ("X", "U"), ("SX", "S"), ("SX", "X"), ("SX", "U"))
+BEFORE_SUMMARY = "population_c47b186c.json"
 
 
 def _hash(value) -> str:
@@ -107,13 +111,14 @@ def _catalogue_record(tools: list[dict], counter, cache: dict) -> dict:
         "cue_tokens": cue_tokens,
         "arm_sha256": {arm: _hash(arms[arm]) for arm in ARMS},
         "rendered": rendered,
-        "integrity": _integrity(arms, cues),
+        "integrity": _integrity(arms, rendered["x_decisions"]),
     }
     cache[key] = record
     return record
 
 
-def _integrity(arms: dict, cues: list[str]) -> dict:
+def _integrity(arms: dict, decisions: list[dict]) -> dict:
+    cues = [row["cue"] for row in decisions]
     names = [tool["function"]["name"] for tool in arms["U"]]
     checks = {
         "membership_and_order": all([tool["function"]["name"] for tool in arms[arm]] == names for arm in ARMS),
@@ -122,7 +127,15 @@ def _integrity(arms: dict, cues: list[str]) -> dict:
         "uncued_sx_equals_s": True,
         "cued_x_is_u_plus_cue": True,
         "cued_sx_is_s_plus_cue": True,
+        "text_cue_phrase_in_rival_u_and_s": True,
+        "dropped_suite_elaboration_still_in_s_request": _suite_context_kept(arms),
     }
+    for row in decisions:
+        if row["cue"] and row["rival_phrase"]:
+            rival = row["rival_index"]
+            checks["text_cue_phrase_in_rival_u_and_s"] &= all(
+                row["rival_phrase"] in arms[arm][rival]["function"]["description"] for arm in ("U", "S")
+            )
     for index, cue in enumerate(cues):
         u_text = arms["U"][index]["function"]["description"]
         s_text = arms["S"][index]["function"]["description"]
@@ -139,6 +152,32 @@ def _integrity(arms: dict, cues: list[str]) -> dict:
                 _blank(arms[arm][index]) == _blank(arms["U"][index])
             )
     return checks
+
+
+def _suite_context_kept(arms: dict) -> bool:
+    """Every suite elaboration in the U request is still somewhere in the S request."""
+    s_texts = [tool["function"]["description"] for tool in arms["S"]]
+    for tool in arms["U"]:
+        context = suite_context(tool["function"]["description"])
+        if context is not None and not any(context in text for text in s_texts):
+            return False
+    return True
+
+
+def _held_out_keeps_sent_bytes(case: dict) -> bool:
+    """Tools sent before each held-out batch keep their bytes in every arm afterwards."""
+    if not case.get("held_out"):
+        return True
+    batches: list[list[dict]] = []
+    before = {arm: arm_tools(case["function"], case["category"], arm) for arm in ARMS}
+    for turn in sorted(case["held_out"], key=int):
+        batches = batches + [list(case["held_out"][turn])]
+        after = {arm: arm_tools(case["function"], case["category"], arm, batches) for arm in ARMS}
+        for arm in ARMS:
+            if dump_request(after[arm][: len(before[arm])]) != dump_request(before[arm]):
+                return False
+        before = after
+    return True
 
 
 def _blank(tool: dict) -> str:
@@ -168,16 +207,19 @@ def build_package(out_dir: Path) -> dict:
         questions = in_scope_questions(category)
         for case in questions:
             tools = model_facing_tools(case["function"], case["category"])
+            seen = _hash(tools) in cache
             record = _catalogue_record(tools, counter, cache)
             _add(totals, record)
             _add(overall, record)
             if case["id"] not in pilot:
                 _add(outside_pilot, record)
-            for name, ok in record["integrity"].items():
+            checks = {**record["integrity"], "held_out_tools_keep_sent_bytes": _held_out_keeps_sent_bytes(case)}
+            for name, ok in checks.items():
                 integrity[name] += int(ok)
                 if not ok:
                     integrity_failures.append({"case_id": case["id"], "check": name})
-            _ledger_s(tools, s_ledger, s_keep)
+            if not seen:
+                _ledger_s(tools, s_ledger, s_keep)
             _ledger_x(record, x_ledger)
             _examples(category, case, record, examples)
         by_category[category] = _with_deltas(totals)
@@ -212,9 +254,26 @@ def build_package(out_dir: Path) -> dict:
     _write(out_dir / "s_keep_reasons.json", {"rules": S_RULES_VERSION, "fields_kept_by_reason": dict(sorted(s_keep.items()))})
     _write(out_dir / "examples.json", examples)
     (out_dir / "EXAMPLES.md").write_text(_examples_markdown(examples), encoding="utf-8")
-    from tool_compression.clean_start.report import PILOT_EVIDENCE, write_pilot_report
+    from tool_compression.clean_start.report import (
+        PILOT_EVIDENCE,
+        REVISED_EVIDENCE,
+        write_pilot_report,
+        write_revised_pilot_report,
+    )
 
     write_pilot_report(study_dir() / PILOT_EVIDENCE, out_dir / "pilot_2026_11_25_analysis.json")
+    write_revised_pilot_report(study_dir() / REVISED_EVIDENCE, out_dir / "pilot_2026_11_25_revised_analysis.json")
+    before = json.loads((study_dir() / REVISED_EVIDENCE / BEFORE_SUMMARY).read_text(encoding="utf-8"))
+    after = population_summary(
+        study_categories(), in_scope_questions, model_facing_tools, render_tools, counter, dump_request
+    )
+    _write(out_dir / "revision_vs_c47b186c.json", {
+        "study": STUDY_ID,
+        "official_settlement": OFFICIAL_SETTLEMENT,
+        "before_source": f"{REVISED_EVIDENCE}/{BEFORE_SUMMARY} (editors at {before['source_commit']})",
+        "measurement": "Local o200k_base counts of the whole tools array of each in-scope question's initial catalogue.",
+        **revision_diff(before, after),
+    })
     vendored = prompt_manifest()
     manifest = {
         "study": STUDY_ID,
@@ -231,6 +290,13 @@ def build_package(out_dir: Path) -> dict:
             "freeze": "python -m tool_compression.clean_start freeze",
             "package": "python -m tool_compression.clean_start package",
             "pilot_report": "python -m tool_compression.clean_start report-pilot",
+            "revised_pilot_report": "python -m tool_compression.clean_start report-pilot --revised",
+            "before_summary": (
+                "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py population"
+            ),
+            "flown_sent_digest": (
+                "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py conversations"
+            ),
             "score_existing_results": (
                 "python -m tool_compression.clean_start evaluate --out <run dir> "
                 "--bfcl-root <pinned gorilla checkout> --thinking off"
@@ -253,16 +319,21 @@ def build_package(out_dir: Path) -> dict:
 
 
 def _ledger_s(tools: list[dict], ledger: dict, keep: Counter) -> None:
-    """One row per distinct tool and field. S sees one tool, so a tool repeated
-    across questions is edited identically and recorded once."""
-    for tool in tools:
-        tool_key = "tool:" + context_id(tool)
+    """One row per distinct tool, suite-context state, and field.
+
+    S sees one tool plus which verbatim suite elaborations earlier tools carry,
+    so a tool is edited identically wherever it has the same state, and each
+    (tool, state) is recorded once.
+    """
+    _edited, all_rows = edit_catalogue(json.loads(json.dumps(tools)))
+    for tool, rows in zip(tools, all_rows):
+        state = rows[0]["suite_context_state"] if rows else None
+        tool_key = f"tool:{context_id(tool)}:{state}"
         if tool_key in ledger:
             continue
         ledger[tool_key] = None
-        _updated, rows = edit_tool(json.loads(json.dumps(tool)))
         for row in rows:
-            key = f"{row['context_id']}{row['pointer']}"
+            key = f"{row['context_id']}{row['pointer']}:{state}"
             if not row["adopted"]:
                 if row["keep_reason"]:
                     keep[row["keep_reason"]] += 1
@@ -272,6 +343,7 @@ def _ledger_s(tools: list[dict], ledger: dict, keep: Counter) -> None:
                 "context_id": row["context_id"],
                 "function": row["function_name"],
                 "pointer": row["pointer"],
+                "suite_context_state": state,
                 "before": row["original"],
                 "after": row["final"],
                 "change_class": row["change_class"],
