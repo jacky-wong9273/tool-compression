@@ -59,6 +59,9 @@ def main(argv: list[str] | None = None) -> int:
     groups.add_argument("--arm-e", type=Path)
     groups.add_argument("--out", type=Path)
 
+    clean = sub.add_parser("clean-start")
+    clean.add_argument("args", nargs=argparse.REMAINDER)
+
     args = parser.parse_args(argv)
     if args.command == "characterize":
         return _characterize(args)
@@ -72,6 +75,12 @@ def main(argv: list[str] | None = None) -> int:
         return _inspect_suffix()
     if args.command == "groups":
         return _groups(args)
+    if args.command == "clean-start":
+        from tool_compression.clean_start.__main__ import main as clean_start_main
+        forwarded = list(args.args)
+        if forwarded[:1] == ["--"]:
+            forwarded = forwarded[1:]
+        return clean_start_main(forwarded)
     return 2
 
 

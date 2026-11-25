@@ -1,0 +1,555 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "case_id": "memory_rec_sum_62-finance-7",
+  "category": "memory_rec_sum",
+  "editable": true,
+  "sendable": true,
+  "unmodified_reason": null,
+  "limitations": [
+    "language_hint_is_official_preparation",
+    "x_qualifies_under_the_language_hint",
+    "response_descriptions_left_unmodified",
+    "memory_prereq_required_for_a_full_score",
+    "memory_instruction_prompt_not_invented",
+    "agentic_format_prompt_left_unmodified",
+    "trajectory_requires_official_backend"
+  ],
+  "held_out_functions": [],
+  "excluded_function_present": [],
+  "changes": [],
+  "arms": {
+    "U": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_append",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The text to append to the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_clear",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_replace",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "old_text": {
+                "type": "string",
+                "description": "The text to be replaced in the memory."
+              },
+              "new_text": {
+                "type": "string",
+                "description": "The new text to replace the old text."
+              }
+            },
+            "required": [
+              "old_text",
+              "new_text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_retrieve",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "memory_content": {
+                "type": "string",
+                "description": "The current content of the memory."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The new text to set as the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "S": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_append",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The text to append to the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_clear",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_replace",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "old_text": {
+                "type": "string",
+                "description": "The text to be replaced in the memory."
+              },
+              "new_text": {
+                "type": "string",
+                "description": "The new text to replace the old text."
+              }
+            },
+            "required": [
+              "old_text",
+              "new_text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_retrieve",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "memory_content": {
+                "type": "string",
+                "description": "The current content of the memory."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The new text to set as the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "X": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_append",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The text to append to the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_clear",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_replace",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "old_text": {
+                "type": "string",
+                "description": "The text to be replaced in the memory."
+              },
+              "new_text": {
+                "type": "string",
+                "description": "The new text to replace the old text."
+              }
+            },
+            "required": [
+              "old_text",
+              "new_text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_retrieve",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "memory_content": {
+                "type": "string",
+                "description": "The current content of the memory."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The new text to set as the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      }
+    ],
+    "SX": [
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_append",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The text to append to the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_clear",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_replace",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Replace a specific text in the memory with new text. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "old_text": {
+                "type": "string",
+                "description": "The text to be replaced in the memory."
+              },
+              "new_text": {
+                "type": "string",
+                "description": "The new text to replace the old text."
+              }
+            },
+            "required": [
+              "old_text",
+              "new_text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_retrieve",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Retrieve the current content of the memory. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "memory_content": {
+                "type": "string",
+                "description": "The current content of the memory."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "memory_update",
+          "description": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "The new text to set as the memory. "
+              }
+            },
+            "required": [
+              "text"
+            ]
+          },
+          "response": {
+            "type": "dict",
+            "properties": {
+              "status": {
+                "type": "string",
+                "description": "Status of the operation."
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

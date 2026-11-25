@@ -10,7 +10,7 @@ The reference configuration stays at `r=0.75`, Jaccard neighbours of at least 1/
 
 Official accuracy and provider-usage measurement stay out of scope until a separate authorization and a spending ceiling. The 10% mean provider-input target is unchanged and unresolved. Local token counts do not establish it.
 
-This repository does not vendor BFCL or TSCG. Check out the commits named in `evidence/WEEK1_EVIDENCE_PACKET.md`, then run:
+The v1.1 commands do not vendor BFCL or TSCG. Check out the commits named in `evidence/WEEK1_EVIDENCE_PACKET.md`, then run:
 
 ```bash
 pip install -e ".[test]"
@@ -21,6 +21,14 @@ python -m tool_compression packet --characterization evidence/week1_characteriza
 ```
 
 `characterize` and `arm-e` read the local checkouts and write counts, hashes, and the packet. They do not call a model. A local token count is not the 10% provider-input target.
+
+`studies/clean-start-usx/` is a separate study. It is not part of Evaluation Protocol v1.1, and `official_settlement` stays false. That study vendors the unmodified BFCL scoring prompts at gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`, the U/S/X/SX renders, a sender that can later persist scorable outputs and billed usage, and a frozen three-case pilot. `studies/clean-start-usx/NOTE.md` is the package note. Nothing in that package calls a provider on import or on the default command path.
+
+```bash
+python -m tool_compression clean-start manifest
+python -m tool_compression clean-start freeze
+python -m tool_compression clean-start run --pilot --out /tmp/clean-start-dry
+```
 
 The evaluation scaffold reads the committed Week 1 hashes and does not need those checkouts:
 
