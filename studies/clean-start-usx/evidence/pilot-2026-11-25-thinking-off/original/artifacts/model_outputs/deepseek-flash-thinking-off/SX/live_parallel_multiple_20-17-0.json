@@ -1,0 +1,57 @@
+{
+  "case_id": "live_parallel_multiple_20-17-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"New York, NY\", \"date\": \"2023-05-21\"}"
+        },
+        {
+          "Buses_3_FindBus": "{\"from_city\": \"Boston, MA\", \"to_city\": \"New York, NY\", \"departure_date\": \"2023-05-21\", \"num_passengers\": 2, \"category\": \"direct\"}"
+        }
+      ],
+      "content": "I'll help you with both the music event search and the bus itinerary. Let me look into these for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_DcYAvQzOOwuv1tgBBqZP4016",
+          "type": "function",
+          "function": {
+            "name": "Events_3_FindEvents",
+            "arguments": "{\"event_type\": \"Music\", \"city\": \"New York, NY\", \"date\": \"2023-05-21\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_GCI2bwRPgWGRNoPeQGmz9982",
+          "type": "function",
+          "function": {
+            "name": "Buses_3_FindBus",
+            "arguments": "{\"from_city\": \"Boston, MA\", \"to_city\": \"New York, NY\", \"departure_date\": \"2023-05-21\", \"num_passengers\": 2, \"category\": \"direct\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2685,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 253,
+      "output_tokens": 220,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"New York, NY\", \"date\": \"2023-05-21\"}"
+    },
+    {
+      "Buses_3_FindBus": "{\"from_city\": \"Boston, MA\", \"to_city\": \"New York, NY\", \"departure_date\": \"2023-05-21\", \"num_passengers\": 2, \"category\": \"direct\"}"
+    }
+  ]
+}
