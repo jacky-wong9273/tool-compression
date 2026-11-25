@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_136",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "court_case_search": "{\"docket_number\": \"12345\", \"location\": \"Dallas, TX\", \"full_text\": false}"
+        },
+        {
+          "chess_rating": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+        },
+        {
+          "get_event_date": "{\"event\": \"Battle of Gettysburg\"}"
+        },
+        {
+          "calculate_final_speed": "{\"initial_velocity\": 0, \"height\": 100, \"gravity\": 9.8}"
+        }
+      ],
+      "content": "I'll help you with all four of those requests. Let me retrieve that information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_qCDk3ZJE6aZjJk5reDhq4020",
+          "type": "function",
+          "function": {
+            "name": "court_case_search",
+            "arguments": "{\"docket_number\": \"12345\", \"location\": \"Dallas, TX\", \"full_text\": false}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_gUa5VsSMXwUX3LgEgNHz0813",
+          "type": "function",
+          "function": {
+            "name": "chess_rating",
+            "arguments": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_KQlf1VdwoWqqVXR9IHyQ8636",
+          "type": "function",
+          "function": {
+            "name": "get_event_date",
+            "arguments": "{\"event\": \"Battle of Gettysburg\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_HKljkLczlalkUOcNXDMU7739",
+          "type": "function",
+          "function": {
+            "name": "calculate_final_speed",
+            "arguments": "{\"initial_velocity\": 0, \"height\": 100, \"gravity\": 9.8}"
+          }
+        }
+      ],
+      "prompt_tokens": 922,
+      "prompt_cache_hit_tokens": 768,
+      "prompt_cache_miss_tokens": 154,
+      "output_tokens": 245,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "court_case_search": "{\"docket_number\": \"12345\", \"location\": \"Dallas, TX\", \"full_text\": false}"
+    },
+    {
+      "chess_rating": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+    },
+    {
+      "get_event_date": "{\"event\": \"Battle of Gettysburg\"}"
+    },
+    {
+      "calculate_final_speed": "{\"initial_velocity\": 0, \"height\": 100, \"gravity\": 9.8}"
+    }
+  ]
+}

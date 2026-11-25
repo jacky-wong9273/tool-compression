@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_115",
+  "category": "multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "find_restaurants": "{\"location\": \"Manhattan\", \"food_type\": \"Thai\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+        }
+      ],
+      "content": "I'll search for Thai restaurants in Manhattan that offer vegan options.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_VN6PSKgPtTKjGlaziqqd5208",
+          "type": "function",
+          "function": {
+            "name": "find_restaurants",
+            "arguments": "{\"location\": \"Manhattan\", \"food_type\": \"Thai\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 826,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 186,
+      "output_tokens": 108,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "find_restaurants": "{\"location\": \"Manhattan\", \"food_type\": \"Thai\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+    }
+  ]
+}

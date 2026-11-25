@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_10-9-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "recall_memory_search": "{\"query\": \"Shishir birthday\"}"
+        },
+        {
+          "recall_memory_search": "{\"query\": \"Shishir\"}"
+        }
+      ],
+      "content": "I'll search our previous conversations for Shishir's birthday information.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_XYcWroHhXCtVrjGejCuR0560",
+          "type": "function",
+          "function": {
+            "name": "recall_memory_search",
+            "arguments": "{\"query\": \"Shishir birthday\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ui0heSpb6XgbP9aDwxBR7877",
+          "type": "function",
+          "function": {
+            "name": "recall_memory_search",
+            "arguments": "{\"query\": \"Shishir\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1893,
+      "prompt_cache_hit_tokens": 1664,
+      "prompt_cache_miss_tokens": 229,
+      "output_tokens": 89,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "recall_memory_search": "{\"query\": \"Shishir birthday\"}"
+    },
+    {
+      "recall_memory_search": "{\"query\": \"Shishir\"}"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_787-174-1",
+  "category": "live_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Homes_2_FindHomeByArea": "{\"area\": \"Berkeley, CA\", \"intent\": \"rent\", \"number_of_beds\": 2, \"number_of_baths\": 1, \"in_unit_laundry\": true}"
+        }
+      ],
+      "content": "I'll search for rental properties in Berkeley, CA with 2 bedrooms and in-unit laundry.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_6XTsqR5deMqvWnLiN9Uo6498",
+          "type": "function",
+          "function": {
+            "name": "Homes_2_FindHomeByArea",
+            "arguments": "{\"area\": \"Berkeley, CA\", \"intent\": \"rent\", \"number_of_beds\": 2, \"number_of_baths\": 1, \"in_unit_laundry\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 747,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 235,
+      "output_tokens": 140,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Homes_2_FindHomeByArea": "{\"area\": \"Berkeley, CA\", \"intent\": \"rent\", \"number_of_beds\": 2, \"number_of_baths\": 1, \"in_unit_laundry\": true}"
+    }
+  ]
+}

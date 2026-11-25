@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_71-31-0",
+  "category": "live_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "add_postgres_server": "{\"nickname\": \"EnterpriseDB\", \"host\": \"db.company.com\", \"database\": \"sales_data\", \"username\": \"dbadmin\", \"password\": \"secure*pwd123\"}"
+        }
+      ],
+      "content": "I'll set up that Postgres connection for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_SUnlvxWfUXcENAWLIXQ73832",
+          "type": "function",
+          "function": {
+            "name": "add_postgres_server",
+            "arguments": "{\"nickname\": \"EnterpriseDB\", \"host\": \"db.company.com\", \"database\": \"sales_data\", \"username\": \"dbadmin\", \"password\": \"secure*pwd123\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 693,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 181,
+      "output_tokens": 123,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "add_postgres_server": "{\"nickname\": \"EnterpriseDB\", \"host\": \"db.company.com\", \"database\": \"sales_data\", \"username\": \"dbadmin\", \"password\": \"secure*pwd123\"}"
+    }
+  ]
+}

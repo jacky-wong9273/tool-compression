@@ -1,0 +1,124 @@
+{
+  "case_id": "memory_kv_136-notetaker-6",
+  "category": "memory_kv",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_key_search": "{\"query\": \"HR deadline next month\"}"
+        },
+        {
+          "archival_memory_key_search": "{\"query\": \"HR deadline next month\"}"
+        }
+      ],
+      "content": "I don't have any information about an HR deadline next month in my memory.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_l1iy0l2bJh0ZuaDw6vFR0446",
+          "type": "function",
+          "function": {
+            "name": "core_memory_key_search",
+            "arguments": "{\"query\": \"HR deadline next month\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_SO062MgqPKBE8CvmXn1Z0003",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_key_search",
+            "arguments": "{\"query\": \"HR deadline next month\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2540,
+      "prompt_cache_hit_tokens": 2304,
+      "prompt_cache_miss_tokens": 236,
+      "output_tokens": 93,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_key_search(query='HR deadline next month')",
+        "archival_memory_key_search(query='HR deadline next month')"
+      ],
+      "tool_outputs": [
+        "{\"ranked_results\": [[0.0, \"tax_documents_submit\"], [0.0, \"daycare_schedule\"], [0.0, \"elementary_school\"], [0.0, \"kid_health\"], [0.0, \"family_time\"]]}",
+        "{\"ranked_results\": [[0.0, \"monday_team_meeting\"], [0.0, \"tuesday_system_downtime\"], [0.0, \"client_call_jacob\"], [0.0, \"benefits_package_review\"], [0.0, \"vendor_followups\"]]}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 1,
+      "result": [
+        {
+          "archival_memory_retrieve": "{\"key\": \"benefits_package_review\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_5dX6392Hvcem1sI9k9Ni8419",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_retrieve",
+            "arguments": "{\"key\": \"benefits_package_review\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2783,
+      "prompt_cache_hit_tokens": 2560,
+      "prompt_cache_miss_tokens": 223,
+      "output_tokens": 47,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_retrieve(key='benefits_package_review')"
+      ],
+      "tool_outputs": [
+        "{\"value\": \"HR sent updated benefits package \\u2014 review before next month's deadline(noted Tuesday).\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 2,
+      "result": "{'answer': 'The updated benefits package HR sent — it needs to be reviewed before next month\\'s deadline (noted on Tuesday).', 'context': 'Core memory had no HR items, but archival memory contained \"benefits_package_review\": HR sent an updated benefits package that must be reviewed before next month\\'s deadline, noted on Tuesday.'}",
+      "content": "{'answer': 'The updated benefits package HR sent — it needs to be reviewed before next month\\'s deadline (noted on Tuesday).', 'context': 'Core memory had no HR items, but archival memory contained \"benefits_package_review\": HR sent an updated benefits package that must be reviewed before next month\\'s deadline, noted on Tuesday.'}",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 2867,
+      "prompt_cache_hit_tokens": 2688,
+      "prompt_cache_miss_tokens": 179,
+      "output_tokens": 74,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    }
+  ],
+  "scorable": true,
+  "result": [
+    [
+      [
+        {
+          "core_memory_key_search": "{\"query\": \"HR deadline next month\"}"
+        },
+        {
+          "archival_memory_key_search": "{\"query\": \"HR deadline next month\"}"
+        }
+      ],
+      [
+        {
+          "archival_memory_retrieve": "{\"key\": \"benefits_package_review\"}"
+        }
+      ],
+      "{'answer': 'The updated benefits package HR sent — it needs to be reviewed before next month\\'s deadline (noted on Tuesday).', 'context': 'Core memory had no HR items, but archival memory contained \"benefits_package_review\": HR sent an updated benefits package that must be reviewed before next month\\'s deadline, noted on Tuesday.'}"
+    ]
+  ],
+  "forced_quit": false
+}

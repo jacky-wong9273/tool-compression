@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_740-168-2",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Payment_1_MakePayment": "{\"payment_method\": \"debit card\", \"amount\": 250, \"receiver\": \"Margaret\", \"private_visibility\": true}"
+        }
+      ],
+      "content": "I'll initiate that payment for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_z3IWZQwcAq3wuOFoloLZ0725",
+          "type": "function",
+          "function": {
+            "name": "Payment_1_MakePayment",
+            "arguments": "{\"payment_method\": \"debit card\", \"amount\": 250, \"receiver\": \"Margaret\", \"private_visibility\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 1460,
+      "prompt_cache_hit_tokens": 1280,
+      "prompt_cache_miss_tokens": 180,
+      "output_tokens": 103,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Payment_1_MakePayment": "{\"payment_method\": \"debit card\", \"amount\": 250, \"receiver\": \"Margaret\", \"private_visibility\": true}"
+    }
+  ]
+}

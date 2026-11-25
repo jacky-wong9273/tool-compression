@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_46",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "museum_get_hours": "{\"museum_name\": \"Louvre Museum\"}"
+        },
+        {
+          "museum_get_waiting_time": "{\"museum_name\": \"Louvre Museum\"}"
+        },
+        {
+          "location_get_travel_time": "{\"destination\": \"Louvre Museum\"}"
+        }
+      ],
+      "content": "I'll look up the Louvre Museum's hours, waiting time, and travel time for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_1flTrsgVyDivLvs8QW092779",
+          "type": "function",
+          "function": {
+            "name": "museum_get_hours",
+            "arguments": "{\"museum_name\": \"Louvre Museum\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_iyZC2MBLRyAbuPxpD9VR9635",
+          "type": "function",
+          "function": {
+            "name": "museum_get_waiting_time",
+            "arguments": "{\"museum_name\": \"Louvre Museum\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_H0vc8X5EfAyT0Yng2YUt0514",
+          "type": "function",
+          "function": {
+            "name": "location_get_travel_time",
+            "arguments": "{\"destination\": \"Louvre Museum\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 567,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 183,
+      "output_tokens": 131,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "museum_get_hours": "{\"museum_name\": \"Louvre Museum\"}"
+    },
+    {
+      "museum_get_waiting_time": "{\"museum_name\": \"Louvre Museum\"}"
+    },
+    {
+      "location_get_travel_time": "{\"destination\": \"Louvre Museum\"}"
+    }
+  ]
+}

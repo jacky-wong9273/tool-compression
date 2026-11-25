@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_21-18-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Services_1_FindProvider": "{\"city\": \"Sunnyvale, CA\"}"
+        },
+        {
+          "Services_1_BookAppointment": "{\"stylist_name\": \"Elegant Styles\", \"appointment_time\": \"15:00\", \"appointment_date\": \"2023-05-10\"}"
+        }
+      ],
+      "content": "I'll search for a hair stylist in Sunnyvale, CA and book the appointment for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_Hdnk0Wjxp9eC5v6cSMwH6968",
+          "type": "function",
+          "function": {
+            "name": "Services_1_FindProvider",
+            "arguments": "{\"city\": \"Sunnyvale, CA\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_aiprLV8JW5iDI3t3MWFm3395",
+          "type": "function",
+          "function": {
+            "name": "Services_1_BookAppointment",
+            "arguments": "{\"stylist_name\": \"Elegant Styles\", \"appointment_time\": \"15:00\", \"appointment_date\": \"2023-05-10\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 771,
+      "prompt_cache_hit_tokens": 637,
+      "prompt_cache_miss_tokens": 134,
+      "output_tokens": 146,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Services_1_FindProvider": "{\"city\": \"Sunnyvale, CA\"}"
+    },
+    {
+      "Services_1_BookAppointment": "{\"stylist_name\": \"Elegant Styles\", \"appointment_time\": \"15:00\", \"appointment_date\": \"2023-05-10\"}"
+    }
+  ]
+}

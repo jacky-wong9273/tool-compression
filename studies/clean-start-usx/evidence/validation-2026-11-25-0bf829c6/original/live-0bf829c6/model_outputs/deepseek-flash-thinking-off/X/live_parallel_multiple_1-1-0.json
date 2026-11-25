@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_1-1-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_current_weather": "{\"location\": \"Guangzhou, China\", \"unit\": \"metric\"}"
+        },
+        {
+          "get_current_weather": "{\"location\": \"Beijing, China\", \"unit\": \"metric\"}"
+        }
+      ],
+      "content": "我来帮您查询这两个城市的天气。",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_AfDTw86PrBf4YTp4wRkV8188",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"Guangzhou, China\", \"unit\": \"metric\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_iDi3BiCLoggsFRl9tIxb4903",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"Beijing, China\", \"unit\": \"metric\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 866,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 226,
+      "output_tokens": 114,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_current_weather": "{\"location\": \"Guangzhou, China\", \"unit\": \"metric\"}"
+    },
+    {
+      "get_current_weather": "{\"location\": \"Beijing, China\", \"unit\": \"metric\"}"
+    }
+  ]
+}

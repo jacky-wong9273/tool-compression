@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_14-12-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "math_gcd": "{\"a\": 36, \"b\": 48}"
+        },
+        {
+          "estimate_derivative": "{\"function\": \"lambda x: x**2\", \"x\": 5}"
+        }
+      ],
+      "content": "I'll calculate both for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_HrMvcaYMil9aCHPj3kQ18660",
+          "type": "function",
+          "function": {
+            "name": "math_gcd",
+            "arguments": "{\"a\": 36, \"b\": 48}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_imXTeTTiNA6OBAs5EZVt0565",
+          "type": "function",
+          "function": {
+            "name": "estimate_derivative",
+            "arguments": "{\"function\": \"lambda x: x**2\", \"x\": 5}"
+          }
+        }
+      ],
+      "prompt_tokens": 606,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 606,
+      "output_tokens": 111,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "math_gcd": "{\"a\": 36, \"b\": 48}"
+    },
+    {
+      "estimate_derivative": "{\"function\": \"lambda x: x**2\", \"x\": 5}"
+    }
+  ]
+}

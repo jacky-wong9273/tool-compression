@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_185",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "metropolitan_museum_get_top_artworks": "{\"number\": 10, \"sort_by\": \"popularity\"}"
+        },
+        {
+          "metropolitan_museum_get_top_artworks": "{\"number\": 5, \"sort_by\": \"chronological\"}"
+        },
+        {
+          "lawsuit_search": "{\"company\": \"Google\", \"start_date\": \"2020-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+        },
+        {
+          "lawsuit_search": "{\"company\": \"Microsoft\", \"start_date\": \"2018-01-01\", \"location\": \"New York\", \"status\": \"settled\"}"
+        }
+      ],
+      "content": "I'll fetch all of that information for you. Let me make these calls in parallel since they're independent.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_LhdYltLEzVLQaYW1E6vY3865",
+          "type": "function",
+          "function": {
+            "name": "metropolitan_museum_get_top_artworks",
+            "arguments": "{\"number\": 10, \"sort_by\": \"popularity\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ArdvKONyRAjQI8CugyIv9412",
+          "type": "function",
+          "function": {
+            "name": "metropolitan_museum_get_top_artworks",
+            "arguments": "{\"number\": 5, \"sort_by\": \"chronological\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_UGJYgjY3bSprXgtgrxEj1583",
+          "type": "function",
+          "function": {
+            "name": "lawsuit_search",
+            "arguments": "{\"company\": \"Google\", \"start_date\": \"2020-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_Nw0gywRy80aUk5V6wHfu0693",
+          "type": "function",
+          "function": {
+            "name": "lawsuit_search",
+            "arguments": "{\"company\": \"Microsoft\", \"start_date\": \"2018-01-01\", \"location\": \"New York\", \"status\": \"settled\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 620,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 236,
+      "output_tokens": 305,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "metropolitan_museum_get_top_artworks": "{\"number\": 10, \"sort_by\": \"popularity\"}"
+    },
+    {
+      "metropolitan_museum_get_top_artworks": "{\"number\": 5, \"sort_by\": \"chronological\"}"
+    },
+    {
+      "lawsuit_search": "{\"company\": \"Google\", \"start_date\": \"2020-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+    },
+    {
+      "lawsuit_search": "{\"company\": \"Microsoft\", \"start_date\": \"2018-01-01\", \"location\": \"New York\", \"status\": \"settled\"}"
+    }
+  ]
+}

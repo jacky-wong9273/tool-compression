@@ -605,3 +605,329 @@ def write_revised_pilot_report(evidence: Path, out: Path) -> dict:
         "matched_correct": report["accuracy"]["matched_correct"],
         "discordant_cases": len(discordant),
     }
+
+
+VALIDATION_EVIDENCE = Path("evidence") / "validation-2026-11-25-0bf829c6"
+VALIDATION_TIP = "0bf829c6c2d24e5efa0483c7447c7ed0df4c53b9"
+VALIDATION_DIGEST = "sent_renders_0bf829c6.json"
+VALIDATION_POPULATION = "population_0bf829c6.json"
+VALIDATION_RUN = Path("original") / "live-0bf829c6"
+VALIDATION_FINAL = Path("original") / "FINAL-0bf829c6.json"
+_PARAMETER = re.compile(r"^/function/parameters/properties/([^/]+)/description$")
+
+
+def _calls(result) -> list[tuple[str, object]]:
+    """Decoded single-turn calls as (function name, arguments)."""
+    calls = []
+    if not isinstance(result, list):
+        return calls
+    for item in result:
+        if not isinstance(item, dict):
+            continue
+        for name, arguments in item.items():
+            if isinstance(arguments, str):
+                try:
+                    arguments = json.loads(arguments)
+                except ValueError:
+                    pass
+            calls.append((name, arguments))
+    return calls
+
+
+def _called_names(sidecar: dict) -> set[str]:
+    names = set()
+    for step in sidecar.get("steps", []):
+        names |= {name for name, _arguments in _calls(step.get("result"))}
+    return names | {name for name, _arguments in _calls(sidecar.get("result"))}
+
+
+def _differing_tools(edits: dict, left: str, right: str) -> set[str]:
+    """Initial-catalogue tools whose bytes differ between two arms of the flown editors."""
+    s_tools = {name for name, _pointer in edits["s_changed_slots"]}
+    x_tools = set(edits["x_cued_tools"])
+    arm_tools = {"U": (set(), set()), "S": (s_tools, set()), "X": (set(), x_tools), "SX": (s_tools, x_tools)}
+    (s_left, x_left), (s_right, x_right) = arm_tools[left], arm_tools[right]
+    return (s_left ^ s_right) | (x_left ^ x_right)
+
+
+def write_validation_flight_report(evidence: Path, out: Path) -> dict:
+    """Paired analysis of the interrupted 25 Nov validation flight of the editors at ``VALIDATION_TIP``.
+
+    Reads only the archived evidence, the committed digest of what the flown
+    commit sends (with the slots its S changed and the tools its X cued), and
+    the current editors (for revised local token counts on the same draw).
+    """
+    from tool_compression.clean_start.runner import arm_tools
+    from tool_compression.clean_start.validation import select_validation_cases
+
+    evidence = Path(evidence)
+    run_dir = evidence / VALIDATION_RUN
+    final = json.loads((evidence / VALIDATION_FINAL).read_text(encoding="utf-8"))
+    run = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+    attempts = _jsonl(run_dir / "attempts.jsonl")
+    bills = _bills(run_dir / "bills.jsonl")
+    digest = json.loads((evidence / VALIDATION_DIGEST).read_text(encoding="utf-8"))
+    population = json.loads((evidence / VALIDATION_POPULATION).read_text(encoding="utf-8"))
+    for name, payload in ((VALIDATION_DIGEST, digest), (VALIDATION_POPULATION, population)):
+        if payload["source_commit"] != VALIDATION_TIP:
+            raise ValueError(f"{name} was not computed at {VALIDATION_TIP}")
+    sidecars = {}
+    for path in sorted((run_dir / "model_outputs").rglob("*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        sidecars[(data["case_id"], data["arm"])] = data
+    scores = _scores(run_dir / "score")
+    scored = _scored_ids(run_dir / "result")
+    cases = digest["cases"]
+    category_of = {case_id: record["category"] for case_id, record in cases.items()}
+
+    sent = [row for row in attempts if row["event"] == "sent"]
+    state_of = {}
+    for case_id, record in cases.items():
+        for state, arms in record["states"].items():
+            for arm, row in arms.items():
+                state_of[(case_id, arm, row["tools_sha256"])] = state
+    matched_states: dict = defaultdict(int)
+    unmatched = []
+    for row in sent:
+        state = state_of.get((row["case_id"], row["arm"], row["tools_sha256"]))
+        if state is None:
+            unmatched.append(row["attempt"])
+        else:
+            matched_states[state.split(":")[0]] += 1
+    billed_attempts = {row["attempt"] for row in bills}
+    completed = {row["attempt"] for row in attempts if row["event"] == "completed"}
+    uncertain = sorted(row["attempt"] for row in sent if row["attempt"] not in billed_attempts)
+    ledger_usd = sum((Decimal(row["usd"]) for row in bills), Decimal("0"))
+
+    failed = {
+        (case_id, arm)
+        for arms in scores.values() for arm, table in arms.items() for case_id in table["failed_ids"]
+    }
+    matched_cases = sorted(
+        case_id
+        for category, arms in scored.items()
+        if not category.endswith("_prereq") and all(arm in arms for arm in ARMS)
+        for case_id in set.intersection(*(set(arms[arm]) for arm in ARMS))
+    )
+    outcome = {(case_id, arm): (case_id, arm) not in failed for case_id in matched_cases for arm in ARMS}
+    by_category: dict = defaultdict(lambda: {"matched": 0, **{arm: 0 for arm in ARMS}})
+    for case_id in matched_cases:
+        row = by_category[category_of[case_id]]
+        row["matched"] += 1
+        for arm in ARMS:
+            row[arm] += int(outcome[(case_id, arm)])
+
+    def identical_tools(case_id: str, left: str, right: str) -> bool:
+        states = cases[case_id]["states"].values()
+        return all(arms[left]["tools_sha256"] == arms[right]["tools_sha256"] for arms in states)
+
+    pair_tables = {}
+    for left, right in PAIRS:
+        table: dict = defaultdict(int)
+        for case_id in matched_cases:
+            ok_left, ok_right = outcome[(case_id, left)], outcome[(case_id, right)]
+            kind = "both_correct" if ok_left and ok_right else "left_only" if ok_left else "right_only" if ok_right else "both_wrong"
+            tools = "identical_tools" if identical_tools(case_id, left, right) else "different_tools"
+            table[f"{tools}:{kind}"] += 1
+        pair_tables[f"{left}-{right}"] = dict(sorted(table.items()))
+
+    discordant = []
+    different = []
+    for case_id in matched_cases:
+        passed = {arm: outcome[(case_id, arm)] for arm in ARMS}
+        if len(set(passed.values())) == 1:
+            continue
+        discordant.append({
+            "case_id": case_id,
+            "category": category_of[case_id],
+            "passed": passed,
+            "identical_sent_tools": {f"{left}={right}": identical_tools(case_id, left, right) for left, right in PAIRS},
+        })
+        for left, right in PAIRS:
+            if passed[left] == passed[right] or identical_tools(case_id, left, right):
+                continue
+            changed = _differing_tools(cases[case_id]["initial_edits"], left, right)
+            called = _called_names(sidecars[(case_id, left)]) | _called_names(sidecars[(case_id, right)])
+            different.append({
+                "case_id": case_id,
+                "category": category_of[case_id],
+                "pair": f"{left}-{right}",
+                "passed": left if passed[left] else right,
+                "tools_differing_on_initial_catalogue": len(changed),
+                "differing_tools_called_by_either_arm": sorted(changed & called),
+            })
+
+    noise = {"trajectory": defaultdict(int), "single_turn": defaultdict(int)}
+    for case_id in matched_cases:
+        kind = "trajectory" if is_trajectory(category_of[case_id]) else "single_turn"
+        for left, right in (("U", "X"), ("S", "SX"), ("U", "S"), ("X", "SX")):
+            if not identical_tools(case_id, left, right):
+                continue
+            stats = noise[kind]
+            stats["pairs_with_identical_sent_tools"] += 1
+            same = _behaviour(sidecars[(case_id, left)]) == _behaviour(sidecars[(case_id, right)])
+            stats["identical_model_behaviour"] += int(same)
+            stats["outcome_differs"] += int(outcome[(case_id, left)] != outcome[(case_id, right)])
+
+    values = {"edited_parameters_filled_by_u_and_s": 0, "U-S": 0, "X-SX": 0, "U-X": 0, "S-SX": 0}
+    value_rows = []
+    for case_id in matched_cases:
+        if is_trajectory(category_of[case_id]):
+            continue
+        for name, pointer in cases[case_id]["initial_edits"]["s_changed_slots"]:
+            match = _PARAMETER.match(pointer)
+            if match is None:
+                continue
+            parameter = match.group(1)
+            filled = {}
+            for arm in ARMS:
+                filled[arm] = [
+                    arguments[parameter]
+                    for called, arguments in _calls(sidecars[(case_id, arm)].get("result"))
+                    if called == name and isinstance(arguments, dict) and parameter in arguments
+                ]
+            if not filled["U"] or not filled["S"]:
+                continue
+            values["edited_parameters_filled_by_u_and_s"] += 1
+            differs = {f"{left}-{right}": filled[left] != filled[right] for left, right in (("U", "S"), ("X", "SX"), ("U", "X"), ("S", "SX"))}
+            for key, flag in differs.items():
+                values[key] += int(flag)
+            if any(differs.values()):
+                value_rows.append({"case_id": case_id, "function": name, "parameter": parameter, "values": filled})
+
+    matched_set = set(matched_cases)
+    scoring_bills = [row for row in bills if row["case_id"] in matched_set]
+    billed = {}
+    for arm in ARMS:
+        rows = [row for row in scoring_bills if row["arm"] == arm]
+        billed[arm] = {
+            "requests": len(rows),
+            "prompt": sum(row["prompt_tokens"] for row in rows),
+            "cache_hit": sum(row["prompt_cache_hit_tokens"] for row in rows),
+            "cache_miss": sum(row["prompt_cache_miss_tokens"] for row in rows),
+            "output": sum(row["output_tokens"] for row in rows),
+            "usd": str(sum((Decimal(row["usd"]) for row in rows), Decimal("0"))),
+            "usd_parts": _usd_parts(rows),
+        }
+    first = {}
+    for row in sorted(scoring_bills, key=lambda item: item["attempt"]):
+        if row["turn"] == 0 and row["step"] == 0:
+            first.setdefault((row["case_id"], row["arm"]), row)
+    first_request = {"cases": len(matched_cases), "prompt_tokens": {}, "delta_vs_U": {}}
+    for arm in ARMS:
+        first_request["prompt_tokens"][arm] = sum(first[(case_id, arm)]["prompt_tokens"] for case_id in matched_cases)
+    for arm in ("S", "X", "SX"):
+        delta = first_request["prompt_tokens"][arm] - first_request["prompt_tokens"]["U"]
+        first_request["delta_vs_U"][arm] = {
+            "tokens": delta,
+            "percent": round(100 * delta / first_request["prompt_tokens"]["U"], 3),
+        }
+
+    counter = TiktokenCounter(LOCAL_TOKENIZER)
+    local = {
+        "flown_editors": {"scoring": defaultdict(int), "prereq": defaultdict(int)},
+        "current_editors": {"scoring": defaultdict(int), "prereq": defaultdict(int)},
+    }
+    for case in select_validation_cases():
+        kind = "prereq" if case.get("prereq") else "scoring"
+        for arm in ARMS:
+            local["current_editors"][kind][arm] += counter.count(
+                dump_request(arm_tools(case["function"], case["category"], arm))
+            )
+            local["flown_editors"][kind][arm] += cases[case["id"]]["states"]["initial"][arm]["local_tools_tokens"]
+
+    memory = {}
+    for category, arms in sorted(scored.items()):
+        if not category.startswith("memory_"):
+            continue
+        memory[category] = {arm: len(arms.get(arm, [])) for arm in ARMS}
+        if not category.endswith("_prereq"):
+            memory[category]["matched_all_arms"] = sum(1 for case_id in matched_cases if category_of[case_id] == category)
+
+    report = {
+        "study": STUDY_ID,
+        "official_settlement": OFFICIAL_SETTLEMENT,
+        "exposure": (
+            "This draw and the 41-case pilot draw have both been flown and diagnosed. Both are exposed "
+            "regression data for any later editor, not unseen validation."
+        ),
+        "source": {
+            "evidence": str(VALIDATION_EVIDENCE),
+            "flown_tip": digest["source_commit"],
+            "flown_rules": population["rules"],
+            "current_editor_rules": {"S": S_RULES_VERSION, "X": X_RULES_VERSION},
+            "observed_status": final["observed_status"],
+            "stale_run_json": {"status": run.get("status"), "running_usd": run.get("running_usd")},
+            "scoring_slots": {"finished": final["scoring_finished"], "planned": final["scoring_total"]},
+            "prerequisite_slots": {"finished": final["prerequisite_finished"], "planned": final["prerequisite_total"]},
+            "provider_sends": len(sent),
+            "completed_events": len(completed),
+            "billed_responses": len(bills),
+            "ledger_usd": str(ledger_usd),
+            "uncertain_attempts": uncertain,
+            "retry_or_resume": final["retry_or_resume"],
+            "thinking": "off",
+            "band": sorted({row["band"] for row in bills}),
+        },
+        "measurement_notes": [
+            "No request was sent for this report. Every number comes from the archived evidence or local counting.",
+            "The flight stopped when the box environment was lost. Accuracy covers only cases all four arms finished.",
+            "memory_kv has 2 cases finished on all four arms; U and S each finished one more. memory_vector and "
+            "memory_rec_sum were never reached. Per-arm totals over unequal denominators are not comparable.",
+            "identical_tools_noise counts arm pairs that sent byte-identical tools in every state. Their outcome "
+            "differences are provider nondeterminism, the floor any editor contrast has to clear.",
+            "different_tools_discordance lists discordant pairs whose tools differ. differing_tools_called_by_either_arm "
+            "is empty when neither arm called any tool the editors changed; the edit cannot be the mechanism there.",
+            "s_edited_parameter_values compares argument values on parameters whose description the flown S changed, "
+            "in single-turn cases where U and S both filled them. U-X and S-SX are the same comparison between arms "
+            "that sent identical text for that parameter.",
+            "first_request compares turn 0 step 0 of each matched case. Messages are identical across arms, so the "
+            "prompt-token difference there is the tools array as the provider tokenizes it.",
+            "Arms were rotated per case and share provider prefix cache, so cache-miss and USD differences between "
+            "arms are confounded by send order.",
+            "Accuracy is from the archived official scorer output (underscore_to_dot=True). No replicate U was run.",
+        ],
+        "sent_bytes": {
+            "sent_attempts": len(sent),
+            "matched_flown_digest": len(sent) - len(unmatched),
+            "unmatched_attempts": unmatched,
+            "matched_by_state": dict(sorted(matched_states.items())),
+        },
+        "accuracy": {
+            "official_scores": scores,
+            "matched_cases": len(matched_cases),
+            "matched_correct": {arm: sum(int(outcome[(case_id, arm)]) for case_id in matched_cases) for arm in ARMS},
+            "matched_correct_by_category": dict(sorted(by_category.items())),
+            "paired_outcomes_by_sent_tools": pair_tables,
+            "discordant_cases": discordant,
+        },
+        "identical_tools_noise": {kind: dict(sorted(stats.items())) for kind, stats in noise.items()},
+        "different_tools_discordance": different,
+        "s_edited_parameter_values": {**values, "differing": value_rows},
+        "memory_coverage": memory,
+        "tokens": {
+            "matched_billed_by_arm": billed,
+            "first_request": first_request,
+            "local_tools_tokens_initial_catalogue": {
+                editors: {kind: dict(values) for kind, values in table.items()} for editors, table in local.items()
+            },
+        },
+        "runner": {
+            "forced_quit_slots": [
+                {"case_id": key[0], "arm": key[1], "steps": len(data.get("steps", []))}
+                for key, data in sorted(sidecars.items())
+                if data.get("forced_quit")
+            ],
+        },
+    }
+    out = Path(out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    return {
+        "sent": len(sent),
+        "sent_matching_flown_digest": len(sent) - len(unmatched),
+        "matched_cases": len(matched_cases),
+        "matched_correct": report["accuracy"]["matched_correct"],
+        "discordant_cases": len(discordant),
+        "uncertain_attempts": uncertain,
+    }

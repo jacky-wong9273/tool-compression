@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_50",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "house_price_forecast": "{\"location\": \"New York\", \"months\": 1}"
+        }
+      ],
+      "content": "I'll get that house price prediction for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_BDRSTYqKRzkrbOyrUs4e5591",
+          "type": "function",
+          "function": {
+            "name": "house_price_forecast",
+            "arguments": "{\"location\": \"New York\", \"months\": 1}"
+          }
+        }
+      ],
+      "prompt_tokens": 615,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 231,
+      "output_tokens": 66,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "house_price_forecast": "{\"location\": \"New York\", \"months\": 1}"
+    }
+  ]
+}

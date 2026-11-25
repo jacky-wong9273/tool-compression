@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_54",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "BattleReignGameAPI_update_player_equipment": "{\"attribute\": \"armor\", \"level\": 5}"
+        },
+        {
+          "GameGuideAPI_search_guide": "{\"game\": \"Battle Reign\", \"condition\": \"snowy weather\"}"
+        },
+        {
+          "GameGuideAPI_search_guide": "{\"game\": \"Shadow Fall\", \"type\": \"strategy\"}"
+        }
+      ],
+      "content": "I'll help you with those requests. Let me make all three calls now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_jxq3aA4uTu6YautTatcr2788",
+          "type": "function",
+          "function": {
+            "name": "BattleReignGameAPI_update_player_equipment",
+            "arguments": "{\"attribute\": \"armor\", \"level\": 5}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_z50SqpvhafSxmId7LU6B9697",
+          "type": "function",
+          "function": {
+            "name": "GameGuideAPI_search_guide",
+            "arguments": "{\"game\": \"Battle Reign\", \"condition\": \"snowy weather\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_DGTJOYvNcxh3dFaaxp0V7063",
+          "type": "function",
+          "function": {
+            "name": "GameGuideAPI_search_guide",
+            "arguments": "{\"game\": \"Shadow Fall\", \"type\": \"strategy\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 539,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 411,
+      "output_tokens": 179,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "BattleReignGameAPI_update_player_equipment": "{\"attribute\": \"armor\", \"level\": 5}"
+    },
+    {
+      "GameGuideAPI_search_guide": "{\"game\": \"Battle Reign\", \"condition\": \"snowy weather\"}"
+    },
+    {
+      "GameGuideAPI_search_guide": "{\"game\": \"Shadow Fall\", \"type\": \"strategy\"}"
+    }
+  ]
+}
