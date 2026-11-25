@@ -1,0 +1,1569 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "exposure": "This draw and the 41-case pilot draw have both been flown and diagnosed. Both are exposed regression data for any later editor, not unseen validation.",
+  "source": {
+    "evidence": "evidence/validation-2026-11-25-0bf829c6",
+    "flown_tip": "0bf829c6c2d24e5efa0483c7447c7ed0df4c53b9",
+    "flown_rules": {
+      "S": "s-rules-2026-11-25.2",
+      "X": "x-rules-2026-11-25.3"
+    },
+    "current_editor_rules": {
+      "S": "s-rules-2026-11-25.2",
+      "X": "x-rules-2026-11-25.3"
+    },
+    "observed_status": "incomplete_process_lost_environment_interruption",
+    "stale_run_json": {
+      "status": "running",
+      "running_usd": "0.346140159000"
+    },
+    "scoring_slots": {
+      "finished": 1214,
+      "planned": 1252
+    },
+    "prerequisite_slots": {
+      "finished": 20,
+      "planned": 60
+    },
+    "provider_sends": 2482,
+    "completed_events": 2481,
+    "billed_responses": 2481,
+    "ledger_usd": "0.346230789000",
+    "uncertain_attempts": [
+      2482
+    ],
+    "retry_or_resume": false,
+    "thinking": "off",
+    "band": [
+      "off_peak"
+    ]
+  },
+  "measurement_notes": [
+    "No request was sent for this report. Every number comes from the archived evidence or local counting.",
+    "The flight stopped when the box environment was lost. Accuracy covers only cases all four arms finished.",
+    "memory_kv has 2 cases finished on all four arms; U and S each finished one more. memory_vector and memory_rec_sum were never reached. Per-arm totals over unequal denominators are not comparable.",
+    "identical_tools_noise counts arm pairs that sent byte-identical tools in every state. Their outcome differences are provider nondeterminism, the floor any editor contrast has to clear.",
+    "different_tools_discordance lists discordant pairs whose tools differ. differing_tools_called_by_either_arm is empty when neither arm called any tool the editors changed; the edit cannot be the mechanism there.",
+    "s_edited_parameter_values compares argument values on parameters whose description the flown S changed, in single-turn cases where U and S both filled them. U-X and S-SX are the same comparison between arms that sent identical text for that parameter.",
+    "first_request compares turn 0 step 0 of each matched case. Messages are identical across arms, so the prompt-token difference there is the tools array as the provider tokenizes it.",
+    "Arms were rotated per case and share provider prefix cache, so cache-miss and USD differences between arms are confounded by send order.",
+    "Accuracy is from the archived official scorer output (underscore_to_dot=True). No replicate U was run."
+  ],
+  "sent_bytes": {
+    "sent_attempts": 2482,
+    "matched_flown_digest": 2482,
+    "unmatched_attempts": [],
+    "matched_by_state": {
+      "held_out": 126,
+      "initial": 2356
+    }
+  },
+  "accuracy": {
+    "official_scores": {
+      "memory_kv": {
+        "S": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "memory_kv_143-notetaker-13"
+          ]
+        },
+        "SX": {
+          "correct": 1,
+          "total": 2,
+          "failed_ids": [
+            "memory_kv_143-notetaker-13"
+          ]
+        },
+        "U": {
+          "correct": 1,
+          "total": 3,
+          "failed_ids": [
+            "memory_kv_143-notetaker-13",
+            "memory_kv_148-notetaker-18"
+          ]
+        },
+        "X": {
+          "correct": 0,
+          "total": 2,
+          "failed_ids": [
+            "memory_kv_143-notetaker-13",
+            "memory_kv_148-notetaker-18"
+          ]
+        }
+      },
+      "live_irrelevance": {
+        "S": {
+          "correct": 54,
+          "total": 64,
+          "failed_ids": [
+            "live_irrelevance_180-30-1",
+            "live_irrelevance_282-64-0",
+            "live_irrelevance_334-78-1",
+            "live_irrelevance_488-141-1",
+            "live_irrelevance_519-157-0",
+            "live_irrelevance_638-202-2",
+            "live_irrelevance_647-205-1",
+            "live_irrelevance_712-236-0",
+            "live_irrelevance_750-261-0",
+            "live_irrelevance_752-263-0"
+          ]
+        },
+        "SX": {
+          "correct": 53,
+          "total": 64,
+          "failed_ids": [
+            "live_irrelevance_180-30-1",
+            "live_irrelevance_282-64-0",
+            "live_irrelevance_334-78-1",
+            "live_irrelevance_488-141-1",
+            "live_irrelevance_519-157-0",
+            "live_irrelevance_638-202-2",
+            "live_irrelevance_647-205-1",
+            "live_irrelevance_712-236-0",
+            "live_irrelevance_746-257-0",
+            "live_irrelevance_750-261-0",
+            "live_irrelevance_752-263-0"
+          ]
+        },
+        "U": {
+          "correct": 54,
+          "total": 64,
+          "failed_ids": [
+            "live_irrelevance_180-30-1",
+            "live_irrelevance_282-64-0",
+            "live_irrelevance_334-78-1",
+            "live_irrelevance_488-141-1",
+            "live_irrelevance_519-157-0",
+            "live_irrelevance_638-202-2",
+            "live_irrelevance_647-205-1",
+            "live_irrelevance_712-236-0",
+            "live_irrelevance_750-261-0",
+            "live_irrelevance_752-263-0"
+          ]
+        },
+        "X": {
+          "correct": 50,
+          "total": 64,
+          "failed_ids": [
+            "live_irrelevance_180-30-1",
+            "live_irrelevance_243-46-0",
+            "live_irrelevance_253-53-1",
+            "live_irrelevance_282-64-0",
+            "live_irrelevance_334-78-1",
+            "live_irrelevance_488-141-1",
+            "live_irrelevance_519-157-0",
+            "live_irrelevance_638-202-2",
+            "live_irrelevance_647-205-1",
+            "live_irrelevance_653-206-2",
+            "live_irrelevance_694-225-4",
+            "live_irrelevance_712-236-0",
+            "live_irrelevance_750-261-0",
+            "live_irrelevance_752-263-0"
+          ]
+        }
+      },
+      "live_multiple": {
+        "S": {
+          "correct": 51,
+          "total": 64,
+          "failed_ids": [
+            "live_multiple_105-43-3",
+            "live_multiple_190-84-0",
+            "live_multiple_218-94-0",
+            "live_multiple_264-126-1",
+            "live_multiple_270-127-5",
+            "live_multiple_271-127-6",
+            "live_multiple_277-128-0",
+            "live_multiple_403-139-7",
+            "live_multiple_505-149-2",
+            "live_multiple_776-172-1",
+            "live_multiple_793-174-7",
+            "live_multiple_871-182-8",
+            "live_multiple_884-184-1"
+          ]
+        },
+        "SX": {
+          "correct": 50,
+          "total": 64,
+          "failed_ids": [
+            "live_multiple_105-43-3",
+            "live_multiple_190-84-0",
+            "live_multiple_218-94-0",
+            "live_multiple_264-126-1",
+            "live_multiple_270-127-5",
+            "live_multiple_271-127-6",
+            "live_multiple_277-128-0",
+            "live_multiple_403-139-7",
+            "live_multiple_505-149-2",
+            "live_multiple_776-172-1",
+            "live_multiple_793-174-7",
+            "live_multiple_871-182-8",
+            "live_multiple_884-184-1",
+            "live_multiple_965-207-1"
+          ]
+        },
+        "U": {
+          "correct": 52,
+          "total": 64,
+          "failed_ids": [
+            "live_multiple_190-84-0",
+            "live_multiple_218-94-0",
+            "live_multiple_264-126-1",
+            "live_multiple_270-127-5",
+            "live_multiple_271-127-6",
+            "live_multiple_277-128-0",
+            "live_multiple_403-139-7",
+            "live_multiple_505-149-2",
+            "live_multiple_776-172-1",
+            "live_multiple_793-174-7",
+            "live_multiple_871-182-8",
+            "live_multiple_884-184-1"
+          ]
+        },
+        "X": {
+          "correct": 52,
+          "total": 64,
+          "failed_ids": [
+            "live_multiple_190-84-0",
+            "live_multiple_218-94-0",
+            "live_multiple_264-126-1",
+            "live_multiple_270-127-5",
+            "live_multiple_271-127-6",
+            "live_multiple_277-128-0",
+            "live_multiple_403-139-7",
+            "live_multiple_505-149-2",
+            "live_multiple_776-172-1",
+            "live_multiple_793-174-7",
+            "live_multiple_871-182-8",
+            "live_multiple_884-184-1"
+          ]
+        }
+      },
+      "live_parallel_multiple": {
+        "S": {
+          "correct": 15,
+          "total": 21,
+          "failed_ids": [
+            "live_parallel_multiple_10-9-0",
+            "live_parallel_multiple_13-11-0",
+            "live_parallel_multiple_14-12-0",
+            "live_parallel_multiple_17-15-0",
+            "live_parallel_multiple_2-2-0",
+            "live_parallel_multiple_9-8-0"
+          ]
+        },
+        "SX": {
+          "correct": 15,
+          "total": 21,
+          "failed_ids": [
+            "live_parallel_multiple_10-9-0",
+            "live_parallel_multiple_13-11-0",
+            "live_parallel_multiple_14-12-0",
+            "live_parallel_multiple_17-15-0",
+            "live_parallel_multiple_2-2-0",
+            "live_parallel_multiple_9-8-0"
+          ]
+        },
+        "U": {
+          "correct": 15,
+          "total": 21,
+          "failed_ids": [
+            "live_parallel_multiple_10-9-0",
+            "live_parallel_multiple_13-11-0",
+            "live_parallel_multiple_14-12-0",
+            "live_parallel_multiple_17-15-0",
+            "live_parallel_multiple_2-2-0",
+            "live_parallel_multiple_9-8-0"
+          ]
+        },
+        "X": {
+          "correct": 16,
+          "total": 21,
+          "failed_ids": [
+            "live_parallel_multiple_10-9-0",
+            "live_parallel_multiple_13-11-0",
+            "live_parallel_multiple_14-12-0",
+            "live_parallel_multiple_17-15-0",
+            "live_parallel_multiple_9-8-0"
+          ]
+        }
+      },
+      "live_relevance": {
+        "S": {
+          "correct": 6,
+          "total": 8,
+          "failed_ids": [
+            "live_relevance_13-13-0",
+            "live_relevance_6-6-0"
+          ]
+        },
+        "SX": {
+          "correct": 7,
+          "total": 8,
+          "failed_ids": [
+            "live_relevance_6-6-0"
+          ]
+        },
+        "U": {
+          "correct": 6,
+          "total": 8,
+          "failed_ids": [
+            "live_relevance_13-13-0",
+            "live_relevance_6-6-0"
+          ]
+        },
+        "X": {
+          "correct": 7,
+          "total": 8,
+          "failed_ids": [
+            "live_relevance_6-6-0"
+          ]
+        }
+      },
+      "multi_turn_base": {
+        "S": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_base_194"
+          ]
+        },
+        "SX": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_base_194"
+          ]
+        },
+        "U": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_base_194"
+          ]
+        },
+        "X": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_base_194"
+          ]
+        }
+      },
+      "multi_turn_long_context": {
+        "S": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_long_context_113"
+          ]
+        },
+        "SX": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_long_context_113"
+          ]
+        },
+        "U": {
+          "correct": 2,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_long_context_113",
+            "multi_turn_long_context_2"
+          ]
+        },
+        "X": {
+          "correct": 3,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_long_context_113"
+          ]
+        }
+      },
+      "multi_turn_miss_func": {
+        "S": {
+          "correct": 0,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_func_15",
+            "multi_turn_miss_func_25",
+            "multi_turn_miss_func_61",
+            "multi_turn_miss_func_9"
+          ]
+        },
+        "SX": {
+          "correct": 2,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_func_15",
+            "multi_turn_miss_func_25"
+          ]
+        },
+        "U": {
+          "correct": 0,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_func_15",
+            "multi_turn_miss_func_25",
+            "multi_turn_miss_func_61",
+            "multi_turn_miss_func_9"
+          ]
+        },
+        "X": {
+          "correct": 0,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_func_15",
+            "multi_turn_miss_func_25",
+            "multi_turn_miss_func_61",
+            "multi_turn_miss_func_9"
+          ]
+        }
+      },
+      "multi_turn_miss_param": {
+        "S": {
+          "correct": 2,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_param_6",
+            "multi_turn_miss_param_83"
+          ]
+        },
+        "SX": {
+          "correct": 2,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_param_6",
+            "multi_turn_miss_param_83"
+          ]
+        },
+        "U": {
+          "correct": 1,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_param_51",
+            "multi_turn_miss_param_6",
+            "multi_turn_miss_param_83"
+          ]
+        },
+        "X": {
+          "correct": 1,
+          "total": 4,
+          "failed_ids": [
+            "multi_turn_miss_param_51",
+            "multi_turn_miss_param_6",
+            "multi_turn_miss_param_83"
+          ]
+        }
+      },
+      "multiple": {
+        "S": {
+          "correct": 59,
+          "total": 64,
+          "failed_ids": [
+            "multiple_136",
+            "multiple_26",
+            "multiple_53",
+            "multiple_76",
+            "multiple_91"
+          ]
+        },
+        "SX": {
+          "correct": 60,
+          "total": 64,
+          "failed_ids": [
+            "multiple_136",
+            "multiple_26",
+            "multiple_53",
+            "multiple_76"
+          ]
+        },
+        "U": {
+          "correct": 59,
+          "total": 64,
+          "failed_ids": [
+            "multiple_136",
+            "multiple_25",
+            "multiple_26",
+            "multiple_53",
+            "multiple_76"
+          ]
+        },
+        "X": {
+          "correct": 59,
+          "total": 64,
+          "failed_ids": [
+            "multiple_136",
+            "multiple_26",
+            "multiple_53",
+            "multiple_76",
+            "multiple_91"
+          ]
+        }
+      },
+      "parallel_multiple": {
+        "S": {
+          "correct": 56,
+          "total": 64,
+          "failed_ids": [
+            "parallel_multiple_106",
+            "parallel_multiple_129",
+            "parallel_multiple_160",
+            "parallel_multiple_166",
+            "parallel_multiple_41",
+            "parallel_multiple_55",
+            "parallel_multiple_67",
+            "parallel_multiple_69"
+          ]
+        },
+        "SX": {
+          "correct": 56,
+          "total": 64,
+          "failed_ids": [
+            "parallel_multiple_106",
+            "parallel_multiple_160",
+            "parallel_multiple_166",
+            "parallel_multiple_41",
+            "parallel_multiple_55",
+            "parallel_multiple_67",
+            "parallel_multiple_69",
+            "parallel_multiple_75"
+          ]
+        },
+        "U": {
+          "correct": 58,
+          "total": 64,
+          "failed_ids": [
+            "parallel_multiple_106",
+            "parallel_multiple_160",
+            "parallel_multiple_41",
+            "parallel_multiple_55",
+            "parallel_multiple_67",
+            "parallel_multiple_69"
+          ]
+        },
+        "X": {
+          "correct": 57,
+          "total": 64,
+          "failed_ids": [
+            "parallel_multiple_106",
+            "parallel_multiple_160",
+            "parallel_multiple_41",
+            "parallel_multiple_55",
+            "parallel_multiple_67",
+            "parallel_multiple_69",
+            "parallel_multiple_75"
+          ]
+        }
+      }
+    },
+    "matched_cases": 303,
+    "matched_correct": {
+      "U": 250,
+      "S": 250,
+      "X": 248,
+      "SX": 252
+    },
+    "matched_correct_by_category": {
+      "live_irrelevance": {
+        "matched": 64,
+        "U": 54,
+        "S": 54,
+        "X": 50,
+        "SX": 53
+      },
+      "live_multiple": {
+        "matched": 64,
+        "U": 52,
+        "S": 51,
+        "X": 52,
+        "SX": 50
+      },
+      "live_parallel_multiple": {
+        "matched": 21,
+        "U": 15,
+        "S": 15,
+        "X": 16,
+        "SX": 15
+      },
+      "live_relevance": {
+        "matched": 8,
+        "U": 6,
+        "S": 6,
+        "X": 7,
+        "SX": 7
+      },
+      "memory_kv": {
+        "matched": 2,
+        "U": 0,
+        "S": 1,
+        "X": 0,
+        "SX": 1
+      },
+      "multi_turn_base": {
+        "matched": 4,
+        "U": 3,
+        "S": 3,
+        "X": 3,
+        "SX": 3
+      },
+      "multi_turn_long_context": {
+        "matched": 4,
+        "U": 2,
+        "S": 3,
+        "X": 3,
+        "SX": 3
+      },
+      "multi_turn_miss_func": {
+        "matched": 4,
+        "U": 0,
+        "S": 0,
+        "X": 0,
+        "SX": 2
+      },
+      "multi_turn_miss_param": {
+        "matched": 4,
+        "U": 1,
+        "S": 2,
+        "X": 1,
+        "SX": 2
+      },
+      "multiple": {
+        "matched": 64,
+        "U": 59,
+        "S": 59,
+        "X": 59,
+        "SX": 60
+      },
+      "parallel_multiple": {
+        "matched": 64,
+        "U": 58,
+        "S": 56,
+        "X": 57,
+        "SX": 56
+      }
+    },
+    "paired_outcomes_by_sent_tools": {
+      "S-U": {
+        "different_tools:both_correct": 101,
+        "different_tools:both_wrong": 25,
+        "different_tools:left_only": 3,
+        "different_tools:right_only": 2,
+        "identical_tools:both_correct": 145,
+        "identical_tools:both_wrong": 24,
+        "identical_tools:left_only": 1,
+        "identical_tools:right_only": 2
+      },
+      "X-U": {
+        "different_tools:both_correct": 19,
+        "different_tools:both_wrong": 11,
+        "different_tools:left_only": 1,
+        "identical_tools:both_correct": 225,
+        "identical_tools:both_wrong": 38,
+        "identical_tools:left_only": 3,
+        "identical_tools:right_only": 6
+      },
+      "SX-S": {
+        "different_tools:both_correct": 22,
+        "different_tools:both_wrong": 7,
+        "different_tools:left_only": 2,
+        "identical_tools:both_correct": 225,
+        "identical_tools:both_wrong": 41,
+        "identical_tools:left_only": 3,
+        "identical_tools:right_only": 3
+      },
+      "SX-X": {
+        "different_tools:both_correct": 98,
+        "different_tools:both_wrong": 23,
+        "different_tools:left_only": 6,
+        "different_tools:right_only": 4,
+        "identical_tools:both_correct": 145,
+        "identical_tools:both_wrong": 23,
+        "identical_tools:left_only": 3,
+        "identical_tools:right_only": 1
+      },
+      "SX-U": {
+        "different_tools:both_correct": 109,
+        "different_tools:both_wrong": 23,
+        "different_tools:left_only": 6,
+        "different_tools:right_only": 5,
+        "identical_tools:both_correct": 136,
+        "identical_tools:both_wrong": 23,
+        "identical_tools:left_only": 1
+      }
+    },
+    "discordant_cases": [
+      {
+        "case_id": "live_irrelevance_243-46-0",
+        "category": "live_irrelevance",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "live_irrelevance_253-53-1",
+        "category": "live_irrelevance",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "live_irrelevance_653-206-2",
+        "category": "live_irrelevance",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "live_irrelevance_694-225-4",
+        "category": "live_irrelevance",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "live_irrelevance_746-257-0",
+        "category": "live_irrelevance",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "live_multiple_105-43-3",
+        "category": "live_multiple",
+        "passed": {
+          "U": true,
+          "S": false,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "live_multiple_965-207-1",
+        "category": "live_multiple",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "live_parallel_multiple_2-2-0",
+        "category": "live_parallel_multiple",
+        "passed": {
+          "U": false,
+          "S": false,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "live_relevance_13-13-0",
+        "category": "live_relevance",
+        "passed": {
+          "U": false,
+          "S": false,
+          "X": true,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "memory_kv_148-notetaker-18",
+        "category": "memory_kv",
+        "passed": {
+          "U": false,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_long_context_2",
+        "category": "multi_turn_long_context",
+        "passed": {
+          "U": false,
+          "S": true,
+          "X": true,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_miss_func_61",
+        "category": "multi_turn_miss_func",
+        "passed": {
+          "U": false,
+          "S": false,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_miss_func_9",
+        "category": "multi_turn_miss_func",
+        "passed": {
+          "U": false,
+          "S": false,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_miss_param_51",
+        "category": "multi_turn_miss_param",
+        "passed": {
+          "U": false,
+          "S": true,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multiple_25",
+        "category": "multiple",
+        "passed": {
+          "U": false,
+          "S": true,
+          "X": true,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "multiple_91",
+        "category": "multiple",
+        "passed": {
+          "U": true,
+          "S": false,
+          "X": false,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "parallel_multiple_129",
+        "category": "parallel_multiple",
+        "passed": {
+          "U": true,
+          "S": false,
+          "X": true,
+          "SX": true
+        },
+        "identical_sent_tools": {
+          "S=U": true,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": true,
+          "SX=U": true
+        }
+      },
+      {
+        "case_id": "parallel_multiple_166",
+        "category": "parallel_multiple",
+        "passed": {
+          "U": true,
+          "S": false,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "parallel_multiple_75",
+        "category": "parallel_multiple",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": false,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      }
+    ]
+  },
+  "identical_tools_noise": {
+    "trajectory": {
+      "identical_model_behaviour": 6,
+      "outcome_differs": 0,
+      "pairs_with_identical_sent_tools": 8
+    },
+    "single_turn": {
+      "identical_model_behaviour": 685,
+      "outcome_differs": 22,
+      "pairs_with_identical_sent_tools": 880
+    }
+  },
+  "different_tools_discordance": [
+    {
+      "case_id": "live_irrelevance_253-53-1",
+      "category": "live_irrelevance",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 2,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "live_irrelevance_694-225-4",
+      "category": "live_irrelevance",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "live_irrelevance_746-257-0",
+      "category": "live_irrelevance",
+      "pair": "SX-X",
+      "passed": "X",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "get_service_providers"
+      ]
+    },
+    {
+      "case_id": "live_irrelevance_746-257-0",
+      "category": "live_irrelevance",
+      "pair": "SX-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "get_service_providers"
+      ]
+    },
+    {
+      "case_id": "live_multiple_105-43-3",
+      "category": "live_multiple",
+      "pair": "S-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 2,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "live_multiple_105-43-3",
+      "category": "live_multiple",
+      "pair": "SX-X",
+      "passed": "X",
+      "tools_differing_on_initial_catalogue": 2,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "live_multiple_105-43-3",
+      "category": "live_multiple",
+      "pair": "SX-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 2,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "live_multiple_965-207-1",
+      "category": "live_multiple",
+      "pair": "SX-X",
+      "passed": "X",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "transfer_to_human_agent"
+      ]
+    },
+    {
+      "case_id": "live_multiple_965-207-1",
+      "category": "live_multiple",
+      "pair": "SX-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "transfer_to_human_agent"
+      ]
+    },
+    {
+      "case_id": "live_relevance_13-13-0",
+      "category": "live_relevance",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "memory_kv_148-notetaker-18",
+      "category": "memory_kv",
+      "pair": "S-U",
+      "passed": "S",
+      "tools_differing_on_initial_catalogue": 14,
+      "differing_tools_called_by_either_arm": [
+        "archival_memory_key_search",
+        "archival_memory_retrieve",
+        "core_memory_key_search"
+      ]
+    },
+    {
+      "case_id": "memory_kv_148-notetaker-18",
+      "category": "memory_kv",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 14,
+      "differing_tools_called_by_either_arm": [
+        "archival_memory_key_search",
+        "archival_memory_retrieve",
+        "core_memory_key_search"
+      ]
+    },
+    {
+      "case_id": "memory_kv_148-notetaker-18",
+      "category": "memory_kv",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 15,
+      "differing_tools_called_by_either_arm": [
+        "archival_memory_key_search",
+        "archival_memory_retrieve",
+        "core_memory_key_search"
+      ]
+    },
+    {
+      "case_id": "multi_turn_long_context_2",
+      "category": "multi_turn_long_context",
+      "pair": "S-U",
+      "passed": "S",
+      "tools_differing_on_initial_catalogue": 25,
+      "differing_tools_called_by_either_arm": [
+        "cd",
+        "cp",
+        "diff",
+        "echo",
+        "ls",
+        "mv",
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_long_context_2",
+      "category": "multi_turn_long_context",
+      "pair": "X-U",
+      "passed": "X",
+      "tools_differing_on_initial_catalogue": 3,
+      "differing_tools_called_by_either_arm": [
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_long_context_2",
+      "category": "multi_turn_long_context",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 25,
+      "differing_tools_called_by_either_arm": [
+        "cd",
+        "cp",
+        "diff",
+        "echo",
+        "ls",
+        "mv",
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_func_61",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-S",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": []
+    },
+    {
+      "case_id": "multi_turn_miss_func_61",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 29,
+      "differing_tools_called_by_either_arm": [
+        "check_tire_pressure",
+        "displayCarStatus",
+        "estimate_distance",
+        "estimate_drive_feasibility_by_mileage",
+        "fillFuelTank",
+        "get_zipcode_based_on_city",
+        "lockDoors",
+        "releaseBrakePedal",
+        "startEngine"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_func_61",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 29,
+      "differing_tools_called_by_either_arm": [
+        "check_tire_pressure",
+        "displayCarStatus",
+        "estimate_distance",
+        "estimate_drive_feasibility_by_mileage",
+        "fillFuelTank",
+        "get_zipcode_based_on_city",
+        "lockDoors",
+        "releaseBrakePedal",
+        "startEngine"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_func_9",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-S",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 3,
+      "differing_tools_called_by_either_arm": [
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_func_9",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 15,
+      "differing_tools_called_by_either_arm": [
+        "cd",
+        "ls",
+        "mv",
+        "pwd",
+        "rm",
+        "sort",
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_func_9",
+      "category": "multi_turn_miss_func",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 15,
+      "differing_tools_called_by_either_arm": [
+        "cd",
+        "diff",
+        "ls",
+        "mv",
+        "pwd",
+        "rm",
+        "sort",
+        "touch"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_param_51",
+      "category": "multi_turn_miss_param",
+      "pair": "S-U",
+      "passed": "S",
+      "tools_differing_on_initial_catalogue": 30,
+      "differing_tools_called_by_either_arm": [
+        "check_tire_pressure",
+        "displayCarStatus",
+        "find_nearest_tire_shop",
+        "list_users",
+        "lockDoors",
+        "message_login",
+        "pressBrakePedal",
+        "send_message",
+        "startEngine"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_param_51",
+      "category": "multi_turn_miss_param",
+      "pair": "SX-X",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 30,
+      "differing_tools_called_by_either_arm": [
+        "check_tire_pressure",
+        "displayCarStatus",
+        "find_nearest_tire_shop",
+        "list_users",
+        "lockDoors",
+        "message_login",
+        "pressBrakePedal",
+        "send_message",
+        "startEngine"
+      ]
+    },
+    {
+      "case_id": "multi_turn_miss_param_51",
+      "category": "multi_turn_miss_param",
+      "pair": "SX-U",
+      "passed": "SX",
+      "tools_differing_on_initial_catalogue": 30,
+      "differing_tools_called_by_either_arm": [
+        "check_tire_pressure",
+        "displayCarStatus",
+        "find_nearest_tire_shop",
+        "list_users",
+        "lockDoors",
+        "message_login",
+        "pressBrakePedal",
+        "send_message",
+        "startEngine"
+      ]
+    },
+    {
+      "case_id": "parallel_multiple_166",
+      "category": "parallel_multiple",
+      "pair": "S-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "calculate_stock_return"
+      ]
+    },
+    {
+      "case_id": "parallel_multiple_166",
+      "category": "parallel_multiple",
+      "pair": "SX-X",
+      "passed": "X",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "calculate_stock_return"
+      ]
+    },
+    {
+      "case_id": "parallel_multiple_166",
+      "category": "parallel_multiple",
+      "pair": "SX-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "calculate_stock_return"
+      ]
+    },
+    {
+      "case_id": "parallel_multiple_75",
+      "category": "parallel_multiple",
+      "pair": "SX-U",
+      "passed": "U",
+      "tools_differing_on_initial_catalogue": 1,
+      "differing_tools_called_by_either_arm": [
+        "route_planner_calculate_route"
+      ]
+    }
+  ],
+  "s_edited_parameter_values": {
+    "edited_parameters_filled_by_u_and_s": 70,
+    "U-S": 1,
+    "X-SX": 1,
+    "U-X": 1,
+    "S-SX": 1,
+    "differing": [
+      {
+        "case_id": "parallel_multiple_166",
+        "function": "calculate_stock_return",
+        "parameter": "annual_growth_rate",
+        "values": {
+          "U": [
+            0.07
+          ],
+          "S": [
+            7
+          ],
+          "X": [
+            0.07
+          ],
+          "SX": [
+            7
+          ]
+        }
+      },
+      {
+        "case_id": "parallel_multiple_75",
+        "function": "route_planner_calculate_route",
+        "parameter": "method",
+        "values": {
+          "U": [
+            "fastest",
+            "fastest",
+            "shortest"
+          ],
+          "S": [
+            "fastest",
+            "fastest",
+            "shortest"
+          ],
+          "X": [
+            "fastest"
+          ],
+          "SX": [
+            "fastest"
+          ]
+        }
+      }
+    ]
+  },
+  "memory_coverage": {
+    "memory_kv": {
+      "U": 3,
+      "S": 3,
+      "X": 2,
+      "SX": 2,
+      "matched_all_arms": 2
+    },
+    "memory_kv_prereq": {
+      "U": 5,
+      "S": 5,
+      "X": 5,
+      "SX": 5
+    }
+  },
+  "tokens": {
+    "matched_billed_by_arm": {
+      "U": {
+        "requests": 512,
+        "prompt": 1366477,
+        "cache_hit": 1130079,
+        "cache_miss": 236398,
+        "output": 55620,
+        "usd": "0.072221937000",
+        "usd_parts": {
+          "cache_hit": "0.003390237000",
+          "cache_miss": "0.035459700000",
+          "output": "0.033372000000"
+        }
+      },
+      "S": {
+        "requests": 519,
+        "prompt": 1231773,
+        "cache_hit": 1001706,
+        "cache_miss": 230067,
+        "output": 55458,
+        "usd": "0.070789968000",
+        "usd_parts": {
+          "cache_hit": "0.003005118000",
+          "cache_miss": "0.034510050000",
+          "output": "0.033274800000"
+        }
+      },
+      "X": {
+        "requests": 532,
+        "prompt": 1489952,
+        "cache_hit": 1255020,
+        "cache_miss": 234932,
+        "output": 57718,
+        "usd": "0.073635660000",
+        "usd_parts": {
+          "cache_hit": "0.003765060000",
+          "cache_miss": "0.035239800000",
+          "output": "0.034630800000"
+        }
+      },
+      "SX": {
+        "requests": 509,
+        "prompt": 1198551,
+        "cache_hit": 973928,
+        "cache_miss": 224623,
+        "output": 54842,
+        "usd": "0.069520434000",
+        "usd_parts": {
+          "cache_hit": "0.002921784000",
+          "cache_miss": "0.033693450000",
+          "output": "0.032905200000"
+        }
+      }
+    },
+    "first_request": {
+      "cases": 303,
+      "prompt_tokens": {
+        "U": 332874,
+        "S": 320284,
+        "X": 334037,
+        "SX": 321253
+      },
+      "delta_vs_U": {
+        "S": {
+          "tokens": -12590,
+          "percent": -3.782
+        },
+        "X": {
+          "tokens": 1163,
+          "percent": 0.349
+        },
+        "SX": {
+          "tokens": -11621,
+          "percent": -3.491
+        }
+      }
+    },
+    "local_tools_tokens_initial_catalogue": {
+      "flown_editors": {
+        "scoring": {
+          "U": 254243,
+          "S": 240361,
+          "X": 255668,
+          "SX": 241786
+        },
+        "prereq": {
+          "U": 21760,
+          "S": 19460,
+          "X": 22680,
+          "SX": 20380
+        }
+      },
+      "current_editors": {
+        "scoring": {
+          "U": 254243,
+          "S": 240361,
+          "X": 255668,
+          "SX": 241786
+        },
+        "prereq": {
+          "U": 21760,
+          "S": 19460,
+          "X": 22680,
+          "SX": 20380
+        }
+      }
+    }
+  },
+  "runner": {
+    "forced_quit_slots": [
+      {
+        "case_id": "multi_turn_miss_func_9",
+        "arm": "S",
+        "steps": 26
+      }
+    ]
+  }
+}

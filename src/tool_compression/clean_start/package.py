@@ -51,6 +51,61 @@ def _pilot_ids() -> set[str]:
     return {row["case_id"] for row in draw["rows"]}
 
 
+def _validation_ids() -> set[str]:
+    draw = json.loads((study_dir() / "validation" / "draw.json").read_text(encoding="utf-8"))
+    return {row["case_id"] for row in draw["order"] if not row["prereq"]}
+
+
+_X_REASONS = (
+    ("Single-tool control", "single_tool_control"),
+    ("No other tool", "no_other_tool"),
+    ("Different actions", "different_actions"),
+    ("One action text does not open with a verb", "no_leading_verb"),
+    ("One side has no action text", "no_action_text"),
+    ("The action texts are identical", "identical_action_text"),
+    ("The differing wording is not one window", "window_too_long"),
+    ("The differing window has no content word", "window_without_content"),
+    ("The differing window carries a negation", "window_negation"),
+    ("The shared wording is shorter", "shared_wording_too_short"),
+    ("The shared wording has no content word", "shared_wording_without_content"),
+    ("The target's differing words end in a coordinator", "target_claims_rival_object"),
+    ("The two action texts act on different objects", "different_objects"),
+    ("The rival's differing phrase", "phrase_not_a_noun_phrase"),
+    ("The rival's name already spells", "rival_name_spells_difference"),
+    ("The cue", "cue_form"),
+)
+
+
+def _x_reason(text: str) -> str:
+    closest = text.removeprefix("No rival qualifies. Closest refusal: ")
+    for prefix, key in _X_REASONS:
+        if closest.startswith(prefix):
+            return key
+    return "other"
+
+
+def _coverage(tools: list[dict], rendered: dict) -> dict:
+    """What each editor did with every field and tool of one catalogue: edits, abstentions, cues."""
+    _edited, rows = edit_catalogue(json.loads(json.dumps(tools)))
+    s_fields = Counter()
+    for row in (row for tool_rows in rows for row in tool_rows):
+        s_fields["fields"] += 1
+        if row["adopted"]:
+            s_fields["edited"] += 1
+            s_fields[f"edited:{row['change_class']}"] += 1
+        else:
+            s_fields[f"kept:{row['keep_reason']}"] += 1
+    x_tools = Counter()
+    for row in rendered["x_decisions"]:
+        x_tools["tools"] += 1
+        if row["cue"]:
+            x_tools["cued"] += 1
+            x_tools[f"cued:{(row['axis'] or '').split(':')[0]}"] += 1
+        else:
+            x_tools[f"uncued:{_x_reason(row['no_cue_reason'] or '')}"] += 1
+    return {"s_fields": s_fields, "x_tools": x_tools}
+
+
 def _empty_totals() -> dict:
     return {
         "questions": 0,
@@ -59,6 +114,7 @@ def _empty_totals() -> dict:
         "changed_questions": {arm: 0 for arm in ARMS if arm != "U"},
         "cued_tools": 0,
         "cue_tokens": 0,
+        "coverage": {"s_fields": Counter(), "x_tools": Counter()},
     }
 
 
@@ -71,6 +127,8 @@ def _add(totals: dict, record: dict) -> None:
         totals["changed_questions"][arm] += int(record["changed"][arm])
     totals["cued_tools"] += record["cued_tools"]
     totals["cue_tokens"] += record["cue_tokens"]
+    for editor, counts in record["coverage"].items():
+        totals["coverage"][editor].update(counts)
 
 
 def _with_deltas(totals: dict) -> dict:
@@ -86,7 +144,11 @@ def _with_deltas(totals: dict) -> dict:
             "tools_tokens": tools,
             "tools_percent": round(100 * tools / base_tools, 3) if base_tools else None,
         }
-    return {**totals, "deltas": deltas}
+    coverage = {editor: dict(sorted(counts.items())) for editor, counts in totals["coverage"].items()}
+    coverage["questions_without_s_edit"] = totals["questions"] - totals["changed_questions"]["S"]
+    coverage["questions_without_x_cue"] = totals["questions"] - totals["changed_questions"]["X"]
+    coverage["questions_unchanged_in_sx"] = totals["questions"] - totals["changed_questions"]["SX"]
+    return {**totals, "coverage": coverage, "deltas": deltas}
 
 
 def _catalogue_record(tools: list[dict], counter, cache: dict) -> dict:
@@ -112,6 +174,7 @@ def _catalogue_record(tools: list[dict], counter, cache: dict) -> dict:
         "arm_sha256": {arm: _hash(arms[arm]) for arm in ARMS},
         "rendered": rendered,
         "integrity": _integrity(arms, rendered["x_decisions"]),
+        "coverage": _coverage(tools, rendered),
     }
     cache[key] = record
     return record
@@ -192,10 +255,12 @@ def build_package(out_dir: Path) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     counter = TiktokenCounter(LOCAL_TOKENIZER)
     pilot = _pilot_ids()
+    validation = _validation_ids()
     cache: dict[str, dict] = {}
     by_category: dict[str, dict] = {}
     overall = _empty_totals()
     outside_pilot = _empty_totals()
+    draws = {"pilot_draw": _empty_totals(), "validation_draw": _empty_totals(), "outside_both_draws": _empty_totals()}
     integrity = Counter()
     integrity_failures = []
     s_ledger: dict[str, dict] = {}
@@ -213,6 +278,12 @@ def build_package(out_dir: Path) -> dict:
             _add(overall, record)
             if case["id"] not in pilot:
                 _add(outside_pilot, record)
+            if case["id"] in pilot:
+                _add(draws["pilot_draw"], record)
+            if case["id"] in validation:
+                _add(draws["validation_draw"], record)
+            if case["id"] not in pilot | validation:
+                _add(draws["outside_both_draws"], record)
             checks = {**record["integrity"], "held_out_tools_keep_sent_bytes": _held_out_keeps_sent_bytes(case)}
             for name, ok in checks.items():
                 integrity[name] += int(ok)
@@ -239,11 +310,18 @@ def build_package(out_dir: Path) -> dict:
             "editable and not counted). tools_tokens counts the compact JSON of the whole tools "
             "array, the part of a request the arms change. Neither is provider-billed usage; the "
             "provider tokenizer and chat template differ. The initial catalogue of each in-scope "
-            "question is counted once per question; held-out miss_func turns are not included."
+            "question is counted once per question; held-out miss_func turns are not included. "
+            "coverage counts, per question, every editable field S saw (edited by class, or kept by "
+            "reason) and every tool X saw (cued by axis, or uncued by the closest refusal)."
+        ),
+        "exposure": (
+            "pilot_draw (41 cases) and validation_draw (313 cases) have both been flown and diagnosed; "
+            "they are exposed regression data, not unseen validation."
         ),
         "rules": {"S": S_RULES_VERSION, "X": X_RULES_VERSION},
         "all_in_scope": _with_deltas(overall),
         "excluding_pilot_draw": _with_deltas(outside_pilot),
+        "draws": {name: _with_deltas(totals) for name, totals in draws.items()},
         "by_category": by_category,
     }
     _write(out_dir / "token_tables.json", tables)
@@ -257,13 +335,19 @@ def build_package(out_dir: Path) -> dict:
     from tool_compression.clean_start.report import (
         PILOT_EVIDENCE,
         REVISED_EVIDENCE,
+        VALIDATION_EVIDENCE,
+        VALIDATION_POPULATION,
         write_pilot_report,
         write_revised_pilot_report,
+        write_validation_flight_report,
     )
 
     write_pilot_report(study_dir() / PILOT_EVIDENCE, out_dir / "pilot_2026_11_25_analysis.json")
     write_revised_pilot_report(study_dir() / REVISED_EVIDENCE, out_dir / "pilot_2026_11_25_revised_analysis.json")
+    write_validation_flight_report(study_dir() / VALIDATION_EVIDENCE, out_dir / "validation_2026_11_25_analysis.json")
+    measurement = "Local o200k_base counts of the whole tools array of each in-scope question's initial catalogue."
     before = json.loads((study_dir() / REVISED_EVIDENCE / BEFORE_SUMMARY).read_text(encoding="utf-8"))
+    flown = json.loads((study_dir() / VALIDATION_EVIDENCE / VALIDATION_POPULATION).read_text(encoding="utf-8"))
     after = population_summary(
         study_categories(), in_scope_questions, model_facing_tools, render_tools, counter, dump_request
     )
@@ -271,12 +355,27 @@ def build_package(out_dir: Path) -> dict:
         "study": STUDY_ID,
         "official_settlement": OFFICIAL_SETTLEMENT,
         "before_source": f"{REVISED_EVIDENCE}/{BEFORE_SUMMARY} (editors at {before['source_commit']})",
-        "measurement": "Local o200k_base counts of the whole tools array of each in-scope question's initial catalogue.",
-        **revision_diff(before, after),
+        "measurement": measurement,
+        **revision_diff(before, flown),
+    })
+    _write(out_dir / "revision_vs_0bf829c6.json", {
+        "study": STUDY_ID,
+        "official_settlement": OFFICIAL_SETTLEMENT,
+        "before_source": f"{VALIDATION_EVIDENCE}/{VALIDATION_POPULATION} (editors at {flown['source_commit']})",
+        "after_source": "current editors",
+        "measurement": measurement,
+        **revision_diff(flown, after),
     })
     from tool_compression.clean_start.validation import validation_report
 
-    _write(out_dir / "validation_20261126.json", validation_report(counter))
+    _write(out_dir / "validation_20261126.json", {
+        **validation_report(counter),
+        "editors": {"S": S_RULES_VERSION, "X": X_RULES_VERSION},
+        "frozen_plan": (
+            "validation/cost.json is the plan the 0bf829c6 flight was sized and checked against, with the "
+            "editors of that commit. This file is the same report recomputed with the editors above."
+        ),
+    })
     vendored = prompt_manifest()
     manifest = {
         "study": STUDY_ID,
@@ -294,11 +393,18 @@ def build_package(out_dir: Path) -> dict:
             "package": "python -m tool_compression.clean_start package",
             "pilot_report": "python -m tool_compression.clean_start report-pilot",
             "revised_pilot_report": "python -m tool_compression.clean_start report-pilot --revised",
+            "validation_flight_report": "python -m tool_compression.clean_start report-validation",
             "before_summary": (
                 "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py population"
             ),
             "flown_sent_digest": (
                 "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py conversations"
+            ),
+            "validation_flown_summary": (
+                "PYTHONPATH=<worktree of 0bf829c6>/src python scripts/clean_start_sent_digest.py population"
+            ),
+            "validation_flown_sent_digest": (
+                "PYTHONPATH=<worktree of 0bf829c6>/src python scripts/clean_start_sent_digest.py validation"
             ),
             "score_existing_results": (
                 "python -m tool_compression.clean_start evaluate --out <run dir> "

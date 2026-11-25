@@ -59,9 +59,9 @@ def test_package_regenerates_byte_identical(tmp_path):
     assert summary["integrity_failures"] == 0
     for name in (
         "token_tables.json", "integrity.json", "s_ledger.jsonl", "x_ledger.jsonl",
-        "s_keep_reasons.json", "examples.json", "EXAMPLES.md",         "pilot_2026_11_25_analysis.json",
+        "s_keep_reasons.json", "examples.json", "EXAMPLES.md", "pilot_2026_11_25_analysis.json",
         "pilot_2026_11_25_revised_analysis.json", "revision_vs_c47b186c.json",
-        "validation_20261126.json",
+        "validation_20261126.json", "validation_2026_11_25_analysis.json", "revision_vs_0bf829c6.json",
     ):
         assert (tmp_path / name).read_bytes() == (PACKAGE / name).read_bytes(), name
     committed = json.loads((PACKAGE / "manifest.json").read_text(encoding="utf-8"))
