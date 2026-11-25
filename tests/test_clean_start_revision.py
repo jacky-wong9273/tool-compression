@@ -1,0 +1,240 @@
+"""Editor revision after the c47b186c flight: evidence, report, and general editor rules."""
+
+from __future__ import annotations
+
+from copy import deepcopy
+from hashlib import sha256
+from pathlib import Path
+import io
+import json
+import os
+import subprocess
+import sys
+import tarfile
+
+import pytest
+
+from tool_compression.clean_start.editor_s import edit_catalogue
+from tool_compression.clean_start.editor_x import qualify_catalogue, qualify_presented
+from tool_compression.clean_start.pilot import study_dir
+from tool_compression.clean_start.render import render_tools, verify_cue_phrases
+from tool_compression.clean_start.report import (
+    REVISED_DIGEST,
+    REVISED_EVIDENCE,
+    REVISED_POPULATION,
+    REVISED_TIP,
+    write_revised_pilot_report,
+)
+from tool_compression.clean_start.runner import arm_tools
+
+REPO = Path(__file__).resolve().parents[1]
+PACKAGE = study_dir() / "package"
+EVIDENCE = study_dir() / REVISED_EVIDENCE
+HINT = " Note that the provided function is in Python 3 syntax."
+
+
+def _tool(name: str, description: str, properties=None, required=None) -> dict:
+    return {
+        "type": "function",
+        "function": {
+            "name": name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": properties or {"value": {"type": "string", "description": "A value."}},
+                "required": required if required is not None else ["value"],
+            },
+        },
+    }
+
+
+def _suite(name: str, action: str, elaboration: str = ", which provides tools to water and prune plants") -> dict:
+    return _tool(name, f"This tool belongs to the Garden API{elaboration}. Tool description: {action}{HINT}")
+
+
+def test_revised_pilot_evidence_is_byte_identical_to_its_checksums():
+    lines = (EVIDENCE / "SHA256SUMS").read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 397
+    for line in lines:
+        digest, relative = line.split("  ", 1)
+        assert sha256((EVIDENCE / "original" / relative).read_bytes()).hexdigest() == digest, relative
+    listed = {line.split("  ", 1)[1].removeprefix("./") for line in lines}
+    present = {str(path.relative_to(EVIDENCE / "original")) for path in (EVIDENCE / "original").rglob("*") if path.is_file()}
+    assert present == listed
+    run = json.loads((EVIDENCE / "original/live-c47b186c/run.json").read_text(encoding="utf-8"))
+    assert run["status"] == "incomplete" and run["reason"] == "provider_error:IncompleteRead"
+
+
+def test_revised_pilot_report_regenerates_from_the_archived_evidence(tmp_path):
+    out = tmp_path / "revised.json"
+    summary = write_revised_pilot_report(EVIDENCE, out)
+    assert out.read_bytes() == (PACKAGE / "pilot_2026_11_25_revised_analysis.json").read_bytes()
+    assert summary == {
+        "sent": 900,
+        "sent_matching_flown_digest": 900,
+        "matched_cases": 32,
+        "matched_correct": {"U": 27, "S": 26, "X": 28, "SX": 25},
+        "discordant_cases": 3,
+    }
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert report["official_settlement"] is False
+    assert report["source"]["flown_tip"] == REVISED_TIP
+    assert report["source"]["uncertain_attempts"] == [900]
+    runner = report["runner"]
+    assert [(row["case_id"], row["arm"]) for row in runner["forced_quit_slots"]] == [("memory_kv_prereq_2-customer-2", "U")]
+    assert runner["partial_slots"][0]["result_row_written"] is False
+    assert all(row["final_equals_last_checkpoint"] for row in runner["memory_snapshots"].values())
+    first = report["tokens"]["first_request"]["delta_vs_U"]
+    assert first["S"]["tokens"] < 0 < first["X"]["tokens"]
+
+
+def test_s_keeps_a_suite_elaboration_on_its_first_carrier_in_the_request():
+    tools = [
+        _suite("water", "Water one plant."),
+        _suite("prune", "Prune one plant."),
+        _tool("other", "This tool belongs to the Kitchen API, which provides tools for recipes. Tool description: Bake a cake." + HINT),
+        _suite("feed", "Feed one plant."),
+    ]
+    edited, rows = edit_catalogue(deepcopy(tools))
+    texts = [tool["function"]["description"] for tool in edited]
+    assert texts[0] == tools[0]["function"]["description"]
+    assert texts[2] == tools[2]["function"]["description"]
+    assert texts[1] == "This tool belongs to the Garden API. Prune one plant." + HINT
+    assert texts[3] == "This tool belongs to the Garden API. Feed one plant." + HINT
+    states = [{row["suite_context_state"] for row in tool_rows} for tool_rows in rows]
+    assert states == [{"first_in_request"}, {"carried_earlier"}, {"first_in_request"}, {"carried_earlier"}]
+    carriers = [
+        fact["carried_by_tool_index"]
+        for tool_rows in rows for row in tool_rows for fact in row["facts"] if "carried_by_tool_index" in fact
+    ]
+    assert carriers == [0, 0]
+    alone, _rows = edit_catalogue(deepcopy(tools[1:2]))
+    assert alone[0] == tools[1]
+
+
+def test_s_suite_rule_is_append_only_and_ignores_different_elaborations():
+    tools = [_suite("water", "Water one plant."), _suite("prune", "Prune one plant.", ", which provides pruning only")]
+    edited, _rows = edit_catalogue(deepcopy(tools))
+    assert edited == tools
+    grown, _rows = edit_catalogue(deepcopy(tools + [_suite("feed", "Feed one plant.")]))
+    assert grown[:2] == edited
+    assert grown[2]["function"]["description"] == "This tool belongs to the Garden API. Feed one plant." + HINT
+
+
+def test_s_keeps_enum_sentences_that_gloss_values():
+    glossed = {
+        "type": "string",
+        "description": "The sort order. Possible values are 'asc' for ascending and 'desc' for descending.",
+        "enum": ["asc", "desc"],
+    }
+    bare = {"type": "string", "description": "The unit. Supported values: 'm' or 'cm'.", "enum": ["m", "cm"]}
+    tool = _tool("sorter", "Sort the rows.", {"order": glossed, "unit": bare}, ["order", "unit"])
+    edited, _rows = edit_catalogue([deepcopy(tool)])
+    properties = edited[0]["function"]["parameters"]["properties"]
+    assert properties["order"] == glossed
+    assert properties["unit"]["description"] == "The unit."
+
+
+def test_x_refuses_a_cue_whose_target_already_claims_the_rival_object():
+    rival = _tool("tool_b", "Delete a folder in current folder.")
+    for joined in ("Delete a file or folder.", "Delete a file and folder."):
+        rows = qualify_catalogue([_tool("tool_a", joined), rival])
+        assert rows[0]["cue"] == ""
+        assert "coordinator" in rows[0]["rejected_rivals"][0]["reason"]
+        assert rows[1]["cue"] == "For a file, use tool_a."
+    rows = qualify_catalogue([_tool("tool_a", "Delete a file from folder."), rival])
+    assert rows[0]["cue"] == "For a folder in current folder, use tool_b."
+
+
+def test_x_cue_phrase_keeps_the_head_noun_before_of_or_on():
+    tools = [
+        _tool("tool_a", "Calculates the return on assets (ROA) for a firm."),
+        _tool("tool_b", "Calculates the return on equity (ROE) for a firm."),
+    ]
+    cues = [row["cue"] for row in qualify_catalogue(tools)]
+    assert cues == [
+        "For the return on equity (ROE), use tool_b.",
+        "For the return on assets (ROA), use tool_a.",
+    ]
+
+
+def test_cue_phrase_must_survive_in_the_rival_s_text():
+    tools = [_tool("tool_a", "Sets the headlights of the vehicle."), _tool("tool_b", "Sets the cruise control of the vehicle.")]
+    rendered = render_tools(tools)
+    decisions = qualify_catalogue(tools)
+    verify_cue_phrases(rendered["arms"], decisions)
+    broken = deepcopy(rendered["arms"])
+    broken["S"][1]["function"]["description"] = "Sets the vehicle."
+    with pytest.raises(RuntimeError, match="not in the S text"):
+        verify_cue_phrases(broken, decisions)
+
+
+def test_held_out_tools_never_change_tools_already_sent():
+    initial = [_tool("tool_a", "Sets the headlights of the vehicle."), _tool("tool_b", "Computes the sum of two numbers.")]
+    late = [_tool("tool_c", "Sets the cruise control of the vehicle.")]
+    flat = qualify_catalogue(initial + late)
+    assert flat[0]["cue"] == "For the cruise control, use tool_c."
+    staged = qualify_presented(initial + late, (2,))
+    assert staged[0]["cue"] == "" and staged[2]["cue"] == "For the headlights, use tool_a."
+    before = render_tools(deepcopy(initial))["arms"]
+    after = render_tools(deepcopy(initial + late), (2,))["arms"]
+    for arm in before:
+        assert after[arm][:2] == before[arm]
+
+
+def test_runner_sends_held_out_batches_as_appends(monkeypatch):
+    functions = [
+        {"name": "tool_a", "description": "Sets the headlights of the vehicle.",
+         "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}},
+        {"name": "tool_b", "description": "Computes the sum of two numbers.",
+         "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}},
+    ]
+    held = [[{"name": "tool_c", "description": "Sets the cruise control of the vehicle.",
+              "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}}]]
+    for arm in ("U", "S", "X", "SX"):
+        first = arm_tools(functions, "multi_turn_miss_func", arm)
+        later = arm_tools(functions, "multi_turn_miss_func", arm, held)
+        assert later[:2] == first and len(later) == 3
+
+
+def test_editor_modules_read_no_files_and_no_evaluation_artifacts():
+    for name in ("editor_s.py", "editor_x.py", "descriptions.py", "render.py"):
+        text = (REPO / "src/tool_compression/clean_start" / name).read_text(encoding="utf-8")
+        for forbidden in ("open(", "read_text", "read_bytes", "studies", "evidence/", "model_outputs",
+                          "attempts", "case_id", "held_out", "clean_start.report", "clean_start.revision",
+                          "clean_start.package", "clean_start.runner", "clean_start.pilot"):
+            assert forbidden not in text, (name, forbidden)
+
+
+def _commit_available(commit: str) -> bool:
+    try:
+        subprocess.run(["git", "-C", str(REPO), "cat-file", "-e", f"{commit}^{{commit}}"], check=True, capture_output=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+    return True
+
+
+def _extract(commit: str, root: Path) -> None:
+    archive = subprocess.run(
+        ["git", "-C", str(REPO), "archive", "--format=tar", commit, "src",
+         "studies/clean-start-usx/bfcl", "studies/clean-start-usx/scope.json", "studies/clean-start-usx/pilot/draw.json"],
+        check=True, capture_output=True,
+    ).stdout
+    with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
+        tar.extractall(root, filter="data")
+
+
+@pytest.mark.skipif(not _commit_available(REVISED_TIP), reason="flown tip not in local history (shallow checkout)")
+@pytest.mark.parametrize("mode, committed", [("conversations", REVISED_DIGEST), ("population", REVISED_POPULATION)])
+def test_flown_editor_digests_reproduce_from_the_flown_commit(tmp_path, mode, committed):
+    _extract(REVISED_TIP, tmp_path)
+    env = {key: value for key, value in os.environ.items() if not key.endswith("_API_KEY")}
+    env["PYTHONPATH"] = str(tmp_path / "src")
+    out = subprocess.run(
+        [sys.executable, str(REPO / "scripts/clean_start_sent_digest.py"), mode],
+        check=True, capture_output=True, env=env, cwd=tmp_path,
+    ).stdout
+    payload = json.loads(out)
+    payload["source_commit"] = REVISED_TIP
+    expected = json.loads((EVIDENCE / committed).read_text(encoding="utf-8"))
+    assert payload == expected

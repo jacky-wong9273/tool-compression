@@ -1,20 +1,27 @@
-"""Editor S. One tool at a time. No sibling catalogue, no question, no label.
+"""Editor S. One tool at a time, in request order. No sibling meaning, no question, no label.
 
 Visit every function description and parameter description. A shorter candidate
-is kept only when this tool's own schema or wording proves it. The original
-stays otherwise. Nothing here reads a provider, a key, or a gold answer.
+is kept only when this tool's own schema or wording proves it, or when the
+dropped words are already in the same request verbatim. The original stays
+otherwise. Nothing here reads a provider, a key, or a gold answer.
 
 Rules, in ``S_RULES_VERSION``:
 
 - ``schema_guaranteed``: drop a parameter clause the unchanged schema states
-  (pinned float suffix with ``format: float``, an enum list equal to ``enum``,
-  a prose default equal to ``default``).
+  (pinned float suffix with ``format: float``, an enum list equal to ``enum``
+  that glosses none of its values, a prose default equal to ``default``).
 - ``suite_context``: when the tool's own text labels its description with
-  ``Tool description:``, keep the membership sentence ``This tool belongs to
-  <suite>.`` and the description, and drop the suite elaboration and the label.
+  ``Tool description:``, the first tool in the request that carries a given
+  suite elaboration keeps it unchanged. A later tool whose membership sentence
+  and elaboration are byte-identical keeps ``This tool belongs to <suite>.`` and
+  its description, and drops the elaboration and the label. The only thing S
+  learns from the rest of the catalogue is which verbatim elaborations earlier
+  tools already carry (``edit_catalogue``); it never reads their names,
+  descriptions, or schemas.
 - ``direct_action``: drop a leading ``This function ...`` subject frame and
   keep the verb as written.
-- ``within_tool_duplicate`` and ``flag_normalization`` as before.
+- ``within_tool_duplicate`` and ``flag_normalization`` (which keeps the closing
+  period) as before.
 
 The official language hint is never edited. Deletions touch only their seams.
 """
@@ -26,9 +33,9 @@ import json
 import re
 
 from tool_compression.adapter import description_slots
-from tool_compression.clean_start.descriptions import leading_frame, split_protected, suite_preamble
+from tool_compression.clean_start.descriptions import leading_frame, split_protected, suite_context, suite_preamble
 
-S_RULES_VERSION = "s-rules-2026-11-25"
+S_RULES_VERSION = "s-rules-2026-11-25.2"
 FLOAT_SUFFIX = " This is a float type value."
 KEEP_REASONS = ("already_minimal", "ambiguous_source", "no_shorter_faithful_candidate")
 _STOP = {
@@ -67,6 +74,8 @@ _DEFAULT_SENTENCE = re.compile(
 _ENUM_SENTENCE = re.compile(
     r"(?i)^(?:Supported values:|Possible values are|\[Enum\]:)\s+(.+?)\.?$"
 )
+_ENUM_HEAD = re.compile(r"(?i)^(?:Supported values:|Possible values are|\[Enum\]:)")
+_LIST_WORDS = {"and", "or"}
 
 
 def context_id(tool: dict) -> str:
@@ -74,17 +83,56 @@ def context_id(tool: dict) -> str:
     return sha256(raw.encode("utf-8")).hexdigest()
 
 
-def edit_tool(tool: dict) -> tuple[dict, list[dict]]:
+def edit_catalogue(tools: list[dict]) -> tuple[list[dict], list[list[dict]]]:
+    """Edit each tool in request order. Returns the edited tools and each tool's rows.
+
+    Tool ``i`` sees its own definition and the set of suite elaborations that
+    tools ``0..i-1`` still carry in their final S text, so appending tools never
+    changes an earlier tool's bytes.
+    """
+    carried: dict[str, int] = {}
+    edited_tools = []
+    all_rows = []
+    for index, tool in enumerate(tools):
+        context = suite_context(_function_text(tool))
+        state = None if context is None else ("carried_earlier" if context in carried else "first_in_request")
+        edited, rows = edit_tool(json.loads(json.dumps(tool)), frozenset(carried))
+        for row in rows:
+            row["suite_context_state"] = state
+            for fact in row["facts"]:
+                excerpt = fact.get("carried_excerpt")
+                if excerpt is None:
+                    continue
+                if excerpt not in carried:
+                    raise ValueError("editor S dropped a suite elaboration no earlier tool carries")
+                fact["carried_by_tool_index"] = carried[excerpt]
+                carrier = edited_tools[carried[excerpt]]["function"]["description"]
+                if excerpt not in carrier:
+                    raise ValueError("editor S carrier lost the suite elaboration")
+        if context is not None and context not in carried and context in _function_text(edited):
+            carried[context] = index
+        edited_tools.append(edited)
+        all_rows.append(rows)
+    return edited_tools, all_rows
+
+
+def _function_text(tool: dict) -> str:
+    function = tool.get("function") if isinstance(tool.get("function"), dict) else {}
+    text = function.get("description")
+    return text if isinstance(text, str) else ""
+
+
+def edit_tool(tool: dict, carried: frozenset[str] = frozenset()) -> tuple[dict, list[dict]]:
     """Return a copied tool and one ledger row per eligible description.
 
-    ``tool`` is the target's complete original definition. Callers must not
-    pass the rest of the catalogue.
+    ``tool`` is the target's complete original definition. ``carried`` holds
+    verbatim suite elaborations that earlier tools in the same request still
+    carry; nothing else about the catalogue may be passed.
     """
     if not isinstance(tool, dict):
         raise ValueError("editor S expected one tool object")
     original_slots = list(description_slots(tool))
-    function = tool.get("function") if isinstance(tool.get("function"), dict) else {}
-    function_text = function.get("description") if isinstance(function.get("description"), str) else ""
+    function_text = _function_text(tool)
     decisions = []
     for pointer, container, key in original_slots:
         decisions.append(
@@ -94,6 +142,7 @@ def edit_tool(tool: dict) -> tuple[dict, list[dict]]:
                 container[key],
                 container,
                 function_text if pointer != "/function/description" else "",
+                carried,
             )
         )
     # A parameter may drop a clause only when the final function text still carries it.
@@ -140,7 +189,9 @@ def _resolve_slot(tool: dict, pointer: str):
     raise KeyError(pointer)
 
 
-def _decide_field(tool: dict, pointer: str, original: str, schema: dict, function_text: str) -> dict:
+def _decide_field(
+    tool: dict, pointer: str, original: str, schema: dict, function_text: str, carried: frozenset[str] = frozenset()
+) -> dict:
     proposals: list[dict] = []
     conflict = _conflict(original, schema)
     proposals.extend(_schema_candidates(original, schema, pointer))
@@ -150,7 +201,7 @@ def _decide_field(tool: dict, pointer: str, original: str, schema: dict, functio
     if duplicate_candidate is not None:
         proposals.append(duplicate_candidate)
     if pointer == "/function/description":
-        proposals.extend(_function_candidates(original))
+        proposals.extend(_function_candidates(original, carried))
     flagged = _flag_candidate(original, schema, function_text, pointer)
     if flagged is not None:
         proposals.append(flagged)
@@ -243,7 +294,15 @@ def _schema_candidates(original: str, schema: dict, pointer: str) -> list[dict]:
             "note": "The float sentence is the pinned conversion suffix. format float and type number stay on the schema.",
         })
     enum_removal = _enum_removal(original, schema, pointer)
-    if enum_removal is not None:
+    if enum_removal is not None and enum_removal.get("refused"):
+        proposals.append({
+            "ok": False,
+            "text": _delete_spans(original, [enum_removal["span"]]),
+            "facts": [],
+            "change_class": None,
+            "detail": enum_removal["refused"],
+        })
+    elif enum_removal is not None:
         removals.append(enum_removal)
     for item in _default_facts(original, schema, pointer):
         if item.get("ok"):
@@ -307,6 +366,16 @@ def _enum_removal(original: str, schema: dict, pointer: str):
     if at > 0 and original[at - 1] == " ":
         at -= 1
         sentence = original[at:stop]
+    residue = _QUOTED.sub(" ", _ENUM_HEAD.sub(" ", sentence.strip()))
+    glosses = [word for word in _words_only(residue) if word not in _LIST_WORDS]
+    if glosses:
+        return {
+            "span": [at, stop],
+            "refused": (
+                f"{pointer} lists the enum values with wording the schema does not carry "
+                f"({' '.join(glosses[:6])}), so the sentence stays."
+            ),
+        }
     return {
         "span": [at, stop],
         "excerpt": sentence,
@@ -481,16 +550,31 @@ def _recovery_excerpt(rest: str, function_text: str) -> str | None:
     return None
 
 
-def _function_candidates(original: str) -> list[dict]:
+def _function_candidates(original: str, carried: frozenset[str] = frozenset()) -> list[dict]:
     """Suite-context and direct-action candidates, alone and together.
 
     Every candidate is the original with spans replaced. Nothing outside the
     protected official hint is added except the period that already closed the
-    membership sentence and the capital on the kept verb.
+    membership sentence and the capital on the kept verb. The suite elaboration
+    is dropped only when an earlier tool in the request carries it verbatim.
     """
     head, _suffix = split_protected(original)
     suite = suite_preamble(head)
     frame = leading_frame(head, suite["core_start"] if suite else 0)
+    context = suite_context(original)
+    proposals = []
+    if suite is not None and context is not None and context not in carried:
+        proposals.append({
+            "ok": False,
+            "text": original,
+            "facts": [],
+            "change_class": None,
+            "detail": (
+                "No earlier tool in this request carries this suite elaboration, so this tool "
+                "keeps it and the label."
+            ),
+        })
+        suite = None
     options = []
     if suite is not None:
         options.append(("suite_context", suite, None))
@@ -498,7 +582,6 @@ def _function_candidates(original: str) -> list[dict]:
         options.append(("direct_action", None, frame))
     if suite is not None and frame is not None:
         options.append(("suite_context+direct_action", suite, frame))
-    proposals = []
     for change_class, use_suite, use_frame in options:
         edits = []
         if use_suite is not None:
@@ -509,9 +592,11 @@ def _function_candidates(original: str) -> list[dict]:
                 "span": elaboration,
                 "replacement": ".",
                 "decision": "SUITE_CONTEXT",
+                "carried_excerpt": context,
                 "note": (
-                    "The elaboration describes the suite this tool belongs to, not this tool. "
-                    "The membership sentence stays, so the suite is still named."
+                    "The elaboration describes the suite this tool belongs to, not this tool, and an "
+                    "earlier tool in the same request carries it verbatim. The membership sentence "
+                    "stays, so the suite is still named."
                 ),
             })
             edits.append({
@@ -542,14 +627,17 @@ def _function_candidates(original: str) -> list[dict]:
             facts.append(kept_membership)
         for edit in edits:
             start, end = edit["span"]
-            facts.append({
+            fact = {
                 "span": [start, end],
                 "excerpt": original[start:end],
                 "decision": edit["decision"],
                 "after": "",
                 "replacement": edit["replacement"],
                 "note": edit["note"],
-            })
+            }
+            if edit.get("carried_excerpt"):
+                fact["carried_excerpt"] = edit["carried_excerpt"]
+            facts.append(fact)
         removed = [item for item in facts if item["decision"] != "KEEP"]
         ok, detail = _faithful(original, candidate, removed)
         proposals.append({
@@ -596,7 +684,7 @@ def _flag_candidate(original: str, schema: dict, function_text: str, pointer: st
     if noun_match and function_text and re.search(rf"\b{re.escape(noun_match.group(1))}\b", function_text, re.IGNORECASE):
         duplicate = noun_match.group(1)
         body = body[:noun_match.start()]
-    candidate = "Whether to " + body
+    candidate = "Whether to " + body + "."
     # Partition the original.
     frame = match.group(1)
     whether = match.group(2) + match.group(3)

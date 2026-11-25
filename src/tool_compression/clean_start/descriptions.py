@@ -6,7 +6,8 @@ question, or answer:
 
 - the official language hint at the end (official preparation, never edited);
 - a suite preamble ``This tool belongs to <suite>[, which ...]. [It ...]. Tool description: ``
-  that the tool's own text separates from its description with that label;
+  that the tool's own text separates from its description with that label
+  (``suite_context`` returns its membership and elaboration verbatim);
 - a leading subject frame such as ``This function retrieves`` before the action.
 """
 
@@ -57,6 +58,18 @@ def suite_preamble(head: str) -> dict | None:
         "label": [match.start("label"), match.end("label")],
         "core_start": core_start,
     }
+
+
+def suite_context(description: str) -> str | None:
+    """Membership sentence and elaboration, verbatim, when the elaboration says more than the membership."""
+    head, _suffix = split_protected(description)
+    suite = suite_preamble(head)
+    if suite is None:
+        return None
+    start, end = suite["elaboration"]
+    if not re.search(r"[A-Za-z0-9]", head[start:end]):
+        return None
+    return head[suite["membership"][0]:end]
 
 
 def leading_frame(text: str, offset: int = 0) -> dict | None:

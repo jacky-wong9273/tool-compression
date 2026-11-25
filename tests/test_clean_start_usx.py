@@ -340,7 +340,7 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     assert "Supported values" not in unit["description"]
     assert "The unit." in unit["description"]
     internal = edited["parameters"]["properties"]["internal"]
-    assert internal["description"] == "Whether to calculate the internal angles"
+    assert internal["description"] == "Whether to calculate the internal angles."
     assert internal["default"] is True
     assert edited["parameters"]["properties"]["label"]["description"] == "A label. Default is true."
     assert edited["response"]["description"] == original["response"]["description"]

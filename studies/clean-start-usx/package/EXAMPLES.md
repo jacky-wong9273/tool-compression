@@ -10,7 +10,7 @@ official_settlement: false.
 S edit, `multiple_0`, `triangle_properties_get` `/function/parameters/properties/get_area/description` (flag_normalization):
 
 - before: 'A flag to determine whether to calculate the area of triangle. Default is true.'
-- after: 'Whether to calculate the area'
+- after: 'Whether to calculate the area.'
 
 X cue, `multiple_2`, on `country_info_largest_city` naming `country_info_population` (text:largest city|current population):
 
@@ -104,10 +104,10 @@ First X refusals: ['No rival qualifies. Closest refusal: Different actions (Find
 
 ## multi_turn_base
 
-S edit, `multi_turn_base_0`, `authenticate_twitter` `/function/description` (suite_context):
+S edit, `multi_turn_base_0`, `comment` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 
 X cue, `multi_turn_base_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
 
@@ -119,10 +119,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## multi_turn_miss_func
 
-S edit, `multi_turn_miss_func_0`, `authenticate_twitter` `/function/description` (suite_context):
+S edit, `multi_turn_miss_func_0`, `comment` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 
 X cue, `multi_turn_miss_func_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
 
@@ -134,10 +134,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## multi_turn_miss_param
 
-S edit, `multi_turn_miss_param_0`, `authenticate_twitter` `/function/description` (suite_context):
+S edit, `multi_turn_miss_param_0`, `comment` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 
 X cue, `multi_turn_miss_param_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
 
@@ -149,10 +149,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## multi_turn_long_context
 
-S edit, `multi_turn_long_context_0`, `authenticate_twitter` `/function/description` (suite_context):
+S edit, `multi_turn_long_context_0`, `comment` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Authenticate a user with username and password. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 
 X cue, `multi_turn_long_context_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
 
@@ -164,10 +164,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_kv
 
-S edit, `memory_kv_0-customer-0`, `archival_memory_add` `/function/description` (suite_context):
+S edit, `memory_kv_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the memory suite. Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
 
 X cue, `memory_kv_0-customer-0`, on `archival_memory_add` naming `core_memory_add` (text:long|short):
 
@@ -179,10 +179,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_vector
 
-S edit, `memory_vector_0-customer-0`, `archival_memory_add` `/function/description` (suite_context):
+S edit, `memory_vector_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a new entry to the archival memory. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Add a new entry to the archival memory. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the memory suite. Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.'
 
 X cue, `memory_vector_0-customer-0`, on `archival_memory_retrieve_all` naming `archival_memory_retrieve` (text:all|the most similar):
 
@@ -194,10 +194,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_rec_sum
 
-S edit, `memory_rec_sum_0-customer-0`, `memory_append` `/function/description` (suite_context):
+S edit, `memory_rec_sum_0-customer-0`, `memory_clear` `/function/description` (suite_context):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Append a new text to the end of the memory. Note that the provided function is in Python 3 syntax.'
+- before: 'This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
+- after: 'This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
 
 X cue: not possible in this category (no rival qualifies anywhere).
 
