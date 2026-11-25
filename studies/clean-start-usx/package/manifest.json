@@ -1,0 +1,62 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "study_manifest": {
+    "study": "clean-start-usx",
+    "official_settlement": false,
+    "extends_official_v1_1": false,
+    "official_v1_1": "historical and closed",
+    "bfcl_repository": "https://github.com/ShishirPatil/gorilla",
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "bfcl_subdir": "berkeley-function-call-leaderboard",
+    "request_model": "deepseek-flash",
+    "served_as": "DeepSeek-V4.1-Flash-1017",
+    "retired_route_alias_not_sent": "deepseek-v4-flash",
+    "arms": [
+      "U",
+      "S",
+      "X",
+      "SX"
+    ],
+    "thinking_order": [
+      "off",
+      "on"
+    ],
+    "thinking_default_on_server": true,
+    "temperature_sent": 0.001,
+    "temperature_ignored_while_thinking": true,
+    "max_tokens_sent": false,
+    "rate_card_id": "deepseek-flash-2026-11-25",
+    "rate_card_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "rate_card_retrieved": "2026-11-25",
+    "paid_inference_authorized_by_this_package": false,
+    "provider_called_on_import": false
+  },
+  "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "vendored_manifest_sha256": "bf2d151cbb2eff669ec47907710e1c9e4e18a3dd51b39723e8840c24ce9c30d4",
+  "rules": {
+    "S": "s-rules-2026-11-25",
+    "X": "x-rules-2026-11-25.2"
+  },
+  "tokenizer": {
+    "encoding": "o200k_base",
+    "backend": "tiktoken-0.14.0"
+  },
+  "python": "3.12.3",
+  "commands": {
+    "freeze": "python -m tool_compression.clean_start freeze",
+    "package": "python -m tool_compression.clean_start package",
+    "pilot_report": "python -m tool_compression.clean_start report-pilot",
+    "score_existing_results": "python -m tool_compression.clean_start evaluate --out <run dir> --bfcl-root <pinned gorilla checkout> --thinking off"
+  },
+  "files": {
+    "EXAMPLES.md": "90e2db257ec3e109b161397ef59fb2efd6d6748aea4baf34afc2fbed87139be6",
+    "examples.json": "e22590e7b55f5468763072fad7635a1c4a3d1229c158e3b14ba492dbd2ee4b25",
+    "integrity.json": "db001e93cbb351e5087cb09d9c991d3201eee6ebde5447c23249c4c863bd5289",
+    "pilot_2026_11_25_analysis.json": "6331a44acaaa58aab0c924c74db7a3981ea6a18412507559b5fdaaed3649978e",
+    "s_keep_reasons.json": "e3d940d9fdb08e5bc37b13eba301b24da677683a5e95e8b81ba0701eafd1cb2a",
+    "s_ledger.jsonl": "9278a221c3fb4e405eaea96eaa1a96fd4efbcc8aba5fc6fbb4d485c1c86286ce",
+    "token_tables.json": "0da5ad8a72ec00d71817182ec20d69c699de990a2fbf4ccff6ce4ab97724ee35",
+    "x_ledger.jsonl": "0ca73a0c62600e5f5b8048523b304cfab00e4c0b127383e2dd705d4983317c11"
+  }
+}

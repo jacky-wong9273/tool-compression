@@ -7,4 +7,9 @@
 - `official_settlement` is false. This pilot is regression and diagnosis evidence. Its outcomes are not editor inputs and were not used to tune the revised editors.
 - The score files contain BFCL gold answers because the official scorer writes them. Editors never read this directory.
 
-Derived tables (paired tokens, cache, outputs) live in `../../package/pilot_2026_11_25_analysis.json` and are rebuilt from this directory alone by `python -m tool_compression.clean_start report-pilot`.
+Derived files next to `original/` (none of them replaces anything in it):
+
+- `sent_renders_0c0284d.json`: per case and arm, the hash and local o200k_base token counts of the tool array the pilot sent, read from `studies/clean-start-usx/pilot/rendered/` at the pilot tip. `report.sent_digest_from_git()` rebuilds it when that commit is in the local history.
+- `rescored-underscore-to-dot/`: official `bfcl evaluate --partial-eval` on a scratch copy of `original/artifacts/result`, with the eight directories registered as the pinned `DeepSeek-V3.2-Exp-FC` entry is (`is_fc_model=True`, `underscore_to_dot=True`). The archived scores used `underscore_to_dot=False`, which scores every dotted gold name (`artwork_search.find`) as `wrong_func_name` against the sent underscore name. Command: `python -m tool_compression.clean_start evaluate --out <scratch> --bfcl-root <pinned gorilla> --thinking off`. Run on the unmodified result files without any provider call; the same command with the old flag reproduces all 38 archived score files byte for byte.
+
+Paired tables (tokens, cache, outputs, archived and rescored accuracy) live in `../../package/pilot_2026_11_25_analysis.json` and are rebuilt from this directory by `python -m tool_compression.clean_start report-pilot`.
