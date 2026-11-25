@@ -112,19 +112,29 @@ def test_x_ledger_cues_name_one_rival_with_evidence_on_both_sides():
 
 def test_x_drops_cues_the_rival_name_already_spells():
     named = [
-        _tool("setHeadlights", "Sets the headlights of the vehicle."),
-        _tool("setCruiseControl", "Sets the cruise control of the vehicle."),
+        _tool("setFrontLights", "Sets the front lights of the vehicle."),
+        _tool("setRearLights", "Sets the rear lights of the vehicle."),
     ]
     assert [row["cue"] for row in qualify_catalogue(named)] == ["", ""]
     assert "already spells" in qualify_catalogue(named)[0]["no_cue_reason"]
     opaque = [
+        _tool("tool_a", "Sets the front lights of the vehicle."),
+        _tool("tool_b", "Sets the rear lights of the vehicle."),
+    ]
+    assert [row["cue"] for row in qualify_catalogue(opaque)] == [
+        "For the rear lights, use tool_b.",
+        "For the front lights, use tool_a.",
+    ]
+
+
+def test_x_refuses_pairs_whose_actions_take_different_objects():
+    different = [
         _tool("tool_a", "Sets the headlights of the vehicle."),
         _tool("tool_b", "Sets the cruise control of the vehicle."),
     ]
-    assert [row["cue"] for row in qualify_catalogue(opaque)] == [
-        "For the cruise control, use tool_b.",
-        "For the headlights, use tool_a.",
-    ]
+    rows = qualify_catalogue(different)
+    assert [row["cue"] for row in rows] == ["", ""]
+    assert "different objects (headlight versus control)" in rows[0]["no_cue_reason"]
 
 
 def test_editor_modules_have_no_question_or_gold_inputs():
