@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_192",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "find_recipe": "{\"dietary_restrictions\": \"vegan\", \"recipe_type\": \"main course\", \"time\": 45}"
+        },
+        {
+          "poker_probability_full_house": "{\"deck_size\": 52, \"hand_size\": 5}"
+        },
+        {
+          "hospital_locate": "{\"location\": \"Denver, CO\", \"radius\": 10, \"department\": \"Emergency\"}"
+        }
+      ],
+      "content": "I'll help you plan your dinner and answer all three questions. Let me gather the information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_GS303GAoa8lWznyBCPiA7233",
+          "type": "function",
+          "function": {
+            "name": "find_recipe",
+            "arguments": "{\"dietary_restrictions\": \"vegan\", \"recipe_type\": \"main course\", \"time\": 45}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_RwQoyI8t0NDrELXAWbrh7148",
+          "type": "function",
+          "function": {
+            "name": "poker_probability_full_house",
+            "arguments": "{\"deck_size\": 52, \"hand_size\": 5}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_u2S5P6LRdraiQ81oShYQ9545",
+          "type": "function",
+          "function": {
+            "name": "hospital_locate",
+            "arguments": "{\"location\": \"Denver, CO\", \"radius\": 10, \"department\": \"Emergency\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 758,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 246,
+      "output_tokens": 213,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "find_recipe": "{\"dietary_restrictions\": \"vegan\", \"recipe_type\": \"main course\", \"time\": 45}"
+    },
+    {
+      "poker_probability_full_house": "{\"deck_size\": 52, \"hand_size\": 5}"
+    },
+    {
+      "hospital_locate": "{\"location\": \"Denver, CO\", \"radius\": 10, \"department\": \"Emergency\"}"
+    }
+  ]
+}
