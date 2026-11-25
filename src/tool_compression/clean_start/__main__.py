@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"refusing: {exc}", file=sys.stderr)
             return 2
         summary = run_official_evaluation(args.out, args.bfcl_root, modes)
-        print(json.dumps({key: summary[key] for key in ("ok", "runs", "failed")}, sort_keys=True))
+        print(json.dumps({"ok": summary["ok"], "runs": len(summary["runs"]), "failed": summary["failed"]}, sort_keys=True))
         return 0 if summary["ok"] else 1
     if args.command == "run":
         return _run(args)
