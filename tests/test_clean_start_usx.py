@@ -43,6 +43,14 @@ from tool_compression.clean_start.pilot import (
     render_document,
     study_dir,
 )
+from tool_compression.clean_start.scope import (
+    OFFICIAL_SIMPLE_CATEGORIES,
+    build_scope_document,
+    in_scope_questions,
+    load_scope,
+    question_in_scope,
+    u_tool_count,
+)
 from tool_compression.clean_start.pin import ARMS, REQUEST_MODEL, RETIRED_ROUTE_ALIAS, study_manifest
 from tool_compression.clean_start.prepare import (
     AGENTIC_SYSTEM_PROMPT,
@@ -720,6 +728,31 @@ def test_authorized_command_uses_the_injected_transport(tmp_path, monkeypatch):
     assert list(tmp_path.rglob("*_result.json"))
 
 
+UNCHANGED_PILOT = {
+    "multiple": ["multiple_142", "multiple_66", "multiple_77"],
+    "parallel_multiple": ["parallel_multiple_191", "parallel_multiple_150", "parallel_multiple_192"],
+    "live_multiple": ["live_multiple_943-196-1", "live_multiple_988-219-0", "live_multiple_447-144-7"],
+    "live_parallel_multiple": [
+        "live_parallel_multiple_3-2-1",
+        "live_parallel_multiple_8-7-0",
+        "live_parallel_multiple_20-17-0",
+    ],
+    "multi_turn_base": ["multi_turn_base_120", "multi_turn_base_86", "multi_turn_base_198"],
+    "multi_turn_miss_func": ["multi_turn_miss_func_189", "multi_turn_miss_func_95", "multi_turn_miss_func_167"],
+    "multi_turn_miss_param": ["multi_turn_miss_param_187", "multi_turn_miss_param_78", "multi_turn_miss_param_31"],
+    "multi_turn_long_context": [
+        "multi_turn_long_context_140",
+        "multi_turn_long_context_6",
+        "multi_turn_long_context_31",
+    ],
+    "memory_kv": ["memory_kv_146-notetaker-16", "memory_kv_58-finance-3", "memory_kv_7-customer-7"],
+    "memory_vector": ["memory_vector_107-student-27", "memory_vector_90-student-10", "memory_vector_123-student-43"],
+    "memory_rec_sum": ["memory_rec_sum_32-healthcare-2", "memory_rec_sum_121-student-41", "memory_rec_sum_62-finance-7"],
+    "web_search_base": ["web_search_base_37", "web_search_base_46", "web_search_base_58"],
+    "web_search_no_snippet": ["web_search_no_snippet_83", "web_search_no_snippet_92", "web_search_no_snippet_58"],
+}
+
+
 def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     first = build_draw()
     assert build_draw() == first
@@ -728,12 +761,19 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     assert first["official_settlement"] is False
     committed = json.loads((study_dir() / "pilot" / "draw.json").read_text(encoding="utf-8"))
     assert committed == first
-    assert len(first["rows"]) == len(ALL_SCORING_CATEGORIES) * 3
+    scope = load_scope()
+    assert first["categories"] == scope["keep"]
+    assert len(first["rows"]) == 47
     by_category: dict[str, list[str]] = {}
-    questions = {category: {case["id"]: case for case in load_questions(category)} for category in ALL_SCORING_CATEGORIES}
+    questions = {
+        category: {case["id"]: case for case in in_scope_questions(category)}
+        for category in first["categories"]
+    }
     for row in first["rows"]:
         by_category.setdefault(row["category"], []).append(row["case_id"])
         assert "_prereq" not in row["case_id"]
+        assert row["category"] not in scope["drop"]
+        assert row["case_id"] in scope["in_scope_ids"][row["category"]]
         case = questions[row["category"]][row["case_id"]]
         document = render_document(case)
         path = study_dir() / "pilot" / "rendered" / row["category"] / f"{row['case_id']}.json"
@@ -746,11 +786,28 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
                 content = message.get("content")
                 if isinstance(content, str) and len(content) >= 40:
                     assert content not in dumped
-    assert all(len(ids) == 3 and len(set(ids)) == 3 for ids in by_category.values())
+    for item in first["draws"]:
+        ids = by_category[item["category"]]
+        assert len(ids) == len(set(ids)) == item["frozen"]
+        if item["method"] == "sample":
+            assert item["population"] >= 3 and item["frozen"] == 3
+        else:
+            assert item["method"] == "all_in_scope_under_k"
+            assert item["frozen"] == item["population"] < 3
+    assert by_category["live_parallel"] == ["live_parallel_6-3-0", "live_parallel_7-3-1"]
+    for category, ids in UNCHANGED_PILOT.items():
+        assert by_category[category] == ids
     note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
     for row in first["rows"]:
         assert row["case_id"] in note
     assert "20261125" in note
+    assert scope["unscope_package"]["tip"] in note
+    assert "simple_python_212" not in note
+    rendered_root = study_dir() / "pilot" / "rendered"
+    on_disk = {path.stem for path in rendered_root.rglob("*.json")}
+    assert on_disk == {row["case_id"] for row in first["rows"]}
+    for category in scope["drop"]:
+        assert not (rendered_root / category).exists()
 
 
 def test_coverage_matches_the_committed_limitations_and_names_are_consistent():
@@ -759,9 +816,15 @@ def test_coverage_matches_the_committed_limitations_and_names_are_consistent():
     assert committed == record
     assert record["official_settlement"] is False
     assert record["unsendable"] == 0
-    java = record["categories"]["simple_java"]
-    assert java["questions"] == 100 and java["sendable"] == 100
-    assert "java_js_parameters_stringified_before_edit" in java["limitations"]
+    assert record["in_scope_questions"] == 3327
+    scope = load_scope()
+    assert set(record["categories"]) == set(scope["keep"])
+    assert "simple_java" not in record["categories"]
+    assert "parallel" not in record["categories"]
+    assert "irrelevance" not in record["categories"]
+    assert record["categories"]["live_parallel"]["questions"] == 2
+    assert record["categories"]["live_parallel"]["s_cases_different_from_u"] == 0
+    assert record["categories"]["live_irrelevance"]["questions"] == 372
     assert "miss_func_holdout_absent_from_initial_tools" in record["categories"]["multi_turn_miss_func"]["limitations"]
     assert "memory_prereq_required_for_a_full_score" in record["categories"]["memory_kv"]["limitations"]
     assert "excluded_function_left_in_catalogue" in record["categories"]["multi_turn_base"]["limitations"]
@@ -786,5 +849,115 @@ def test_package_command_forwards_and_dry_pilot_stays_offline(tmp_path, monkeypa
     assert plan["status"] == "not_sent"
     assert plan["provider_contacted"] is False
     assert plan["complete"] is False
-    assert plan["slots_total"] == len(ALL_SCORING_CATEGORIES) * 3 * 2 * 4
+    assert plan["slots_total"] == len(build_draw()["rows"]) * 2 * 4 == 47 * 8
     assert calls == []
+
+
+def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
+    fresh = build_scope_document()
+    assert fresh == load_scope()
+    assert fresh["official_settlement"] is False
+    assert fresh["official_simple_multi_tool_ids"] == []
+    assert fresh["scoring_questions"] == 5106
+    assert fresh["in_scope_questions"] == 3327
+    assert fresh["out_of_scope_questions"] == 1779
+    assert fresh["drop"] == [
+        "simple_python",
+        "simple_java",
+        "simple_javascript",
+        "parallel",
+        "irrelevance",
+        "live_simple",
+    ]
+    assert fresh["unscope_package"]["pull_request"] == 24
+    assert fresh["unscope_package"]["tip"] == "c1df4bbf439151abad2ed79b103d401a61443412"
+    assert fresh["unscope_package"]["pilot_cases"] == 66
+    assert fresh["unscope_package"]["scoring_categories"] == len(ALL_SCORING_CATEGORIES) == 22
+    by_category = {row["category"]: row for row in fresh["census"]}
+    assert list(by_category) == list(ALL_SCORING_CATEGORIES)
+    for category in OFFICIAL_SIMPLE_CATEGORIES:
+        row = by_category[category]
+        assert row["questions"] == row["one_tool"]
+        assert row["multi_tool"] == 0 and row["zero_tool"] == 0
+        assert row["disposition"] == "dropped" and row["in_scope"] == 0
+    assert by_category["parallel"]["one_tool"] == 200 and by_category["parallel"]["disposition"] == "dropped"
+    assert by_category["irrelevance"]["one_tool"] == 240 and by_category["irrelevance"]["disposition"] == "dropped"
+    assert by_category["parallel_multiple"]["median_tools"] == 2.5
+    assert by_category["live_parallel"]["in_scope"] == 2
+    assert by_category["live_irrelevance"]["zero_tool"] == 4
+    assert by_category["live_irrelevance"]["one_tool"] == 508
+    assert by_category["live_irrelevance"]["multi_tool"] == 372
+    assert by_category["live_relevance"]["one_tool"] == 5
+    assert by_category["live_relevance"]["multi_tool"] == 11
+    assert fresh["memory_prerequisites"]["in_study_population"] is False
+    assert fresh["memory_prerequisites"]["backends"]["memory_kv"]["conversations"] == 37
+    assert fresh["memory_prerequisites"]["backends"]["memory_kv"]["min_tools"] == 15
+    empty = next(row for row in fresh["surprises"] if row["kind"] == "empty_loaded_catalogue")
+    assert empty["ids"] == [
+        "live_irrelevance_120-9-0",
+        "live_irrelevance_121-9-1",
+        "live_irrelevance_122-9-2",
+        "live_irrelevance_123-9-3",
+    ]
+    for example in fresh["checked_examples"]:
+        case = next(item for item in load_questions(example["category"]) if item["id"] == example["id"])
+        compiled = compile_case(case)
+        assert len(compiled["arms"]["U"]) == example["tools"] == u_tool_count(case)
+        assert question_in_scope(case) is example["in_scope"]
+    echo_b = _echo_function()
+    echo_b["name"] = "echo_b"
+    two_tools = [_echo_function(), echo_b]
+    simple = {
+        "id": "simple_python_synthetic",
+        "category": "simple_python",
+        "function": two_tools,
+        "prereq": False,
+    }
+    assert u_tool_count(simple) == 2
+    assert question_in_scope(simple) is False
+    multiple = dict(simple, id="multiple_synthetic", category="multiple")
+    assert question_in_scope(multiple) is True
+    assert question_in_scope(dict(multiple, function=[_echo_function()])) is False
+    held = load_questions("multi_turn_miss_func")[0]
+    assert u_tool_count(held) == len(held["function"]) > 1
+    assert "sort" not in [doc.get("name") for doc in held["function"]]
+    assert question_in_scope(held) is True
+    prereq = load_prereqs("memory_kv")[0]
+    assert prereq["prereq"] is True and u_tool_count(prereq) == 15
+    assert question_in_scope(prereq) is False
+    assert (bfcl_root() / "prompts" / "BFCL_v4_simple_python.json").is_file()
+    assert (bfcl_root() / "prompts" / "BFCL_v4_parallel.json").is_file()
+    assert (bfcl_root() / "prompts" / "BFCL_v4_irrelevance.json").is_file()
+    for row in fresh["mixed"]:
+        population = [case["id"] for case in load_questions(row["category"])]
+        chosen = fresh["in_scope_ids"][row["category"]]
+        assert set(row["out_of_scope_ids"]).isdisjoint(chosen)
+        assert set(row["out_of_scope_ids"]) | set(chosen) == set(population)
+        assert len(chosen) == row["in_scope"]
+    from tool_compression.clean_start.__main__ import _select_cases
+
+    pilot = _select_cases(True)
+    assert [case["id"] for case in pilot] == [row["case_id"] for row in build_draw()["rows"]]
+    assert all(not case.get("prereq") for case in pilot)
+    assert {case["category"] for case in pilot}.isdisjoint(fresh["drop"])
+    full = _select_cases(False)
+    prereqs = [case for case in full if case.get("prereq")]
+    scoring = [case for case in full if not case.get("prereq")]
+    assert len(prereqs) == 37 * 3
+    assert {case["category"] for case in prereqs} == {"memory_kv", "memory_vector", "memory_rec_sum"}
+    assert [case["id"] for case in scoring] == [
+        case_id
+        for category in fresh["keep"]
+        for case_id in fresh["in_scope_ids"][category]
+    ]
+    assert all(case["category"] not in fresh["drop"] for case in scoring)
+    assert all("_prereq" not in case_id for ids in fresh["in_scope_ids"].values() for case_id in ids)
+    text = evaluate_instructions()
+    assert "--test-category all_scoring" not in text
+    assert "Do not pass all_scoring." in text
+    for category in fresh["keep"] + fresh["drop"]:
+        assert category in text
+    note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
+    assert "Study population" in note
+    assert "3327" in note
+    assert "PR #24" in note

@@ -4,16 +4,11 @@
   "seed": 20261125,
   "k": 3,
   "algorithm": "random.Random('clean-start-usx:{seed}:{category}').sample(sorted(question_ids), 3)",
-  "population": "scoring questions only; memory prerequisites are excluded",
+  "short_population": "When a category has fewer than 3 in-scope questions, freeze every in-scope id in sorted order. Do not call sample and do not change the seed.",
+  "population": "in-scope scoring questions only; a question is in scope when its loaded U catalogue has more than one tool; official simple sets are excluded; memory prerequisites are excluded",
   "categories": [
-    "simple_python",
-    "simple_java",
-    "simple_javascript",
     "multiple",
-    "parallel",
     "parallel_multiple",
-    "irrelevance",
-    "live_simple",
     "live_multiple",
     "live_parallel",
     "live_parallel_multiple",
@@ -29,52 +24,105 @@
     "web_search_base",
     "web_search_no_snippet"
   ],
+  "draws": [
+    {
+      "category": "multiple",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "parallel_multiple",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "live_multiple",
+      "population": 1053,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "live_parallel",
+      "population": 2,
+      "frozen": 2,
+      "method": "all_in_scope_under_k"
+    },
+    {
+      "category": "live_parallel_multiple",
+      "population": 24,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "live_irrelevance",
+      "population": 372,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "live_relevance",
+      "population": 11,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "multi_turn_base",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "multi_turn_long_context",
+      "population": 200,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "memory_kv",
+      "population": 155,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "memory_vector",
+      "population": 155,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "memory_rec_sum",
+      "population": 155,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "web_search_base",
+      "population": 100,
+      "frozen": 3,
+      "method": "sample"
+    },
+    {
+      "category": "web_search_no_snippet",
+      "population": 100,
+      "frozen": 3,
+      "method": "sample"
+    }
+  ],
   "rows": [
-    {
-      "category": "simple_python",
-      "case_id": "simple_python_212",
-      "position": 0
-    },
-    {
-      "category": "simple_python",
-      "case_id": "simple_python_125",
-      "position": 1
-    },
-    {
-      "category": "simple_python",
-      "case_id": "simple_python_311",
-      "position": 2
-    },
-    {
-      "category": "simple_java",
-      "case_id": "simple_java_46",
-      "position": 0
-    },
-    {
-      "category": "simple_java",
-      "case_id": "simple_java_86",
-      "position": 1
-    },
-    {
-      "category": "simple_java",
-      "case_id": "simple_java_2",
-      "position": 2
-    },
-    {
-      "category": "simple_javascript",
-      "case_id": "simple_javascript_0",
-      "position": 0
-    },
-    {
-      "category": "simple_javascript",
-      "case_id": "simple_javascript_33",
-      "position": 1
-    },
-    {
-      "category": "simple_javascript",
-      "case_id": "simple_javascript_16",
-      "position": 2
-    },
     {
       "category": "multiple",
       "case_id": "multiple_142",
@@ -91,21 +139,6 @@
       "position": 2
     },
     {
-      "category": "parallel",
-      "case_id": "parallel_134",
-      "position": 0
-    },
-    {
-      "category": "parallel",
-      "case_id": "parallel_115",
-      "position": 1
-    },
-    {
-      "category": "parallel",
-      "case_id": "parallel_72",
-      "position": 2
-    },
-    {
       "category": "parallel_multiple",
       "case_id": "parallel_multiple_191",
       "position": 0
@@ -118,36 +151,6 @@
     {
       "category": "parallel_multiple",
       "case_id": "parallel_multiple_192",
-      "position": 2
-    },
-    {
-      "category": "irrelevance",
-      "case_id": "irrelevance_55",
-      "position": 0
-    },
-    {
-      "category": "irrelevance",
-      "case_id": "irrelevance_165",
-      "position": 1
-    },
-    {
-      "category": "irrelevance",
-      "case_id": "irrelevance_238",
-      "position": 2
-    },
-    {
-      "category": "live_simple",
-      "case_id": "live_simple_166-99-0",
-      "position": 0
-    },
-    {
-      "category": "live_simple",
-      "case_id": "live_simple_26-6-0",
-      "position": 1
-    },
-    {
-      "category": "live_simple",
-      "case_id": "live_simple_29-7-2",
       "position": 2
     },
     {
@@ -172,13 +175,8 @@
     },
     {
       "category": "live_parallel",
-      "case_id": "live_parallel_8-4-0",
+      "case_id": "live_parallel_7-3-1",
       "position": 1
-    },
-    {
-      "category": "live_parallel",
-      "case_id": "live_parallel_12-8-0",
-      "position": 2
     },
     {
       "category": "live_parallel_multiple",
@@ -197,32 +195,32 @@
     },
     {
       "category": "live_irrelevance",
-      "case_id": "live_irrelevance_817-314-1",
+      "case_id": "live_irrelevance_663-211-3",
       "position": 0
     },
     {
       "category": "live_irrelevance",
-      "case_id": "live_irrelevance_522-159-0",
+      "case_id": "live_irrelevance_238-43-0",
       "position": 1
     },
     {
       "category": "live_irrelevance",
-      "case_id": "live_irrelevance_201-32-14",
+      "case_id": "live_irrelevance_553-169-6",
       "position": 2
     },
     {
       "category": "live_relevance",
-      "case_id": "live_relevance_15-15-0",
+      "case_id": "live_relevance_11-11-0",
       "position": 0
     },
     {
       "category": "live_relevance",
-      "case_id": "live_relevance_6-6-0",
+      "case_id": "live_relevance_10-10-0",
       "position": 1
     },
     {
       "category": "live_relevance",
-      "case_id": "live_relevance_7-7-0",
+      "case_id": "live_relevance_14-14-0",
       "position": 2
     },
     {

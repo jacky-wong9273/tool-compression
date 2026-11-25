@@ -148,6 +148,11 @@ def load_prereqs(category: str) -> list[dict]:
 
 
 def iter_scoring_cases(*, include_prereqs: bool) -> list[dict]:
+    """Official scoring package, including questions outside the study.
+
+    The study runner uses ``scope.select_full_run_cases`` and the pilot draw.
+    This iterator stays the unfiltered package.
+    """
     cases: list[dict] = []
     for category in ALL_SCORING_CATEGORIES:
         if include_prereqs:

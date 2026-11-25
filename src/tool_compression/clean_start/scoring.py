@@ -90,6 +90,12 @@ def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict) -> Pa
 
 
 def evaluate_instructions() -> str:
+    from tool_compression.clean_start.scope import require_recorded_scope
+
+    scope = require_recorded_scope()
+    kept = ", ".join(scope["keep"])
+    dropped = ", ".join(scope["drop"])
+    mixed = ", ".join(row["category"] for row in scope["mixed"])
     return (
         "Accuracy is recovered by the official evaluator at gorilla commit "
         f"{BFCL_COMMIT}, not by a scorer in this repo. Gold files stay in that tree "
@@ -100,13 +106,20 @@ def evaluate_instructions() -> str:
         "The API model on every request is "
         f"{REQUEST_MODEL}. The directory suffix separates the two thinking passes "
         "so memory snapshots are not shared.\n\n"
+        "This study's categories, in order, are: "
+        f"{kept}. "
+        f"Dropped from this study: {dropped}. "
+        f"Mixed categories ({mixed}) include only the in-scope ids in "
+        "studies/clean-start-usx/scope.json. Their result files omit the other ids "
+        "in that official category. A missing one-tool id is outside this study, "
+        "not an incomplete result file. Do not pass all_scoring.\n\n"
         "The pinned BFCL model list has no deepseek-flash entry. Register both "
         "directory names before evaluate, with model_name "
         f"'{REQUEST_MODEL}', is_fc_model True, and DeepSeekAPIHandler. Then, from "
-        "the berkeley-function-call-leaderboard checkout:\n"
-        "  bfcl evaluate --model deepseek-flash-thinking-off --test-category all_scoring "
+        "the berkeley-function-call-leaderboard checkout, run one study category at a time:\n"
+        "  bfcl evaluate --model deepseek-flash-thinking-off --test-category <category> "
         "--result-dir <path> --partial-eval\n"
-        "Repeat for deepseek-flash-thinking-on. --partial-eval is for a pilot subset. "
-        "A full run omits it only after every scoring id is present.\n"
+        "Repeat for deepseek-flash-thinking-on. --partial-eval is required because "
+        "the result file holds this study's ids, not every official id in the category.\n"
         "format_sensitivity is not a scoring category and is not in this package."
     )
