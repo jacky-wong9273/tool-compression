@@ -74,11 +74,11 @@ These categories stay with every scoring question: `multiple` (200), `parallel_m
 
 `live_relevance` has 16 questions: 5 with one tool and 11 with two to five tools. In scope: those 11. One-tool example: `live_relevance_15-15-0`. Multi-tool examples: `live_relevance_7-7-0` (2 tools), `live_relevance_6-6-0` (4 tools).
 
-The resulting study is 16 categories and 3327 questions. `evaluate-help` names those 16 categories. Each category is passed on its own with `--partial-eval`, because a mixed result file holds the in-scope ids. `all_scoring` is outside this study's command.
+The resulting study is 16 categories and 3327 questions. `evaluate-help` names those 16 categories. Each category is passed on its own with `--partial-eval`, because a category result file holds the in-scope ids. The same command is repeated for each of the eight model directories, one arm of one thinking pass. `all_scoring` is outside this study's command.
 
 ## What is packaged
 
-1. Unmodified scoring prompts, function-doc catalogues, and memory prerequisites under `bfcl/`, pinned to gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. `bfcl/manifest.json` is the byte identity. Gold stays in that Gorilla tree. Saved outputs are the official JSONL result lines (`id` and `result`) plus a sidecar of the assistant message, reasoning, tool calls, and usage. Accuracy is recovered with `bfcl evaluate` after both directory names `deepseek-flash-thinking-off` and `deepseek-flash-thinking-on` are registered as `deepseek-flash` function-calling models. `python -m tool_compression clean-start evaluate-help` prints the command. This repo does not score.
+1. Unmodified scoring prompts, function-doc catalogues, and memory prerequisites under `bfcl/`, pinned to gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. `bfcl/manifest.json` is the byte identity. Gold stays in that Gorilla tree. Saved outputs are the official JSONL result lines (`id` and `result`) plus a sidecar of the assistant message, reasoning, tool calls, and usage. Accuracy is recovered with `bfcl evaluate` after the eight directory names `deepseek-flash-thinking-<off|on>-<U|S|X|SX>` are registered as `deepseek-flash` function-calling models. Each name is one arm of one thinking pass. `python -m tool_compression clean-start evaluate-help` prints the commands. This repo does not score. `official_settlement` stays false.
 
 2. Editors S and X, and the composed SX renders. The pilot renders under `pilot/rendered/` are the inspectable edits. `limitations.json` counts, for every in-scope scoring question, how many S, X, and SX catalogues differ from U.
 
@@ -97,7 +97,7 @@ Retrieved 2026-11-25 from https://api-docs.deepseek.com/quick_start/pricing/. Pr
 
 Peak is double off-peak. Peak hours are 01:00–04:00 and 06:00–10:00 UTC, Monday–Friday, half-open, which is 09:00–12:00 and 14:00–18:00 HKT. Chinese public holidays are off-peak for the whole Asia/Shanghai date. The 2026 holiday dates are the 放假 ranges in 国办发明电〔2025〕7号. Weekends stay off-peak, including makeup weekend workdays. Years outside 2026 have no holiday rows in this package. If the provider omits the cache split, the whole prompt is billed as cache miss and the bill says `assumed_all_miss`.
 
-Token bills are `bills.jsonl` (one row per completed HTTP step) and `spend.json` (running USD, ceiling, slot counts, and the rate card). Scorable lines are `result/deepseek-flash-thinking-<off|on>/<group>/BFCL_v4_<category>_result.json`. The raw message for each slot is `model_outputs/deepseek-flash-thinking-<off|on>/<arm>/<case_id>.json`.
+Token bills are `bills.jsonl` (one row per completed HTTP step) and `spend.json` (running USD, ceiling, slot counts, and the rate card). Scorable lines are `result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/BFCL_v4_<category>_result.json`. U, S, X, and SX do not append into the same file. The raw message for each slot is `model_outputs/deepseek-flash-thinking-<off|on>/<arm>/<case_id>.json`. Memory snapshots written during a trajectory stay under `result/deepseek-flash-thinking-<off|on>/`.
 
 ## Editor limitations by set
 

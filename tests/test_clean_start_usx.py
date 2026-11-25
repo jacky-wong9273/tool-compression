@@ -68,7 +68,7 @@ from tool_compression.clean_start.runner import (
     turn_messages,
     write_plan,
 )
-from tool_compression.clean_start.scoring import evaluate_instructions, result_relative
+from tool_compression.clean_start.scoring import append_result, evaluate_instructions, result_relative
 from tool_compression.evaluation import evaluation_manifest
 
 REPO = Path(__file__).resolve().parents[1]
@@ -472,17 +472,110 @@ def test_execution_config_separates_snippet_memory_and_long_context(tmp_path):
 
 
 def test_result_paths_match_the_official_groups():
-    assert result_relative("simple_python_0", "off") == Path(
-        "result/deepseek-flash-thinking-off/non_live/BFCL_v4_simple_python_result.json"
+    assert result_relative("simple_python_0", "off", "U") == Path(
+        "result/deepseek-flash-thinking-off-U/non_live/BFCL_v4_simple_python_result.json"
     )
+    assert result_relative("memory_kv_0-customer-0", "on", "SX") == Path(
+        "result/deepseek-flash-thinking-on-SX/agentic/memory/kv/BFCL_v4_memory_kv_result.json"
+    )
+    assert result_relative("web_search_no_snippet_3", "off", "X") == Path(
+        "result/deepseek-flash-thinking-off-X/agentic/BFCL_v4_web_search_no_snippet_result.json"
+    )
+    paths = {
+        (thinking, arm): result_relative("multiple_0", thinking, arm)
+        for thinking in ("off", "on")
+        for arm in ARMS
+    }
+    assert len(set(paths.values())) == 8
+    assert {path.name for path in paths.values()} == {"BFCL_v4_multiple_result.json"}
+    assert paths[("off", "U")] != paths[("off", "S")]
     assert result_group("memory_kv") == "agentic/memory/kv"
     assert result_group("memory_kv_prereq") == "agentic/memory/kv"
     assert category_from_id("memory_kv_0-customer-0") == "memory_kv"
     assert category_from_id("web_search_no_snippet_3") == "web_search_no_snippet"
     text = evaluate_instructions()
     assert "bfcl evaluate" in text
-    assert "deepseek-flash-thinking-off" in text
     assert "not by a scorer in this repo" in text
+    assert "not official settlement" in text
+    assert "BFCL_v4_<category>_result.json" in text
+    for thinking in ("off", "on"):
+        for arm in ARMS:
+            name = f"deepseek-flash-thinking-{thinking}-{arm}"
+            assert (
+                f"--model {name} --test-category <category> --result-dir <out>/result --partial-eval"
+                in text
+            )
+    assert "--model deepseek-flash-thinking-off --test-category" not in text
+    assert "--model deepseek-flash-thinking-on --test-category" not in text
+    note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
+    assert (
+        "result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/BFCL_v4_<category>_result.json"
+        in note
+    )
+    assert "result/deepseek-flash-thinking-<off|on>/<group>/BFCL_v4_<category>_result.json" not in note
+
+
+def test_two_arms_do_not_append_into_the_same_result_file(tmp_path):
+    case_id = "multiple_0"
+    unmodified = append_result(
+        tmp_path,
+        case_id,
+        "off",
+        {"id": case_id, "result": [{"echo": "{\"value\": 1}"}]},
+        "U",
+    )
+    edited = append_result(
+        tmp_path,
+        case_id,
+        "off",
+        {"id": case_id, "result": "different"},
+        "S",
+    )
+    assert unmodified != edited
+    assert unmodified.name == edited.name == "BFCL_v4_multiple_result.json"
+    assert json.loads(unmodified.read_text(encoding="utf-8"))["result"] != json.loads(
+        edited.read_text(encoding="utf-8")
+    )["result"]
+    assert len(unmodified.read_text(encoding="utf-8").splitlines()) == 1
+    assert len(edited.read_text(encoding="utf-8").splitlines()) == 1
+    again = append_result(
+        tmp_path,
+        case_id,
+        "on",
+        {"id": case_id, "result": "later"},
+        "U",
+    )
+    assert again != unmodified
+    assert len(unmodified.read_text(encoding="utf-8").splitlines()) == 1
+
+    case = _simple_case()
+    slots = [
+        slot
+        for slot in build_slots([case])
+        if slot["thinking"] == "off" and slot["arm"] in {"U", "X"}
+    ]
+    script = _Scripted([_tool_response("echo"), _content_response("plain")])
+    execute(
+        [case],
+        slots,
+        tmp_path / "run",
+        script,
+        ceiling_usd=Decimal("1"),
+        clock=lambda: _utc(2026, 11, 25, 12, 0),
+    )
+    u_lines = (
+        tmp_path / "run" / result_relative(case["id"], "off", "U")
+    ).read_text(encoding="utf-8").splitlines()
+    x_lines = (
+        tmp_path / "run" / result_relative(case["id"], "off", "X")
+    ).read_text(encoding="utf-8").splitlines()
+    assert len(u_lines) == 1 and len(x_lines) == 1
+    assert json.loads(u_lines[0])["result"] != json.loads(x_lines[0])["result"]
+    assert not (
+        tmp_path / "run/result/deepseek-flash-thinking-off/non_live/BFCL_v4_simple_python_result.json"
+    ).exists()
+    assert not (tmp_path / "run" / result_relative(case["id"], "off", "S")).exists()
+    assert not (tmp_path / "run" / result_relative(case["id"], "off", "SX")).exists()
 
 
 def test_runner_persists_scorable_output_usage_and_spend(tmp_path):
@@ -501,9 +594,17 @@ def test_runner_persists_scorable_output_usage_and_spend(tmp_path):
     assert result["status"] == "complete"
     assert result["official_settlement"] is False
     assert result["max_tokens_sent"] is False
-    lines = (tmp_path / "result/deepseek-flash-thinking-off/non_live/BFCL_v4_simple_python_result.json").read_text(encoding="utf-8").splitlines()
-    on_lines = (tmp_path / "result/deepseek-flash-thinking-on/non_live/BFCL_v4_simple_python_result.json").read_text(encoding="utf-8").splitlines()
-    assert len(lines) == 4 and len(on_lines) == 4
+    lines = (tmp_path / result_relative("simple_python_0", "off", "U")).read_text(encoding="utf-8").splitlines()
+    on_lines = (tmp_path / result_relative("simple_python_0", "on", "U")).read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 1 and len(on_lines) == 1
+    for arm in ARMS:
+        for thinking in ("off", "on"):
+            arm_lines = (tmp_path / result_relative("simple_python_0", thinking, arm)).read_text(encoding="utf-8").splitlines()
+            assert len(arm_lines) == 1
+            assert json.loads(arm_lines[0])["id"] == "simple_python_0"
+    assert not (
+        tmp_path / "result/deepseek-flash-thinking-off/non_live/BFCL_v4_simple_python_result.json"
+    ).exists()
     entry = json.loads(lines[0])
     assert entry["id"] == "simple_python_0"
     assert entry["result"] == [{"echo": "{\"value\": 1}"}]
@@ -546,8 +647,9 @@ def test_ceiling_stops_later_sends_and_partial_is_not_complete(tmp_path):
     assert result["reason"] == "ceiling"
     assert result["slots_sent"] == 1
     assert len(script.bodies) == 1
-    lines = (tmp_path / "result/deepseek-flash-thinking-off/non_live/BFCL_v4_simple_python_result.json").read_text(encoding="utf-8").splitlines()
+    lines = (tmp_path / result_relative("simple_python_0", "off", "U")).read_text(encoding="utf-8").splitlines()
     assert len(lines) == 1
+    assert not (tmp_path / result_relative("simple_python_0", "off", "S")).exists()
     assert not (tmp_path / "model_outputs/deepseek-flash-thinking-off/S/simple_python_0.json").exists()
     spend = json.loads((tmp_path / "spend.json").read_text(encoding="utf-8"))
     assert spend["complete"] is False
@@ -639,8 +741,7 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
     )
     assert result["complete"] is True
     entry = json.loads(
-        (tmp_path / "result/deepseek-flash-thinking-off/multi_turn/BFCL_v4_multi_turn_long_context_result.json")
-        .read_text(encoding="utf-8")
+        (tmp_path / result_relative("multi_turn_long_context_0", "off", "U")).read_text(encoding="utf-8")
     )
     assert entry["result"][0][0] == [{"echo": "{\"value\": 1}"}]
     assert entry["result"][0][1] == "done"

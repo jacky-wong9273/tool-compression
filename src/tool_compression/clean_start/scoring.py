@@ -13,7 +13,13 @@ from pathlib import Path
 import json
 
 from tool_compression.clean_start.categories import category_from_id, result_group
-from tool_compression.clean_start.pin import BFCL_COMMIT, BFCL_VERSION_PREFIX, REQUEST_MODEL
+from tool_compression.clean_start.pin import (
+    ARMS,
+    BFCL_COMMIT,
+    BFCL_VERSION_PREFIX,
+    REQUEST_MODEL,
+    THINKING_ORDER,
+)
 
 
 def registry_dir(thinking: str) -> str:
@@ -22,10 +28,21 @@ def registry_dir(thinking: str) -> str:
     return f"deepseek-flash-thinking-{thinking}"
 
 
-def result_relative(case_id: str, thinking: str) -> Path:
+def result_model_name(thinking: str, arm: str) -> str:
+    """Directory name ``bfcl evaluate --model`` selects.
+
+    Official files are ``result/<model>/<group>/BFCL_v4_<category>_result.json``.
+    The evaluator has no arm field, so the arm is part of the model directory.
+    """
+    if arm not in ARMS:
+        raise ValueError(arm)
+    return f"{registry_dir(thinking)}-{arm}"
+
+
+def result_relative(case_id: str, thinking: str, arm: str) -> Path:
     category = category_from_id(case_id)
     filename = f"{BFCL_VERSION_PREFIX}_{category}_result.json"
-    return Path("result") / registry_dir(thinking) / result_group(category) / filename
+    return Path("result") / result_model_name(thinking, arm) / result_group(category) / filename
 
 
 def parse_fc_message(message: dict) -> tuple[object, list[dict]]:
@@ -80,8 +97,8 @@ def to_execution_strings(result: object) -> list[str]:
     return strings
 
 
-def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict) -> Path:
-    path = out_dir / result_relative(case_id, thinking)
+def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict, arm: str) -> Path:
+    path = out_dir / result_relative(case_id, thinking, arm)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
@@ -96,16 +113,29 @@ def evaluate_instructions() -> str:
     kept = ", ".join(scope["keep"])
     dropped = ", ".join(scope["drop"])
     mixed = ", ".join(row["category"] for row in scope["mixed"])
+    directories = [
+        result_model_name(thinking, arm) for thinking in THINKING_ORDER for arm in ARMS
+    ]
+    commands = "\n".join(
+        "  bfcl evaluate --model "
+        f"{name} --test-category <category> --result-dir <out>/result --partial-eval"
+        for name in directories
+    )
     return (
         "Accuracy is recovered by the official evaluator at gorilla commit "
         f"{BFCL_COMMIT}, not by a scorer in this repo. Gold files stay in that tree "
-        "under bfcl_eval/data/possible_answer and are not editor inputs.\n\n"
-        "Result lines are JSONL objects with id and result, under\n"
-        "  <out>/result/deepseek-flash-thinking-off/<group>/BFCL_v4_<category>_result.json\n"
-        "  <out>/result/deepseek-flash-thinking-on/<group>/BFCL_v4_<category>_result.json\n"
+        "under bfcl_eval/data/possible_answer and are not editor inputs. "
+        "This packaging is not official settlement.\n\n"
+        "Result lines are JSONL objects with id and result. bfcl evaluate reads "
+        "result/<model>/<group>/BFCL_v4_<category>_result.json and has no arm field, "
+        "so each arm of each thinking pass is its own model directory:\n"
+        "  <out>/result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/BFCL_v4_<category>_result.json\n"
+        "U, S, X, and SX do not append into the same BFCL_v4_<category>_result.json. "
+        f"The eight directories are {', '.join(directories)}. "
         "The API model on every request is "
-        f"{REQUEST_MODEL}. The directory suffix separates the two thinking passes "
-        "so memory snapshots are not shared.\n\n"
+        f"{REQUEST_MODEL}. Memory snapshots written during a trajectory stay under "
+        "result/deepseek-flash-thinking-<off|on>/, which separates the two thinking "
+        "passes. bfcl evaluate does not read those snapshot directories.\n\n"
         "This study's categories, in order, are: "
         f"{kept}. "
         f"Dropped from this study: {dropped}. "
@@ -113,13 +143,16 @@ def evaluate_instructions() -> str:
         "studies/clean-start-usx/scope.json. Their result files omit the other ids "
         "in that official category. A missing one-tool id is outside this study, "
         "not an incomplete result file. Do not pass all_scoring.\n\n"
-        "The pinned BFCL model list has no deepseek-flash entry. Register both "
-        "directory names before evaluate, with model_name "
+        "The pinned BFCL model list has no deepseek-flash entry. Register each of "
+        "the eight directory names before evaluate, with model_name "
         f"'{REQUEST_MODEL}', is_fc_model True, and DeepSeekAPIHandler. Then, from "
-        "the berkeley-function-call-leaderboard checkout, run one study category at a time:\n"
-        "  bfcl evaluate --model deepseek-flash-thinking-off --test-category <category> "
-        "--result-dir <path> --partial-eval\n"
-        "Repeat for deepseek-flash-thinking-on. --partial-eval is required because "
-        "the result file holds this study's ids, not every official id in the category.\n"
+        "the berkeley-function-call-leaderboard checkout, run one study category "
+        "and one model directory at a time. --result-dir is the directory that "
+        "contains those eight model directories. Pass an absolute path when "
+        "<out> is outside that checkout:\n"
+        f"{commands}\n"
+        "--partial-eval is required because "
+        "the result file holds this study's ids, not every official id in the category. "
+        "Each command scores one arm. "
         "format_sensitivity is not a scoring category and is not in this package."
     )

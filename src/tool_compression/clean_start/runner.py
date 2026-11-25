@@ -447,7 +447,7 @@ def _run_slot(case, slot, out_dir, transport, clock, executor, bill) -> bool:
             "input_token_count": parsed["prompt_tokens"],
             "output_token_count": parsed["output_tokens"],
         }
-        append_result(out_dir, case["id"], thinking, entry)
+        append_result(out_dir, case["id"], thinking, entry, arm)
         sidecar["steps"].append(_step_record(message, result, parsed))
         sidecar["scorable"] = True
         sidecar["result"] = result
@@ -503,7 +503,7 @@ def _run_slot(case, slot, out_dir, transport, clock, executor, bill) -> bool:
         "output_token_count": output_counts,
         "forced_quit": forced,
     }
-    append_result(out_dir, case["id"], thinking, entry)
+    append_result(out_dir, case["id"], thinking, entry, arm)
     sidecar["scorable"] = True
     sidecar["result"] = turns
     sidecar["forced_quit"] = forced
