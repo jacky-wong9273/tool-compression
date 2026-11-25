@@ -92,7 +92,8 @@ def _coverage(tools: list[dict], rendered: dict) -> dict:
         s_fields["fields"] += 1
         if row["adopted"]:
             s_fields["edited"] += 1
-            s_fields[f"edited:{row['change_class']}"] += 1
+            for rule in row["change_class"].split("+"):
+                s_fields[f"edited:{rule}"] += 1
         else:
             s_fields[f"kept:{row['keep_reason']}"] += 1
     x_tools = Counter()
@@ -431,16 +432,21 @@ def build_package(out_dir: Path) -> dict:
     }
 
 
-def _ledger_s(tools: list[dict], ledger: dict, keep: Counter) -> None:
-    """One row per distinct tool, suite-context state, and field.
+_S_STATES = ("suite_context_state", "membership_state", "hint_state")
 
-    S sees one tool plus which verbatim suite elaborations earlier tools carry,
-    so a tool is edited identically wherever it has the same state, and each
-    (tool, state) is recorded once.
+
+def _ledger_s(tools: list[dict], ledger: dict, keep: Counter) -> None:
+    """One row per distinct tool, carried-excerpt state, and field.
+
+    S sees one tool plus which verbatim suite elaborations, membership sentences
+    and language hints earlier tools carry, so a tool is edited identically
+    wherever it has the same state, and each (tool, state) is recorded once,
+    from the first catalogue that holds it (``tool_index`` is its index there).
     """
     _edited, all_rows = edit_catalogue(json.loads(json.dumps(tools)))
-    for tool, rows in zip(tools, all_rows):
-        state = rows[0]["suite_context_state"] if rows else None
+    for index, (tool, rows) in enumerate(zip(tools, all_rows)):
+        states = {name: rows[0][name] if rows else None for name in _S_STATES}
+        state = "|".join(str(states[name]) for name in _S_STATES)
         tool_key = f"tool:{context_id(tool)}:{state}"
         if tool_key in ledger:
             continue
@@ -455,8 +461,9 @@ def _ledger_s(tools: list[dict], ledger: dict, keep: Counter) -> None:
                 "rules_version": row["rules_version"],
                 "context_id": row["context_id"],
                 "function": row["function_name"],
+                "tool_index": index,
                 "pointer": row["pointer"],
-                "suite_context_state": state,
+                **states,
                 "before": row["original"],
                 "after": row["final"],
                 "change_class": row["change_class"],

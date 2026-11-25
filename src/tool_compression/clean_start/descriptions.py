@@ -4,7 +4,8 @@ Editors S and X both read original text through this parse. It recognises three
 things by grammar on the tool's own text, never by tool name, suite name, case id,
 question, or answer:
 
-- the official language hint at the end (official preparation, never edited);
+- the official language hint at the end (official preparation; X never compares
+  it, and S states it once per request on the first tool that carries it);
 - a suite preamble ``This tool belongs to <suite>[, which ...]. [It ...]. Tool description: ``
   that the tool's own text separates from its description with that label
   (``suite_context`` returns its membership and elaboration verbatim);

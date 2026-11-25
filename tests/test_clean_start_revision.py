@@ -88,26 +88,35 @@ def test_revised_pilot_report_regenerates_from_the_archived_evidence(tmp_path):
     assert first["S"]["tokens"] < 0 < first["X"]["tokens"]
 
 
-def test_s_keeps_a_suite_elaboration_on_its_first_carrier_in_the_request():
+def test_s_states_suite_membership_and_hint_once_on_their_first_carrier():
+    kitchen = "This tool belongs to the Kitchen API, which provides tools for recipes. Tool description: Bake a cake."
     tools = [
         _suite("water", "Water one plant."),
         _suite("prune", "Prune one plant."),
-        _tool("other", "This tool belongs to the Kitchen API, which provides tools for recipes. Tool description: Bake a cake." + HINT),
+        _tool("other", kitchen + HINT),
         _suite("feed", "Feed one plant."),
     ]
     edited, rows = edit_catalogue(deepcopy(tools))
     texts = [tool["function"]["description"] for tool in edited]
-    assert texts[0] == tools[0]["function"]["description"]
-    assert texts[2] == tools[2]["function"]["description"]
-    assert texts[1] == "This tool belongs to the Garden API. Prune one plant." + HINT
-    assert texts[3] == "This tool belongs to the Garden API. Feed one plant." + HINT
-    states = [{row["suite_context_state"] for row in tool_rows} for tool_rows in rows]
-    assert states == [{"first_in_request"}, {"carried_earlier"}, {"first_in_request"}, {"carried_earlier"}]
-    carriers = [
-        fact["carried_by_tool_index"]
-        for tool_rows in rows for row in tool_rows for fact in row["facts"] if "carried_by_tool_index" in fact
-    ]
-    assert carriers == [0, 0]
+    assert texts == [tools[0]["function"]["description"], "Garden API: Prune one plant.", kitchen, "Garden API: Feed one plant."]
+    for name, expected in (
+        ("suite_context_state", ["first_in_request", "carried_earlier", "first_in_request", "carried_earlier"]),
+        ("membership_state", ["first_in_request", "carried_earlier", "first_in_request", "carried_earlier"]),
+        ("hint_state", ["first_in_request", "carried_earlier", "carried_earlier", "carried_earlier"]),
+    ):
+        assert [tool_rows[0][name] for tool_rows in rows] == expected
+    carriers = {
+        (index, fact["decision"]): (fact["carried_excerpt"], fact["carried_by_tool_index"])
+        for index, tool_rows in enumerate(rows) for row in tool_rows for fact in row["facts"]
+        if "carried_by_tool_index" in fact
+    }
+    context = "This tool belongs to the Garden API, which provides tools to water and prune plants."
+    assert carriers == {
+        (1, "SUITE_CONTEXT"): (context, 0), (1, "SUITE_LABEL"): ("This tool belongs to the Garden API", 0),
+        (1, "HINT_CONTEXT"): (HINT, 0), (2, "HINT_CONTEXT"): (HINT, 0),
+        (3, "SUITE_CONTEXT"): (context, 0), (3, "SUITE_LABEL"): ("This tool belongs to the Garden API", 0),
+        (3, "HINT_CONTEXT"): (HINT, 0),
+    }
     alone, _rows = edit_catalogue(deepcopy(tools[1:2]))
     assert alone[0] == tools[1]
 
@@ -115,10 +124,42 @@ def test_s_keeps_a_suite_elaboration_on_its_first_carrier_in_the_request():
 def test_s_suite_rule_is_append_only_and_ignores_different_elaborations():
     tools = [_suite("water", "Water one plant."), _suite("prune", "Prune one plant.", ", which provides pruning only")]
     edited, _rows = edit_catalogue(deepcopy(tools))
-    assert edited == tools
+    assert edited[0] == tools[0]
+    assert edited[1]["function"]["description"] == tools[1]["function"]["description"].removesuffix(HINT)
     grown, _rows = edit_catalogue(deepcopy(tools + [_suite("feed", "Feed one plant.")]))
     assert grown[:2] == edited
-    assert grown[2]["function"]["description"] == "This tool belongs to the Garden API. Feed one plant." + HINT
+    assert grown[2]["function"]["description"] == "Garden API: Feed one plant."
+
+
+def test_s_membership_without_elaboration_becomes_a_label_after_its_first_carrier():
+    bare = [
+        _tool("water", "This tool belongs to the Garden API. Tool description: Water one plant." + HINT),
+        _tool("prune", "This tool belongs to the Garden API. Tool description: Prune one plant." + HINT),
+    ]
+    edited, rows = edit_catalogue(deepcopy(bare))
+    assert [tool["function"]["description"] for tool in edited] == [
+        "This tool belongs to the Garden API. Water one plant." + HINT,
+        "Garden API: Prune one plant.",
+    ]
+    assert rows[1][0]["change_class"] == "suite_context+suite_label+hint_context"
+
+
+def test_s_hint_needs_an_earlier_carrier_and_never_empties_a_description():
+    first = _tool("first", "Add two numbers." + HINT)
+    second = _tool("second", "Subtract two numbers." + HINT)
+    only_hint = _tool("hint_only", HINT)
+    java = _tool("java", "Add two numbers. Note that the provided function is in Java 8 SDK syntax.")
+    edited, rows = edit_catalogue(deepcopy([first, second, only_hint, java]))
+    texts = [tool["function"]["description"] for tool in edited]
+    assert texts == [
+        "Add two numbers." + HINT,
+        "Subtract two numbers.",
+        HINT,
+        "Add two numbers. Note that the provided function is in Java 8 SDK syntax.",
+    ]
+    assert rows[3][0]["hint_state"] == "first_in_request"
+    alone, _rows = edit_catalogue(deepcopy([second]))
+    assert alone[0] == second
 
 
 def test_s_keeps_enum_sentences_that_gloss_values():

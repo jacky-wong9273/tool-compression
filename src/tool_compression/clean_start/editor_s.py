@@ -14,16 +14,26 @@ Rules, in ``S_RULES_VERSION``:
   ``Tool description:``, the first tool in the request that carries a given
   suite elaboration keeps it unchanged. A later tool whose membership sentence
   and elaboration are byte-identical keeps ``This tool belongs to <suite>.`` and
-  its description, and drops the elaboration and the label. The only thing S
-  learns from the rest of the catalogue is which verbatim elaborations earlier
-  tools already carry (``edit_catalogue``); it never reads their names,
-  descriptions, or schemas.
+  its description, and drops the elaboration and the label.
+- ``suite_label``: when an earlier tool also states that membership sentence
+  verbatim, the later tool names the suite as a label instead:
+  ``Gorilla file system: Change the current working directory ...``. The suite
+  name is copied verbatim (first letter capitalised); only ``This tool belongs
+  to (the)`` is dropped.
+- ``hint_context``: the official language hint applies to every tool of the
+  request. The first tool that carries it keeps it verbatim; a later tool whose
+  hint is byte-identical drops it. Before ``s-rules-2026-11-26`` the hint was
+  never edited, so every tool repeated it.
 - ``direct_action``: drop a leading ``This function ...`` subject frame and
   keep the verb as written.
 - ``within_tool_duplicate`` and ``flag_normalization`` (which keeps the closing
   period) as before.
 
-The official language hint is never edited. Deletions touch only their seams.
+The only thing S learns from the rest of the catalogue is which verbatim
+request-level excerpts (suite elaborations, membership sentences, language
+hints) earlier tools still carry (``edit_catalogue``); it never reads their
+names, descriptions, or schemas, and never looks ahead, so appended tools leave
+earlier bytes alone. Deletions touch only their seams.
 """
 
 from __future__ import annotations
@@ -35,7 +45,7 @@ import re
 from tool_compression.adapter import description_slots
 from tool_compression.clean_start.descriptions import leading_frame, split_protected, suite_context, suite_preamble
 
-S_RULES_VERSION = "s-rules-2026-11-25.2"
+S_RULES_VERSION = "s-rules-2026-11-26"
 FLOAT_SUFFIX = " This is a float type value."
 KEEP_REASONS = ("already_minimal", "ambiguous_source", "no_shorter_faithful_candidate")
 _STOP = {
@@ -86,34 +96,58 @@ def context_id(tool: dict) -> str:
 def edit_catalogue(tools: list[dict]) -> tuple[list[dict], list[list[dict]]]:
     """Edit each tool in request order. Returns the edited tools and each tool's rows.
 
-    Tool ``i`` sees its own definition and the set of suite elaborations that
-    tools ``0..i-1`` still carry in their final S text, so appending tools never
-    changes an earlier tool's bytes.
+    Tool ``i`` sees its own definition and the request-level excerpts (suite
+    elaborations, membership sentences, language hints) that tools ``0..i-1``
+    still carry verbatim in their final S text, so appending tools never changes
+    an earlier tool's bytes.
     """
     carried: dict[str, int] = {}
     edited_tools = []
     all_rows = []
     for index, tool in enumerate(tools):
         context = suite_context(_function_text(tool))
-        state = None if context is None else ("carried_earlier" if context in carried else "first_in_request")
+        membership = _membership(_function_text(tool))
+        _head, hint = split_protected(_function_text(tool))
+        states = {
+            "suite_context_state": _carried_state(context, carried),
+            "membership_state": _carried_state(membership, carried),
+            "hint_state": _carried_state(hint, carried),
+        }
         edited, rows = edit_tool(json.loads(json.dumps(tool)), frozenset(carried))
         for row in rows:
-            row["suite_context_state"] = state
+            row.update(states)
             for fact in row["facts"]:
                 excerpt = fact.get("carried_excerpt")
                 if excerpt is None:
                     continue
                 if excerpt not in carried:
-                    raise ValueError("editor S dropped a suite elaboration no earlier tool carries")
+                    raise ValueError("editor S dropped a request-level excerpt no earlier tool carries")
                 fact["carried_by_tool_index"] = carried[excerpt]
                 carrier = edited_tools[carried[excerpt]]["function"]["description"]
                 if excerpt not in carrier:
-                    raise ValueError("editor S carrier lost the suite elaboration")
-        if context is not None and context not in carried and context in _function_text(edited):
-            carried[context] = index
+                    raise ValueError("editor S carrier lost the request-level excerpt")
+        final = _function_text(edited)
+        for excerpt in (context, membership, hint):
+            if excerpt and excerpt not in carried and excerpt in final:
+                carried[excerpt] = index
         edited_tools.append(edited)
         all_rows.append(rows)
     return edited_tools, all_rows
+
+
+def _carried_state(excerpt: str | None, carried: dict[str, int]) -> str | None:
+    if not excerpt:
+        return None
+    return "carried_earlier" if excerpt in carried else "first_in_request"
+
+
+def _membership(description: str) -> str | None:
+    head, _suffix = split_protected(description)
+    suite = suite_preamble(head)
+    if suite is None:
+        return None
+    start, end = suite["membership"]
+    return head[start:end]
 
 
 def _function_text(tool: dict) -> str:
@@ -551,14 +585,15 @@ def _recovery_excerpt(rest: str, function_text: str) -> str | None:
 
 
 def _function_candidates(original: str, carried: frozenset[str] = frozenset()) -> list[dict]:
-    """Suite-context and direct-action candidates, alone and together.
+    """Suite-context, suite-label, direct-action and hint-context candidates, alone and together.
 
-    Every candidate is the original with spans replaced. Nothing outside the
-    protected official hint is added except the period that already closed the
-    membership sentence and the capital on the kept verb. The suite elaboration
-    is dropped only when an earlier tool in the request carries it verbatim.
+    Every candidate is the original with spans replaced. Nothing is added except
+    the period or colon that closes the membership, and capitals on the kept verb
+    and suite name. The suite elaboration, the ``This tool belongs to`` frame and
+    the language hint are dropped only when an earlier tool in the request
+    carries the same excerpt verbatim.
     """
-    head, _suffix = split_protected(original)
+    head, suffix = split_protected(original)
     suite = suite_preamble(head)
     frame = leading_frame(head, suite["core_start"] if suite else 0)
     context = suite_context(original)
@@ -575,43 +610,65 @@ def _function_candidates(original: str, carried: frozenset[str] = frozenset()) -
             ),
         })
         suite = None
-    options = []
+    label = None
     if suite is not None:
-        options.append(("suite_context", suite, None))
+        membership = head[suite["membership"][0]:suite["membership"][1]]
+        named = _MEMBERSHIP.match(membership)
+        if named is not None and membership in carried:
+            label = named.group("suite")[:1].upper() + named.group("suite")[1:]
+    hint = suffix if suffix and suffix in carried and head.strip() else None
+    pieces = []
+    if suite is not None:
+        pieces.append([("suite_context", None)] + ([("suite_context+suite_label", label)] if label else []))
     if frame is not None:
-        options.append(("direct_action", None, frame))
-    if suite is not None and frame is not None:
-        options.append(("suite_context+direct_action", suite, frame))
-    for change_class, use_suite, use_frame in options:
+        pieces.append([("direct_action", None)])
+    if hint is not None:
+        pieces.append([("hint_context", None)])
+    for chosen in _combinations(pieces):
+        names = [name for name, _value in chosen]
+        use_suite = suite if any(name.startswith("suite_context") for name in names) else None
+        use_label = next((value for name, value in chosen if name == "suite_context+suite_label"), None)
+        use_frame = frame if "direct_action" in names else None
+        change_class = "+".join(names)
         edits = []
+        kept_membership = None
         if use_suite is not None:
             membership = use_suite["membership"]
-            elaboration = use_suite["elaboration"]
-            label = use_suite["label"]
             edits.append({
-                "span": elaboration,
-                "replacement": ".",
+                "span": use_suite["elaboration"],
+                "replacement": ":" if use_label else ".",
                 "decision": "SUITE_CONTEXT",
                 "carried_excerpt": context,
                 "note": (
                     "The elaboration describes the suite this tool belongs to, not this tool, and an "
-                    "earlier tool in the same request carries it verbatim. The membership sentence "
-                    "stays, so the suite is still named."
+                    "earlier tool in the same request carries it verbatim. The suite is still named."
                 ),
             })
             edits.append({
-                "span": label,
+                "span": use_suite["label"],
                 "replacement": " ",
                 "decision": "FRAME",
                 "note": "The label only marks where the tool's own description starts.",
             })
-            kept_membership = {
-                "span": membership,
-                "excerpt": original[membership[0]:membership[1]],
-                "decision": "KEEP",
-                "after": original[membership[0]:membership[1]],
-                "note": "Suite membership stays.",
-            }
+            if use_label:
+                edits.append({
+                    "span": membership,
+                    "replacement": use_label,
+                    "decision": "SUITE_LABEL",
+                    "carried_excerpt": original[membership[0]:membership[1]],
+                    "note": (
+                        "An earlier tool in this request states this membership sentence verbatim. "
+                        "This tool names the same suite as a label before its own description."
+                    ),
+                })
+            else:
+                kept_membership = {
+                    "span": membership,
+                    "excerpt": original[membership[0]:membership[1]],
+                    "decision": "KEEP",
+                    "after": original[membership[0]:membership[1]],
+                    "note": "Suite membership stays.",
+                }
         if use_frame is not None:
             start, end = use_frame["frame"]
             verb = use_frame["verb"]
@@ -621,10 +678,19 @@ def _function_candidates(original: str, carried: frozenset[str] = frozenset()) -
                 "decision": "FRAME",
                 "note": "The subject frame is not a separate claim. The verb stays as written.",
             })
+        if "hint_context" in names:
+            edits.append({
+                "span": [len(head), len(original)],
+                "replacement": "",
+                "decision": "HINT_CONTEXT",
+                "carried_excerpt": suffix,
+                "note": (
+                    "The official language hint applies to every tool in the request, and an earlier "
+                    "tool in the same request carries it verbatim."
+                ),
+            })
         candidate = _replace_spans(original, edits)
-        facts = []
-        if use_suite is not None:
-            facts.append(kept_membership)
+        facts = [kept_membership] if kept_membership else []
         for edit in edits:
             start, end = edit["span"]
             fact = {
@@ -648,6 +714,17 @@ def _function_candidates(original: str, carried: frozenset[str] = frozenset()) -
             "detail": detail if not ok else f"The function description keeps its own action text ({change_class}).",
         })
     return proposals
+
+
+_MEMBERSHIP = re.compile(r"^This tool belongs to (?:the )?(?P<suite>\S.*)$")
+
+
+def _combinations(pieces: list[list[tuple[str, str | None]]]):
+    """Every non-empty choice of at most one variant from each piece, in piece order."""
+    choices: list[list[tuple[str, str | None]]] = [[]]
+    for variants in pieces:
+        choices = choices + [choice + [variant] for choice in choices for variant in variants]
+    return [choice for choice in choices if choice]
 
 
 def _replace_spans(text: str, edits: list[dict]) -> str:
