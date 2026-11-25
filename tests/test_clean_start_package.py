@@ -55,7 +55,7 @@ def test_archived_pilot_evidence_is_byte_identical_to_its_checksums():
 
 def test_package_regenerates_byte_identical(tmp_path):
     summary = build_package(tmp_path)
-    assert summary["questions"] == 3327
+    assert summary["questions"] == 3127
     assert summary["integrity_failures"] == 0
     for name in (
         "token_tables.json", "integrity.json", "s_ledger.jsonl", "x_ledger.jsonl",
@@ -67,7 +67,7 @@ def test_package_regenerates_byte_identical(tmp_path):
         assert sha256((PACKAGE / name).read_bytes()).hexdigest() == digest, name
     integrity = json.loads((PACKAGE / "integrity.json").read_text(encoding="utf-8"))
     assert integrity["failures"] == []
-    assert set(integrity["passed_per_check"].values()) == {3327}
+    assert set(integrity["passed_per_check"].values()) == {3127}
     tables = json.loads((PACKAGE / "token_tables.json").read_text(encoding="utf-8"))
     assert tables["official_settlement"] is False
     overall = tables["all_in_scope"]

@@ -1,10 +1,14 @@
-"""Study population: multi-tool U catalogues only.
+"""Study population: multi-tool U catalogues, minus billable web search.
 
 A scoring question is in scope when the model-facing U catalogue has more
 than one tool. That list is the OpenAI tool entries ``compile_case`` hands
 to the editors after ``load_questions`` and the official language hint.
 Official simple sets stay out of the study even if a question were
-multi-tool. Memory prerequisites are not scoring questions.
+multi-tool. ``web_search_base`` and ``web_search_no_snippet`` stay out
+because every search calls billable SerpAPI, which is outside the DeepSeek
+ceiling. Their prompts stay in the vendored BFCL package. Memory backends
+stay in the study; their Python libraries and the MiniLM weight file are
+local, not a billable service. Memory prerequisites are not scoring questions.
 
 ``scope.json`` is the checked census. The runner applies this rule to the
 loaded questions; it does not keep a second id list in code.
@@ -30,6 +34,18 @@ OFFICIAL_SIMPLE_CATEGORIES = (
     "simple_java",
     "simple_javascript",
     "live_simple",
+)
+
+# Both web sets are multi-tool. They leave the study because the pinned
+# executor calls SerpAPI, a billable service outside the DeepSeek ceiling.
+# This is not a redraw of any other category's questions.
+EXCLUDED_EXTERNAL_SERVICE_CATEGORIES = (
+    "web_search_base",
+    "web_search_no_snippet",
+)
+EXTERNAL_SERVICE_EXCLUSION_REASON = (
+    "excluded: web search calls billable SerpAPI outside the DeepSeek ceiling; "
+    "the vendored prompts stay in the BFCL package"
 )
 
 # Examples measured while scoping. The census builder refuses a different count.
@@ -110,13 +126,13 @@ def u_tool_count(case: dict) -> int:
 
 
 def question_in_scope(case: dict) -> bool:
-    """Scoring question with a multi-tool U catalogue, outside the simple sets."""
+    """Scoring question with a multi-tool U catalogue, outside the exclusions."""
     if case.get("prereq"):
         return False
     category = case.get("category")
     if category not in ALL_SCORING_CATEGORIES:
         return False
-    if category in OFFICIAL_SIMPLE_CATEGORIES:
+    if category in OFFICIAL_SIMPLE_CATEGORIES or category in EXCLUDED_EXTERNAL_SERVICE_CATEGORIES:
         return False
     return u_tool_count(case) > 1
 
@@ -142,7 +158,7 @@ def study_categories() -> tuple[str, ...]:
     counts = _tool_counts()
     kept = []
     for category in ALL_SCORING_CATEGORIES:
-        if category in OFFICIAL_SIMPLE_CATEGORIES:
+        if category in OFFICIAL_SIMPLE_CATEGORIES or category in EXCLUDED_EXTERNAL_SERVICE_CATEGORIES:
             continue
         if any(count > 1 for count in counts[category].values()):
             kept.append(category)
@@ -152,7 +168,7 @@ def study_categories() -> tuple[str, ...]:
 def in_scope_questions(category: str) -> list[dict]:
     if category not in ALL_SCORING_CATEGORIES:
         raise ValueError(f"{category} is not a scoring category")
-    if category in OFFICIAL_SIMPLE_CATEGORIES:
+    if category in OFFICIAL_SIMPLE_CATEGORIES or category in EXCLUDED_EXTERNAL_SERVICE_CATEGORIES:
         return []
     counts = _tool_counts()[category]
     return [
@@ -230,6 +246,10 @@ def _census_row(category: str) -> dict:
         else:
             reason = "official simple set; excluded regardless of tool count"
         in_scope_ids: list[str] = []
+    elif category in EXCLUDED_EXTERNAL_SERVICE_CATEGORIES:
+        disposition = "dropped"
+        reason = EXTERNAL_SERVICE_EXCLUSION_REASON
+        in_scope_ids = []
     elif not multi_ids:
         disposition = "dropped"
         reason = "no question has more than one tool in the loaded U catalogue"
@@ -377,8 +397,11 @@ def build_scope_document() -> dict:
         "rule": {
             "in_scope": (
                 "A scoring question is in scope iff len(tools) > 1 on the loaded U "
-                "catalogue and the category is not an official simple set."
+                "catalogue, the category is not an official simple set, and the "
+                "category is not web_search_base or web_search_no_snippet."
             ),
+            "excluded_external_service": list(EXCLUDED_EXTERNAL_SERVICE_CATEGORIES),
+            "excluded_external_service_reason": EXTERNAL_SERVICE_EXCLUSION_REASON,
             "tool": (
                 "One function-document entry in the initial model-facing U catalogue, "
                 "which is one OpenAI tool entry after official load and the language hint. "

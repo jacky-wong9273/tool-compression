@@ -5,7 +5,7 @@
   "k": 3,
   "algorithm": "random.Random('clean-start-usx:{seed}:{category}').sample(sorted(question_ids), 3)",
   "short_population": "When a category has fewer than 3 in-scope questions, freeze every in-scope id in sorted order. Do not call sample and do not change the seed.",
-  "population": "in-scope scoring questions only; a question is in scope when its loaded U catalogue has more than one tool; official simple sets are excluded; memory prerequisites are excluded",
+  "population": "in-scope scoring questions only; a question is in scope when its loaded U catalogue has more than one tool; official simple sets are excluded; web_search_base and web_search_no_snippet are excluded because they call billable SerpAPI; memory prerequisites are excluded from the draw",
   "categories": [
     "multiple",
     "parallel_multiple",
@@ -20,9 +20,7 @@
     "multi_turn_long_context",
     "memory_kv",
     "memory_vector",
-    "memory_rec_sum",
-    "web_search_base",
-    "web_search_no_snippet"
+    "memory_rec_sum"
   ],
   "draws": [
     {
@@ -106,18 +104,6 @@
     {
       "category": "memory_rec_sum",
       "population": 155,
-      "frozen": 3,
-      "method": "sample"
-    },
-    {
-      "category": "web_search_base",
-      "population": 100,
-      "frozen": 3,
-      "method": "sample"
-    },
-    {
-      "category": "web_search_no_snippet",
-      "population": 100,
       "frozen": 3,
       "method": "sample"
     }
@@ -326,36 +312,6 @@
     {
       "category": "memory_rec_sum",
       "case_id": "memory_rec_sum_62-finance-7",
-      "position": 2
-    },
-    {
-      "category": "web_search_base",
-      "case_id": "web_search_base_37",
-      "position": 0
-    },
-    {
-      "category": "web_search_base",
-      "case_id": "web_search_base_46",
-      "position": 1
-    },
-    {
-      "category": "web_search_base",
-      "case_id": "web_search_base_58",
-      "position": 2
-    },
-    {
-      "category": "web_search_no_snippet",
-      "case_id": "web_search_no_snippet_83",
-      "position": 0
-    },
-    {
-      "category": "web_search_no_snippet",
-      "case_id": "web_search_no_snippet_92",
-      "position": 1
-    },
-    {
-      "category": "web_search_no_snippet",
-      "case_id": "web_search_no_snippet_58",
       "position": 2
     }
   ]

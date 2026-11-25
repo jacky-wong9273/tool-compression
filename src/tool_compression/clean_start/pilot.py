@@ -161,7 +161,8 @@ def build_draw(seed: int = PILOT_SEED) -> dict:
         "population": (
             "in-scope scoring questions only; a question is in scope when its loaded "
             "U catalogue has more than one tool; official simple sets are excluded; "
-            "memory prerequisites are excluded"
+            "web_search_base and web_search_no_snippet are excluded because they call "
+            "billable SerpAPI; memory prerequisites are excluded from the draw"
         ),
         "categories": list(categories),
         "draws": draws,
@@ -248,7 +249,8 @@ def coverage() -> dict:
         "study": STUDY_ID,
         "official_settlement": OFFICIAL_SETTLEMENT,
         "population": (
-            "in-scope scoring questions whose loaded U catalogue has more than one tool"
+            "in-scope scoring questions whose loaded U catalogue has more than one tool, "
+            "excluding web_search_base and web_search_no_snippet"
         ),
         "in_scope_questions": total,
         "scope_file": "studies/clean-start-usx/scope.json",
