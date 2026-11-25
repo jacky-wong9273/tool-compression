@@ -2,6 +2,8 @@
 
 This study is separate from Evaluation Protocol v1.1. v1.1 stays historical and closed. `official_settlement` is false. Nothing in this package calls a provider. A later evaluation is intended off-peak and is not started here.
 
+`REVIEW.md` is the 2026-11-25 independent review: severity-ranked critique, literature, editor and runner revisions, offline token tables, the re-read of the 25 Nov thinking-off pilot, reproduction commands, and open blockers. The offline review package is `package/`. The pilot evidence is archived unmodified under `evidence/pilot-2026-11-25-thinking-off/`.
+
 The request model is `deepseek-flash`, currently served as DeepSeek-V4.1-Flash-1017. The retired name `deepseek-v4-flash` still routes and is not the name this runner sends. V4.1 Flash defaults to thinking on, so the runner sets `thinking.type` to `disabled` and then `enabled`. Arms are U, S, X, and SX. U is the unmodified original BFCL tools after the official language hint and OpenAI-completions conversion. S edits one tool at a time. X appends at most one contrast cue computed on U. SX is S, then that same cue. Questions and gold answers are not editor inputs.
 
 ## Study population
@@ -14,7 +16,7 @@ Official simple sets stay out of the study: `simple_python`, `simple_java`, `sim
 
 A category with zero in-scope questions is dropped. A mixed category stays, restricted to the in-scope questions. Vendored prompts under `bfcl/` stay the original scoring package, including the dropped sets.
 
-Memory prerequisite conversations are not scoring questions. They stay out of the census population, the pilot, the in-scope id lists, and the limitation question counts. The full runner still sends the 37 prerequisites for each memory backend before that backend's questions, because a full memory score needs those conversations. Those catalogues are multi-tool (kv 15, vector 12, rec_sum 5) and remain outside the population. The pilot does not send them.
+Memory prerequisite conversations are not scoring questions. They stay out of the census population, the pilot, the in-scope id lists, and the limitation question counts. The full runner still sends the 37 prerequisites for each memory backend before that backend's questions, because a full memory score needs those conversations. Those catalogues are multi-tool (kv 15, vector 12, rec_sum 5) and remain outside the population. A live pilot must choose `--memory-prereqs none` or `--memory-prereqs matched`. `matched` sends, before each memory category, the prerequisites of the scenarios its drawn questions use, which is the official `depends_on` set: 54 conversations and 466 turns per arm and thinking mode. `none` sends memory questions on empty memory, so their scores are not interpretable.
 
 The unscoped 22-set package, with its 66-case pilot, stays on PR #24, branch `cursor/clean-start-usx-14e3`, tip `c1df4bbf439151abad2ed79b103d401a61443412`, parented on main `1ab2b5d042b7d8fadbb0c922c51201ae6fc75c21`. This change leaves that branch as it is.
 
@@ -78,13 +80,13 @@ The resulting study is 16 categories and 3327 questions. `evaluate-help` names t
 
 ## What is packaged
 
-1. Unmodified scoring prompts, function-doc catalogues, and memory prerequisites under `bfcl/`, pinned to gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. `bfcl/manifest.json` is the byte identity. Gold stays in that Gorilla tree. Saved outputs are the official JSONL result lines (`id` and `result`) plus a sidecar of the assistant message, reasoning, tool calls, and usage. Accuracy is recovered with `bfcl evaluate` after the eight directory names `deepseek-flash-thinking-<off|on>-<U|S|X|SX>` are registered as `deepseek-flash` function-calling models. Each name is one arm of one thinking pass. `python -m tool_compression clean-start evaluate-help` prints the commands. This repo does not score. `official_settlement` stays false.
+1. Unmodified scoring prompts, function-doc catalogues, and memory prerequisites under `bfcl/`, pinned to gorilla `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. `bfcl/manifest.json` is the byte identity. Gold stays in that Gorilla tree. Saved outputs are the official JSONL result lines (`id` and `result`) plus a sidecar of the assistant message, reasoning, tool calls, and usage. Accuracy is recovered with `bfcl evaluate` after the eight directory names `deepseek-flash-thinking-<off|on>-<U|S|X|SX>` are registered as `deepseek-flash` function-calling models with `underscore_to_dot` true, the same flags as the pinned `DeepSeek-V3.2-Exp-FC` entry. Tool names are sent with `.` replaced by `_`; with `underscore_to_dot` false every dotted gold name scores `wrong_func_name`, which is what happened to the archived 25 Nov pilot scores. Each name is one arm of one thinking pass. `python -m tool_compression clean-start evaluate-help` prints the commands. `python -m tool_compression.clean_start evaluate --out DIR --bfcl-root GORILLA --thinking off|on|off,on` does the registration in-process and runs the official evaluator per category with partial evaluation. It contacts no provider. This repo has no scorer of its own. `official_settlement` stays false.
 
-2. Editors S and X, and the composed SX renders. The pilot renders under `pilot/rendered/` are the inspectable edits. `limitations.json` counts, for every in-scope scoring question, how many S, X, and SX catalogues differ from U.
+2. Editors S and X, and the composed SX renders. The pilot renders under `pilot/rendered/` are the inspectable edits; trajectory renders also carry `held_out_turn_arms`, the cumulative held-out documents per turn. `limitations.json` counts, for every in-scope scoring question, how many S, X, and SX catalogues differ from U. `package/` holds the S and X ledgers, token tables, integrity checks over all 3327 questions, and examples; `python -m tool_compression.clean_start package` rebuilds it byte for byte.
 
-3. A sender for U/S/X/SX with thinking off, then thinking on. It does not reserve or send `max_tokens`. After each completed response it records `prompt_tokens`, cache hit and miss (or the assumption below), output tokens, and reasoning tokens when the provider reports them. Reasoning tokens are recorded and are not added on top of output tokens. Spend uses the rate card below. If the running spend has reached a later-authorized ceiling, later sends stop. A stopped run has `complete: false` and is not a finished evaluation. A response without billed usage, or a provider error, stops the run and does not invent a charge. There is no retry.
+3. A sender for U/S/X/SX for the thinking modes a person authorises. `--thinking off`, `--thinking on`, or `--thinking off,on` is required with `--live`; a slot outside those modes stops the run before a send. It does not reserve or send `max_tokens`. Before each request it checks the running spend against the ceiling and journals a `sent` line in `attempts.jsonl` (body hash, tools hash, byte size, time). After each completed response it records `prompt_tokens`, cache hit and miss (or the assumption below), output tokens, and reasoning tokens when the provider reports them, then writes a `completed` line and rewrites the slot's sidecar, so a stopped trajectory keeps every billed step. Reasoning tokens are recorded and are not added on top of output tokens. Spend uses the rate card below. If the running spend has reached a later-authorized ceiling, later sends stop. A stopped run has `complete: false` and is not a finished evaluation. A response without billed usage, a provider error, or a timeout stops the run, does not invent a charge, and lists the open attempt under `uncertain_attempts` in `run.json` because it may have been billed. There is no retry. Each read waits at most 120 s and each request at most 900 s in total. An output directory that already holds `attempts.jsonl`, `bills.jsonl`, or a `run.json` that contacted a provider is refused before a key read, so a run is never resumed or doubled. Before any request a preflight checks the Gorilla root, the backend modules the planned categories import, and that `DEEPSEEK_API_KEY` and, for web search, `SERPAPI_API_KEY` are set and non-empty (values are never printed or stored). Arm order rotates by case position, `ARMS[i % 4:] + ARMS[:i % 4]`, so no arm always sends first into a cold provider cache. Trajectories follow the pinned FC loop: class instances are initialised before the first query, memory categories get the pinned memory instruction prompt, a turn ends on an empty or undecodable reply, more than 20 steps in a turn force-quits the trajectory, held-out documents arrive without the language hint, and a memory prerequisite flushes its snapshot at the end.
 
-4. The same sender limited to the frozen pilot. `python -m tool_compression clean-start run --pilot --out DIR` writes a dry plan and does not contact a provider. `--live` without `--authorize-live` exits before a key read or a socket. The authorized path also requires `--ceiling-usd` greater than zero and, for any trajectory category, `--bfcl-root` pointing at the pinned Gorilla checkout so the official multi-turn executor can run. This package does not start that run.
+4. The same sender limited to the frozen pilot. `python -m tool_compression clean-start run --pilot --out DIR` writes a dry plan and does not contact a provider. `--live` without `--authorize-live` exits before a key read or a socket. The authorized path also requires `--thinking`, `--memory-prereqs`, `--ceiling-usd` greater than zero and, for any trajectory category, `--bfcl-root` pointing at the pinned Gorilla checkout so the official multi-turn executor can run. This package does not start that run.
 
 ## Rate card
 
@@ -97,32 +99,32 @@ Retrieved 2026-11-25 from https://api-docs.deepseek.com/quick_start/pricing/. Pr
 
 Peak is double off-peak. Peak hours are 01:00–04:00 and 06:00–10:00 UTC, Monday–Friday, half-open, which is 09:00–12:00 and 14:00–18:00 HKT. Chinese public holidays are off-peak for the whole Asia/Shanghai date. The 2026 holiday dates are the 放假 ranges in 国办发明电〔2025〕7号. Weekends stay off-peak, including makeup weekend workdays. Years outside 2026 have no holiday rows in this package. If the provider omits the cache split, the whole prompt is billed as cache miss and the bill says `assumed_all_miss`.
 
-Token bills are `bills.jsonl` (one row per completed HTTP step) and `spend.json` (running USD, ceiling, slot counts, and the rate card). Scorable lines are `result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/BFCL_v4_<category>_result.json`. U, S, X, and SX do not append into the same file. The raw message for each slot is `model_outputs/deepseek-flash-thinking-<off|on>/<arm>/<case_id>.json`. Memory snapshots for a trajectory are `result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/memory_snapshot/<scenario>_final.json`. The executor instance name is `deepseek_flash_thinking_<off|on>_<arm>`. U, S, X, and SX do not share an in-process class instance or a snapshot file.
+Token bills are `bills.jsonl` (one row per completed HTTP step, with its attempt number, send time and price band) and `spend.json` (running USD, ceiling, slot counts, and the rate card). `attempts.jsonl` has a line before every request and one after it, so a request with no bill row is still on record. Scorable lines are `result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/BFCL_v4_<category>_result.json`. U, S, X, and SX do not append into the same file. The raw message for each slot is `model_outputs/deepseek-flash-thinking-<off|on>/<arm>/<case_id>.json`. Memory snapshots for a trajectory are `result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/memory_snapshot/<scenario>_final.json`. The executor instance name is `deepseek_flash_thinking_<off|on>_<arm>`. U, S, X, and SX do not share an in-process class instance or a snapshot file.
 
 ## Editor limitations by set
 
-Every in-scope question gets the official language hint before the editors run. X qualifies the wording under that hint, then the cue is appended after it. Response-schema descriptions are not description slots, so they stay unmodified wherever a catalogue has them. A zero in the table means the rules ran on the in-scope questions and no candidate qualified. Dropped sets are omitted here; the census above records them. Question counts in this table are the in-scope counts.
+Every in-scope question gets the official language hint before the editors run. S never edits the hint. X compares each tool's action sentence with the hint, any labelled suite preamble, and a leading `This function` frame set aside, then appends the cue after the hint. Response-schema descriptions are not description slots, so they stay unmodified wherever a catalogue has them. A zero in the table means the rules ran on the in-scope questions and no candidate qualified. Dropped sets are omitted here; the census above records them. Question counts in this table are the in-scope counts. Rules are `s-rules-2026-11-25` and `x-rules-2026-11-25.2`.
 
 `live_parallel` shows zeros because neither in-scope catalogue changed. The two S differences on the unscoped record are one-tool questions and are outside this study.
 
-| set | in-scope questions | S differs from U | X differs from U | what stays unmodified |
-| --- | ---: | ---: | ---: | --- |
-| multiple | 200 | 86 | 13 | |
-| parallel_multiple | 200 | 74 | 12 | |
-| live_multiple | 1053 | 228 | 0 | same rules; no rival qualified |
-| live_parallel | 2 | 0 | 0 | same rules; no S candidate and no X rival qualified |
-| live_parallel_multiple | 24 | 9 | 0 | same rules; no rival qualified |
-| live_irrelevance | 372 | 78 | 0 | same rules; no rival qualified |
-| live_relevance | 11 | 3 | 0 | same rules; no rival qualified |
-| multi_turn_base | 200 | 200 | 25 | `excluded_function` stays in the catalogue because the pinned loader does not strip it; execution needs the official backend |
-| multi_turn_miss_func | 200 | 200 | 25 | held-out docs are absent from the initial tools and return on that turn with the official holdout user prompt, which is sender text |
-| multi_turn_miss_param | 200 | 200 | 25 | same catalogue limitation as the base set |
-| multi_turn_long_context | 200 | 200 | 25 | the long-context flag is an executor input, not a document edit |
-| memory_kv | 155 | 0 | 155 | 37 prerequisite conversations are required for a full score and are not in the pilot; the backend instruction prompt is not invented; the agentic format prompt is sender text |
-| memory_vector | 155 | 0 | 155 | same memory limitations |
-| memory_rec_sum | 155 | 0 | 0 | same memory limitations; no S candidate and no X rival qualified |
-| web_search_base | 100 | 0 | 0 | snippet display is `show_snippet` on the executor; the two web sets share tool docs |
-| web_search_no_snippet | 100 | 0 | 0 | `show_snippet` is false when the id contains `no_snippet` |
+| set | in-scope questions | S differs from U | X differs from U | SX differs from U | what stays unmodified |
+| --- | ---: | ---: | ---: | ---: | --- |
+| multiple | 200 | 86 | 19 | 99 | |
+| parallel_multiple | 200 | 74 | 21 | 89 | |
+| live_multiple | 1053 | 369 | 21 | 390 | |
+| live_parallel | 2 | 0 | 0 | 0 | same rules; no S candidate and no X rival qualified |
+| live_parallel_multiple | 24 | 12 | 0 | 12 | same rules; no X rival qualified |
+| live_irrelevance | 372 | 128 | 11 | 139 | |
+| live_relevance | 11 | 5 | 0 | 5 | same rules; no X rival qualified |
+| multi_turn_base | 200 | 200 | 95 | 200 | `excluded_function` stays in the catalogue because the pinned loader does not strip it; execution needs the official backend |
+| multi_turn_miss_func | 200 | 200 | 95 | 200 | held-out docs are absent from the initial tools and return on that turn, without the language hint, with the official holdout user prompt, which is sender text |
+| multi_turn_miss_param | 200 | 200 | 95 | 200 | same catalogue limitation as the base set |
+| multi_turn_long_context | 200 | 200 | 95 | 200 | the long-context flag is an executor input, not a document edit |
+| memory_kv | 155 | 155 | 155 | 155 | 37 prerequisite conversations are required for a full score; the pilot sends the matched ones only with `--memory-prereqs matched`; the memory instruction prompt is the pinned BFCL one; the agentic format prompt is sender text |
+| memory_vector | 155 | 155 | 155 | 155 | same memory limitations |
+| memory_rec_sum | 155 | 155 | 0 | 155 | same memory limitations; no X rival qualified |
+| web_search_base | 100 | 100 | 0 | 100 | snippet display is `show_snippet` on the executor; the two web sets share tool docs; no X rival qualified |
+| web_search_no_snippet | 100 | 100 | 0 | 100 | `show_snippet` is false when the id contains `no_snippet` |
 
 Still outside the vendored tree: `format_sensitivity`, `exec_simple`, `exec_parallel`, `exec_multiple`, `exec_parallel_multiple`, `rest`, `sql`, `chatable`, `multi_turn_composite`, and `unused_datasets`.
 
