@@ -16,7 +16,7 @@ import json
 import platform
 
 from tool_compression.adapter import description_slots
-from tool_compression.clean_start.descriptions import suite_context
+from tool_compression.clean_start.descriptions import split_protected, suite_context, suite_preamble
 from tool_compression.clean_start.editor_s import S_RULES_VERSION, context_id, edit_catalogue
 from tool_compression.clean_start.editor_x import X_RULES_VERSION, qualify_catalogue
 from tool_compression.clean_start.load import prompt_manifest
@@ -116,6 +116,7 @@ def _empty_totals() -> dict:
         "cued_tools": 0,
         "cue_tokens": 0,
         "coverage": {"s_fields": Counter(), "x_tools": Counter()},
+        "u_anatomy": Counter(),
     }
 
 
@@ -130,6 +131,7 @@ def _add(totals: dict, record: dict) -> None:
     totals["cue_tokens"] += record["cue_tokens"]
     for editor, counts in record["coverage"].items():
         totals["coverage"][editor].update(counts)
+    totals["u_anatomy"].update(record["anatomy"])
 
 
 def _with_deltas(totals: dict) -> dict:
@@ -149,7 +151,19 @@ def _with_deltas(totals: dict) -> dict:
     coverage["questions_without_s_edit"] = totals["questions"] - totals["changed_questions"]["S"]
     coverage["questions_without_x_cue"] = totals["questions"] - totals["changed_questions"]["X"]
     coverage["questions_unchanged_in_sx"] = totals["questions"] - totals["changed_questions"]["SX"]
-    return {**totals, "coverage": coverage, "deltas": deltas}
+    base = totals["tools_tokens"]["U"]
+    anatomy = {"outside_descriptions": base - totals["field_tokens"]["U"], **totals["u_anatomy"]}
+    u_anatomy = {
+        name: {"tokens": anatomy.get(name, 0), "percent_of_u_tools": round(100 * anatomy.get(name, 0) / base, 3) if base else None}
+        for name in _ANATOMY
+    }
+    return {**totals, "coverage": coverage, "u_anatomy": u_anatomy, "deltas": deltas}
+
+
+_ANATOMY = (
+    "outside_descriptions", "function_descriptions", "parameter_descriptions", "language_hints",
+    "repeated_language_hints", "suite_preambles", "repeated_suite_preambles",
+)
 
 
 def _catalogue_record(tools: list[dict], counter, cache: dict) -> dict:
@@ -176,9 +190,36 @@ def _catalogue_record(tools: list[dict], counter, cache: dict) -> dict:
         "rendered": rendered,
         "integrity": _integrity(arms, rendered["x_decisions"]),
         "coverage": _coverage(tools, rendered),
+        "anatomy": _anatomy(arms["U"], counter),
     }
     cache[key] = record
     return record
+
+
+def _anatomy(tools: list[dict], counter) -> Counter:
+    """Where the U tools tokens sit: description kinds, and request-level text repeated after its first tool."""
+    parts = Counter()
+    seen_hints: set[str] = set()
+    seen_members: set[str] = set()
+    for tool in tools:
+        for pointer, container, key in description_slots(tool):
+            kind = "function_descriptions" if pointer == "/function/description" else "parameter_descriptions"
+            parts[kind] += counter.count(container[key])
+        head, hint = split_protected(tool["function"]["description"])
+        if hint:
+            parts["language_hints"] += counter.count(hint)
+            if hint in seen_hints:
+                parts["repeated_language_hints"] += counter.count(hint)
+            seen_hints.add(hint)
+        suite = suite_preamble(head)
+        if suite:
+            preamble = counter.count(head[: suite["core_start"]])
+            membership = head[suite["membership"][0]:suite["membership"][1]]
+            parts["suite_preambles"] += preamble
+            if membership in seen_members:
+                parts["repeated_suite_preambles"] += preamble
+            seen_members.add(membership)
+    return parts
 
 
 def _integrity(arms: dict, decisions: list[dict]) -> dict:
@@ -193,6 +234,8 @@ def _integrity(arms: dict, decisions: list[dict]) -> dict:
         "cued_sx_is_s_plus_cue": True,
         "text_cue_phrase_in_rival_u_and_s": True,
         "dropped_suite_elaboration_still_in_s_request": _suite_context_kept(arms),
+        "every_language_hint_still_in_s_request": _excerpts_kept(arms, _hint_of),
+        "every_membership_sentence_still_in_s_request": _excerpts_kept(arms, _membership_of),
     }
     for row in decisions:
         if row["cue"] and row["rival_phrase"]:
@@ -226,6 +269,26 @@ def _suite_context_kept(arms: dict) -> bool:
         if context is not None and not any(context in text for text in s_texts):
             return False
     return True
+
+
+def _excerpts_kept(arms: dict, excerpt_of) -> bool:
+    """Every request-level excerpt of the U request is still verbatim in some S description."""
+    s_texts = [tool["function"]["description"] for tool in arms["S"]]
+    for tool in arms["U"]:
+        excerpt = excerpt_of(tool["function"]["description"])
+        if excerpt and not any(excerpt in text for text in s_texts):
+            return False
+    return True
+
+
+def _hint_of(description: str) -> str:
+    return split_protected(description)[1]
+
+
+def _membership_of(description: str) -> str | None:
+    head, _hint = split_protected(description)
+    suite = suite_preamble(head)
+    return head[suite["membership"][0]:suite["membership"][1]] if suite else None
 
 
 def _held_out_keeps_sent_bytes(case: dict) -> bool:
@@ -312,8 +375,13 @@ def build_package(out_dir: Path) -> dict:
             "array, the part of a request the arms change. Neither is provider-billed usage; the "
             "provider tokenizer and chat template differ. The initial catalogue of each in-scope "
             "question is counted once per question; held-out miss_func turns are not included. "
-            "coverage counts, per question, every editable field S saw (edited by class, or kept by "
-            "reason) and every tool X saw (cued by axis, or uncued by the closest refusal)."
+            "coverage counts, per question, every editable field S saw (edited, then once under each "
+            "rule that edited it, or kept by reason) and every tool X saw (cued by axis kind, or "
+            "uncued by the closest refusal). u_anatomy splits the U tools tokens: description kinds are "
+            "summed field by field; outside_descriptions is tools tokens minus those fields (names, "
+            "schema, JSON punctuation; approximate, since tokens do not add across field seams); hints "
+            "and suite preambles are inside function descriptions, and their repeated_ parts are the "
+            "occurrences after the first tool of the request that carries the same hint or membership."
         ),
         "exposure": (
             "pilot_draw (41 cases) and validation_draw (313 cases) have both been flown and diagnosed; "

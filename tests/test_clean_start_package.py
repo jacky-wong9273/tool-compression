@@ -75,10 +75,32 @@ def test_package_regenerates_byte_identical(tmp_path):
     assert tables["official_settlement"] is False
     overall = tables["all_in_scope"]
     assert overall["deltas"]["X-U"]["field_tokens"] == overall["cue_tokens"] > 0
-    assert tables["by_category"]["live_parallel"]["deltas"]["S-U"]["field_tokens"] == 0
+    assert tables["by_category"]["live_parallel"]["deltas"]["S-U"]["field_tokens"] < 0
+    assert tables["by_category"]["live_parallel"]["deltas"]["X-U"]["field_tokens"] == 0
     for row in tables["by_category"].values():
         assert row["deltas"]["X-U"]["tools_tokens"] >= 0
-        assert row["deltas"]["S-U"]["tools_tokens"] <= 0
+        assert row["deltas"]["S-U"]["tools_tokens"] < 0
+    draws = tables["draws"]
+    assert {name: row["questions"] for name, row in draws.items()} == {
+        "pilot_draw": 41, "validation_draw": 313, "outside_both_draws": 2773,
+    }
+    assert "exposed" in tables["exposure"]
+    for row in [overall, *draws.values()]:
+        coverage = row["coverage"]
+        assert coverage["s_fields"]["fields"] == coverage["s_fields"]["edited"] + sum(
+            count for key, count in coverage["s_fields"].items() if key.startswith("kept:")
+        )
+        assert coverage["x_tools"]["tools"] == coverage["x_tools"]["cued"] + sum(
+            count for key, count in coverage["x_tools"].items() if key.startswith("uncued:")
+        )
+        assert coverage["questions_without_x_cue"] <= row["questions"]
+        anatomy = row["u_anatomy"]
+        assert sum(anatomy[name]["tokens"] for name in (
+            "outside_descriptions", "function_descriptions", "parameter_descriptions",
+        )) == row["tools_tokens"]["U"]
+        assert anatomy["repeated_language_hints"]["tokens"] <= anatomy["language_hints"]["tokens"]
+        assert anatomy["repeated_suite_preambles"]["tokens"] <= anatomy["suite_preambles"]["tokens"]
+        assert anatomy["language_hints"]["tokens"] <= anatomy["function_descriptions"]["tokens"]
 
 
 def test_s_ledger_rows_keep_their_facts_and_never_touch_names():
