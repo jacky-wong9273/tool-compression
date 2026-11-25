@@ -81,6 +81,30 @@ def assistant_history(message: dict) -> dict:
     return history
 
 
+def decode_execute(result: object) -> list[str]:
+    """Port of pinned ``convert_to_function_call`` for an FC model.
+
+    Raises exactly where the pinned decoder raises: a content string, a non-JSON
+    argument string, or arguments that are not an object. The official loop
+    ends the turn on that exception.
+    """
+    calls = [result] if isinstance(result, dict) else result
+    strings = []
+    for call in calls:
+        for name, value in call.items():
+            if isinstance(value, str):
+                value = json.loads(value)
+            strings.append(f"{name}({','.join(f'{key}={repr(item)}' for key, item in value.items())})")
+    return strings
+
+
+def is_empty_execute_response(decoded: list) -> bool:
+    """Port of pinned ``is_empty_execute_response``."""
+    if len(decoded) == 0:
+        return True
+    return len(decoded) == 1 and len(decoded[0]) == 0
+
+
 def to_execution_strings(result: object) -> list[str]:
     """Same shape as BFCL ``convert_to_function_call`` for the official executor."""
     if not isinstance(result, list):
