@@ -1,0 +1,72 @@
+{
+  "case_id": "live_parallel_multiple_3-2-1",
+  "category": "live_parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "OpenWeatherMap_get_current_weather": "{\"location\": \"Seoul, South Korea\", \"units\": \"metric\"}"
+        },
+        {
+          "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+        },
+        {
+          "HNA_WQA_search": "{\"keyword\": \"Imjin War up-to-date information\"}"
+        }
+      ],
+      "content": "I'll help you with all three requests. Let me make these calls now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_uavwDgBcArLeNjiMMpbU4633",
+          "type": "function",
+          "function": {
+            "name": "OpenWeatherMap_get_current_weather",
+            "arguments": "{\"location\": \"Seoul, South Korea\", \"units\": \"metric\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_anA1GZD7VjBjhXVocbAc9631",
+          "type": "function",
+          "function": {
+            "name": "ControlAppliance_execute",
+            "arguments": "{\"command\": \"거실, 에어컨, 실행\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_t8Ef23ym7BnAipsXWekL5696",
+          "type": "function",
+          "function": {
+            "name": "HNA_WQA_search",
+            "arguments": "{\"keyword\": \"Imjin War up-to-date information\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1469,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1469,
+      "output_tokens": 153,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "OpenWeatherMap_get_current_weather": "{\"location\": \"Seoul, South Korea\", \"units\": \"metric\"}"
+    },
+    {
+      "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+    },
+    {
+      "HNA_WQA_search": "{\"keyword\": \"Imjin War up-to-date information\"}"
+    }
+  ]
+}
