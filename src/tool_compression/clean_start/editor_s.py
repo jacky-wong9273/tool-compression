@@ -3,6 +3,20 @@
 Visit every function description and parameter description. A shorter candidate
 is kept only when this tool's own schema or wording proves it. The original
 stays otherwise. Nothing here reads a provider, a key, or a gold answer.
+
+Rules, in ``S_RULES_VERSION``:
+
+- ``schema_guaranteed``: drop a parameter clause the unchanged schema states
+  (pinned float suffix with ``format: float``, an enum list equal to ``enum``,
+  a prose default equal to ``default``).
+- ``suite_context``: when the tool's own text labels its description with
+  ``Tool description:``, keep the membership sentence ``This tool belongs to
+  <suite>.`` and the description, and drop the suite elaboration and the label.
+- ``direct_action``: drop a leading ``This function ...`` subject frame and
+  keep the verb as written.
+- ``within_tool_duplicate`` and ``flag_normalization`` as before.
+
+The official language hint is never edited. Deletions touch only their seams.
 """
 
 from __future__ import annotations
@@ -12,7 +26,9 @@ import json
 import re
 
 from tool_compression.adapter import description_slots
+from tool_compression.clean_start.descriptions import leading_frame, split_protected, suite_preamble
 
+S_RULES_VERSION = "s-rules-2026-11-25"
 FLOAT_SUFFIX = " This is a float type value."
 KEEP_REASONS = ("already_minimal", "ambiguous_source", "no_shorter_faithful_candidate")
 _STOP = {
@@ -49,23 +65,7 @@ _DEFAULT_SENTENCE = re.compile(
     r"(?i)^(?P<head>default\s+value\s+is|defaults?\s+(?:is|to|:)|default\s+(?:is|to|:)|default)\s+(?P<value>.+?)\.?$"
 )
 _ENUM_SENTENCE = re.compile(
-    r"(?i)^(?:Supported values:|Possible values are)\s+(.+?)\.?$"
-)
-_FRAMES = (
-    ("This function calculates ", "Calculate "),
-    ("This function finds ", "Find "),
-    ("This function creates ", "Create "),
-    ("This function retrieves ", "Retrieve "),
-    ("This function identifies ", "Identify "),
-    ("This function checks ", "Check "),
-    ("This function will return ", "Return "),
-    ("This function helps tune ", "Tune "),
-    ("This function allows users to add ", "Add "),
-    ("This function is used to create ", "Create "),
-    ("This function is for playing ", "Play "),
-    ("This function is for generating ", "Generate "),
-    ("This function takes in ", "Take in "),
-    ("This function allows deletion or addition of ", "Delete or add "),
+    r"(?i)^(?:Supported values:|Possible values are|\[Enum\]:)\s+(.+?)\.?$"
 )
 
 
@@ -150,10 +150,7 @@ def _decide_field(tool: dict, pointer: str, original: str, schema: dict, functio
     if duplicate_candidate is not None:
         proposals.append(duplicate_candidate)
     if pointer == "/function/description":
-        base = duplicate_source
-        framed = _frame_candidate(original, base)
-        if framed is not None:
-            proposals.append(framed)
+        proposals.extend(_function_candidates(original))
     flagged = _flag_candidate(original, schema, function_text, pointer)
     if flagged is not None:
         proposals.append(flagged)
@@ -193,6 +190,7 @@ def _row(tool, pointer, original, candidate, final, adopted, reason, detail, fac
         raise ValueError(reason)
     _check_facts(original, final, facts, adopted)
     return {
+        "rules_version": S_RULES_VERSION,
         "context_id": context_id(tool),
         "function_name": tool.get("function", {}).get("name"),
         "pointer": pointer,
@@ -228,7 +226,7 @@ def _check_facts(original: str, final: str, facts: list[dict], adopted: bool) ->
                 raise ValueError(f"editor S final claim {claim} is not in the source")
 
 
-_ALLOWED_NEW = {"calculate", "find", "create", "retrieve", "identify", "check", "return", "tune", "add", "play", "generate", "take", "delete", "include", "whether"}
+_ALLOWED_NEW = {"include", "whether"}
 
 
 def _schema_candidates(original: str, schema: dict, pointer: str) -> list[dict]:
@@ -487,40 +485,99 @@ def _recovery_excerpt(rest: str, function_text: str) -> str | None:
     return None
 
 
-def _frame_candidate(original: str, working: str) -> dict | None:
-    for prefix, replacement in _FRAMES:
-        if not working.startswith(prefix):
-            continue
-        tail = working[len(prefix):]
-        if not tail:
-            continue
-        candidate = replacement + tail
-        if not original.startswith(prefix):
-            # Schema stripping is not expected on these frames. Refuse a shifted span.
-            return None
-        fact = {
-            "span": [0, len(prefix)],
-            "excerpt": prefix,
-            "decision": "FRAME",
-            "after": replacement,
-            "note": "The frame is not a separate claim. The action and the remaining words stay.",
-        }
-        kept = {
-            "span": [len(prefix), len(original)],
-            "excerpt": original[len(prefix):],
-            "decision": "KEEP",
-            "after": tail,
-            "note": "The object and qualifiers are unchanged.",
-        }
-        ok, detail = _faithful(original, candidate, [fact])
-        return {
+def _function_candidates(original: str) -> list[dict]:
+    """Suite-context and direct-action candidates, alone and together.
+
+    Every candidate is the original with spans replaced. Nothing outside the
+    protected official hint is added except the period that already closed the
+    membership sentence and the capital on the kept verb.
+    """
+    head, _suffix = split_protected(original)
+    suite = suite_preamble(head)
+    frame = leading_frame(head, suite["core_start"] if suite else 0)
+    options = []
+    if suite is not None:
+        options.append(("suite_context", suite, None))
+    if frame is not None:
+        options.append(("direct_action", None, frame))
+    if suite is not None and frame is not None:
+        options.append(("suite_context+direct_action", suite, frame))
+    proposals = []
+    for change_class, use_suite, use_frame in options:
+        edits = []
+        if use_suite is not None:
+            membership = use_suite["membership"]
+            elaboration = use_suite["elaboration"]
+            label = use_suite["label"]
+            edits.append({
+                "span": elaboration,
+                "replacement": ".",
+                "decision": "SUITE_CONTEXT",
+                "note": (
+                    "The elaboration describes the suite this tool belongs to, not this tool. "
+                    "The membership sentence stays, so the suite is still named."
+                ),
+            })
+            edits.append({
+                "span": label,
+                "replacement": " ",
+                "decision": "FRAME",
+                "note": "The label only marks where the tool's own description starts.",
+            })
+            kept_membership = {
+                "span": membership,
+                "excerpt": original[membership[0]:membership[1]],
+                "decision": "KEEP",
+                "after": original[membership[0]:membership[1]],
+                "note": "Suite membership stays.",
+            }
+        if use_frame is not None:
+            start, end = use_frame["frame"]
+            verb = use_frame["verb"]
+            edits.append({
+                "span": [start, end + 1],
+                "replacement": verb[:1].upper(),
+                "decision": "FRAME",
+                "note": "The subject frame is not a separate claim. The verb stays as written.",
+            })
+        candidate = _replace_spans(original, edits)
+        facts = []
+        if use_suite is not None:
+            facts.append(kept_membership)
+        for edit in edits:
+            start, end = edit["span"]
+            facts.append({
+                "span": [start, end],
+                "excerpt": original[start:end],
+                "decision": edit["decision"],
+                "after": "",
+                "replacement": edit["replacement"],
+                "note": edit["note"],
+            })
+        removed = [item for item in facts if item["decision"] != "KEEP"]
+        ok, detail = _faithful(original, candidate, removed)
+        proposals.append({
             "ok": ok,
             "text": candidate,
-            "facts": [fact, kept],
-            "change_class": "direct_action" if ok else None,
-            "detail": detail if not ok else f"The function description becomes a direct action. Removed frame {prefix!r}.",
-        }
-    return None
+            "facts": facts,
+            "change_class": change_class if ok else None,
+            "detail": detail if not ok else f"The function description keeps its own action text ({change_class}).",
+        })
+    return proposals
+
+
+def _replace_spans(text: str, edits: list[dict]) -> str:
+    out = []
+    cursor = 0
+    for edit in sorted(edits, key=lambda item: item["span"][0]):
+        start, end = edit["span"]
+        if start < cursor:
+            raise ValueError("editor S replacement spans overlap")
+        out.append(text[cursor:start])
+        out.append(edit["replacement"])
+        cursor = end
+    out.append(text[cursor:])
+    return "".join(out)
 
 
 def _flag_candidate(original: str, schema: dict, function_text: str, pointer: str) -> dict | None:
@@ -643,8 +700,6 @@ def _words_only(text: str) -> list[str]:
 def _faithful(original: str, candidate: str, removals: list[dict]) -> tuple[bool, str]:
     if not candidate or candidate == original or len(candidate) >= len(original):
         return False, "The candidate is not shorter."
-    if candidate != candidate.strip() or "  " in candidate:
-        return False, "The candidate changes only spacing."
     if _words_only(original) == _words_only(candidate):
         return False, "The candidate changes only punctuation or casing."
     if _WHETHER.search(original) and not _WHETHER.search(candidate):
@@ -679,17 +734,30 @@ def _conflict(original: str, schema: dict) -> str | None:
 
 
 def _delete_spans(text: str, spans: list[list[int]]) -> str:
-    kept = []
+    """Delete spans and tidy whitespace only where a deletion joined two pieces."""
+    out = ""
     cursor = 0
     for start, end in sorted(spans):
-        kept.append(text[cursor:start])
+        out = _join(out, text[cursor:start])
         cursor = end
-    kept.append(text[cursor:])
-    candidate = "".join(kept)
-    candidate = re.sub(r"\s+\.", ".", candidate)
-    candidate = re.sub(r"\s{2,}", " ", candidate).strip()
-    candidate = re.sub(r"\s+\.", ".", candidate)
-    return candidate
+    out = _join(out, text[cursor:])
+    if text == text.lstrip():
+        out = out.lstrip()
+    if text == text.rstrip():
+        out = out.rstrip()
+    return out
+
+
+def _join(left: str, right: str) -> str:
+    if not left:
+        return right
+    if not right:
+        return left
+    if right[0] in ".,;:" and left[-1].isspace():
+        left = left.rstrip()
+    elif left[-1].isspace() and right[0].isspace():
+        right = right.lstrip()
+    return left + right
 
 
 def _overlap(removals: list[dict]) -> bool:
