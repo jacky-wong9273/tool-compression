@@ -274,6 +274,9 @@ def build_package(out_dir: Path) -> dict:
         "measurement": "Local o200k_base counts of the whole tools array of each in-scope question's initial catalogue.",
         **revision_diff(before, after),
     })
+    from tool_compression.clean_start.validation import validation_report
+
+    _write(out_dir / "validation_20261126.json", validation_report(counter))
     vendored = prompt_manifest()
     manifest = {
         "study": STUDY_ID,
@@ -300,6 +303,10 @@ def build_package(out_dir: Path) -> dict:
             "score_existing_results": (
                 "python -m tool_compression.clean_start evaluate --out <run dir> "
                 "--bfcl-root <pinned gorilla checkout> --thinking off"
+            ),
+            "validation_dry_plan": (
+                "python -m tool_compression.clean_start run --validation --thinking off "
+                "--memory-prereqs matched --ceiling-usd 20 --out <new empty dir>"
             ),
         },
         "files": {},

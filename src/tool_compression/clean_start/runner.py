@@ -489,20 +489,30 @@ def plan_summary(slots: list[dict], thinking_modes: tuple[str, ...]) -> dict:
     }
 
 
-def write_plan(cases: list[dict], out_dir: Path, *, pilot: bool, thinking_modes: tuple[str, ...] = THINKING_ORDER) -> dict:
+def write_plan(
+    cases: list[dict],
+    out_dir: Path,
+    *,
+    pilot: bool,
+    thinking_modes: tuple[str, ...] = THINKING_ORDER,
+    ceiling_usd: str | None = None,
+    extra: dict | None = None,
+) -> dict:
     slots = build_slots(cases, thinking_modes)
-    return _status(
-        out_dir,
-        status="not_sent",
-        complete=False,
-        reason="dry_plan",
-        pilot=pilot,
-        slots_sent=0,
-        running_usd="0",
-        ceiling_usd=None,
-        provider_contacted=False,
+    fields = {
+        "status": "not_sent",
+        "complete": False,
+        "reason": "dry_plan",
+        "pilot": pilot,
+        "slots_sent": 0,
+        "running_usd": "0",
+        "ceiling_usd": ceiling_usd,
+        "provider_contacted": False,
         **plan_summary(slots, thinking_modes),
-    )
+    }
+    if extra:
+        fields.update(extra)
+    return _status(out_dir, **fields)
 
 
 def refuse_reuse(out_dir: Path) -> str | None:
