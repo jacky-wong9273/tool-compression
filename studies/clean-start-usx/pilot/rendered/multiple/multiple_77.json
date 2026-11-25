@@ -14,20 +14,20 @@
   "excluded_function_present": [],
   "changes": [
     {
-      "arm": "X",
+      "arm": "S",
       "function": "artwork_search_find",
       "pointer": "/function/description",
-      "rival": "park_search_find",
-      "cue": "For parks based on facilities, use park_search_find.",
-      "axis": "text:artworks based on type|parks based on facilities"
+      "before": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax.",
+      "after": "Search for artworks based on type and location.",
+      "change_class": "hint_context"
     },
     {
-      "arm": "X",
+      "arm": "S",
       "function": "park_search_find",
       "pointer": "/function/description",
-      "rival": "artwork_search_find",
-      "cue": "For artworks based on type, use artwork_search_find.",
-      "axis": "text:parks based on facilities|artworks based on type"
+      "before": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax.",
+      "after": "Search for parks based on facilities and location.",
+      "change_class": "hint_context"
     }
   ],
   "arms": {
@@ -142,6 +142,88 @@
         "type": "function",
         "function": {
           "name": "artwork_search_find",
+          "description": "Search for artworks based on type and location.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type of the artwork. E.g., painting, sculpture, installation."
+              },
+              "location": {
+                "type": "string",
+                "description": "Location or city where the artwork is."
+              },
+              "era": {
+                "type": "string",
+                "description": "Time period of the artwork, can be 'contemporary', 'modern', 'renaissance', etc. Default 'contemporary'",
+                "optional": "True"
+              }
+            },
+            "required": [
+              "type",
+              "location"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "park_search_find",
+          "description": "Search for parks based on facilities and location.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "facilities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of facilities in the park."
+              },
+              "location": {
+                "type": "string",
+                "description": "Location or city where the park is."
+              }
+            },
+            "required": [
+              "facilities",
+              "location"
+            ]
+          }
+        }
+      }
+    ],
+    "X": [
+      {
+        "type": "function",
+        "function": {
+          "name": "tourist_attraction_find",
+          "description": "Search for tourist attractions based on type and location. Note that the provided function is in Python 3 syntax.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "attractionType": {
+                "type": "string",
+                "description": "Type of the attraction. E.g., monument, museum, park."
+              },
+              "location": {
+                "type": "string",
+                "description": "Location or city where the attraction is."
+              }
+            },
+            "required": [
+              "attractionType",
+              "location"
+            ]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "artwork_search_find",
           "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
@@ -195,88 +277,6 @@
         }
       }
     ],
-    "X": [
-      {
-        "type": "function",
-        "function": {
-          "name": "tourist_attraction_find",
-          "description": "Search for tourist attractions based on type and location. Note that the provided function is in Python 3 syntax.",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "attractionType": {
-                "type": "string",
-                "description": "Type of the attraction. E.g., monument, museum, park."
-              },
-              "location": {
-                "type": "string",
-                "description": "Location or city where the attraction is."
-              }
-            },
-            "required": [
-              "attractionType",
-              "location"
-            ]
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "artwork_search_find",
-          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax. For parks based on facilities, use park_search_find.",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "description": "Type of the artwork. E.g., painting, sculpture, installation."
-              },
-              "location": {
-                "type": "string",
-                "description": "Location or city where the artwork is."
-              },
-              "era": {
-                "type": "string",
-                "description": "Time period of the artwork, can be 'contemporary', 'modern', 'renaissance', etc. Default 'contemporary'",
-                "optional": "True"
-              }
-            },
-            "required": [
-              "type",
-              "location"
-            ]
-          }
-        }
-      },
-      {
-        "type": "function",
-        "function": {
-          "name": "park_search_find",
-          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax. For artworks based on type, use artwork_search_find.",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "facilities": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "List of facilities in the park."
-              },
-              "location": {
-                "type": "string",
-                "description": "Location or city where the park is."
-              }
-            },
-            "required": [
-              "facilities",
-              "location"
-            ]
-          }
-        }
-      }
-    ],
     "SX": [
       {
         "type": "function",
@@ -306,7 +306,7 @@
         "type": "function",
         "function": {
           "name": "artwork_search_find",
-          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax. For parks based on facilities, use park_search_find.",
+          "description": "Search for artworks based on type and location.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -335,7 +335,7 @@
         "type": "function",
         "function": {
           "name": "park_search_find",
-          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax. For artworks based on type, use artwork_search_find.",
+          "description": "Search for parks based on facilities and location.",
           "parameters": {
             "type": "object",
             "properties": {

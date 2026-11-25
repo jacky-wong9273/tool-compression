@@ -27,79 +27,79 @@
         "scoring": 64,
         "prerequisites": 0,
         "turns": 64,
-        "first_request_tokens": 91798
+        "first_request_tokens": 89112
       },
       "parallel_multiple": {
         "scoring": 64,
         "prerequisites": 0,
         "turns": 64,
-        "first_request_tokens": 100820
+        "first_request_tokens": 98120
       },
       "live_multiple": {
         "scoring": 64,
         "prerequisites": 0,
         "turns": 64,
-        "first_request_tokens": 219808
+        "first_request_tokens": 214930
       },
       "live_parallel_multiple": {
         "scoring": 21,
         "prerequisites": 0,
         "turns": 21,
-        "first_request_tokens": 57150
+        "first_request_tokens": 55812
       },
       "live_irrelevance": {
         "scoring": 64,
         "prerequisites": 0,
         "turns": 64,
-        "first_request_tokens": 213270
+        "first_request_tokens": 208702
       },
       "live_relevance": {
         "scoring": 8,
         "prerequisites": 0,
         "turns": 8,
-        "first_request_tokens": 26096
+        "first_request_tokens": 25640
       },
       "multi_turn_base": {
         "scoring": 4,
         "prerequisites": 0,
         "turns": 14,
-        "first_request_tokens": 65358
+        "first_request_tokens": 62298
       },
       "multi_turn_miss_func": {
         "scoring": 4,
         "prerequisites": 0,
         "turns": 20,
-        "first_request_tokens": 58966
+        "first_request_tokens": 55912
       },
       "multi_turn_miss_param": {
         "scoring": 4,
         "prerequisites": 0,
         "turns": 17,
-        "first_request_tokens": 63836
+        "first_request_tokens": 60612
       },
       "multi_turn_long_context": {
         "scoring": 4,
         "prerequisites": 0,
         "turns": 12,
-        "first_request_tokens": 73664
+        "first_request_tokens": 69644
       },
       "memory_kv": {
         "scoring": 4,
         "prerequisites": 5,
         "turns": 28,
-        "first_request_tokens": 76920
+        "first_request_tokens": 72636
       },
       "memory_vector": {
         "scoring": 4,
         "prerequisites": 5,
         "turns": 28,
-        "first_request_tokens": 60688
+        "first_request_tokens": 57322
       },
       "memory_rec_sum": {
         "scoring": 4,
         "prerequisites": 5,
         "turns": 28,
-        "first_request_tokens": 22508
+        "first_request_tokens": 21284
       }
     }
   },
@@ -109,17 +109,17 @@
     "prerequisites": 60
   },
   "order": "single-turn, then multi-turn, then each memory category's prerequisites before its questions",
-  "first_request_floor_tokens": 1130882,
-  "first_request_floor_usd": "0.339265",
+  "first_request_floor_tokens": 1092024,
+  "first_request_floor_usd": "0.327607",
   "first_request_floor": "Local o200k_base tokens of the turn-0 message text plus the tools array, summed over the four arms, priced as peak cache misses, with no output and no chat template. The pinned memory instruction and core-memory text are not included. This is a lower bound on prompt spend if every slot ended after one request, not a forecast.",
-  "planning_upper_usd": "16.205873",
+  "planning_upper_usd": "16.200886",
   "planning_upper_parts_usd": {
-    "single_turn": "0.896683",
+    "single_turn": "0.891695",
     "trajectories_at_six_steps_per_turn": "14.452265",
     "memory_force_quit_contingency": "0.856926"
   },
   "planning_upper": "Peak prices, no cache credit. A single-turn slot is its local first-request tokens plus 500 output tokens. A trajectory turn is 6 requests at the greater of 1.5 times the mean prompt and the 95th percentile prompt of that family in the c47b186c bills, plus 900 output tokens. One extra force-quit turn (21 requests instead of 6) is added per memory category per arm. Sized to stay at or under $17 so the $20 cap is not the way the run is expected to end.",
-  "structural_cap_usd": "51.479609",
+  "structural_cap_usd": "51.474622",
   "structural_cap": "The same allowances with every trajectory turn taking the runner cap of 21 requests. That is the tail if the model never finishes a turn. It is not the planning number. The hard ceiling still stops the run.",
   "ceiling_usd": "20",
   "pack_limit_usd": "17",
@@ -133,8 +133,8 @@
     "multi_turn_miss_param": 7961
   },
   "editors": {
-    "S": "s-rules-2026-11-25.2",
-    "X": "x-rules-2026-11-25.3"
+    "S": "s-rules-2026-11-26",
+    "X": "x-rules-2026-11-26"
   },
   "frozen_plan": "validation/cost.json is the plan the 0bf829c6 flight was sized and checked against, with the editors of that commit. This file is the same report recomputed with the editors above."
 }

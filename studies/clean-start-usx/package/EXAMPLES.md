@@ -12,83 +12,80 @@ S edit, `multiple_0`, `triangle_properties_get` `/function/parameters/properties
 - before: 'A flag to determine whether to calculate the area of triangle. Default is true.'
 - after: 'Whether to calculate the area.'
 
-X cue, `multiple_2`, on `country_info_largest_city` naming `country_info_population` (text:largest city|current population):
+X cue, `multiple_11`, on `math_roots_quadratic` naming `math_roots_polynomial` (interface:numeric-array-versus-numeric-scalars):
 
-- target action text: 'Fetch the largest city of a specified country.'
-- rival action text: 'Fetch the current population of a specified country.'
-- appended cue: 'For the current population, use country_info_population.'
+- target action text: 'Calculate the roots of a quadratic equation.'
+- rival action text: 'Calculate the roots of a polynomial equation.'
+- appended cue: 'For an array of coefficients, use math_roots_polynomial.'
 
-Unchanged by S, X, and SX: `multiple_3` with tools `EuclideanDistance_calculate`, `angleToXAxis_calculate`.
-First X refusals: ['No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.', 'No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## parallel_multiple
 
-S edit, `parallel_multiple_1`, `volume_cylinder_calculate` `/function/parameters/properties/radius/description` (schema_guaranteed):
+S edit, `parallel_multiple_0`, `math_toolkit_product_of_primes` `/function/description` (hint_context):
 
-- before: 'The radius of the cylinder. This is a float type value.'
-- after: 'The radius of the cylinder.'
+- before: 'Find the product of the first n prime numbers. Note that the provided function is in Python 3 syntax.'
+- after: 'Find the product of the first n prime numbers.'
 
-X cue, `parallel_multiple_5`, on `lcm` naming `gcd` (text:least common multiple|greatest common divisor):
+X cue, `parallel_multiple_67`, on `math_roots_polynomial` naming `math_roots_cubic` (interface:numeric-array-versus-numeric-scalars):
 
-- target action text: 'Calculate the least common multiple of two integers.'
-- rival action text: 'Calculate the greatest common divisor of two integers.'
-- appended cue: 'For the greatest common divisor, use gcd.'
+- target action text: 'Calculate the roots of a polynomial equation.'
+- rival action text: 'Calculate the roots of a cubic equation.'
+- appended cue: 'For separate a, b, c and d arguments, use math_roots_cubic.'
 
-Unchanged by S, X, and SX: `parallel_multiple_0` with tools `math_toolkit_sum_of_multiples`, `math_toolkit_product_of_primes`.
-First X refusals: ['No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.', 'No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## live_multiple
 
-S edit, `live_multiple_23-5-0`, `search_products` `/function/parameters/properties/price_min/description` (schema_guaranteed):
+S edit, `live_multiple_0-0-0`, `ChaDri_change_drink` `/function/description` (hint_context):
 
-- before: 'The minimum price of the product search. Enter a float value representing the lowest price in dollars. This is a float type value.'
-- after: 'The minimum price of the product search. Enter a float value representing the lowest price in dollars.'
+- before: "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences. Note that the provided function is in Python 3 syntax."
+- after: "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences."
 
-X cue, `live_multiple_198-90-0`, on `adriel_detail_experience_and_education` naming `adriel_experiences_and_education` (text:the detailed information regarding|a comprehensive list detailing):
+X cue, `live_multiple_206-91-0`, on `detail_experience_and_education` naming `experiences_and_education` (text:the detailed information about|a list of):
 
-- target action text: "Retrieve the detailed information regarding Adriel's professional experiences and educational background."
-- rival action text: "Retrieve a comprehensive list detailing Adriel's professional experiences and educational background."
-- appended cue: 'For a comprehensive list, use adriel_experiences_and_education.'
+- target action text: "Retrieve the detailed information about Adriel's professional experiences and educational background."
+- rival action text: "Retrieve a list of Adriel's professional experiences and educational background."
+- appended cue: 'For a list, use experiences_and_education.'
 
-Unchanged by S, X, and SX: `live_multiple_0-0-0` with tools `ChaFod`, `ChaDri_change_drink`.
-First X refusals: ['No rival qualifies. Closest refusal: Different actions (Changes versus Modifies).', 'No rival qualifies. Closest refusal: Different actions (Modifies versus Changes).']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## live_parallel
 
-S edit: not possible in this category.
+S edit, `live_parallel_6-3-0`, `get_snow_report` `/function/description` (hint_context):
+
+- before: 'Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather. Note that the provided function is in Python 3 syntax.'
+- after: 'Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.'
 
 X cue: not possible in this category (no rival qualifies anywhere).
 
-Unchanged by S, X, and SX: `live_parallel_6-3-0` with tools `get_current_weather`, `get_snow_report`.
-First X refusals: ['No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.', 'No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## live_parallel_multiple
 
-S edit, `live_parallel_multiple_8-7-0`, `clone_repo` `/function/parameters/properties/recursive/description` (schema_guaranteed):
+S edit, `live_parallel_multiple_0-0-0`, `ChaDri_change_drink` `/function/description` (hint_context):
 
-- before: 'A flag indicating whether to recursively clone submodules. Defaults to false.'
-- after: 'A flag indicating whether to recursively clone submodules.'
+- before: "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences. Note that the provided function is in Python 3 syntax."
+- after: "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences."
 
 X cue: not possible in this category (no rival qualifies anywhere).
 
-Unchanged by S, X, and SX: `live_parallel_multiple_0-0-0` with tools `ChaFod`, `ChaDri_change_drink`.
-First X refusals: ['No rival qualifies. Closest refusal: Different actions (Changes versus Modifies).', 'No rival qualifies. Closest refusal: Different actions (Modifies versus Changes).']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## live_irrelevance
 
-S edit, `live_irrelevance_153-17-0`, `search_products` `/function/parameters/properties/price_min/description` (schema_guaranteed):
+S edit, `live_irrelevance_103-3-0`, `KeyStat` `/function/description` (hint_context):
 
-- before: 'The minimum price of the product search. Enter a float value representing the lowest price in dollars. This is a float type value.'
-- after: 'The minimum price of the product search. Enter a float value representing the lowest price in dollars.'
+- before: 'Retrieves a key statistic that represents encrypted content. This statistic should be decrypted using a compatible decryption tool. Note that the provided function is in Python 3 syntax.'
+- after: 'Retrieves a key statistic that represents encrypted content. This statistic should be decrypted using a compatible decryption tool.'
 
-X cue, `live_irrelevance_487-141-0`, on `adriel_detail_experience_and_education` naming `adriel_experiences_and_education` (text:the detailed information regarding|a comprehensive list detailing):
+X cue, `live_irrelevance_489-142-0`, on `detail_experience_and_education` naming `experiences_and_education` (text:the detailed information about|a list of):
 
-- target action text: "Retrieve the detailed information regarding Adriel's professional experiences and educational background."
-- rival action text: "Retrieve a comprehensive list detailing Adriel's professional experiences and educational background."
-- appended cue: 'For a comprehensive list, use adriel_experiences_and_education.'
+- target action text: "Retrieve the detailed information about Adriel's professional experiences and educational background."
+- rival action text: "Retrieve a list of Adriel's professional experiences and educational background."
+- appended cue: 'For a list, use experiences_and_education.'
 
-Unchanged by S, X, and SX: `live_irrelevance_103-3-0` with tools `ChaScr`, `KeyStat`, `ReqScr_generate_key`, `ReqSav`, `SavScr`, `ReaScr`.
-First X refusals: ['No rival qualifies. Closest refusal: Different actions (Modifies versus Retrieves).', 'No rival qualifies. Closest refusal: Different actions (Retrieves versus Modifies).', 'No rival qualifies. Closest refusal: Different actions (Generates versus Modifies).']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## live_relevance
 
@@ -99,75 +96,74 @@ S edit, `live_relevance_0-0-0`, `search_engine_query` `/function/parameters/prop
 
 X cue: not possible in this category (no rival qualifies anywhere).
 
-Unchanged by S, X, and SX: `live_relevance_8-8-0` with tools `Events_3_FindEvents`, `Events_3_BuyEventTickets`, `RideSharing_2_GetRide`.
-First X refusals: ['No rival qualifies. Closest refusal: Different actions (Find versus Purchase).', 'No rival qualifies. Closest refusal: Different actions (Purchase versus Find).', 'No rival qualifies. Closest refusal: Different actions (Book versus Find).']
+Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## multi_turn_base
 
-S edit, `multi_turn_base_0`, `comment` `/function/description` (suite_context):
+S edit, `multi_turn_base_0`, `comment` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_base_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
+X cue, `multi_turn_base_0`, on `rmdir` naming `rm` (text:directory at current|file or):
 
-- target action text: 'Create a new directory in the current directory.'
-- rival action text: 'Create a new file of any extension in the current directory.'
-- appended cue: 'For a new file of any extension, use touch.'
+- target action text: 'Remove a directory at current directory.'
+- rival action text: 'Remove a file or directory.'
+- appended cue: 'For a file, use rm.'
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## multi_turn_miss_func
 
-S edit, `multi_turn_miss_func_0`, `comment` `/function/description` (suite_context):
+S edit, `multi_turn_miss_func_0`, `comment` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_miss_func_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
+X cue, `multi_turn_miss_func_0`, on `rmdir` naming `rm` (text:directory at current|file or):
 
-- target action text: 'Create a new directory in the current directory.'
-- rival action text: 'Create a new file of any extension in the current directory.'
-- appended cue: 'For a new file of any extension, use touch.'
+- target action text: 'Remove a directory at current directory.'
+- rival action text: 'Remove a file or directory.'
+- appended cue: 'For a file, use rm.'
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## multi_turn_miss_param
 
-S edit, `multi_turn_miss_param_0`, `comment` `/function/description` (suite_context):
+S edit, `multi_turn_miss_param_0`, `comment` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_miss_param_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
+X cue, `multi_turn_miss_param_0`, on `rmdir` naming `rm` (text:directory at current|file or):
 
-- target action text: 'Create a new directory in the current directory.'
-- rival action text: 'Create a new file of any extension in the current directory.'
-- appended cue: 'For a new file of any extension, use touch.'
+- target action text: 'Remove a directory at current directory.'
+- rival action text: 'Remove a file or directory.'
+- appended cue: 'For a file, use rm.'
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## multi_turn_long_context
 
-S edit, `multi_turn_long_context_0`, `comment` `/function/description` (suite_context):
+S edit, `multi_turn_long_context_0`, `comment` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
+- after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_long_context_0`, on `mkdir` naming `touch` (text:directory|file of any extension):
+X cue, `multi_turn_long_context_0`, on `rmdir` naming `rm` (text:directory at current|file or):
 
-- target action text: 'Create a new directory in the current directory.'
-- rival action text: 'Create a new file of any extension in the current directory.'
-- appended cue: 'For a new file of any extension, use touch.'
+- target action text: 'Remove a directory at current directory.'
+- rival action text: 'Remove a file or directory.'
+- appended cue: 'For a file, use rm.'
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## memory_kv
 
-S edit, `memory_kv_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context):
+S edit, `memory_kv_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
+- after: 'Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.'
 
 X cue, `memory_kv_0-customer-0`, on `archival_memory_add` naming `core_memory_add` (text:long|short):
 
@@ -179,10 +175,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_vector
 
-S edit, `memory_vector_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context):
+S edit, `memory_vector_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.'
+- after: 'Memory suite: Clear all entries in the archival memory.'
 
 X cue, `memory_vector_0-customer-0`, on `archival_memory_retrieve_all` naming `archival_memory_retrieve` (text:all|the most similar):
 
@@ -194,10 +190,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_rec_sum
 
-S edit, `memory_rec_sum_0-customer-0`, `memory_clear` `/function/description` (suite_context):
+S edit, `memory_rec_sum_0-customer-0`, `memory_clear` `/function/description` (suite_context+suite_label+hint_context):
 
 - before: 'This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
+- after: 'Memory suite: Clear all content in the memory, including any from previous interactions. This operation is irreversible.'
 
 X cue: not possible in this category (no rival qualifies anywhere).
 
