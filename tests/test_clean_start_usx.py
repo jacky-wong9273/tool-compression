@@ -26,6 +26,7 @@ from tool_compression.clean_start.categories import (
     result_group,
 )
 from tool_compression.clean_start.editor_s import edit_tool
+from tool_compression.clean_start.editor_x import qualify_catalogue
 from tool_compression.clean_start.load import (
     bfcl_root,
     identity_rows,
@@ -348,9 +349,17 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     assert rendered["arms"]["S"][0] == alone
 
     pair = {case["id"]: case for case in load_questions("multiple")}
-    compiled = compile_case(pair["multiple_34"])
+    different = model_facing_tools(pair["multiple_34"]["function"], "multiple")
+    assert not [change for change in render_tools(different)["changes"] if change["arm"] == "X"]
+    refusals = {
+        (row["function_name"], rival["function_name"]): rival["reason"]
+        for row in qualify_catalogue(different) for rival in row["rejected_rivals"]
+    }
+    assert "different objects (divisor versus multiple)" in refusals[("math_gcd", "math_lcm")]
+    assert "different objects (multiple versus divisor)" in refusals[("math_lcm", "math_gcd")]
+    compiled = compile_case(pair["multiple_12"])
     cues = {change["function"]: change for change in compiled["changes"] if change["arm"] == "X"}
-    assert set(cues) == {"math_gcd", "math_lcm"}
+    assert set(cues) == {"financial_ratios_calculate_ROA", "financial_ratios_calculate_ROE"}
     for tool_u, tool_s, tool_x, tool_sx in zip(*(compiled["arms"][arm] for arm in ARMS)):
         name = tool_u["function"]["name"]
         cue = cues.get(name, {}).get("cue", "")

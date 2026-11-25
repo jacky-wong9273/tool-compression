@@ -26,6 +26,15 @@ phrase names: the target's differing words end in ``or``/``and`` joined to the
 shared wording (``Remove a file or directory`` against ``Remove a directory ...``).
 A cue there would send a use the target documents to the rival.
 
+Both action texts must also act on the same object: the head noun of the
+verb's direct object (``_object_head``) has to match. ``Get the login status``
+and ``Get the message statistics``, or ``Calculate the greatest common divisor``
+and ``Calculate the least common multiple``, share a verb but serve different
+needs, and each rival's own description already says what it does. The cue is
+kept for siblings that differ on a modifier of one object (``the long-term
+memory`` against ``the short-term memory``, ``the return on assets`` against
+``the return on equity``).
+
 The rival's phrase starts at its determiner. When the differing words follow
 ``of`` or ``on`` with no determiner, the phrase keeps the head noun that the
 preposition belongs to (``the return on equity (ROE)``, not ``equity (ROE)``).
@@ -41,7 +50,7 @@ import re
 
 from tool_compression.clean_start.descriptions import action_sentence
 
-X_RULES_VERSION = "x-rules-2026-11-25.3"
+X_RULES_VERSION = "x-rules-2026-11-26"
 CUE_POINTER = "/function/description"
 CUE_SEPARATOR = " "
 BANNED = ("only this", "cannot", "can't", "exclusively", "unable to", "does not handle", "can't handle")
@@ -65,6 +74,18 @@ _NEGATION = {"not", "no", "never", "without", "only", "cannot", "except"}
 _NUMERIC = {"integer", "number"}
 _COORDINATORS = {"or", "and"}
 _HEAD_PREPOSITIONS = {"of", "on"}
+_PARTICLES = {"for", "on", "up", "out", "to", "about", "into", "in"}
+_OBJECT_BREAK = {
+    "of", "for", "about", "on", "in", "with", "from", "by", "to", "between", "at", "into", "within",
+    "across", "over", "under", "via", "per", "regarding", "using", "given", "based", "including",
+    "that", "which", "who", "whose", "where", "if", "when", "as", "than", "during", "after", "before",
+    "through", "among", "against", "upon", "such", "like", "according", "whether",
+}
+_LIGHT_NOUNS = {
+    "list", "set", "array", "collection", "number", "count", "group", "series", "kind", "type",
+    "amount", "total", "information", "detail", "data",
+}
+_LIGHT_LINKS = {"of", "about", "regarding"}
 
 
 def qualify_catalogue(tools: list[dict]) -> list[dict]:
@@ -213,6 +234,12 @@ def _pair(target: dict, rival: dict) -> tuple[dict | None, str]:
         )
         if problem:
             return None, problem
+        head_t, head_r = _object_head(target_words), _object_head(rival_words)
+        if head_t != head_r:
+            return None, (
+                f"The two action texts act on different objects ({head_t or 'none'} versus "
+                f"{head_r or 'none'}), so the tools are not alternatives for one need."
+            )
         shared_words = prefix + suffix
     else:
         mid_t = mid_r = []
@@ -365,6 +392,43 @@ def _rival_span(text: str, words: list, start: int, mid: list) -> str | None:
 
 def _participle(word: str) -> bool:
     return len(word) > 5 and word.endswith(("ing", "ed"))
+
+
+def _object_head(words: list) -> str | None:
+    """Head noun of the verb's direct object, lemmatised.
+
+    The object runs from after the verb (and one particle such as ``up`` or
+    ``for``) to the first preposition, relative word, adverb, or participle after
+    a content word. A light noun followed by ``of``/``about``/``regarding``
+    (``a list of``, ``the number of``, ``information about``) hands the head to
+    the phrase it introduces.
+    """
+    lowered = [word.lower() for word, _span in words]
+    index = 1
+    if index < len(lowered) and lowered[index] in _PARTICLES:
+        index += 1
+    content: list[str] = []
+    while index < len(lowered):
+        word = lowered[index]
+        if word in _LIGHT_LINKS and content and _lemma(content[-1]) in _LIGHT_NOUNS:
+            content = []
+        elif word in _OBJECT_BREAK:
+            break
+        elif content and (_participle(word) or _adverb(lowered, index)):
+            break
+        elif word not in _STOP:
+            content.append(word)
+        index += 1
+    return _lemma(content[-1]) if content else None
+
+
+def _adverb(lowered: list[str], index: int) -> bool:
+    """An ``-ly`` word that does not modify a following noun (``keys currently in``)."""
+    word = lowered[index]
+    if len(word) <= 4 or not word.endswith("ly"):
+        return False
+    after = lowered[index + 1] if index + 1 < len(lowered) else None
+    return after is None or after in _OBJECT_BREAK or after in _STOP or _participle(after)
 
 
 def _cue(rival: dict, match: dict) -> str:

@@ -143,7 +143,8 @@ def test_x_refuses_a_cue_whose_target_already_claims_the_rival_object():
         assert "coordinator" in rows[0]["rejected_rivals"][0]["reason"]
         assert rows[1]["cue"] == "For a file, use tool_a."
     rows = qualify_catalogue([_tool("tool_a", "Delete a file from folder."), rival])
-    assert rows[0]["cue"] == "For a folder in current folder, use tool_b."
+    assert rows[0]["cue"] == ""
+    assert "different objects (file versus folder)" in rows[0]["no_cue_reason"]
 
 
 def test_x_cue_phrase_keeps_the_head_noun_before_of_or_on():
@@ -159,9 +160,10 @@ def test_x_cue_phrase_keeps_the_head_noun_before_of_or_on():
 
 
 def test_cue_phrase_must_survive_in_the_rival_s_text():
-    tools = [_tool("tool_a", "Sets the headlights of the vehicle."), _tool("tool_b", "Sets the cruise control of the vehicle.")]
+    tools = [_tool("tool_a", "Sets the front lights of the vehicle."), _tool("tool_b", "Sets the rear lights of the vehicle.")]
     rendered = render_tools(tools)
     decisions = qualify_catalogue(tools)
+    assert decisions[0]["cue"] == "For the rear lights, use tool_b."
     verify_cue_phrases(rendered["arms"], decisions)
     broken = deepcopy(rendered["arms"])
     broken["S"][1]["function"]["description"] = "Sets the vehicle."
@@ -170,12 +172,12 @@ def test_cue_phrase_must_survive_in_the_rival_s_text():
 
 
 def test_held_out_tools_never_change_tools_already_sent():
-    initial = [_tool("tool_a", "Sets the headlights of the vehicle."), _tool("tool_b", "Computes the sum of two numbers.")]
-    late = [_tool("tool_c", "Sets the cruise control of the vehicle.")]
+    initial = [_tool("tool_a", "Sets the front lights of the vehicle."), _tool("tool_b", "Computes the sum of two numbers.")]
+    late = [_tool("tool_c", "Sets the rear lights of the vehicle.")]
     flat = qualify_catalogue(initial + late)
-    assert flat[0]["cue"] == "For the cruise control, use tool_c."
+    assert flat[0]["cue"] == "For the rear lights, use tool_c."
     staged = qualify_presented(initial + late, (2,))
-    assert staged[0]["cue"] == "" and staged[2]["cue"] == "For the headlights, use tool_a."
+    assert staged[0]["cue"] == "" and staged[2]["cue"] == "For the front lights, use tool_a."
     before = render_tools(deepcopy(initial))["arms"]
     after = render_tools(deepcopy(initial + late), (2,))["arms"]
     for arm in before:
@@ -184,12 +186,12 @@ def test_held_out_tools_never_change_tools_already_sent():
 
 def test_runner_sends_held_out_batches_as_appends(monkeypatch):
     functions = [
-        {"name": "tool_a", "description": "Sets the headlights of the vehicle.",
+        {"name": "tool_a", "description": "Sets the front lights of the vehicle.",
          "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}},
         {"name": "tool_b", "description": "Computes the sum of two numbers.",
          "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}},
     ]
-    held = [[{"name": "tool_c", "description": "Sets the cruise control of the vehicle.",
+    held = [[{"name": "tool_c", "description": "Sets the rear lights of the vehicle.",
               "parameters": {"type": "dict", "properties": {"value": {"type": "string", "description": "A value."}}, "required": ["value"]}}]]
     for arm in ("U", "S", "X", "SX"):
         first = arm_tools(functions, "multi_turn_miss_func", arm)
