@@ -1135,7 +1135,8 @@ def test_coverage_matches_the_committed_limitations_and_names_are_consistent():
     assert "parallel" not in record["categories"]
     assert "irrelevance" not in record["categories"]
     assert record["categories"]["live_parallel"]["questions"] == 2
-    assert record["categories"]["live_parallel"]["s_cases_different_from_u"] == 0
+    assert record["categories"]["live_parallel"]["s_cases_different_from_u"] == 2
+    assert record["categories"]["live_parallel"]["x_cases_different_from_u"] == 0
     assert record["categories"]["live_irrelevance"]["questions"] == 372
     assert "miss_func_holdout_absent_from_initial_tools" in record["categories"]["multi_turn_miss_func"]["limitations"]
     assert "memory_prereq_required_for_a_full_score" in record["categories"]["memory_kv"]["limitations"]

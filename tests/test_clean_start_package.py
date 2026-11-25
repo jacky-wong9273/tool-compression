@@ -13,6 +13,7 @@ import pytest
 from tool_compression.clean_start.editor_x import qualify_catalogue
 from tool_compression.clean_start.package import build_package
 from tool_compression.clean_start.pilot import study_dir
+from tool_compression.clean_start.prepare import JAVA_HINT, JAVASCRIPT_HINT, PYTHON_HINT
 from tool_compression.clean_start.report import (
     PILOT_EVIDENCE,
     PILOT_TIP,
@@ -83,6 +84,7 @@ def test_package_regenerates_byte_identical(tmp_path):
 def test_s_ledger_rows_keep_their_facts_and_never_touch_names():
     rows = [json.loads(line) for line in (PACKAGE / "s_ledger.jsonl").read_text(encoding="utf-8").splitlines()]
     assert rows
+    dropped_hints = 0
     for row in rows:
         assert row["before"] != row["after"]
         assert row["pointer"].endswith("/description")
@@ -91,10 +93,16 @@ def test_s_ledger_rows_keep_their_facts_and_never_touch_names():
             assert row["before"][start:end] == fact["excerpt"]
             if fact.get("decision") == "KEEP":
                 assert fact["after"] in row["after"]
-        for hint in ("Note that the provided function is in Python 3 syntax.",
-                     "Note that the provided function is in Java 8 SDK syntax.",
-                     "Note that the provided function is in JavaScript syntax."):
-            assert (hint in row["before"]) == (hint in row["after"])
+        for hint in (PYTHON_HINT, JAVA_HINT, JAVASCRIPT_HINT):
+            if hint in row["before"] and hint not in row["after"]:
+                dropped_hints += 1
+                carried = [fact for fact in row["facts"] if fact["decision"] == "HINT_CONTEXT"]
+                assert [fact["excerpt"] for fact in carried] == [hint]
+                assert carried[0]["carried_excerpt"] == hint
+                assert 0 <= carried[0]["carried_by_tool_index"] < row["tool_index"]
+            elif hint in row["before"]:
+                assert row["after"].endswith(hint)
+    assert dropped_hints > 0
 
 
 def test_x_ledger_cues_name_one_rival_with_evidence_on_both_sides():
