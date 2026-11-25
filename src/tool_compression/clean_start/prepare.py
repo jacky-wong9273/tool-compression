@@ -98,6 +98,10 @@ def apply_official_language_hint(functions: list[dict], category: str) -> list[d
 
 
 def model_facing_tools(functions: list[dict], category: str) -> list[dict]:
+    """OpenAI tool entries the editors and the sender see.
+
+    The clean-start scope counts one choice tool per entry in this list.
+    """
     hinted = apply_official_language_hint(functions, category)
     return to_openai_completions_tools(hinted)
 

@@ -1,6 +1,7 @@
-"""Frozen three-case draw and the inspectable U/S/X/SX renders.
+"""Frozen pilot draw and the inspectable U/S/X/SX renders.
 
-The draw is local. Nothing here contacts a provider.
+The draw is local. Nothing here contacts a provider. The population is the
+in-scope multi-tool questions from ``scope``.
 """
 
 from __future__ import annotations
@@ -10,7 +11,6 @@ import json
 import random
 
 from tool_compression.clean_start.categories import (
-    ALL_SCORING_CATEGORIES,
     is_java,
     is_javascript,
     is_memory,
@@ -18,10 +18,16 @@ from tool_compression.clean_start.categories import (
     is_trajectory,
     is_web_search,
 )
-from tool_compression.clean_start.load import load_prereqs, load_questions
+from tool_compression.clean_start.load import load_prereqs
 from tool_compression.clean_start.pin import ARMS, OFFICIAL_SETTLEMENT, STUDY_ID
 from tool_compression.clean_start.prepare import model_facing_tools, response_description_pointers
 from tool_compression.clean_start.render import render_tools
+from tool_compression.clean_start.scope import (
+    in_scope_questions,
+    require_recorded_scope,
+    study_categories,
+    write_scope,
+)
 
 PILOT_SEED = 20261125
 PILOT_K = 3
@@ -117,18 +123,32 @@ def compile_case(case: dict) -> dict:
 
 
 def draw_category(category: str, case_ids: list[str], *, seed: int = PILOT_SEED) -> list[str]:
+    """Sample ``PILOT_K`` ids, or freeze every id when fewer than ``PILOT_K`` exist."""
     population = sorted(case_ids)
+    if not population:
+        raise RuntimeError(f"{category} has no in-scope questions")
     if len(population) < PILOT_K:
-        raise RuntimeError(f"{category} has {len(population)} questions")
+        return population
     rng = random.Random(f"clean-start-usx:{seed}:{category}")
     return rng.sample(population, PILOT_K)
 
 
 def build_draw(seed: int = PILOT_SEED) -> dict:
+    require_recorded_scope()
     rows = []
-    for category in ALL_SCORING_CATEGORIES:
-        questions = load_questions(category)
-        chosen = draw_category(category, [case["id"] for case in questions], seed=seed)
+    draws = []
+    categories = study_categories()
+    for category in categories:
+        questions = in_scope_questions(category)
+        ids = [case["id"] for case in questions]
+        chosen = draw_category(category, ids, seed=seed)
+        method = "sample" if len(ids) >= PILOT_K else "all_in_scope_under_k"
+        draws.append({
+            "category": category,
+            "population": len(ids),
+            "frozen": len(chosen),
+            "method": method,
+        })
         for position, case_id in enumerate(chosen):
             rows.append({
                 "category": category,
@@ -141,8 +161,17 @@ def build_draw(seed: int = PILOT_SEED) -> dict:
         "seed": seed,
         "k": PILOT_K,
         "algorithm": DRAW_ALGORITHM,
-        "population": "scoring questions only; memory prerequisites are excluded",
-        "categories": list(ALL_SCORING_CATEGORIES),
+        "short_population": (
+            "When a category has fewer than 3 in-scope questions, freeze every "
+            "in-scope id in sorted order. Do not call sample and do not change the seed."
+        ),
+        "population": (
+            "in-scope scoring questions only; a question is in scope when its loaded "
+            "U catalogue has more than one tool; official simple sets are excluded; "
+            "memory prerequisites are excluded"
+        ),
+        "categories": list(categories),
+        "draws": draws,
         "rows": rows,
     }
 
@@ -169,11 +198,13 @@ def render_document(case: dict) -> dict:
 
 
 def coverage() -> dict:
-    """Edit every scoring question and record what stayed unmodified."""
+    """Edit every in-scope question and record what stayed unmodified."""
     categories = {}
     unsendable = 0
-    for category in ALL_SCORING_CATEGORIES:
-        questions = load_questions(category)
+    total = 0
+    for category in study_categories():
+        questions = in_scope_questions(category)
+        total += len(questions)
         changed_s = 0
         cued_x = 0
         changed_sx = 0
@@ -211,6 +242,11 @@ def coverage() -> dict:
     return {
         "study": STUDY_ID,
         "official_settlement": OFFICIAL_SETTLEMENT,
+        "population": (
+            "in-scope scoring questions whose loaded U catalogue has more than one tool"
+        ),
+        "in_scope_questions": total,
+        "scope_file": "studies/clean-start-usx/scope.json",
         "unsendable": unsendable,
         "categories": categories,
     }
@@ -222,17 +258,38 @@ def _dump(path: Path, payload: dict) -> None:
 
 
 def freeze() -> dict:
-    """Write the committed pilot draw, renders, and limitation record."""
+    """Write the census, pilot draw, in-scope renders, and limitation record.
+
+    Pilot renders for questions that are no longer in the draw are deleted.
+    Vendored BFCL prompts are left in place.
+    """
     root = study_dir()
+    write_scope(root / "scope.json")
     draw = build_draw()
     _dump(root / "pilot" / "draw.json", draw)
     by_category: dict[str, dict[str, dict]] = {}
-    for category in ALL_SCORING_CATEGORIES:
-        for case in load_questions(category):
+    for category in study_categories():
+        for case in in_scope_questions(category):
             by_category.setdefault(category, {})[case["id"]] = case
+    rendered_root = root / "pilot" / "rendered"
+    keep: set[Path] = set()
     for row in draw["rows"]:
         document = render_document(by_category[row["category"]][row["case_id"]])
-        _dump(root / "pilot" / "rendered" / row["category"] / f"{row['case_id']}.json", document)
+        path = rendered_root / row["category"] / f"{row['case_id']}.json"
+        _dump(path, document)
+        keep.add(path.resolve())
+    if rendered_root.is_dir():
+        for path in rendered_root.rglob("*.json"):
+            if path.resolve() not in keep:
+                path.unlink()
+        directories = [item for item in rendered_root.rglob("*") if item.is_dir()]
+        for path in sorted(directories, reverse=True):
+            if not any(path.iterdir()):
+                path.rmdir()
     record = coverage()
     _dump(root / "limitations.json", record)
-    return {"draw": len(draw["rows"]), "unsendable": record["unsendable"]}
+    return {
+        "draw": len(draw["rows"]),
+        "categories": len(draw["categories"]),
+        "unsendable": record["unsendable"],
+    }

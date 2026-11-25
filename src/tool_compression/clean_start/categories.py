@@ -35,6 +35,8 @@ MEMORY_CATEGORY = tuple(f"memory_{backend}" for backend in MEMORY_BACKENDS)
 MEMORY_SCENARIOS = ("student", "customer", "finance", "healthcare", "notetaker")
 WEB_SEARCH_CATEGORY = ("web_search_base", "web_search_no_snippet")
 
+# Official BFCL scoring categories. The clean-start study population is the
+# multi-tool subset in ``tool_compression.clean_start.scope``, not this tuple.
 ALL_SCORING_CATEGORIES = (
     NON_LIVE_CATEGORY + LIVE_CATEGORY + MULTI_TURN_CATEGORY + MEMORY_CATEGORY + WEB_SEARCH_CATEGORY
 )

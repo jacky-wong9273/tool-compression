@@ -8,7 +8,6 @@ import sys
 from decimal import Decimal
 from pathlib import Path
 
-from tool_compression.clean_start.load import load_prereqs, load_questions
 from tool_compression.clean_start.pilot import build_draw, freeze, study_dir
 from tool_compression.clean_start.pin import study_manifest
 from tool_compression.clean_start.runner import (
@@ -19,8 +18,8 @@ from tool_compression.clean_start.runner import (
     resolve_bfcl_package,
     write_plan,
 )
+from tool_compression.clean_start.scope import in_scope_questions, select_full_run_cases, study_categories
 from tool_compression.clean_start.scoring import evaluate_instructions
-from tool_compression.clean_start.categories import ALL_SCORING_CATEGORIES
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -115,20 +114,22 @@ def _run(args) -> int:
 
 def _select_cases(pilot: bool) -> list[dict]:
     if not pilot:
-        cases = []
-        for category in ALL_SCORING_CATEGORIES:
-            cases.extend(load_prereqs(category))
-            cases.extend(load_questions(category))
-        return cases
+        return select_full_run_cases()
     draw = build_draw()
-    wanted = {(row["category"], row["case_id"]) for row in draw["rows"]}
+    wanted = [(row["category"], row["case_id"]) for row in draw["rows"]]
+    by_id = {
+        (category, case["id"]): case
+        for category in study_categories()
+        for case in in_scope_questions(category)
+    }
     chosen = []
-    for category in ALL_SCORING_CATEGORIES:
-        for case in load_questions(category):
-            if (category, case["id"]) in wanted:
-                chosen.append(case)
+    for key in wanted:
+        case = by_id.get(key)
+        if case is None:
+            raise RuntimeError("pilot draw does not match the in-scope questions")
+        chosen.append(case)
     if len(chosen) != len(wanted):
-        raise RuntimeError("pilot draw does not match the loaded questions")
+        raise RuntimeError("pilot draw does not match the in-scope questions")
     return chosen
 
 
