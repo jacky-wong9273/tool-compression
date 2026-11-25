@@ -1,10 +1,21 @@
-"""Send U/S/X/SX with thinking off, then thinking on.
+"""Send U/S/X/SX for the thinking modes a person authorised, one request at a time.
 
 The default path does not read a provider key and does not open a socket.
 ``--live`` without ``--authorize-live`` exits before either of those. There is
-no max_tokens budget and no pre-send reserve. After each completed response the
-billed usage is recorded and the running spend is compared with the ceiling.
-A run that stops early is marked incomplete.
+no max_tokens budget and no pre-send reserve. Before each request the running
+spend is compared with the ceiling and an attempt line is journalled. After each
+completed response the billed usage is recorded and the step is written to its
+sidecar, so a stopped trajectory keeps every billed step. Nothing is retried. A
+run that stops early is marked incomplete. An output directory that already
+holds provider evidence is refused, so a run is never resumed or doubled.
+
+Trajectory categories follow the pinned BFCL function-calling loop: class
+instances are created before the first request, memory categories get the
+pinned memory instruction prompt, a turn ends on an empty or undecodable reply,
+a turn is forced to quit after more than ``STEP_LIMIT`` executed steps, held-out
+documents arrive without the language hint, and a memory prerequisite flushes
+its snapshot at the end. Reasoning content is passed back on tool turns because
+the provider requires it when tools are sent.
 """
 
 from __future__ import annotations
@@ -12,19 +23,22 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 from decimal import Decimal
+from hashlib import sha256
 from pathlib import Path
+import importlib.util
 import json
 import os
 
-from tool_compression.clean_start.categories import is_agentic, is_trajectory
+from tool_compression.clean_start.categories import is_agentic, is_memory, is_trajectory, is_web_search
 from tool_compression.clean_start.pin import (
+    API_URL,
     ARMS,
     OFFICIAL_SETTLEMENT,
     REQUEST_MODEL,
+    STEP_LIMIT,
     STUDY_ID,
     TEMPERATURE,
     THINKING_ORDER,
-    STEP_LIMIT,
 )
 from tool_compression.clean_start.prepare import (
     AGENTIC_SYSTEM_PROMPT,
@@ -36,15 +50,43 @@ from tool_compression.clean_start.render import render_tools
 from tool_compression.clean_start.scoring import (
     append_result,
     assistant_history,
+    decode_execute,
+    is_empty_execute_response,
     parse_fc_message,
     registry_dir,
     result_model_name,
 )
+from tool_compression.convert import to_openai_completions_tools
+
+READ_TIMEOUT_SECONDS = 120.0
+TOTAL_DEADLINE_SECONDS = 900.0
+EVIDENCE_FILES = ("attempts.jsonl", "bills.jsonl", "run.json")
+ARM_ORDER = "rotated by case position: case i sends ARMS[i % 4:] + ARMS[:i % 4]"
+
 
 class RunStopped(RuntimeError):
     def __init__(self, reason: str):
         super().__init__(reason)
         self.reason = reason
+
+
+class TotalDeadlineExceeded(TimeoutError):
+    """The whole request outlived the total deadline. It may still be billed."""
+
+
+class ProviderHTTPError(RuntimeError):
+    def __init__(self, status: int, body: str):
+        super().__init__(f"HTTP {status}")
+        self.status = status
+        self.body = body
+
+
+def parse_thinking_modes(text: str) -> tuple[str, ...]:
+    """``off``, ``on``, or ``off,on``. Nothing else, and no silent default."""
+    modes = tuple(part.strip() for part in str(text).split(",") if part.strip())
+    if not modes or len(set(modes)) != len(modes) or any(mode not in THINKING_ORDER for mode in modes):
+        raise ValueError(f"thinking modes must be off, on, or off,on; got {text!r}")
+    return tuple(mode for mode in THINKING_ORDER if mode in modes)
 
 
 def request_body(messages: list[dict], tools: list[dict], thinking: str) -> dict:
@@ -75,22 +117,62 @@ def read_provider_key() -> str:
     return str(key)
 
 
-def post_chat(body: dict, api_key: str) -> dict:
-    """POST one chat completion. Imported only after authorization."""
-    import urllib.request
+def post_chat(
+    body: dict,
+    api_key: str,
+    *,
+    read_timeout: float = READ_TIMEOUT_SECONDS,
+    total_deadline: float = TOTAL_DEADLINE_SECONDS,
+    connection_factory=None,
+) -> dict:
+    """POST one chat completion with a per-read timeout and a total deadline.
+
+    A socket timeout only bounds each read, so a server that keeps a queued
+    request alive can hold it far longer. The total deadline closes the
+    connection from outside and raises ``TotalDeadlineExceeded``. Either way the
+    request may already be billed, and the caller stops without retrying.
+    """
+    import threading
+    from urllib.parse import urlsplit
+
+    url = urlsplit(API_URL)
+    if connection_factory is None:
+        import http.client
+        import ssl
+
+        def connection_factory():
+            return http.client.HTTPSConnection(
+                url.hostname, timeout=read_timeout, context=ssl.create_default_context()
+            )
 
     payload = json.dumps(body).encode("utf-8")
-    request = urllib.request.Request(
-        "https://api.deepseek.com/chat/completions",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=120) as response:
-        return json.loads(response.read().decode("utf-8"))
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    connection = connection_factory()
+    outcome: dict = {}
+
+    def work():
+        try:
+            connection.request("POST", url.path, body=payload, headers=headers)
+            response = connection.getresponse()
+            outcome["status"] = response.status
+            outcome["data"] = response.read()
+        except BaseException as exc:
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=work, daemon=True)
+    worker.start()
+    worker.join(total_deadline)
+    if worker.is_alive():
+        try:
+            connection.close()
+        finally:
+            raise TotalDeadlineExceeded(f"no complete response within {total_deadline} seconds")
+    connection.close()
+    if "error" in outcome:
+        raise outcome["error"]
+    if outcome.get("status") != 200:
+        raise ProviderHTTPError(int(outcome.get("status") or 0), outcome.get("data", b"")[:500].decode("utf-8", "replace"))
+    return json.loads(outcome["data"].decode("utf-8"))
 
 
 def authorized_transport():
@@ -141,29 +223,48 @@ def parse_usage(usage: dict | None) -> dict:
     }
 
 
-def turn_messages(case: dict, turn_index: int) -> list[dict]:
-    turn = case["question"][turn_index]
+def prepared_question(case: dict) -> list[list[dict]]:
+    """Turns as the pinned loader leaves them: the agentic format prompt on turn 0."""
+    question = deepcopy(case["question"])
+    if is_agentic(case["category"]) and not case.get("prereq") and question:
+        question[0] = [{"role": "system", "content": AGENTIC_SYSTEM_PROMPT}, *question[0]]
+    return question
+
+
+def turn_messages(case: dict, turn_index: int, question: list[list[dict]] | None = None) -> list[dict]:
+    question = prepared_question(case) if question is None else question
+    turn = question[turn_index]
     if not turn and str(turn_index) in case.get("held_out", {}):
-        messages = [{"role": "user", "content": HOLDOUT_USER_PROMPT}]
-    else:
-        messages = [dict(item) for item in turn]
-    if turn_index == 0 and is_agentic(case["category"]) and not case.get("prereq"):
-        messages = [{"role": "system", "content": AGENTIC_SYSTEM_PROMPT}, *messages]
-    return messages
+        return [{"role": "user", "content": HOLDOUT_USER_PROMPT}]
+    return [dict(item) for item in turn]
 
 
-def arm_tools(functions: list[dict], category: str, arm: str) -> list[dict]:
+def arm_tools(functions: list[dict], category: str, arm: str, held_out: list[dict] | None = None) -> list[dict]:
+    """Model-facing tools for one arm. Held-out docs are converted without the hint."""
     facing = model_facing_tools(functions, category)
+    if held_out:
+        facing = facing + to_openai_completions_tools(deepcopy(held_out))
     if arm == "U":
         return facing
     return render_tools(facing)["arms"][arm]
 
 
-def build_slots(cases: list[dict]) -> list[dict]:
+def arm_order(position: int) -> tuple[str, ...]:
+    shift = position % len(ARMS)
+    return ARMS[shift:] + ARMS[:shift]
+
+
+def build_slots(cases: list[dict], thinking_modes: tuple[str, ...] = THINKING_ORDER) -> list[dict]:
+    """Slots for the given thinking modes only, in mode, case, then rotated arm order.
+
+    The arm rotation spreads provider prefix-cache warming evenly over the arms.
+    Memory prerequisites keep their position before their backend's questions.
+    """
+    modes = parse_thinking_modes(",".join(thinking_modes))
     slots = []
-    for thinking in THINKING_ORDER:
-        for case in cases:
-            for arm in ARMS:
+    for thinking in modes:
+        for position, case in enumerate(cases):
+            for arm in arm_order(position):
                 slots.append({
                     "case_id": case["id"],
                     "category": case["category"],
@@ -197,7 +298,7 @@ def execution_config(case: dict, result_dir: Path) -> dict:
         return {
             "initial_config": {
                 class_name: {
-                    "model_result_dir": str(result_dir),
+                    "model_result_dir": Path(result_dir),
                     "scenario": case.get("scenario"),
                     "test_id": case["id"],
                     "test_category": case["category"] if not case.get("prereq") else f"{case['category']}_prereq",
@@ -221,8 +322,46 @@ def execution_config(case: dict, result_dir: Path) -> dict:
     }
 
 
+BACKEND_MODULES = {
+    "WebSearchAPI": ("serpapi", "bs4", "html2text", "requests"),
+    "MemoryAPI_kv": ("rank_bm25",),
+    "MemoryAPI_vector": ("sentence_transformers", "faiss", "numpy"),
+    "MemoryAPI_rec_sum": (),
+}
+
+
+def preflight(cases: list[dict], slots: list[dict], *, bfcl_root: Path | None, environ=None, find_spec=None) -> list[str]:
+    """Problems that would waste spend if found after the first request.
+
+    Reads only whether variables are set, never their values into any output.
+    """
+    environ = os.environ if environ is None else environ
+    find_spec = importlib.util.find_spec if find_spec is None else find_spec
+    problems = []
+    by_id = {case["id"]: case for case in cases}
+    trajectory = [slot for slot in slots if slot["kind"] == "trajectory"]
+    if trajectory and bfcl_root is None:
+        problems.append("bfcl_root_missing: a trajectory category needs --bfcl-root")
+    classes = set()
+    for slot in trajectory:
+        classes.update(by_id[slot["case_id"]].get("involved_classes") or [])
+        if is_web_search(slot["category"]):
+            classes.add("WebSearchAPI")
+    for class_name in sorted(classes):
+        for module in BACKEND_MODULES.get(class_name, ()):
+            if find_spec(module) is None:
+                problems.append(f"backend_module_missing: {class_name} needs {module}")
+    if "WebSearchAPI" in classes and not str(environ.get("SERPAPI_API_KEY") or "").strip():
+        problems.append(
+            "serpapi_key_missing: web_search slots would run with every search returning an error string"
+        )
+    if not str(environ.get("DEEPSEEK_API_KEY") or "").strip():
+        problems.append("provider_key_missing: DEEPSEEK_API_KEY is not set")
+    return problems
+
+
 class OfficialBfclExecutor:
-    """Call the pinned ``execute_multi_turn_func_call``. Constructed only for an authorized run."""
+    """Call the pinned BFCL executor and memory helpers. Constructed only for an authorized run."""
 
     def __init__(self, package_root: Path, instance_name: str):
         import sys
@@ -241,10 +380,8 @@ class OfficialBfclExecutor:
         self._execute = execute_multi_turn_func_call
         self._instance_name = instance_name
 
-    def execute(self, result: object, case: dict, config: dict) -> list[str]:
-        from tool_compression.clean_start.scoring import to_execution_strings
-        strings = to_execution_strings(result)
-        outputs, _instances = self._execute(
+    def _call(self, strings: list[str], case: dict, config: dict):
+        return self._execute(
             strings,
             config["initial_config"],
             config["involved_classes"],
@@ -253,14 +390,43 @@ class OfficialBfclExecutor:
             long_context=bool(config["long_context"]),
             is_evaL_run=False,
         )
+
+    def initialize(self, case: dict, config: dict) -> dict:
+        _outputs, instances = self._call([], case, config)
+        return instances
+
+    def memory_prompt(self, question: list[list[dict]], case: dict, instances: dict) -> list[list[dict]]:
+        from bfcl_eval.model_handler.utils import add_memory_instruction_system_prompt
+
+        if len(instances) != 1:
+            raise RunStopped("memory_instance_count")
+        instance = next(iter(instances.values()))
+        category = case["id"].rsplit("_", 1)[0]
+        return add_memory_instruction_system_prompt(question, category, case["scenario"], instance)
+
+    def execute_calls(self, strings: list[str], case: dict, config: dict) -> list[str]:
+        outputs, _instances = self._call(strings, case, config)
         return list(outputs)
+
+    def flush_prereq(self, case: dict, instances: dict) -> None:
+        if len(instances) != 1:
+            raise RunStopped("memory_instance_count")
+        next(iter(instances.values()))._flush_memory_to_local_file()
 
 
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+def _append_jsonl(path: Path, row: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
 
 
 def _status(out_dir: Path, **fields) -> dict:
@@ -269,9 +435,12 @@ def _status(out_dir: Path, **fields) -> dict:
         "official_settlement": OFFICIAL_SETTLEMENT,
         "model": REQUEST_MODEL,
         "arms": list(ARMS),
-        "thinking_order": list(THINKING_ORDER),
+        "arm_order": ARM_ORDER,
         "rate_card": rate_card(),
         "max_tokens_sent": False,
+        "retries": 0,
+        "read_timeout_seconds": READ_TIMEOUT_SECONDS,
+        "total_deadline_seconds": TOTAL_DEADLINE_SECONDS,
     }
     payload.update(fields)
     payload["complete"] = bool(payload.get("complete"))
@@ -283,35 +452,63 @@ def _status(out_dir: Path, **fields) -> dict:
         "ceiling_usd": payload.get("ceiling_usd"),
         "slots_sent": payload.get("slots_sent", 0),
         "slots_total": payload.get("slots_total", 0),
+        "requests_billed": payload.get("requests_billed", 0),
         "complete": payload["complete"],
         "status": payload["status"],
         "reason": payload.get("reason"),
+        "uncertain_attempts": payload.get("uncertain_attempts", []),
         "rate_card": rate_card(),
     }
     _write_json(out_dir / "spend.json", spend)
     return payload
 
 
-def write_plan(cases: list[dict], out_dir: Path, *, pilot: bool) -> dict:
-    slots = build_slots(cases)
+def plan_summary(slots: list[dict], thinking_modes: tuple[str, ...]) -> dict:
     counts: dict[str, int] = {}
     for slot in slots:
         key = f"{slot['thinking']}:{slot['arm']}:{slot['kind']}"
         counts[key] = counts.get(key, 0) + 1
+    return {
+        "thinking_modes_authorized": list(thinking_modes),
+        "slots_total": len(slots),
+        "prereq_slots": sum(1 for slot in slots if slot.get("prereq")),
+        "counts": counts,
+        "order": f"thinking {', then '.join(thinking_modes)}; cases in list order; arms {ARM_ORDER}",
+        "slot_sha256": sha256(json.dumps(
+            [[slot["thinking"], slot["case_id"], slot["arm"]] for slot in slots]
+        ).encode("utf-8")).hexdigest(),
+    }
+
+
+def write_plan(cases: list[dict], out_dir: Path, *, pilot: bool, thinking_modes: tuple[str, ...] = THINKING_ORDER) -> dict:
+    slots = build_slots(cases, thinking_modes)
     return _status(
         out_dir,
         status="not_sent",
         complete=False,
         reason="dry_plan",
         pilot=pilot,
-        slots_total=len(slots),
         slots_sent=0,
         running_usd="0",
         ceiling_usd=None,
-        order="thinking off for every case and arm, then thinking on; arms are U, S, X, SX",
-        counts=counts,
         provider_contacted=False,
+        **plan_summary(slots, thinking_modes),
     )
+
+
+def refuse_reuse(out_dir: Path) -> str | None:
+    for name in EVIDENCE_FILES:
+        path = out_dir / name
+        if not path.exists():
+            continue
+        if name == "run.json":
+            try:
+                if not json.loads(path.read_text(encoding="utf-8")).get("provider_contacted"):
+                    continue
+            except (OSError, ValueError):
+                pass
+        return f"out_dir_has_provider_evidence:{name}"
+    return None
 
 
 def execute(
@@ -321,51 +518,135 @@ def execute(
     transport,
     *,
     ceiling_usd: Decimal,
+    thinking_modes: tuple[str, ...],
     clock=None,
     executor=None,
+    identity: dict | None = None,
 ) -> dict:
+    """Send ``slots`` in order. ``thinking_modes`` is what a person authorised."""
+    out_dir = Path(out_dir)
     if ceiling_usd <= 0:
         raise RunStopped("ceiling_not_positive")
+    modes = parse_thinking_modes(",".join(thinking_modes))
+    leaked = sorted({slot["thinking"] for slot in slots} - set(modes))
+    if leaked:
+        raise RunStopped(f"thinking_mode_not_authorized:{','.join(leaked)}")
+    reused = refuse_reuse(out_dir)
+    if reused:
+        raise RunStopped(reused)
     clock = clock or (lambda: datetime.now(timezone.utc))
     by_id = {}
     for case in cases:
         if case["id"] in by_id:
             raise ValueError(f"duplicate case id {case['id']}")
         by_id[case["id"]] = case
-    running = Decimal("0")
-    sent = 0
-    bills = out_dir / "bills.jsonl"
-    bills.parent.mkdir(parents=True, exist_ok=True)
-    state = _status(
-        out_dir,
-        status="running",
-        complete=False,
-        reason=None,
-        slots_total=len(slots),
-        slots_sent=0,
-        running_usd=str(running),
-        ceiling_usd=str(ceiling_usd),
-        provider_contacted=True,
-    )
+    missing = [slot["case_id"] for slot in slots if slot["case_id"] not in by_id]
+    if missing:
+        raise RunStopped(f"slot_without_case:{missing[0]}")
+    state = {
+        "running": Decimal("0"),
+        "sent": 0,
+        "billed": 0,
+        "attempt": 0,
+        "open_attempt": None,
+        "partial": [],
+    }
+    common = {
+        "slots_total": len(slots),
+        "ceiling_usd": str(ceiling_usd),
+        "provider_contacted": True,
+        "identity": identity or {},
+        **{key: value for key, value in plan_summary(slots, modes).items() if key != "slots_total"},
+    }
 
-    def bill(slot: dict, step: dict, at: datetime, parsed: dict) -> None:
-        nonlocal running, sent
+    def status(**fields) -> dict:
+        return _status(
+            out_dir,
+            slots_sent=state["sent"],
+            requests_billed=state["billed"],
+            running_usd=str(state["running"]),
+            partial_slots=state["partial"],
+            **common,
+            **fields,
+        )
+
+    status(status="running", complete=False, reason=None, uncertain_attempts=[])
+    attempts = out_dir / "attempts.jsonl"
+    bills = out_dir / "bills.jsonl"
+
+    def send(slot: dict, body: dict, turn: int, step: int) -> tuple[dict, dict, datetime]:
+        if body.get("thinking", {}).get("type") != {"off": "disabled", "on": "enabled"}[slot["thinking"]]:
+            raise RunStopped("thinking_field_mismatch")
+        if slot["thinking"] not in modes:
+            raise RunStopped("thinking_mode_not_authorized")
+        if "max_tokens" in body:
+            raise RunStopped("max_tokens_present")
+        if state["running"] >= ceiling_usd:
+            raise RunStopped("ceiling")
+        state["attempt"] += 1
+        number = state["attempt"]
+        encoded = json.dumps(body, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        sent_at = clock()
+        _append_jsonl(attempts, {
+            "attempt": number,
+            "event": "sent",
+            "case_id": slot["case_id"],
+            "arm": slot["arm"],
+            "thinking": slot["thinking"],
+            "turn": turn,
+            "step": step,
+            "sent_at": sent_at.isoformat(),
+            "body_sha256": sha256(encoded).hexdigest(),
+            "tools_sha256": sha256(json.dumps(body.get("tools") or [], ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest(),
+            "request_bytes": len(encoded),
+        })
+        state["open_attempt"] = number
+        try:
+            payload = transport(body)
+        except RunStopped:
+            raise
+        except Exception as exc:
+            _append_jsonl(attempts, {
+                "attempt": number,
+                "event": "failed",
+                "at": clock().isoformat(),
+                "error": exc.__class__.__name__,
+                "http_status": getattr(exc, "status", None),
+                "may_be_billed": True,
+            })
+            raise RunStopped(f"provider_error:{exc.__class__.__name__}") from exc
+        try:
+            message, parsed, at = _read_payload(payload, clock)
+        except RunStopped as stopped:
+            _append_jsonl(attempts, {
+                "attempt": number,
+                "event": "unusable_response",
+                "at": clock().isoformat(),
+                "reason": stopped.reason,
+                "may_be_billed": True,
+            })
+            raise
         amount, band = spend_usd(
             cache_hit=parsed["prompt_cache_hit_tokens"],
             cache_miss=parsed["prompt_cache_miss_tokens"],
             output=parsed["output_tokens"],
             at=at,
         )
-        running += amount
-        row = {
+        _sent_amount, band_at_send = spend_usd(cache_hit=0, cache_miss=0, output=0, at=sent_at)
+        state["running"] += amount
+        state["billed"] += 1
+        _append_jsonl(bills, {
+            "attempt": number,
             "case_id": slot["case_id"],
             "category": slot["category"],
             "arm": slot["arm"],
             "thinking": slot["thinking"],
-            "turn": step["turn"],
-            "step": step["step"],
+            "turn": turn,
+            "step": step,
+            "sent_at": sent_at.isoformat(),
             "completed_at": at.isoformat(),
             "band": band,
+            "band_at_send": band_at_send,
             "prompt_tokens": parsed["prompt_tokens"],
             "prompt_cache_hit_tokens": parsed["prompt_cache_hit_tokens"],
             "prompt_cache_miss_tokens": parsed["prompt_cache_miss_tokens"],
@@ -374,168 +655,187 @@ def execute(
             "cache_fields": parsed["cache_fields"],
             "usage_inconsistent": parsed["usage_inconsistent"],
             "usd": str(amount),
-            "running_usd": str(running),
+            "running_usd": str(state["running"]),
             "request_model": REQUEST_MODEL,
             "billed": True,
-        }
-        with bills.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
-            handle.flush()
+        })
+        _append_jsonl(attempts, {"attempt": number, "event": "completed", "at": at.isoformat(), "billed": True})
+        state["open_attempt"] = None
+        return message, parsed, at
 
-    def stop(reason: str, scorable_case: bool) -> dict:
-        return _status(
-            out_dir,
+    def stop(reason: str) -> dict:
+        uncertain = [state["open_attempt"]] if state["open_attempt"] is not None else []
+        return status(
             status="incomplete",
             complete=False,
             reason=reason,
-            slots_total=len(slots),
-            slots_sent=sent,
-            running_usd=str(running),
-            ceiling_usd=str(ceiling_usd),
-            provider_contacted=True,
+            uncertain_attempts=uncertain,
             partial_presented_as_complete=False,
         )
 
     for slot in slots:
-        if running >= ceiling_usd:
-            return stop("ceiling", False)
+        if state["running"] >= ceiling_usd:
+            return stop("ceiling")
         if slot["kind"] == "trajectory" and executor is None:
-            return stop("trajectory_executor_required", False)
+            return stop("trajectory_executor_required")
         case = by_id[slot["case_id"]]
+        sidecar = _new_sidecar(case, slot)
         try:
-            finished = _run_slot(
-                case, slot, out_dir, transport, clock, executor, bill,
-            )
+            if slot["kind"] == "single":
+                _run_single(case, slot, out_dir, send, sidecar)
+            else:
+                _run_trajectory(case, slot, out_dir, send, executor, sidecar)
         except RunStopped as stopped:
-            return stop(stopped.reason, False)
-        if not finished:
-            return stop("slot_not_finished", False)
-        sent += 1
-        _status(
-            out_dir,
-            status="running",
-            complete=False,
-            reason=None,
-            slots_total=len(slots),
-            slots_sent=sent,
-            running_usd=str(running),
-            ceiling_usd=str(ceiling_usd),
-            provider_contacted=True,
-        )
-    return _status(
-        out_dir,
-        status="complete",
-        complete=True,
-        reason="finished",
-        slots_total=len(slots),
-        slots_sent=sent,
-        running_usd=str(running),
-        ceiling_usd=str(ceiling_usd),
-        provider_contacted=True,
-    )
+            if sidecar["steps"] or sidecar.get("stage"):
+                sidecar["status"] = "stopped"
+                sidecar["stop_reason"] = stopped.reason
+                _write_sidecar(out_dir, slot, sidecar)
+                state["partial"].append({
+                    "case_id": slot["case_id"],
+                    "arm": slot["arm"],
+                    "thinking": slot["thinking"],
+                    "billed_steps": len(sidecar["steps"]),
+                })
+            return stop(stopped.reason)
+        state["sent"] += 1
+        status(status="running", complete=False, reason=None, uncertain_attempts=[])
+    return status(status="complete", complete=True, reason="finished", uncertain_attempts=[])
 
 
-def _run_slot(case, slot, out_dir, transport, clock, executor, bill) -> bool:
-    thinking = slot["thinking"]
-    arm = slot["arm"]
-    result_dir = out_dir / "result" / result_model_name(thinking, arm)
-    config = execution_config(case, result_dir)
-    config["instance_name"] = executor_instance_name(thinking, arm)
-    sidecar = {
+def _new_sidecar(case: dict, slot: dict) -> dict:
+    return {
         "case_id": case["id"],
         "category": case["category"],
-        "arm": arm,
-        "thinking": thinking,
+        "arm": slot["arm"],
+        "thinking": slot["thinking"],
         "request_model": REQUEST_MODEL,
+        "status": "in_progress",
         "steps": [],
         "scorable": False,
     }
-    if slot["kind"] == "single":
-        messages = turn_messages(case, 0)
-        tools = arm_tools(case["function"], case["category"], arm)
-        body = request_body(messages, tools, thinking)
-        message, parsed, at = _exchange(body, transport, clock)
-        bill(slot, {"turn": 0, "step": 0}, at, parsed)
-        result, _calls = parse_fc_message(message)
-        entry = {
-            "id": case["id"],
-            "result": result,
-            "input_token_count": parsed["prompt_tokens"],
-            "output_token_count": parsed["output_tokens"],
-        }
-        append_result(out_dir, case["id"], thinking, entry, arm)
-        sidecar["steps"].append(_step_record(message, result, parsed))
-        sidecar["scorable"] = True
-        sidecar["result"] = result
-        _write_sidecar(out_dir, slot, sidecar)
-        return True
 
+
+def _run_single(case: dict, slot: dict, out_dir: Path, send, sidecar: dict) -> None:
+    thinking, arm = slot["thinking"], slot["arm"]
+    messages = turn_messages(case, 0)
+    tools = arm_tools(case["function"], case["category"], arm)
+    body = request_body(messages, tools, thinking)
+    message, parsed, _at = send(slot, body, 0, 0)
+    result, _calls = parse_fc_message(message)
+    sidecar["steps"].append(_step_record(message, result, parsed))
+    _write_sidecar(out_dir, slot, sidecar)
+    append_result(out_dir, case["id"], thinking, {
+        "id": case["id"],
+        "result": result,
+        "input_token_count": parsed["prompt_tokens"],
+        "output_token_count": parsed["output_tokens"],
+    }, arm)
+    sidecar["status"] = "finished"
+    sidecar["scorable"] = True
+    sidecar["result"] = result
+    _write_sidecar(out_dir, slot, sidecar)
+
+
+def _run_trajectory(case: dict, slot: dict, out_dir: Path, send, executor, sidecar: dict) -> None:
+    thinking, arm = slot["thinking"], slot["arm"]
+    result_dir = out_dir / "result" / result_model_name(thinking, arm)
+    config = execution_config(case, result_dir)
+    config["instance_name"] = executor_instance_name(thinking, arm)
+    sidecar["stage"] = "initialize"
+    initialize = getattr(executor, "initialize", None)
+    instances = initialize(case, config) if initialize else {}
+    question = prepared_question(case)
+    if is_memory(case["category"]):
+        memory_prompt = getattr(executor, "memory_prompt", None)
+        if memory_prompt is None:
+            raise RunStopped("memory_prompt_unavailable")
+        question = memory_prompt(question, case, instances)
+    sidecar["stage"] = "turns"
     messages: list[dict] = []
-    functions = list(case["function"])
+    held_out: list[dict] = []
     turns: list[list] = []
     input_counts: list[list[int]] = []
     output_counts: list[list[int]] = []
     forced = False
-    for turn_index in range(len(case["question"])):
+    for turn_index in range(len(question)):
         if str(turn_index) in case.get("held_out", {}):
-            functions = functions + list(case["held_out"][str(turn_index)])
-        messages.extend(turn_messages(case, turn_index))
+            held_out = held_out + list(case["held_out"][str(turn_index)])
+        messages.extend(turn_messages(case, turn_index, question))
         steps: list = []
         turn_in: list[int] = []
         turn_out: list[int] = []
-        for step_index in range(STEP_LIMIT):
-            tools = arm_tools(functions, case["category"], arm)
+        count = 0
+        while True:
+            tools = arm_tools(case["function"], case["category"], arm, held_out)
             body = request_body(messages, tools, thinking)
-            message, parsed, at = _exchange(body, transport, clock)
-            bill(slot, {"turn": turn_index, "step": step_index}, at, parsed)
+            message, parsed, _at = send(slot, body, turn_index, count)
             result, calls = parse_fc_message(message)
             messages.append(assistant_history(message))
             steps.append(result)
             turn_in.append(parsed["prompt_tokens"])
             turn_out.append(parsed["output_tokens"])
-            sidecar["steps"].append(_step_record(message, result, parsed, turn_index, step_index))
-            if not calls:
+            record = _step_record(message, result, parsed, turn_index, count)
+            sidecar["steps"].append(record)
+            _write_sidecar(out_dir, slot, sidecar)
+            try:
+                decoded = decode_execute(result)
+            except Exception as exc:
+                record["turn_end"] = f"decode_error:{exc.__class__.__name__}"
+                _write_sidecar(out_dir, slot, sidecar)
                 break
-            outputs = executor.execute(result, case, config)
-            if len(outputs) != len(calls):
-                raise RunStopped("executor_result_count")
-            for call, output in zip(calls, outputs):
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": call["id"],
-                    "content": output,
-                })
-        else:
-            forced = True
+            if is_empty_execute_response(decoded):
+                record["turn_end"] = "empty_response"
+                _write_sidecar(out_dir, slot, sidecar)
+                break
+            outputs = _execute_calls(executor, decoded, case, config)
+            record["executed"] = decoded
+            record["tool_outputs"] = outputs
+            _write_sidecar(out_dir, slot, sidecar)
+            for output, call in zip(outputs, calls):
+                messages.append({"role": "tool", "content": output, "tool_call_id": call["id"]})
+            count += 1
+            if count > STEP_LIMIT:
+                forced = True
+                record["turn_end"] = "forced_quit"
+                break
         turns.append(steps)
         input_counts.append(turn_in)
         output_counts.append(turn_out)
         if forced:
             break
-    entry = {
+    if case.get("prereq") and is_memory(case["category"]):
+        flush = getattr(executor, "flush_prereq", None)
+        if flush is None:
+            raise RunStopped("memory_flush_unavailable")
+        flush(case, instances)
+    append_result(out_dir, case["id"], thinking, {
         "id": case["id"],
         "result": turns,
         "input_token_count": input_counts,
         "output_token_count": output_counts,
         "forced_quit": forced,
-    }
-    append_result(out_dir, case["id"], thinking, entry, arm)
+    }, arm)
+    sidecar["status"] = "finished"
     sidecar["scorable"] = True
     sidecar["result"] = turns
     sidecar["forced_quit"] = forced
+    sidecar.pop("stage", None)
     _write_sidecar(out_dir, slot, sidecar)
-    return True
 
 
-def _exchange(body: dict, transport, clock):
-    if "max_tokens" in body:
-        raise RunStopped("max_tokens_present")
+def _execute_calls(executor, decoded: list[str], case: dict, config: dict) -> list[str]:
+    run = getattr(executor, "execute_calls", None)
+    if run is None:
+        raise RunStopped("executor_interface")
     try:
-        payload = transport(body)
+        return list(run(decoded, case, config))
     except RunStopped:
         raise
     except Exception as exc:
-        raise RunStopped(f"provider_error:{exc.__class__.__name__}") from exc
+        raise RunStopped(f"executor_error:{exc.__class__.__name__}") from exc
+
+
+def _read_payload(payload, clock):
     if not isinstance(payload, dict):
         raise RunStopped("provider_payload")
     choices = payload.get("choices") or []

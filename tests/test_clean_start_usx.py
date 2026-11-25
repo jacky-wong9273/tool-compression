@@ -329,7 +329,7 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     rendered = render_tools(model_facing_tools([raw], "simple_python"))
     edited = rendered["arms"]["S"][0]["function"]
     original = rendered["arms"]["U"][0]["function"]
-    assert edited["description"].startswith("Calculate the area of a rectangle.")
+    assert edited["description"].startswith("Calculates the area of a rectangle.")
     assert edited["description"].endswith(" Note that the provided function is in Python 3 syntax.")
     width = edited["parameters"]["properties"]["width"]
     assert width["type"] == "number" and width["format"] == "float"
@@ -387,7 +387,7 @@ def test_single_tool_control_has_no_cue_and_names_are_u_s_x_sx():
     roots = {case["id"]: case for case in load_questions("multiple")}["multiple_11"]
     compiled = compile_case(roots)
     axes = {change["function"]: change["axis"] for change in compiled["changes"] if change["arm"] == "X"}
-    assert axes["math_roots_quadratic"] == "named-coefficients-versus-ordered-array"
+    assert axes["math_roots_quadratic"] == "interface:numeric-array-versus-numeric-scalars"
     assert "math_sqrt" not in axes or axes.get("math_sqrt", "") == ""
 
 
@@ -455,7 +455,9 @@ def test_execution_config_separates_snippet_memory_and_long_context(tmp_path):
         tmp_path,
     )
     assert memory["initial_config"]["MemoryAPI_kv"]["test_category"] == "memory_kv_prereq"
-    assert memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"] == str(tmp_path)
+    # Pinned MemoryAPI._prepare_snapshot joins this with "/", so it must stay a Path.
+    assert memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"] == tmp_path
+    assert isinstance(memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"], Path)
     long_context = execution_config(
         {"id": "multi_turn_long_context_0", "category": "multi_turn_long_context", "prereq": False, "initial_config": {}},
         tmp_path,
@@ -562,6 +564,7 @@ def test_two_arms_do_not_append_into_the_same_result_file(tmp_path):
         tmp_path / "run",
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     u_lines = (
@@ -589,6 +592,7 @@ def test_runner_persists_scorable_output_usage_and_spend(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off", "on"),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is True
@@ -641,6 +645,7 @@ def test_ceiling_stops_later_sends_and_partial_is_not_complete(tmp_path):
         tmp_path,
         script,
         ceiling_usd=_off_peak_cost(),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
@@ -669,10 +674,12 @@ def test_missing_usage_does_not_invent_a_bill_or_a_result(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
     assert result["reason"] == "usage_missing"
+    assert result["uncertain_attempts"] == [1]
     assert result["slots_sent"] == 0
     assert not (tmp_path / "bills.jsonl").exists()
     assert not list(tmp_path.rglob("*_result.json"))
@@ -693,6 +700,7 @@ def test_absent_cache_split_is_billed_as_all_miss_and_named(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     bill = json.loads((tmp_path / "bills.jsonl").read_text(encoding="utf-8"))
@@ -725,8 +733,12 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
         def __init__(self):
             self.calls = []
 
-        def execute(self, result, case, config):
-            self.calls.append((result, config["instance_name"], config["long_context"]))
+        def initialize(self, case, config):
+            self.calls.append(([], config["instance_name"], config["long_context"]))
+            return {"GorillaFileSystem": object()}
+
+        def execute_calls(self, strings, case, config):
+            self.calls.append((strings, config["instance_name"], config["long_context"]))
             return ["listed"]
 
     executor = Executor()
@@ -737,10 +749,12 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
         executor=executor,
     )
     assert result["complete"] is True
+    assert executor.calls[0][0] == [] and executor.calls[1][0] == ["echo(value=1)"]
     entry = json.loads(
         (tmp_path / result_relative("multi_turn_long_context_0", "off", "U")).read_text(encoding="utf-8")
     )
@@ -804,8 +818,8 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
     assert [(slot["case_id"], slot["arm"]) for slot in slots] == [
         ("memory_kv_0-customer-0", "U"),
         ("memory_kv_0-customer-0", "S"),
-        ("multi_turn_base_0", "U"),
         ("multi_turn_base_0", "S"),
+        ("multi_turn_base_0", "U"),
         ("web_search_base_0", "U"),
         ("web_search_base_0", "S"),
     ]
@@ -817,7 +831,14 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
             self.globals = {}
             self.trace = []
 
-        def execute(self, result, case, config):
+        def initialize(self, case, config):
+            self.execute_calls([], case, config)
+            return {config["involved_classes"][0]: self.globals[self.trace[-1]["key"]]}
+
+        def memory_prompt(self, question, case, instances):
+            return question
+
+        def execute_calls(self, strings, case, config):
             class_name = config["involved_classes"][0]
             key = _bfcl_instance_key(config["instance_name"], case["id"], class_name)
             created = key not in self.globals
@@ -842,6 +863,7 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
         tmp_path,
         _Scripted(responses),
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
         executor=executor,
     )
@@ -853,9 +875,9 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
     assert len(by_key) == 6
     for events in by_key.values():
         assert events[0]["created"] is True
-        assert len(events) == 2
-        assert events[1]["created"] is False
-        assert events[1]["instance"] is events[0]["instance"]
+        assert len(events) == 3
+        assert all(event["created"] is False for event in events[1:])
+        assert all(event["instance"] is events[0]["instance"] for event in events[1:])
     for case, class_name in (
         (memory, "MemoryAPI_kv"),
         (multi, "GorillaFileSystem"),
@@ -925,6 +947,7 @@ def test_trajectory_without_executor_stops_before_a_request(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
@@ -972,16 +995,31 @@ def test_authorized_command_uses_the_injected_transport(tmp_path, monkeypatch):
     from tool_compression.clean_start.__main__ import main
 
     script = _Scripted([_content_response("ok")])
-    monkeypatch.setattr("tool_compression.clean_start.__main__._select_cases", lambda _pilot: [_simple_case()])
-    monkeypatch.setattr("tool_compression.clean_start.__main__.build_slots", lambda cases: build_slots(cases)[:1])
+    monkeypatch.setattr("tool_compression.clean_start.__main__._select_cases", lambda _pilot, _prereqs: [_simple_case()])
+    monkeypatch.setattr(
+        "tool_compression.clean_start.__main__.build_slots",
+        lambda cases, modes: build_slots(cases, modes)[:1],
+    )
     monkeypatch.setattr("tool_compression.clean_start.__main__.authorized_transport", lambda: script)
-    code = main([
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "placeholder-not-a-key")
+    assert main([
         "run", "--live", "--authorize-live", "--ceiling-usd", "1", "--out", str(tmp_path),
+    ]) == 2
+    assert script.bodies == []
+    code = main([
+        "run", "--live", "--authorize-live", "--thinking", "off", "--ceiling-usd", "1", "--out", str(tmp_path),
     ])
     assert code == 0
     assert script.bodies and script.bodies[0]["model"] == "deepseek-flash"
+    assert [body["thinking"]["type"] for body in script.bodies] == ["disabled"]
     assert (tmp_path / "bills.jsonl").is_file()
     assert list(tmp_path.rglob("*_result.json"))
+    again = _Scripted([_content_response("ok")])
+    monkeypatch.setattr("tool_compression.clean_start.__main__.authorized_transport", lambda: again)
+    assert main([
+        "run", "--live", "--authorize-live", "--thinking", "off", "--ceiling-usd", "1", "--out", str(tmp_path),
+    ]) == 2
+    assert again.bodies == []
 
 
 UNCHANGED_PILOT = {
