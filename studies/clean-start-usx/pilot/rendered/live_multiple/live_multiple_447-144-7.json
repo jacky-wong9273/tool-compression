@@ -24,6 +24,14 @@
     {
       "arm": "S",
       "function": "Payment_1_MakePayment",
+      "pointer": "/function/description",
+      "before": "Executes a transaction to transfer funds from the user to another account. Note that the provided function is in Python 3 syntax.",
+      "after": "Executes a transaction to transfer funds from the user to another account.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "Payment_1_MakePayment",
       "pointer": "/function/parameters/properties/amount/description",
       "before": "The monetary value to be transferred, in USD. This is a float type value.",
       "after": "The monetary value to be transferred, in USD.",
@@ -34,8 +42,32 @@
       "function": "Restaurants_2_ReserveRestaurant",
       "pointer": "/function/description",
       "before": "This function makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation. Note that the provided function is in Python 3 syntax.",
-      "after": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation. Note that the provided function is in Python 3 syntax.",
-      "change_class": "direct_action"
+      "after": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation.",
+      "change_class": "direct_action+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "Restaurants_2_FindRestaurants",
+      "pointer": "/function/description",
+      "before": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating. Note that the provided function is in Python 3 syntax.",
+      "after": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "Services_4_BookAppointment",
+      "pointer": "/function/description",
+      "before": "Books a therapy appointment with a specified therapist at a given date and time. Note that the provided function is in Python 3 syntax.",
+      "after": "Books a therapy appointment with a specified therapist at a given date and time.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "Services_4_FindProvider",
+      "pointer": "/function/description",
+      "before": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization. Note that the provided function is in Python 3 syntax.",
+      "after": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization.",
+      "change_class": "hint_context"
     }
   ],
   "arms": {
@@ -323,7 +355,7 @@
         "type": "function",
         "function": {
           "name": "Payment_1_MakePayment",
-          "description": "Executes a transaction to transfer funds from the user to another account. Note that the provided function is in Python 3 syntax.",
+          "description": "Executes a transaction to transfer funds from the user to another account.",
           "parameters": {
             "type": "object",
             "required": [
@@ -363,7 +395,7 @@
         "type": "function",
         "function": {
           "name": "Restaurants_2_ReserveRestaurant",
-          "description": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation. Note that the provided function is in Python 3 syntax.",
+          "description": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation.",
           "parameters": {
             "type": "object",
             "required": [
@@ -402,7 +434,7 @@
         "type": "function",
         "function": {
           "name": "Restaurants_2_FindRestaurants",
-          "description": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating. Note that the provided function is in Python 3 syntax.",
+          "description": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating.",
           "parameters": {
             "type": "object",
             "required": [
@@ -477,7 +509,7 @@
         "type": "function",
         "function": {
           "name": "Services_4_BookAppointment",
-          "description": "Books a therapy appointment with a specified therapist at a given date and time. Note that the provided function is in Python 3 syntax.",
+          "description": "Books a therapy appointment with a specified therapist at a given date and time.",
           "parameters": {
             "type": "object",
             "required": [
@@ -506,7 +538,7 @@
         "type": "function",
         "function": {
           "name": "Services_4_FindProvider",
-          "description": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization. Note that the provided function is in Python 3 syntax.",
+          "description": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization.",
           "parameters": {
             "type": "object",
             "required": [
@@ -821,7 +853,7 @@
         "type": "function",
         "function": {
           "name": "Payment_1_MakePayment",
-          "description": "Executes a transaction to transfer funds from the user to another account. Note that the provided function is in Python 3 syntax.",
+          "description": "Executes a transaction to transfer funds from the user to another account.",
           "parameters": {
             "type": "object",
             "required": [
@@ -861,7 +893,7 @@
         "type": "function",
         "function": {
           "name": "Restaurants_2_ReserveRestaurant",
-          "description": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation. Note that the provided function is in Python 3 syntax.",
+          "description": "Makes a reservation for a specified number of seats at a restaurant, given the restaurant's name, location, time, and date of the reservation.",
           "parameters": {
             "type": "object",
             "required": [
@@ -900,7 +932,7 @@
         "type": "function",
         "function": {
           "name": "Restaurants_2_FindRestaurants",
-          "description": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating. Note that the provided function is in Python 3 syntax.",
+          "description": "Retrieves a list of restaurants based on specified criteria such as location, category, price range, and availability of vegetarian options and outdoor seating.",
           "parameters": {
             "type": "object",
             "required": [
@@ -975,7 +1007,7 @@
         "type": "function",
         "function": {
           "name": "Services_4_BookAppointment",
-          "description": "Books a therapy appointment with a specified therapist at a given date and time. Note that the provided function is in Python 3 syntax.",
+          "description": "Books a therapy appointment with a specified therapist at a given date and time.",
           "parameters": {
             "type": "object",
             "required": [
@@ -1004,7 +1036,7 @@
         "type": "function",
         "function": {
           "name": "Services_4_FindProvider",
-          "description": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization. Note that the provided function is in Python 3 syntax.",
+          "description": "Discover therapists in a specified city based on the user's preferences for the therapist's specialization.",
           "parameters": {
             "type": "object",
             "required": [

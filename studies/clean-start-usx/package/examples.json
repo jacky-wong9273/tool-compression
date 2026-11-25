@@ -9,163 +9,99 @@
       "change_class": "flag_normalization"
     },
     "X_cue": {
-      "case_id": "multiple_2",
-      "target": "country_info_largest_city",
-      "rival": "country_info_population",
-      "cue": "For the current population, use country_info_population.",
-      "target_action": "Fetch the largest city of a specified country.",
-      "rival_action": "Fetch the current population of a specified country.",
-      "axis": "text:largest city|current population"
+      "case_id": "multiple_11",
+      "target": "math_roots_quadratic",
+      "rival": "math_roots_polynomial",
+      "cue": "For an array of coefficients, use math_roots_polynomial.",
+      "target_action": "Calculate the roots of a quadratic equation.",
+      "rival_action": "Calculate the roots of a polynomial equation.",
+      "axis": "interface:numeric-array-versus-numeric-scalars"
     },
-    "unchanged": {
-      "case_id": "multiple_3",
-      "tools": [
-        "EuclideanDistance_calculate",
-        "angleToXAxis_calculate"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.",
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side."
-      ]
-    }
+    "unchanged": null
   },
   "parallel_multiple": {
     "S_edit": {
-      "case_id": "parallel_multiple_1",
-      "function": "volume_cylinder_calculate",
-      "pointer": "/function/parameters/properties/radius/description",
-      "before": "The radius of the cylinder. This is a float type value.",
-      "after": "The radius of the cylinder.",
-      "change_class": "schema_guaranteed"
+      "case_id": "parallel_multiple_0",
+      "function": "math_toolkit_product_of_primes",
+      "pointer": "/function/description",
+      "before": "Find the product of the first n prime numbers. Note that the provided function is in Python 3 syntax.",
+      "after": "Find the product of the first n prime numbers.",
+      "change_class": "hint_context"
     },
     "X_cue": {
-      "case_id": "parallel_multiple_5",
-      "target": "lcm",
-      "rival": "gcd",
-      "cue": "For the greatest common divisor, use gcd.",
-      "target_action": "Calculate the least common multiple of two integers.",
-      "rival_action": "Calculate the greatest common divisor of two integers.",
-      "axis": "text:least common multiple|greatest common divisor"
+      "case_id": "parallel_multiple_67",
+      "target": "math_roots_polynomial",
+      "rival": "math_roots_cubic",
+      "cue": "For separate a, b, c and d arguments, use math_roots_cubic.",
+      "target_action": "Calculate the roots of a polynomial equation.",
+      "rival_action": "Calculate the roots of a cubic equation.",
+      "axis": "interface:numeric-array-versus-numeric-scalars"
     },
-    "unchanged": {
-      "case_id": "parallel_multiple_0",
-      "tools": [
-        "math_toolkit_sum_of_multiples",
-        "math_toolkit_product_of_primes"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.",
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side."
-      ]
-    }
+    "unchanged": null
   },
   "live_multiple": {
     "S_edit": {
-      "case_id": "live_multiple_23-5-0",
-      "function": "search_products",
-      "pointer": "/function/parameters/properties/price_min/description",
-      "before": "The minimum price of the product search. Enter a float value representing the lowest price in dollars. This is a float type value.",
-      "after": "The minimum price of the product search. Enter a float value representing the lowest price in dollars.",
-      "change_class": "schema_guaranteed"
+      "case_id": "live_multiple_0-0-0",
+      "function": "ChaDri_change_drink",
+      "pointer": "/function/description",
+      "before": "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences. Note that the provided function is in Python 3 syntax.",
+      "after": "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences.",
+      "change_class": "hint_context"
     },
     "X_cue": {
-      "case_id": "live_multiple_198-90-0",
-      "target": "adriel_detail_experience_and_education",
-      "rival": "adriel_experiences_and_education",
-      "cue": "For a comprehensive list, use adriel_experiences_and_education.",
-      "target_action": "Retrieve the detailed information regarding Adriel's professional experiences and educational background.",
-      "rival_action": "Retrieve a comprehensive list detailing Adriel's professional experiences and educational background.",
-      "axis": "text:the detailed information regarding|a comprehensive list detailing"
+      "case_id": "live_multiple_206-91-0",
+      "target": "detail_experience_and_education",
+      "rival": "experiences_and_education",
+      "cue": "For a list, use experiences_and_education.",
+      "target_action": "Retrieve the detailed information about Adriel's professional experiences and educational background.",
+      "rival_action": "Retrieve a list of Adriel's professional experiences and educational background.",
+      "axis": "text:the detailed information about|a list of"
     },
-    "unchanged": {
-      "case_id": "live_multiple_0-0-0",
-      "tools": [
-        "ChaFod",
-        "ChaDri_change_drink"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: Different actions (Changes versus Modifies).",
-        "No rival qualifies. Closest refusal: Different actions (Modifies versus Changes)."
-      ]
-    }
+    "unchanged": null
   },
   "live_parallel": {
-    "S_edit": null,
-    "X_cue": null,
-    "unchanged": {
+    "S_edit": {
       "case_id": "live_parallel_6-3-0",
-      "tools": [
-        "get_current_weather",
-        "get_snow_report"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side.",
-        "No rival qualifies. Closest refusal: The differing wording is not one window of one to 4 words on each side."
-      ]
-    }
+      "function": "get_snow_report",
+      "pointer": "/function/description",
+      "before": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather. Note that the provided function is in Python 3 syntax.",
+      "after": "Retrieves the latest snow report for a specified location, providing details about the snow conditions and weather.",
+      "change_class": "hint_context"
+    },
+    "X_cue": null,
+    "unchanged": null
   },
   "live_parallel_multiple": {
     "S_edit": {
-      "case_id": "live_parallel_multiple_8-7-0",
-      "function": "clone_repo",
-      "pointer": "/function/parameters/properties/recursive/description",
-      "before": "A flag indicating whether to recursively clone submodules. Defaults to false.",
-      "after": "A flag indicating whether to recursively clone submodules.",
-      "change_class": "schema_guaranteed"
+      "case_id": "live_parallel_multiple_0-0-0",
+      "function": "ChaDri_change_drink",
+      "pointer": "/function/description",
+      "before": "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences. Note that the provided function is in Python 3 syntax.",
+      "after": "Modifies the existing drink order to accommodate the customer's new request, ensuring the drink is updated according to the specified preferences.",
+      "change_class": "hint_context"
     },
     "X_cue": null,
-    "unchanged": {
-      "case_id": "live_parallel_multiple_0-0-0",
-      "tools": [
-        "ChaFod",
-        "ChaDri_change_drink"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: Different actions (Changes versus Modifies).",
-        "No rival qualifies. Closest refusal: Different actions (Modifies versus Changes)."
-      ]
-    }
+    "unchanged": null
   },
   "live_irrelevance": {
     "S_edit": {
-      "case_id": "live_irrelevance_153-17-0",
-      "function": "search_products",
-      "pointer": "/function/parameters/properties/price_min/description",
-      "before": "The minimum price of the product search. Enter a float value representing the lowest price in dollars. This is a float type value.",
-      "after": "The minimum price of the product search. Enter a float value representing the lowest price in dollars.",
-      "change_class": "schema_guaranteed"
+      "case_id": "live_irrelevance_103-3-0",
+      "function": "KeyStat",
+      "pointer": "/function/description",
+      "before": "Retrieves a key statistic that represents encrypted content. This statistic should be decrypted using a compatible decryption tool. Note that the provided function is in Python 3 syntax.",
+      "after": "Retrieves a key statistic that represents encrypted content. This statistic should be decrypted using a compatible decryption tool.",
+      "change_class": "hint_context"
     },
     "X_cue": {
-      "case_id": "live_irrelevance_487-141-0",
-      "target": "adriel_detail_experience_and_education",
-      "rival": "adriel_experiences_and_education",
-      "cue": "For a comprehensive list, use adriel_experiences_and_education.",
-      "target_action": "Retrieve the detailed information regarding Adriel's professional experiences and educational background.",
-      "rival_action": "Retrieve a comprehensive list detailing Adriel's professional experiences and educational background.",
-      "axis": "text:the detailed information regarding|a comprehensive list detailing"
+      "case_id": "live_irrelevance_489-142-0",
+      "target": "detail_experience_and_education",
+      "rival": "experiences_and_education",
+      "cue": "For a list, use experiences_and_education.",
+      "target_action": "Retrieve the detailed information about Adriel's professional experiences and educational background.",
+      "rival_action": "Retrieve a list of Adriel's professional experiences and educational background.",
+      "axis": "text:the detailed information about|a list of"
     },
-    "unchanged": {
-      "case_id": "live_irrelevance_103-3-0",
-      "tools": [
-        "ChaScr",
-        "KeyStat",
-        "ReqScr_generate_key",
-        "ReqSav",
-        "SavScr",
-        "ReaScr",
-        "list_scripts",
-        "DelScr",
-        "DelPerm",
-        "DelTemp",
-        "end_request",
-        "DecEnv"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: Different actions (Modifies versus Retrieves).",
-        "No rival qualifies. Closest refusal: Different actions (Retrieves versus Modifies).",
-        "No rival qualifies. Closest refusal: Different actions (Generates versus Modifies)."
-      ]
-    }
+    "unchanged": null
   },
   "live_relevance": {
     "S_edit": {
@@ -177,19 +113,7 @@
       "change_class": "schema_guaranteed"
     },
     "X_cue": null,
-    "unchanged": {
-      "case_id": "live_relevance_8-8-0",
-      "tools": [
-        "Events_3_FindEvents",
-        "Events_3_BuyEventTickets",
-        "RideSharing_2_GetRide"
-      ],
-      "x_no_cue_reasons": [
-        "No rival qualifies. Closest refusal: Different actions (Find versus Purchase).",
-        "No rival qualifies. Closest refusal: Different actions (Purchase versus Find).",
-        "No rival qualifies. Closest refusal: Different actions (Book versus Find)."
-      ]
-    }
+    "unchanged": null
   },
   "multi_turn_base": {
     "S_edit": {
@@ -197,17 +121,17 @@
       "function": "comment",
       "pointer": "/function/description",
       "before": "This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "multi_turn_base_0",
-      "target": "mkdir",
-      "rival": "touch",
-      "cue": "For a new file of any extension, use touch.",
-      "target_action": "Create a new directory in the current directory.",
-      "rival_action": "Create a new file of any extension in the current directory.",
-      "axis": "text:directory|file of any extension"
+      "target": "rmdir",
+      "rival": "rm",
+      "cue": "For a file, use rm.",
+      "target_action": "Remove a directory at current directory.",
+      "rival_action": "Remove a file or directory.",
+      "axis": "text:directory at current|file or"
     },
     "unchanged": null
   },
@@ -217,17 +141,17 @@
       "function": "comment",
       "pointer": "/function/description",
       "before": "This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "multi_turn_miss_func_0",
-      "target": "mkdir",
-      "rival": "touch",
-      "cue": "For a new file of any extension, use touch.",
-      "target_action": "Create a new directory in the current directory.",
-      "rival_action": "Create a new file of any extension in the current directory.",
-      "axis": "text:directory|file of any extension"
+      "target": "rmdir",
+      "rival": "rm",
+      "cue": "For a file, use rm.",
+      "target_action": "Remove a directory at current directory.",
+      "rival_action": "Remove a file or directory.",
+      "axis": "text:directory at current|file or"
     },
     "unchanged": null
   },
@@ -237,17 +161,17 @@
       "function": "comment",
       "pointer": "/function/description",
       "before": "This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "multi_turn_miss_param_0",
-      "target": "mkdir",
-      "rival": "touch",
-      "cue": "For a new file of any extension, use touch.",
-      "target_action": "Create a new directory in the current directory.",
-      "rival_action": "Create a new file of any extension in the current directory.",
-      "axis": "text:directory|file of any extension"
+      "target": "rmdir",
+      "rival": "rm",
+      "cue": "For a file, use rm.",
+      "target_action": "Remove a directory at current directory.",
+      "rival_action": "Remove a file or directory.",
+      "axis": "text:directory at current|file or"
     },
     "unchanged": null
   },
@@ -257,17 +181,17 @@
       "function": "comment",
       "pointer": "/function/description",
       "before": "This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the TwitterAPI. Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "multi_turn_long_context_0",
-      "target": "mkdir",
-      "rival": "touch",
-      "cue": "For a new file of any extension, use touch.",
-      "target_action": "Create a new directory in the current directory.",
-      "rival_action": "Create a new file of any extension in the current directory.",
-      "axis": "text:directory|file of any extension"
+      "target": "rmdir",
+      "rival": "rm",
+      "cue": "For a file, use rm.",
+      "target_action": "Remove a directory at current directory.",
+      "rival_action": "Remove a file or directory.",
+      "axis": "text:directory at current|file or"
     },
     "unchanged": null
   },
@@ -277,8 +201,8 @@
       "function": "archival_memory_clear",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the memory suite. Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "memory_kv_0-customer-0",
@@ -297,8 +221,8 @@
       "function": "archival_memory_clear",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the memory suite. Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "Memory suite: Clear all entries in the archival memory.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": {
       "case_id": "memory_vector_0-customer-0",
@@ -317,8 +241,8 @@
       "function": "memory_clear",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "after": "This tool belongs to the memory suite. Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "change_class": "suite_context"
+      "after": "Memory suite: Clear all content in the memory, including any from previous interactions. This operation is irreversible.",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     "X_cue": null,
     "unchanged": null
