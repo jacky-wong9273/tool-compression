@@ -1,0 +1,88 @@
+{
+  "case_id": "live_parallel_multiple_23-20-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "user_mandates": "{\"name\": \"parath\", \"status\": \"pending\"}"
+        },
+        {
+          "user_mandates": "{\"name\": \"parath\", \"status\": \"active\"}"
+        },
+        {
+          "user_mandates": "{\"name\": \"bhanu\", \"status\": \"pending\"}"
+        },
+        {
+          "user_mandates": "{\"name\": \"bhanu\", \"status\": \"active\"}"
+        }
+      ],
+      "content": "I'll fetch the mandates for both users. Let me get the pending and active mandates for each.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_YENp5jCHWxugjLG1wU0Y8543",
+          "type": "function",
+          "function": {
+            "name": "user_mandates",
+            "arguments": "{\"name\": \"parath\", \"status\": \"pending\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_nTg86VkcgFetXvcYpbWU9572",
+          "type": "function",
+          "function": {
+            "name": "user_mandates",
+            "arguments": "{\"name\": \"parath\", \"status\": \"active\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_plyHW0SgZIWC6pZBq28s2091",
+          "type": "function",
+          "function": {
+            "name": "user_mandates",
+            "arguments": "{\"name\": \"bhanu\", \"status\": \"pending\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_rFv1CEcvpTAFd8ADjxsw2077",
+          "type": "function",
+          "function": {
+            "name": "user_mandates",
+            "arguments": "{\"name\": \"bhanu\", \"status\": \"active\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 507,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 507,
+      "output_tokens": 218,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "user_mandates": "{\"name\": \"parath\", \"status\": \"pending\"}"
+    },
+    {
+      "user_mandates": "{\"name\": \"parath\", \"status\": \"active\"}"
+    },
+    {
+      "user_mandates": "{\"name\": \"bhanu\", \"status\": \"pending\"}"
+    },
+    {
+      "user_mandates": "{\"name\": \"bhanu\", \"status\": \"active\"}"
+    }
+  ]
+}

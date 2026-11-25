@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_197",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "recipe_search": "{\"dietary_restriction\": \"Vegetarian\", \"ingredients\": [\"potatoes\", \"carrots\", \"onions\"], \"servings\": 4}"
+        },
+        {
+          "detailed_weather_forecast": "{\"location\": \"New York\", \"duration\": 12, \"include_precipitation\": true}"
+        },
+        {
+          "get_time_difference": "{\"place1\": \"New York\", \"place2\": \"Tokyo\"}"
+        }
+      ],
+      "content": "I'll help you plan your dinner party! Let me gather all the information you need.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_TVYUNaYFirQOoxVKp7yc2357",
+          "type": "function",
+          "function": {
+            "name": "recipe_search",
+            "arguments": "{\"dietary_restriction\": \"Vegetarian\", \"ingredients\": [\"potatoes\", \"carrots\", \"onions\"], \"servings\": 4}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_eFLiHxY9N07i8Rt8YAhy1753",
+          "type": "function",
+          "function": {
+            "name": "detailed_weather_forecast",
+            "arguments": "{\"location\": \"New York\", \"duration\": 12, \"include_precipitation\": true}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_DJZIygnqWjAuADa0eIkO9612",
+          "type": "function",
+          "function": {
+            "name": "get_time_difference",
+            "arguments": "{\"place1\": \"New York\", \"place2\": \"Tokyo\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 711,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 199,
+      "output_tokens": 221,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "recipe_search": "{\"dietary_restriction\": \"Vegetarian\", \"ingredients\": [\"potatoes\", \"carrots\", \"onions\"], \"servings\": 4}"
+    },
+    {
+      "detailed_weather_forecast": "{\"location\": \"New York\", \"duration\": 12, \"include_precipitation\": true}"
+    },
+    {
+      "get_time_difference": "{\"place1\": \"New York\", \"place2\": \"Tokyo\"}"
+    }
+  ]
+}

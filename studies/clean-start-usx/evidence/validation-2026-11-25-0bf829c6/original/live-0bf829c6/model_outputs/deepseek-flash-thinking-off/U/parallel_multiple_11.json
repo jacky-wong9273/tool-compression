@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_11",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "physics_electric_field": "{\"charge\": 4, \"distance\": 3}"
+        },
+        {
+          "physics_magnetic_field": "{\"current\": 0.5, \"turnsPerMeter\": 25, \"length\": 2}"
+        }
+      ],
+      "content": "I'll calculate both fields for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_lRBI9U02PW78Hv2kNGu57926",
+          "type": "function",
+          "function": {
+            "name": "physics_electric_field",
+            "arguments": "{\"charge\": 4, \"distance\": 3}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_DrqljprnFR40YWoDdjYf8250",
+          "type": "function",
+          "function": {
+            "name": "physics_magnetic_field",
+            "arguments": "{\"current\": 0.5, \"turnsPerMeter\": 25, \"length\": 2}"
+          }
+        }
+      ],
+      "prompt_tokens": 568,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 184,
+      "output_tokens": 130,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "physics_electric_field": "{\"charge\": 4, \"distance\": 3}"
+    },
+    {
+      "physics_magnetic_field": "{\"current\": 0.5, \"turnsPerMeter\": 25, \"length\": 2}"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_3",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_rectangle_property": "{\"perimeter\": 14, \"area\": 15, \"property\": \"length\"}"
+        },
+        {
+          "get_rectangle_property": "{\"perimeter\": 14, \"area\": 15, \"property\": \"width\"}"
+        }
+      ],
+      "content": "I'll find the length and width using the given perimeter and area.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_jZD7pZoNgQ6bbuxiaeD11292",
+          "type": "function",
+          "function": {
+            "name": "get_rectangle_property",
+            "arguments": "{\"perimeter\": 14, \"area\": 15, \"property\": \"length\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_6kdwZz12GxMvrzYo8Hze4579",
+          "type": "function",
+          "function": {
+            "name": "get_rectangle_property",
+            "arguments": "{\"perimeter\": 14, \"area\": 15, \"property\": \"width\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 546,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 162,
+      "output_tokens": 150,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_rectangle_property": "{\"perimeter\": 14, \"area\": 15, \"property\": \"length\"}"
+    },
+    {
+      "get_rectangle_property": "{\"perimeter\": 14, \"area\": 15, \"property\": \"width\"}"
+    }
+  ]
+}

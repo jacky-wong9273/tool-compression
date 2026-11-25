@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_105",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "geodistance_find": "{\"origin\": \"New York\", \"destination\": \"London\", \"unit\": \"kilometers\"}"
+        },
+        {
+          "timezones_get_difference": "{\"city1\": \"New York\", \"city2\": \"London\"}"
+        },
+        {
+          "flights_search": "{\"from_city\": \"New York\", \"to_city\": \"London\", \"date\": \"next friday\"}"
+        },
+        {
+          "geodistance_find": "{\"origin\": \"London\", \"destination\": \"Paris\", \"unit\": \"miles\"}"
+        }
+      ],
+      "content": "I'll help you plan your trip. Let me gather all that information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_FQ0TWawGetNUUm0GBv7C7359",
+          "type": "function",
+          "function": {
+            "name": "geodistance_find",
+            "arguments": "{\"origin\": \"New York\", \"destination\": \"London\", \"unit\": \"kilometers\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_TjAJtb4IX3HvFhFl8y9U9697",
+          "type": "function",
+          "function": {
+            "name": "timezones_get_difference",
+            "arguments": "{\"city1\": \"New York\", \"city2\": \"London\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_DhMINRNqmi6I5DaFCOJN3538",
+          "type": "function",
+          "function": {
+            "name": "flights_search",
+            "arguments": "{\"from_city\": \"New York\", \"to_city\": \"London\", \"date\": \"next friday\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_LCTg3uJ5z3NnnE9ghv0W0735",
+          "type": "function",
+          "function": {
+            "name": "geodistance_find",
+            "arguments": "{\"origin\": \"London\", \"destination\": \"Paris\", \"unit\": \"miles\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 698,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 186,
+      "output_tokens": 273,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "geodistance_find": "{\"origin\": \"New York\", \"destination\": \"London\", \"unit\": \"kilometers\"}"
+    },
+    {
+      "timezones_get_difference": "{\"city1\": \"New York\", \"city2\": \"London\"}"
+    },
+    {
+      "flights_search": "{\"from_city\": \"New York\", \"to_city\": \"London\", \"date\": \"next friday\"}"
+    },
+    {
+      "geodistance_find": "{\"origin\": \"London\", \"destination\": \"Paris\", \"unit\": \"miles\"}"
+    }
+  ]
+}

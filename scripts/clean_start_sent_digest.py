@@ -14,6 +14,9 @@ prerequisites), arm and catalogue state (initial, then after each held-out
 batch), the tools hash in the runner's journal formula, so it can be compared
 with ``attempts.jsonl`` byte for byte, plus local token counts.
 
+``validation``: the same, for the 328 conversations of the frozen validation
+draw (313 scoring cases and 15 notetaker prerequisites).
+
 ``population``: ``revision.population_summary`` from this checkout's source,
 run on the imported editors over every in-scope question's initial catalogue.
 """
@@ -71,10 +74,29 @@ def _source_commit() -> str | None:
     return commit or None
 
 
-def conversations() -> dict:
+def _edits(case: dict) -> dict:
+    """Description slots S changed and tools X cued, on the initial catalogue."""
+    initial = {arm: arm_tools(case["function"], case["category"], arm) for arm in ("U", "S", "X")}
+
+    def slots(tools):
+        return [(tool["function"]["name"], pointer, container[key])
+                for tool in tools for pointer, container, key in description_slots(tool)]
+
+    base = slots(initial["U"])
+    return {
+        "s_changed_slots": [
+            [name, pointer] for (name, pointer, text), (_n, _p, edited) in zip(base, slots(initial["S"])) if text != edited
+        ],
+        "x_cued_tools": [
+            tool["function"]["name"] for tool, cued in zip(initial["U"], initial["X"]) if tool != cued
+        ],
+    }
+
+
+def conversations(selected: list[dict] | None = None) -> dict:
     counter = TiktokenCounter(LOCAL_TOKENIZER)
     cases = {}
-    for case in _select_cases(True, "matched"):
+    for case in _select_cases(True, "matched") if selected is None else selected:
         states = {"initial": {arm: _row(arm_tools(case["function"], case["category"], arm), counter) for arm in ARMS}}
         batches: list[list[dict]] = []
         for turn in sorted(case.get("held_out", {}), key=int):
@@ -88,6 +110,8 @@ def conversations() -> dict:
             "prereq": bool(case.get("prereq")),
             "states": states,
         }
+        if selected is not None:
+            cases[case["id"]]["initial_edits"] = _edits(case)
     return {
         "source_commit": _source_commit(),
         "tokenizer": LOCAL_TOKENIZER,
@@ -95,6 +119,12 @@ def conversations() -> dict:
         "conversations": len(cases),
         "cases": cases,
     }
+
+
+def validation() -> dict:
+    from tool_compression.clean_start.validation import select_validation_cases
+
+    return conversations(select_validation_cases())
 
 
 def population() -> dict:
@@ -116,6 +146,6 @@ def population() -> dict:
 
 if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "conversations"
-    payload = {"conversations": conversations, "population": population}[mode]()
+    payload = {"conversations": conversations, "validation": validation, "population": population}[mode]()
     json.dump(payload, sys.stdout, indent=1, ensure_ascii=False)
     sys.stdout.write("\n")

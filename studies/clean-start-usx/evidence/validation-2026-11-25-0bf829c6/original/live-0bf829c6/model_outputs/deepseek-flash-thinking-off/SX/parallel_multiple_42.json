@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_42",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "artwork_find": "{\"museum\": \"Modern Arts Museum, New York\", \"type\": \"Sculpture\", \"material\": \"Bronze\"}"
+        },
+        {
+          "artwork_find": "{\"museum\": \"Louvre Museum, Paris\", \"type\": \"Sculpture\", \"material\": \"Stone\"}"
+        },
+        {
+          "artwork_find": "{\"museum\": \"Metropolitan Museum of Art\", \"type\": \"Painting\", \"artist\": \"Picasso\"}"
+        }
+      ],
+      "content": "I'll search for all three artworks at once.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_V9FUJeir20y8RPp6kjOX6362",
+          "type": "function",
+          "function": {
+            "name": "artwork_find",
+            "arguments": "{\"museum\": \"Modern Arts Museum, New York\", \"type\": \"Sculpture\", \"material\": \"Bronze\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_LERvtnjl9Jisby8PjPYT1024",
+          "type": "function",
+          "function": {
+            "name": "artwork_find",
+            "arguments": "{\"museum\": \"Louvre Museum, Paris\", \"type\": \"Sculpture\", \"material\": \"Stone\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vF51tQOwTYiuoI6qAlcm5641",
+          "type": "function",
+          "function": {
+            "name": "artwork_find",
+            "arguments": "{\"museum\": \"Metropolitan Museum of Art\", \"type\": \"Painting\", \"artist\": \"Picasso\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 704,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 704,
+      "output_tokens": 225,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "artwork_find": "{\"museum\": \"Modern Arts Museum, New York\", \"type\": \"Sculpture\", \"material\": \"Bronze\"}"
+    },
+    {
+      "artwork_find": "{\"museum\": \"Louvre Museum, Paris\", \"type\": \"Sculpture\", \"material\": \"Stone\"}"
+    },
+    {
+      "artwork_find": "{\"museum\": \"Metropolitan Museum of Art\", \"type\": \"Painting\", \"artist\": \"Picasso\"}"
+    }
+  ]
+}

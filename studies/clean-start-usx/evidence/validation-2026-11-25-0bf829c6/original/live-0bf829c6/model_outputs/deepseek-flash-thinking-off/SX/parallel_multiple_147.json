@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_147",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "find_restaurants": "{\"location\": \"San Francisco\", \"food_type\": \"Italian\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+        },
+        {
+          "sports_match_schedule": "{\"team_name\": \"Golden State Warriors\", \"num_matches\": 3, \"league\": \"NBA\"}"
+        },
+        {
+          "get_stock_info": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+        },
+        {
+          "find_instrument": "{\"budget\": 500, \"type\": \"guitar\", \"make\": \"Fender\"}"
+        }
+      ],
+      "content": "I'll help you plan your day out! Let me gather all the information you need.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_jFWXOpKR4YliLjYnB5n87512",
+          "type": "function",
+          "function": {
+            "name": "find_restaurants",
+            "arguments": "{\"location\": \"San Francisco\", \"food_type\": \"Italian\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_DXqoMuZirrSQXf7iOEvM9097",
+          "type": "function",
+          "function": {
+            "name": "sports_match_schedule",
+            "arguments": "{\"team_name\": \"Golden State Warriors\", \"num_matches\": 3, \"league\": \"NBA\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_AnTqgmEdhKP69dQtzVh25940",
+          "type": "function",
+          "function": {
+            "name": "get_stock_info",
+            "arguments": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_pFB02RAfCiUlN7jM8ulU9038",
+          "type": "function",
+          "function": {
+            "name": "find_instrument",
+            "arguments": "{\"budget\": 500, \"type\": \"guitar\", \"make\": \"Fender\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 931,
+      "prompt_cache_hit_tokens": 768,
+      "prompt_cache_miss_tokens": 163,
+      "output_tokens": 311,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "find_restaurants": "{\"location\": \"San Francisco\", \"food_type\": \"Italian\", \"number\": 5, \"dietary_requirements\": [\"vegan\"]}"
+    },
+    {
+      "sports_match_schedule": "{\"team_name\": \"Golden State Warriors\", \"num_matches\": 3, \"league\": \"NBA\"}"
+    },
+    {
+      "get_stock_info": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+    },
+    {
+      "find_instrument": "{\"budget\": 500, \"type\": \"guitar\", \"make\": \"Fender\"}"
+    }
+  ]
+}

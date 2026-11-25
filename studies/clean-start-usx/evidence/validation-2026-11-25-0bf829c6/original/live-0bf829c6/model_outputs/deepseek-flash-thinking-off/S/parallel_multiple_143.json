@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_143",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "math_factorial": "{\"number\": 7}"
+        },
+        {
+          "find_flute": "{\"brand\": \"Yamaha\", \"specs\": [\"open hole\", \"silver headjoint\"]}"
+        },
+        {
+          "calculate_genotype_frequency": "{\"allele_frequency\": 0.6, \"genotype\": \"AA\"}"
+        }
+      ],
+      "content": "I'll help you with all three tasks. Let me run them in parallel.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9Pq5gyTVZPZ2Oicp31Zu2573",
+          "type": "function",
+          "function": {
+            "name": "math_factorial",
+            "arguments": "{\"number\": 7}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_6CUz4n7cNsOQnpCnxSd19914",
+          "type": "function",
+          "function": {
+            "name": "find_flute",
+            "arguments": "{\"brand\": \"Yamaha\", \"specs\": [\"open hole\", \"silver headjoint\"]}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_iogLCNQ5AXw1zdoxd9xm5796",
+          "type": "function",
+          "function": {
+            "name": "calculate_genotype_frequency",
+            "arguments": "{\"allele_frequency\": 0.6, \"genotype\": \"AA\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 672,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 160,
+      "output_tokens": 163,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "math_factorial": "{\"number\": 7}"
+    },
+    {
+      "find_flute": "{\"brand\": \"Yamaha\", \"specs\": [\"open hole\", \"silver headjoint\"]}"
+    },
+    {
+      "calculate_genotype_frequency": "{\"allele_frequency\": 0.6, \"genotype\": \"AA\"}"
+    }
+  ]
+}

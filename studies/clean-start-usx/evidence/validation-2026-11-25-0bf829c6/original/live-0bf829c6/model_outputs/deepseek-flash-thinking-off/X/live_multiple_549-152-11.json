@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_549-152-11",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Homes_2_FindHomeByArea": "{\"area\": \"San Jose, CA\", \"intent\": \"buy\", \"number_of_beds\": 3, \"number_of_baths\": 2, \"has_garage\": true}"
+        }
+      ],
+      "content": "I'll search for homes for sale in San Jose, CA matching your criteria.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_0LimYCETkS4m95DtYVCq1409",
+          "type": "function",
+          "function": {
+            "name": "Homes_2_FindHomeByArea",
+            "arguments": "{\"area\": \"San Jose, CA\", \"intent\": \"buy\", \"number_of_beds\": 3, \"number_of_baths\": 2, \"has_garage\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 1008,
+      "prompt_cache_hit_tokens": 768,
+      "prompt_cache_miss_tokens": 240,
+      "output_tokens": 136,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Homes_2_FindHomeByArea": "{\"area\": \"San Jose, CA\", \"intent\": \"buy\", \"number_of_beds\": 3, \"number_of_baths\": 2, \"has_garage\": true}"
+    }
+  ]
+}

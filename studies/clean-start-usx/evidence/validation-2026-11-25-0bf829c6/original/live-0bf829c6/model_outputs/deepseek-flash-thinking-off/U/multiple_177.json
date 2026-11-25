@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_177",
+  "category": "multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "board_game_chess_get_top_players": "{\"location\": \"New York\", \"minimum_rating\": 2300}"
+        }
+      ],
+      "content": "I'll look up the top chess players in New York with a rating above 2300.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_RAYBorotAvMgqPZAK7yR8678",
+          "type": "function",
+          "function": {
+            "name": "board_game_chess_get_top_players",
+            "arguments": "{\"location\": \"New York\", \"minimum_rating\": 2300}"
+          }
+        }
+      ],
+      "prompt_tokens": 660,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 148,
+      "output_tokens": 81,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "board_game_chess_get_top_players": "{\"location\": \"New York\", \"minimum_rating\": 2300}"
+    }
+  ]
+}

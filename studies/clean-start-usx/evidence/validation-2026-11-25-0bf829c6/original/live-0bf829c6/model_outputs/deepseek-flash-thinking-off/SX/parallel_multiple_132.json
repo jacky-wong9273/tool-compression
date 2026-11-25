@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_132",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "calculus_derivative": "{\"function\": \"3*x**2 + 2*x - 1\", \"value\": 2, \"function_variable\": \"x\"}"
+        },
+        {
+          "calculus_derivative": "{\"function\": \"5*y**3 - 4*y + 2\", \"value\": 3, \"function_variable\": \"y\"}"
+        },
+        {
+          "get_personality_traits": "{\"type\": \"INTJ\", \"traits\": [\"strengths\", \"weaknesses\"]}"
+        }
+      ],
+      "content": "I'll perform these three tasks for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_KbFyFew6gncu5vrzXn8p0642",
+          "type": "function",
+          "function": {
+            "name": "calculus_derivative",
+            "arguments": "{\"function\": \"3*x**2 + 2*x - 1\", \"value\": 2, \"function_variable\": \"x\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_fqqTXGQpUbJIimzzoRMt2340",
+          "type": "function",
+          "function": {
+            "name": "calculus_derivative",
+            "arguments": "{\"function\": \"5*y**3 - 4*y + 2\", \"value\": 3, \"function_variable\": \"y\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_A62ZNzbcbX4RbIhZj44v4779",
+          "type": "function",
+          "function": {
+            "name": "get_personality_traits",
+            "arguments": "{\"type\": \"INTJ\", \"traits\": [\"strengths\", \"weaknesses\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 586,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 458,
+      "output_tokens": 225,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "calculus_derivative": "{\"function\": \"3*x**2 + 2*x - 1\", \"value\": 2, \"function_variable\": \"x\"}"
+    },
+    {
+      "calculus_derivative": "{\"function\": \"5*y**3 - 4*y + 2\", \"value\": 3, \"function_variable\": \"y\"}"
+    },
+    {
+      "get_personality_traits": "{\"type\": \"INTJ\", \"traits\": [\"strengths\", \"weaknesses\"]}"
+    }
+  ]
+}

@@ -1,0 +1,686 @@
+{
+  "case_id": "multi_turn_miss_param_6",
+  "category": "multi_turn_miss_param",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "pwd": "{}"
+        }
+      ],
+      "content": "I'll create that file for you. Let me first check the current directory to make sure we're in the right place.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_J7alcCXJuv8Y9NVEFpDL6555",
+          "type": "function",
+          "function": {
+            "name": "pwd",
+            "arguments": "{}"
+          }
+        }
+      ],
+      "prompt_tokens": 2384,
+      "prompt_cache_hit_tokens": 1152,
+      "prompt_cache_miss_tokens": 1232,
+      "output_tokens": 45,
+      "reasoning_tokens": null,
+      "executed": [
+        "pwd()"
+      ],
+      "tool_outputs": [
+        "{\"current_working_directory\": \"/gorilla\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 1,
+      "result": [
+        {
+          "ls": "{\"a\": true}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_V3M2paPEGGlt77jGhRlD4128",
+          "type": "function",
+          "function": {
+            "name": "ls",
+            "arguments": "{\"a\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 2451,
+      "prompt_cache_hit_tokens": 2304,
+      "prompt_cache_miss_tokens": 147,
+      "output_tokens": 36,
+      "reasoning_tokens": null,
+      "executed": [
+        "ls(a=True)"
+      ],
+      "tool_outputs": [
+        "{\"current_directory_content\": [\"communal\", \"reserve\", \"shared\", \"archives\"]}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 2,
+      "result": [
+        {
+          "cd": "{\"folder\": \"communal\"}"
+        }
+      ],
+      "content": "I see a `communal` folder. Let me navigate into it and create the file.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_q5FBUpcp9SRmV6HLRxka2658",
+          "type": "function",
+          "function": {
+            "name": "cd",
+            "arguments": "{\"folder\": \"communal\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2519,
+      "prompt_cache_hit_tokens": 2304,
+      "prompt_cache_miss_tokens": 215,
+      "output_tokens": 55,
+      "reasoning_tokens": null,
+      "executed": [
+        "cd(folder='communal')"
+      ],
+      "tool_outputs": [
+        "{\"current_working_directory\": \"communal\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 3,
+      "result": [
+        {
+          "touch": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9wv8xqleht2eyZH57Xmt7510",
+          "type": "function",
+          "function": {
+            "name": "touch",
+            "arguments": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2596,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 164,
+      "output_tokens": 43,
+      "reasoning_tokens": null,
+      "executed": [
+        "touch(file_name='Annual_Report_2023.docx')"
+      ],
+      "tool_outputs": [
+        "None"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 4,
+      "result": [
+        {
+          "ls": "{\"a\": true}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_EtV5AtvPi5GnsywkutaG6982",
+          "type": "function",
+          "function": {
+            "name": "ls",
+            "arguments": "{\"a\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 2652,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 220,
+      "output_tokens": 36,
+      "reasoning_tokens": null,
+      "executed": [
+        "ls(a=True)"
+      ],
+      "tool_outputs": [
+        "{\"current_directory_content\": [\"Annual_Report_2023.docx\"]}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 5,
+      "result": "Done! I've created **`Annual_Report_2023.docx`** in the `communal` folder (`/gorilla/communal`). It's an empty file ready for your notes. Let me know if you'd like me to add any content to it before you wrap up. 🌙",
+      "content": "Done! I've created **`Annual_Report_2023.docx`** in the `communal` folder (`/gorilla/communal`). It's an empty file ready for your notes. Let me know if you'd like me to add any content to it before you wrap up. 🌙",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 2714,
+      "prompt_cache_hit_tokens": 2560,
+      "prompt_cache_miss_tokens": 154,
+      "output_tokens": 63,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 1,
+      "step": 0,
+      "result": [
+        {
+          "echo": "{\"content\": \"Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla\", \"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "content": "I'll add those statistics to the annual report. Let me write the content to the file.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_mLwaoEWoG1OtRtF9yPDI3220",
+          "type": "function",
+          "function": {
+            "name": "echo",
+            "arguments": "{\"content\": \"Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla\", \"file_name\": \"Annual_Report_2023.docx\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2822,
+      "prompt_cache_hit_tokens": 2688,
+      "prompt_cache_miss_tokens": 134,
+      "output_tokens": 96,
+      "reasoning_tokens": null,
+      "executed": [
+        "echo(content='Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla',file_name='Annual_Report_2023.docx')"
+      ],
+      "tool_outputs": [
+        "None"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 1,
+      "result": [
+        {
+          "cat": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_UjKp9ghaNRKOa4SAxWmx9957",
+          "type": "function",
+          "function": {
+            "name": "cat",
+            "arguments": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2931,
+      "prompt_cache_hit_tokens": 2688,
+      "prompt_cache_miss_tokens": 243,
+      "output_tokens": 43,
+      "reasoning_tokens": null,
+      "executed": [
+        "cat(file_name='Annual_Report_2023.docx')"
+      ],
+      "tool_outputs": [
+        "{\"file_content\": \"Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "result": "The statistics have been added to **`Annual_Report_2023.docx`** in the `communal` folder. Here's what it now contains:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nLet me know if you'd like to add anything else — for example, a calculated profit figure (Earnings − Expenditure = 1500) or any other details. 🌙",
+      "content": "The statistics have been added to **`Annual_Report_2023.docx`** in the `communal` folder. Here's what it now contains:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nLet me know if you'd like to add anything else — for example, a calculated profit figure (Earnings − Expenditure = 1500) or any other details. 🌙",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3012,
+      "prompt_cache_hit_tokens": 2816,
+      "prompt_cache_miss_tokens": 196,
+      "output_tokens": 92,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 2,
+      "step": 0,
+      "result": [
+        {
+          "cat": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_YRkwosfnGYSGf96z4Yod3583",
+          "type": "function",
+          "function": {
+            "name": "cat",
+            "arguments": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3127,
+      "prompt_cache_hit_tokens": 2944,
+      "prompt_cache_miss_tokens": 183,
+      "output_tokens": 43,
+      "reasoning_tokens": null,
+      "executed": [
+        "cat(file_name='Annual_Report_2023.docx')"
+      ],
+      "tool_outputs": [
+        "{\"file_content\": \"Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 1,
+      "result": "Here's what's inside **`Annual_Report_2023.docx`**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nThat's the full contents of the file. Let me know if you'd like to add, edit, or remove anything. 🌙",
+      "content": "Here's what's inside **`Annual_Report_2023.docx`**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nThat's the full contents of the file. Let me know if you'd like to add, edit, or remove anything. 🌙",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3208,
+      "prompt_cache_hit_tokens": 3072,
+      "prompt_cache_miss_tokens": 136,
+      "output_tokens": 67,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 3,
+      "step": 0,
+      "result": [
+        {
+          "wc": "{\"file_name\": \"Annual_Report_2023.docx\", \"mode\": \"w\"}"
+        }
+      ],
+      "content": "I'll count the words in `Annual_Report_2023.docx`.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_dAE2KDoFsYsfy4HxQejH0382",
+          "type": "function",
+          "function": {
+            "name": "wc",
+            "arguments": "{\"file_name\": \"Annual_Report_2023.docx\", \"mode\": \"w\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3289,
+      "prompt_cache_hit_tokens": 3072,
+      "prompt_cache_miss_tokens": 217,
+      "output_tokens": 73,
+      "reasoning_tokens": null,
+      "executed": [
+        "wc(file_name='Annual_Report_2023.docx',mode='w')"
+      ],
+      "tool_outputs": [
+        "{\"count\": 9, \"type\": \"words\"}"
+      ]
+    },
+    {
+      "turn": 3,
+      "step": 1,
+      "result": "Your file **`Annual_Report_2023.docx`** contains **9 words**.\n\nHere's the breakdown of the content:\n- `Company Earning: 2000` → 3 words\n- `Company Expenditure: 500` → 3 words\n- `Company Name: Gorilla` → 3 words\n\nLet me know if you need anything else! 🌙",
+      "content": "Your file **`Annual_Report_2023.docx`** contains **9 words**.\n\nHere's the breakdown of the content:\n- `Company Earning: 2000` → 3 words\n- `Company Expenditure: 500` → 3 words\n- `Company Name: Gorilla` → 3 words\n\nLet me know if you need anything else! 🌙",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3386,
+      "prompt_cache_hit_tokens": 3200,
+      "prompt_cache_miss_tokens": 186,
+      "output_tokens": 79,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 4,
+      "step": 0,
+      "result": "Got it — that's the same file, **`Annual_Report_2023.docx`** in the `communal` folder, which contains **9 words**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nIs there anything else you'd like to do with it? 🌙",
+      "content": "Got it — that's the same file, **`Annual_Report_2023.docx`** in the `communal` folder, which contains **9 words**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nIs there anything else you'd like to do with it? 🌙",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3478,
+      "prompt_cache_hit_tokens": 3328,
+      "prompt_cache_miss_tokens": 150,
+      "output_tokens": 72,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 5,
+      "step": 0,
+      "result": [
+        {
+          "cd": "{\"folder\": \"..\"}"
+        }
+      ],
+      "content": "I'll create the file in the `shared` directory. Let me navigate there first.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_78AM8Nln7qiiIEqIz1gX1611",
+          "type": "function",
+          "function": {
+            "name": "cd",
+            "arguments": "{\"folder\": \"..\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3576,
+      "prompt_cache_hit_tokens": 3328,
+      "prompt_cache_miss_tokens": 248,
+      "output_tokens": 53,
+      "reasoning_tokens": null,
+      "executed": [
+        "cd(folder='..')"
+      ],
+      "tool_outputs": [
+        "{}"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 1,
+      "result": [
+        {
+          "cd": "{\"folder\": \"shared\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_Fu2wkl5Pjfp02jbqNNi18779",
+          "type": "function",
+          "function": {
+            "name": "cd",
+            "arguments": "{\"folder\": \"shared\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3641,
+      "prompt_cache_hit_tokens": 3456,
+      "prompt_cache_miss_tokens": 185,
+      "output_tokens": 36,
+      "reasoning_tokens": null,
+      "executed": [
+        "cd(folder='shared')"
+      ],
+      "tool_outputs": [
+        "{\"current_working_directory\": \"shared\"}"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 2,
+      "result": [
+        {
+          "echo": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ywJXFoJmLTIhzrbPRxGN0581",
+          "type": "function",
+          "function": {
+            "name": "echo",
+            "arguments": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3698,
+      "prompt_cache_hit_tokens": 3456,
+      "prompt_cache_miss_tokens": 242,
+      "output_tokens": 56,
+      "reasoning_tokens": null,
+      "executed": [
+        "echo(content='9',file_name='report_word_count.txt')"
+      ],
+      "tool_outputs": [
+        "{\"error\": \"echo: cannot write to 'report_word_count.txt': No such file\"}"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 3,
+      "result": [
+        {
+          "touch": "{\"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      "content": "The `echo` tool needs the file to exist first. Let me create it, then write the count.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_POftEDPlHbw97dlA59uT9168",
+          "type": "function",
+          "function": {
+            "name": "touch",
+            "arguments": "{\"file_name\": \"report_word_count.txt\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3785,
+      "prompt_cache_hit_tokens": 3584,
+      "prompt_cache_miss_tokens": 201,
+      "output_tokens": 61,
+      "reasoning_tokens": null,
+      "executed": [
+        "touch(file_name='report_word_count.txt')"
+      ],
+      "tool_outputs": [
+        "None"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 4,
+      "result": [
+        {
+          "echo": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_3MJCuGQi7oR7gv9GasAT7056",
+          "type": "function",
+          "function": {
+            "name": "echo",
+            "arguments": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3859,
+      "prompt_cache_hit_tokens": 3712,
+      "prompt_cache_miss_tokens": 147,
+      "output_tokens": 56,
+      "reasoning_tokens": null,
+      "executed": [
+        "echo(content='9',file_name='report_word_count.txt')"
+      ],
+      "tool_outputs": [
+        "None"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 5,
+      "result": [
+        {
+          "cat": "{\"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_db3dCaBVQ2XFqwqMZwfj8069",
+          "type": "function",
+          "function": {
+            "name": "cat",
+            "arguments": "{\"file_name\": \"report_word_count.txt\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3928,
+      "prompt_cache_hit_tokens": 3712,
+      "prompt_cache_miss_tokens": 216,
+      "output_tokens": 40,
+      "reasoning_tokens": null,
+      "executed": [
+        "cat(file_name='report_word_count.txt')"
+      ],
+      "tool_outputs": [
+        "{\"file_content\": \"9\"}"
+      ]
+    },
+    {
+      "turn": 5,
+      "step": 6,
+      "result": "Done! I've created **`report_word_count.txt`** in the `shared` directory (`/gorilla/shared`) containing the word count:\n\n```\n9\n```\n\nThat wraps up your notes for the day. 🌙 You now have:\n- **`communal/Annual_Report_2023.docx`** — the annual report with the company statistics\n- **`shared/report_word_count.txt`** — the word count (9) of that report\n\nAnything else before you sign off?",
+      "content": "Done! I've created **`report_word_count.txt`** in the `shared` directory (`/gorilla/shared`) containing the word count:\n\n```\n9\n```\n\nThat wraps up your notes for the day. 🌙 You now have:\n- **`communal/Annual_Report_2023.docx`** — the annual report with the company statistics\n- **`shared/report_word_count.txt`** — the word count (9) of that report\n\nAnything else before you sign off?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3987,
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 147,
+      "output_tokens": 103,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    }
+  ],
+  "scorable": true,
+  "result": [
+    [
+      [
+        {
+          "pwd": "{}"
+        }
+      ],
+      [
+        {
+          "ls": "{\"a\": true}"
+        }
+      ],
+      [
+        {
+          "cd": "{\"folder\": \"communal\"}"
+        }
+      ],
+      [
+        {
+          "touch": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      [
+        {
+          "ls": "{\"a\": true}"
+        }
+      ],
+      "Done! I've created **`Annual_Report_2023.docx`** in the `communal` folder (`/gorilla/communal`). It's an empty file ready for your notes. Let me know if you'd like me to add any content to it before you wrap up. 🌙"
+    ],
+    [
+      [
+        {
+          "echo": "{\"content\": \"Company Earning: 2000\\nCompany Expenditure: 500\\nCompany Name: Gorilla\", \"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      [
+        {
+          "cat": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "The statistics have been added to **`Annual_Report_2023.docx`** in the `communal` folder. Here's what it now contains:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nLet me know if you'd like to add anything else — for example, a calculated profit figure (Earnings − Expenditure = 1500) or any other details. 🌙"
+    ],
+    [
+      [
+        {
+          "cat": "{\"file_name\": \"Annual_Report_2023.docx\"}"
+        }
+      ],
+      "Here's what's inside **`Annual_Report_2023.docx`**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nThat's the full contents of the file. Let me know if you'd like to add, edit, or remove anything. 🌙"
+    ],
+    [
+      [
+        {
+          "wc": "{\"file_name\": \"Annual_Report_2023.docx\", \"mode\": \"w\"}"
+        }
+      ],
+      "Your file **`Annual_Report_2023.docx`** contains **9 words**.\n\nHere's the breakdown of the content:\n- `Company Earning: 2000` → 3 words\n- `Company Expenditure: 500` → 3 words\n- `Company Name: Gorilla` → 3 words\n\nLet me know if you need anything else! 🌙"
+    ],
+    [
+      "Got it — that's the same file, **`Annual_Report_2023.docx`** in the `communal` folder, which contains **9 words**:\n\n```\nCompany Earning: 2000\nCompany Expenditure: 500\nCompany Name: Gorilla\n```\n\nIs there anything else you'd like to do with it? 🌙"
+    ],
+    [
+      [
+        {
+          "cd": "{\"folder\": \"..\"}"
+        }
+      ],
+      [
+        {
+          "cd": "{\"folder\": \"shared\"}"
+        }
+      ],
+      [
+        {
+          "echo": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      [
+        {
+          "touch": "{\"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      [
+        {
+          "echo": "{\"content\": \"9\", \"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      [
+        {
+          "cat": "{\"file_name\": \"report_word_count.txt\"}"
+        }
+      ],
+      "Done! I've created **`report_word_count.txt`** in the `shared` directory (`/gorilla/shared`) containing the word count:\n\n```\n9\n```\n\nThat wraps up your notes for the day. 🌙 You now have:\n- **`communal/Annual_Report_2023.docx`** — the annual report with the company statistics\n- **`shared/report_word_count.txt`** — the word count (9) of that report\n\nAnything else before you sign off?"
+    ]
+  ],
+  "forced_quit": false
+}

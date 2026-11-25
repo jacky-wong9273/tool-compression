@@ -1,0 +1,43 @@
+{
+  "case_id": "live_parallel_multiple_2-2-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+        }
+      ],
+      "content": "요청하신 두 가지 명령을 확인했습니다. 다만 제어 도구에서 지원하는 명령 형식이 제한적이라, 침실 공기청정기 중지 명령은 현재 형식으로 실행이 어렵습니다. 우선 거실 에어컨 실행을 진행하겠습니다.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_wrchC5UBDWZvEhLZB6Th7970",
+          "type": "function",
+          "function": {
+            "name": "ControlAppliance_execute",
+            "arguments": "{\"command\": \"거실, 에어컨, 실행\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1450,
+      "prompt_cache_hit_tokens": 1280,
+      "prompt_cache_miss_tokens": 170,
+      "output_tokens": 117,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+    }
+  ]
+}

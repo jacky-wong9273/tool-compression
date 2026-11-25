@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_129",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "currency_exchange_convert": "{\"amount\": 5000, \"from_currency\": \"EUR\", \"to_currency\": \"USD\", \"live_conversion\": true}"
+        },
+        {
+          "currency_exchange_convert": "{\"amount\": 3000, \"from_currency\": \"EUR\", \"to_currency\": \"GBP\", \"live_conversion\": false}"
+        },
+        {
+          "unit_conversion_convert": "{\"value\": 100, \"from_unit\": \"kilometers\", \"to_unit\": \"miles\"}"
+        },
+        {
+          "unit_conversion_convert": "{\"value\": 75, \"from_unit\": \"kilograms\", \"to_unit\": \"pounds\"}"
+        }
+      ],
+      "content": "I'll help you with all four conversions. Let me run them now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_vwGKDe7uio8niYcM4ox71744",
+          "type": "function",
+          "function": {
+            "name": "currency_exchange_convert",
+            "arguments": "{\"amount\": 5000, \"from_currency\": \"EUR\", \"to_currency\": \"USD\", \"live_conversion\": true}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_jMm0rpNAZzAHEmhFYK6b2630",
+          "type": "function",
+          "function": {
+            "name": "currency_exchange_convert",
+            "arguments": "{\"amount\": 3000, \"from_currency\": \"EUR\", \"to_currency\": \"GBP\", \"live_conversion\": false}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vW4Ms4GTClR4PRLFXr2l0300",
+          "type": "function",
+          "function": {
+            "name": "unit_conversion_convert",
+            "arguments": "{\"value\": 100, \"from_unit\": \"kilometers\", \"to_unit\": \"miles\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_KFB3G2UZ3hnuJKAlW3vk0404",
+          "type": "function",
+          "function": {
+            "name": "unit_conversion_convert",
+            "arguments": "{\"value\": 75, \"from_unit\": \"kilograms\", \"to_unit\": \"pounds\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 626,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 242,
+      "output_tokens": 329,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "currency_exchange_convert": "{\"amount\": 5000, \"from_currency\": \"EUR\", \"to_currency\": \"USD\", \"live_conversion\": true}"
+    },
+    {
+      "currency_exchange_convert": "{\"amount\": 3000, \"from_currency\": \"EUR\", \"to_currency\": \"GBP\", \"live_conversion\": false}"
+    },
+    {
+      "unit_conversion_convert": "{\"value\": 100, \"from_unit\": \"kilometers\", \"to_unit\": \"miles\"}"
+    },
+    {
+      "unit_conversion_convert": "{\"value\": 75, \"from_unit\": \"kilograms\", \"to_unit\": \"pounds\"}"
+    }
+  ]
+}

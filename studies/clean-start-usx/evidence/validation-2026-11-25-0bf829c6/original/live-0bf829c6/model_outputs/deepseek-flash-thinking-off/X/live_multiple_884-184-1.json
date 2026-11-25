@@ -1,0 +1,58 @@
+{
+  "case_id": "live_multiple_884-184-1",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Buses_3_FindBus": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"direct\"}"
+        },
+        {
+          "Buses_3_FindBus": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"one-stop\"}"
+        }
+      ],
+      "content": "I'll search for bus itineraries from Anaheim to Las Vegas for the upcoming Friday. Let me check both direct and one-stop options.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_7UbbD4CEF54FXkulyuX34958",
+          "type": "function",
+          "function": {
+            "name": "Buses_3_FindBus",
+            "arguments": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"direct\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_sxaJfO0NqzAiL7h4MKEg9436",
+          "type": "function",
+          "function": {
+            "name": "Buses_3_FindBus",
+            "arguments": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"one-stop\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1798,
+      "prompt_cache_hit_tokens": 1664,
+      "prompt_cache_miss_tokens": 134,
+      "output_tokens": 235,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Buses_3_FindBus": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"direct\"}"
+    },
+    {
+      "Buses_3_FindBus": "{\"from_city\": \"Anaheim, CA\", \"to_city\": \"Las Vegas, NV\", \"departure_date\": \"2025-01-17\", \"category\": \"one-stop\"}"
+    }
+  ]
+}

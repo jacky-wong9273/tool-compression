@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_25",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "stock_invest_calculate_investment_cost": "{\"company\": \"Apple\", \"shares\": 50}"
+        },
+        {
+          "stock_invest_calculate_dividend_payout": "{\"shares\": 50, \"dividend_per_share\": 1.3}"
+        }
+      ],
+      "content": "I'll calculate both for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ew7lMRcrGc6TjF8gditt8869",
+          "type": "function",
+          "function": {
+            "name": "stock_invest_calculate_investment_cost",
+            "arguments": "{\"company\": \"Apple\", \"shares\": 50}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_HUdv8r5R4w4EO0yCbBaM7998",
+          "type": "function",
+          "function": {
+            "name": "stock_invest_calculate_dividend_payout",
+            "arguments": "{\"shares\": 50, \"dividend_per_share\": 1.3}"
+          }
+        }
+      ],
+      "prompt_tokens": 492,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 236,
+      "output_tokens": 126,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "stock_invest_calculate_investment_cost": "{\"company\": \"Apple\", \"shares\": 50}"
+    },
+    {
+      "stock_invest_calculate_dividend_payout": "{\"shares\": 50, \"dividend_per_share\": 1.3}"
+    }
+  ]
+}

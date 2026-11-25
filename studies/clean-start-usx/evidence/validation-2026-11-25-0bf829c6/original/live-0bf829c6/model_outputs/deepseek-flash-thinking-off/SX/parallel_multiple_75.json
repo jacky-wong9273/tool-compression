@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_75",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "chess_club_details_find": "{\"name\": \"Knight Gambit\", \"city\": \"Boston\"}"
+        },
+        {
+          "chess_club_details_find": "{\"name\": \"Rook Corner\", \"city\": \"Philadelphia\"}"
+        },
+        {
+          "route_planner_calculate_route": "{\"start\": \"New York\", \"destination\": \"Boston\", \"method\": \"fastest\"}"
+        }
+      ],
+      "content": "I'll help you plan your day. Let me gather the details for both chess clubs and calculate the routes.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ItNt1EPSqtX3UGJ04CYb2643",
+          "type": "function",
+          "function": {
+            "name": "chess_club_details_find",
+            "arguments": "{\"name\": \"Knight Gambit\", \"city\": \"Boston\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Eg0iQrd6N7eSRAsCjtQs7537",
+          "type": "function",
+          "function": {
+            "name": "chess_club_details_find",
+            "arguments": "{\"name\": \"Rook Corner\", \"city\": \"Philadelphia\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_hUEmbqZB9G5wYPwd5DvL2646",
+          "type": "function",
+          "function": {
+            "name": "route_planner_calculate_route",
+            "arguments": "{\"start\": \"New York\", \"destination\": \"Boston\", \"method\": \"fastest\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 599,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 215,
+      "output_tokens": 199,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "chess_club_details_find": "{\"name\": \"Knight Gambit\", \"city\": \"Boston\"}"
+    },
+    {
+      "chess_club_details_find": "{\"name\": \"Rook Corner\", \"city\": \"Philadelphia\"}"
+    },
+    {
+      "route_planner_calculate_route": "{\"start\": \"New York\", \"destination\": \"Boston\", \"method\": \"fastest\"}"
+    }
+  ]
+}

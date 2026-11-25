@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_148",
+  "category": "multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_stock_info": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+        }
+      ],
+      "content": "I'll retrieve detailed stock information for Apple Inc. for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_jfFaHVvuG6VJyRlcF0Uy0119",
+          "type": "function",
+          "function": {
+            "name": "get_stock_info",
+            "arguments": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 492,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 236,
+      "output_tokens": 86,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_stock_info": "{\"company_name\": \"Apple Inc.\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+    }
+  ]
+}

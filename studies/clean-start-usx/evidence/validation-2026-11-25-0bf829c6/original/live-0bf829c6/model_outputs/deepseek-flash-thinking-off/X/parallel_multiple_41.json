@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_41",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "painting_create": "{\"shape\": \"square\", \"background_color\": \"blue\", \"dimensions\": [16, 16]}"
+        },
+        {
+          "display_set_screen_brightness": "{\"percentage\": 70, \"duration\": 30}"
+        }
+      ],
+      "content": "I'll create the painting and set up the display brightness in parallel, then display it.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_LnnwCLLrbk8jljb0DUnr9299",
+          "type": "function",
+          "function": {
+            "name": "painting_create",
+            "arguments": "{\"shape\": \"square\", \"background_color\": \"blue\", \"dimensions\": [16, 16]}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_AL1NLQc653IWex0fXVOh5726",
+          "type": "function",
+          "function": {
+            "name": "display_set_screen_brightness",
+            "arguments": "{\"percentage\": 70, \"duration\": 30}"
+          }
+        }
+      ],
+      "prompt_tokens": 558,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 174,
+      "output_tokens": 143,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "painting_create": "{\"shape\": \"square\", \"background_color\": \"blue\", \"dimensions\": [16, 16]}"
+    },
+    {
+      "display_set_screen_brightness": "{\"percentage\": 70, \"duration\": 30}"
+    }
+  ]
+}

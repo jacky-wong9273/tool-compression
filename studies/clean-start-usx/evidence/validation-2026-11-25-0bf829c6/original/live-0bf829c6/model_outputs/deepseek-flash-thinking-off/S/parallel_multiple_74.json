@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_74",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "basketball_player_stats_get": "{\"player_name\": \"LeBron James\", \"stats_fields\": [\"points\", \"assists\", \"rebounds\", \"minutes\"]}"
+        },
+        {
+          "basketball_team_stats_get": "{\"team_name\": \"Los Angeles Lakers\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"win rate\"]}"
+        },
+        {
+          "basketball_game_stats_get": "{\"team1\": \"Los Angeles Lakers\", \"team2\": \"Golden State Warriors\", \"date\": \"2021-01-18\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"turnovers\"]}"
+        }
+      ],
+      "content": "I'll gather all three sets of statistics for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_S2USL4VhXyCPhePrft9l4096",
+          "type": "function",
+          "function": {
+            "name": "basketball_player_stats_get",
+            "arguments": "{\"player_name\": \"LeBron James\", \"stats_fields\": [\"points\", \"assists\", \"rebounds\", \"minutes\"]}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_LlhU0Y7DPTYrcxYWo3qM1444",
+          "type": "function",
+          "function": {
+            "name": "basketball_team_stats_get",
+            "arguments": "{\"team_name\": \"Los Angeles Lakers\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"win rate\"]}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vZzHTdJJQ5QuCwqmxKmy4425",
+          "type": "function",
+          "function": {
+            "name": "basketball_game_stats_get",
+            "arguments": "{\"team1\": \"Los Angeles Lakers\", \"team2\": \"Golden State Warriors\", \"date\": \"2021-01-18\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"turnovers\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 755,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 755,
+      "output_tokens": 259,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "basketball_player_stats_get": "{\"player_name\": \"LeBron James\", \"stats_fields\": [\"points\", \"assists\", \"rebounds\", \"minutes\"]}"
+    },
+    {
+      "basketball_team_stats_get": "{\"team_name\": \"Los Angeles Lakers\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"win rate\"]}"
+    },
+    {
+      "basketball_game_stats_get": "{\"team1\": \"Los Angeles Lakers\", \"team2\": \"Golden State Warriors\", \"date\": \"2021-01-18\", \"stats_fields\": [\"total points\", \"total assists\", \"total rebounds\", \"turnovers\"]}"
+    }
+  ]
+}

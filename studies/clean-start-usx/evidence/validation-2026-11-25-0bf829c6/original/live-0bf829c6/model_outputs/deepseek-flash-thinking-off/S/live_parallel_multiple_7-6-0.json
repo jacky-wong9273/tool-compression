@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_7-6-0",
+  "category": "live_parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_aws_pricing": "{\"cpu\": 2, \"memory\": 4}"
+        },
+        {
+          "get_gcp_pricing": "{\"cpu_count\": 2, \"memory_gb\": 4}"
+        }
+      ],
+      "content": "I'll check the pricing for a 2 vCPU, 4 GB RAM machine on both AWS and GCP.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_rcdLJsPAvJPzVmMrpjKV8831",
+          "type": "function",
+          "function": {
+            "name": "get_aws_pricing",
+            "arguments": "{\"cpu\": 2, \"memory\": 4}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_6gDPmHSKduZpGLJ4bZ3S9625",
+          "type": "function",
+          "function": {
+            "name": "get_gcp_pricing",
+            "arguments": "{\"cpu_count\": 2, \"memory_gb\": 4}"
+          }
+        }
+      ],
+      "prompt_tokens": 636,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 252,
+      "output_tokens": 129,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_aws_pricing": "{\"cpu\": 2, \"memory\": 4}"
+    },
+    {
+      "get_gcp_pricing": "{\"cpu_count\": 2, \"memory_gb\": 4}"
+    }
+  ]
+}

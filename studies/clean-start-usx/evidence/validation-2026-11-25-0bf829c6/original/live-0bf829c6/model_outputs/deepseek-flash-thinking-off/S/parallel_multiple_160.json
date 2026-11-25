@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_160",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "compound_interest": "{\"principal\": 5000, \"annual_rate\": 5, \"compounding_freq\": \"quarterly\", \"time_in_years\": 7}"
+        },
+        {
+          "lawsuits_search": "{\"company_name\": \"Tech Corp\", \"location\": \"San Francisco\", \"year\": 2018}"
+        }
+      ],
+      "content": "I'll help you with both tasks. Let me run the compound interest calculation and search for lawsuits against Tech Corp simultaneously.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_LOBu1w7dL87wuAPaiALv2421",
+          "type": "function",
+          "function": {
+            "name": "compound_interest",
+            "arguments": "{\"principal\": 5000, \"annual_rate\": 5, \"compounding_freq\": \"quarterly\", \"time_in_years\": 7}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_rfkChv00dWTDmXNOgwZn5836",
+          "type": "function",
+          "function": {
+            "name": "lawsuits_search",
+            "arguments": "{\"company_name\": \"Tech Corp\", \"location\": \"San Francisco\", \"year\": 2018}"
+          }
+        }
+      ],
+      "prompt_tokens": 695,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 183,
+      "output_tokens": 184,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "compound_interest": "{\"principal\": 5000, \"annual_rate\": 5, \"compounding_freq\": \"quarterly\", \"time_in_years\": 7}"
+    },
+    {
+      "lawsuits_search": "{\"company_name\": \"Tech Corp\", \"location\": \"San Francisco\", \"year\": 2018}"
+    }
+  ]
+}

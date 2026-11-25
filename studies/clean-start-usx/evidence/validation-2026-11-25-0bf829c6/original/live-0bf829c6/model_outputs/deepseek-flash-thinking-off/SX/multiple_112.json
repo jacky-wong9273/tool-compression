@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_112",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "forest_growth_forecast": "{\"location\": \"Yellowstone National Park\", \"years\": 5, \"include_human_impact\": true}"
+        }
+      ],
+      "content": "I'll predict the forest growth for Yellowstone National Park over the next 5 years, including human impact.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_DndySaUcCRgU4UNx2odV0109",
+          "type": "function",
+          "function": {
+            "name": "forest_growth_forecast",
+            "arguments": "{\"location\": \"Yellowstone National Park\", \"years\": 5, \"include_human_impact\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 472,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 472,
+      "output_tokens": 100,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "forest_growth_forecast": "{\"location\": \"Yellowstone National Park\", \"years\": 5, \"include_human_impact\": true}"
+    }
+  ]
+}
