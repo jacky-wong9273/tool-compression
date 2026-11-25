@@ -43,7 +43,7 @@ def study_dir() -> Path:
 def catalogue_limitations(category: str, functions: list[dict]) -> list[str]:
     notes = [
         "language_hint_is_official_preparation",
-        "x_qualifies_under_the_language_hint",
+        "x_compares_action_sentences_of_the_u_catalogue",
     ]
     if is_java(category) or is_javascript(category):
         notes.append("java_js_parameters_stringified_before_edit")
@@ -54,12 +54,13 @@ def catalogue_limitations(category: str, functions: list[dict]) -> list[str]:
         notes.append("trajectory_requires_official_backend")
     if category == "multi_turn_miss_func":
         notes.append("miss_func_holdout_absent_from_initial_tools")
+        notes.append("held_out_docs_sent_without_language_hint_as_pinned")
     if category == "multi_turn_long_context":
         notes.append("long_context_payload_left_unmodified")
     if is_memory(category):
         notes.extend([
             "memory_prereq_required_for_a_full_score",
-            "memory_instruction_prompt_not_invented",
+            "memory_instruction_prompt_from_pinned_bfcl",
             "agentic_format_prompt_left_unmodified",
             "trajectory_requires_official_backend",
         ])
@@ -68,6 +69,7 @@ def catalogue_limitations(category: str, functions: list[dict]) -> list[str]:
             "snippet_flag_is_execution_setting",
             "agentic_format_prompt_left_unmodified",
             "trajectory_requires_official_backend",
+            "serpapi_key_checked_before_any_request",
         ])
     if is_trajectory(category) and "trajectory_requires_official_backend" not in notes:
         notes.append("trajectory_requires_official_backend")
@@ -100,18 +102,9 @@ def compile_case(case: dict) -> dict:
             "arms": None,
             "changes": [],
         }
-    try:
-        rendered = render_tools(tools)
-    except (KeyError, TypeError, ValueError, RuntimeError) as exc:
-        identical = {arm: tools for arm in ARMS}
-        return {
-            **base,
-            "editable": False,
-            "sendable": True,
-            "unmodified_reason": f"editor_failed: {exc.__class__.__name__}: {exc}",
-            "arms": identical,
-            "changes": [],
-        }
+    # The sender renders with the same call and no fallback, so an editor
+    # failure here must stop the freeze rather than silently send U.
+    rendered = render_tools(tools)
     return {
         **base,
         "editable": True,
@@ -194,6 +187,18 @@ def render_document(case: dict) -> dict:
     }
     if set(document["arms"] or {}) - set(ARMS):
         raise RuntimeError("rendered arms must be U, S, X, and SX")
+    if case.get("held_out") and compiled["sendable"]:
+        from tool_compression.clean_start.runner import arm_tools
+
+        cumulative: list[dict] = []
+        turns = {}
+        for turn in sorted(case["held_out"], key=int):
+            cumulative = cumulative + list(case["held_out"][turn])
+            turns[turn] = {
+                "held_out_functions": [doc.get("name") for doc in case["held_out"][turn]],
+                "arms": {arm: arm_tools(case["function"], case["category"], arm, cumulative) for arm in ARMS},
+            }
+        document["held_out_turn_arms"] = turns
     return document
 
 

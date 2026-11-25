@@ -8,15 +8,33 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint",
+    "x_compares_action_sentences_of_the_u_catalogue",
     "response_descriptions_left_unmodified",
     "snippet_flag_is_execution_setting",
     "agentic_format_prompt_left_unmodified",
-    "trajectory_requires_official_backend"
+    "trajectory_requires_official_backend",
+    "serpapi_key_checked_before_any_request"
   ],
   "held_out_functions": [],
   "excluded_function_present": [],
-  "changes": [],
+  "changes": [
+    {
+      "arm": "S",
+      "function": "search_engine_query",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the Web Search API category. Queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context+direct_action"
+    },
+    {
+      "arm": "S",
+      "function": "fetch_url_content",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the Web Search API category. Retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context+direct_action"
+    }
+  ],
   "arms": {
     "U": [
       {
@@ -162,7 +180,7 @@
         "type": "function",
         "function": {
           "name": "search_engine_query",
-          "description": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the Web Search API category. Queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -261,7 +279,7 @@
         "type": "function",
         "function": {
           "name": "fetch_url_content",
-          "description": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the Web Search API category. Retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -440,7 +458,7 @@
         "type": "function",
         "function": {
           "name": "search_engine_query",
-          "description": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the Web Search API category. Queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -539,7 +557,7 @@
         "type": "function",
         "function": {
           "name": "fetch_url_content",
-          "description": "This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the Web Search API category. Retrieves content from the provided URL and processes it based on the selected mode. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {

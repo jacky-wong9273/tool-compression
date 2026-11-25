@@ -8,11 +8,28 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint"
+    "x_compares_action_sentences_of_the_u_catalogue"
   ],
   "held_out_functions": [],
   "excluded_function_present": [],
-  "changes": [],
+  "changes": [
+    {
+      "arm": "X",
+      "function": "artwork_search_find",
+      "pointer": "/function/description",
+      "rival": "park_search_find",
+      "cue": "For parks based on facilities, use park_search_find.",
+      "axis": "text:artworks based on type|parks based on facilities"
+    },
+    {
+      "arm": "X",
+      "function": "park_search_find",
+      "pointer": "/function/description",
+      "rival": "artwork_search_find",
+      "cue": "For artworks based on type, use artwork_search_find.",
+      "axis": "text:parks based on facilities|artworks based on type"
+    }
+  ],
   "arms": {
     "U": [
       {
@@ -207,7 +224,7 @@
         "type": "function",
         "function": {
           "name": "artwork_search_find",
-          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax.",
+          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax. For parks based on facilities, use park_search_find.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -236,7 +253,7 @@
         "type": "function",
         "function": {
           "name": "park_search_find",
-          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax.",
+          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax. For artworks based on type, use artwork_search_find.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -289,7 +306,7 @@
         "type": "function",
         "function": {
           "name": "artwork_search_find",
-          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax.",
+          "description": "Search for artworks based on type and location. Note that the provided function is in Python 3 syntax. For parks based on facilities, use park_search_find.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -318,7 +335,7 @@
         "type": "function",
         "function": {
           "name": "park_search_find",
-          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax.",
+          "description": "Search for parks based on facilities and location. Note that the provided function is in Python 3 syntax. For artworks based on type, use artwork_search_find.",
           "parameters": {
             "type": "object",
             "properties": {

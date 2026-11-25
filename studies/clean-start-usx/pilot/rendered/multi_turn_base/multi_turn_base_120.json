@@ -8,7 +8,7 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint",
+    "x_compares_action_sentences_of_the_u_catalogue",
     "response_descriptions_left_unmodified",
     "excluded_function_left_in_catalogue",
     "trajectory_requires_official_backend"
@@ -16,6 +16,30 @@
   "held_out_functions": [],
   "excluded_function_present": [],
   "changes": [
+    {
+      "arm": "S",
+      "function": "add_to_watchlist",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "cancel_order",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Cancel an order. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Cancel an order. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "filter_stocks_by_price",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
     {
       "arm": "S",
       "function": "filter_stocks_by_price",
@@ -35,10 +59,98 @@
     {
       "arm": "S",
       "function": "fund_account",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "fund_account",
       "pointer": "/function/parameters/properties/amount/description",
       "before": "Amount to fund the account with.  This is a float type value.",
       "after": "Amount to fund the account with.",
       "change_class": "schema_guaranteed"
+    },
+    {
+      "arm": "S",
+      "function": "get_account_info",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get account information. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get account information. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_available_stocks",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_current_time",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the current time. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the current time. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_order_details",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of an order. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the details of an order. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_order_history",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_stock_info",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of a stock. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the details of a stock. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_symbol_by_name",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_transaction_history",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_watchlist",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the watchlist. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the watchlist. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "notify_price_change",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
     },
     {
       "arm": "S",
@@ -51,10 +163,58 @@
     {
       "arm": "S",
       "function": "place_order",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Place an order. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Place an order. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "place_order",
       "pointer": "/function/parameters/properties/price/description",
       "before": "Price at which to place the order. This is a float type value.",
       "after": "Price at which to place the order.",
       "change_class": "schema_guaranteed"
+    },
+    {
+      "arm": "S",
+      "function": "remove_stock_from_watchlist",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "trading_get_login_status",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the login status. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Get the login status. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "trading_login",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user login. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Handle user login. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "trading_logout",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
+    },
+    {
+      "arm": "S",
+      "function": "withdraw_funds",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the trading system. Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
+      "change_class": "suite_context"
     },
     {
       "arm": "S",
@@ -746,7 +906,7 @@
         "type": "function",
         "function": {
           "name": "add_to_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -777,7 +937,7 @@
         "type": "function",
         "function": {
           "name": "cancel_order",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Cancel an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Cancel an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -809,7 +969,7 @@
         "type": "function",
         "function": {
           "name": "filter_stocks_by_price",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -855,7 +1015,7 @@
         "type": "function",
         "function": {
           "name": "fund_account",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -888,7 +1048,7 @@
         "type": "function",
         "function": {
           "name": "get_account_info",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get account information. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get account information. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -917,7 +1077,7 @@
         "type": "function",
         "function": {
           "name": "get_available_stocks",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -948,7 +1108,7 @@
         "type": "function",
         "function": {
           "name": "get_current_time",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the current time. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the current time. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -969,7 +1129,7 @@
         "type": "function",
         "function": {
           "name": "get_order_details",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the details of an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1017,7 +1177,7 @@
         "type": "function",
         "function": {
           "name": "get_order_history",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1041,7 +1201,7 @@
         "type": "function",
         "function": {
           "name": "get_stock_info",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of a stock. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the details of a stock. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1085,7 +1245,7 @@
         "type": "function",
         "function": {
           "name": "get_symbol_by_name",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1113,7 +1273,7 @@
         "type": "function",
         "function": {
           "name": "get_transaction_history",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1162,7 +1322,7 @@
         "type": "function",
         "function": {
           "name": "get_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1186,7 +1346,7 @@
         "type": "function",
         "function": {
           "name": "notify_price_change",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1223,7 +1383,7 @@
         "type": "function",
         "function": {
           "name": "place_order",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Place an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Place an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1283,7 +1443,7 @@
         "type": "function",
         "function": {
           "name": "remove_stock_from_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1311,7 +1471,7 @@
         "type": "function",
         "function": {
           "name": "trading_get_login_status",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the login status. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the login status. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1332,7 +1492,7 @@
         "type": "function",
         "function": {
           "name": "trading_login",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user login. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Handle user login. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1365,7 +1525,7 @@
         "type": "function",
         "function": {
           "name": "trading_logout",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1386,7 +1546,7 @@
         "type": "function",
         "function": {
           "name": "withdraw_funds",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2096,7 +2256,7 @@
         "type": "function",
         "function": {
           "name": "add_to_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Add a stock to the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2127,7 +2287,7 @@
         "type": "function",
         "function": {
           "name": "cancel_order",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Cancel an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Cancel an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2159,7 +2319,7 @@
         "type": "function",
         "function": {
           "name": "filter_stocks_by_price",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Filter stocks based on a price range. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2205,7 +2365,7 @@
         "type": "function",
         "function": {
           "name": "fund_account",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Fund the account with the specified amount. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2238,7 +2398,7 @@
         "type": "function",
         "function": {
           "name": "get_account_info",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get account information. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get account information. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2267,7 +2427,7 @@
         "type": "function",
         "function": {
           "name": "get_available_stocks",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get a list of stock symbols in the given sector. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2298,7 +2458,7 @@
         "type": "function",
         "function": {
           "name": "get_current_time",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the current time. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the current time. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2319,7 +2479,7 @@
         "type": "function",
         "function": {
           "name": "get_order_details",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the details of an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2367,7 +2527,7 @@
         "type": "function",
         "function": {
           "name": "get_order_history",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the stock order ID history. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2391,7 +2551,7 @@
         "type": "function",
         "function": {
           "name": "get_stock_info",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of a stock. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the details of a stock. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2435,7 +2595,7 @@
         "type": "function",
         "function": {
           "name": "get_symbol_by_name",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2463,7 +2623,7 @@
         "type": "function",
         "function": {
           "name": "get_transaction_history",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2512,7 +2672,7 @@
         "type": "function",
         "function": {
           "name": "get_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2536,7 +2696,7 @@
         "type": "function",
         "function": {
           "name": "notify_price_change",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Notify if there is a significant price change in the stocks. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2573,7 +2733,7 @@
         "type": "function",
         "function": {
           "name": "place_order",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Place an order. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Place an order. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2633,7 +2793,7 @@
         "type": "function",
         "function": {
           "name": "remove_stock_from_watchlist",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2661,7 +2821,7 @@
         "type": "function",
         "function": {
           "name": "trading_get_login_status",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the login status. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Get the login status. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2682,7 +2842,7 @@
         "type": "function",
         "function": {
           "name": "trading_login",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user login. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Handle user login. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2715,7 +2875,7 @@
         "type": "function",
         "function": {
           "name": "trading_logout",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Handle user logout for trading system. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2736,7 +2896,7 @@
         "type": "function",
         "function": {
           "name": "withdraw_funds",
-          "description": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the trading system. Withdraw funds from the account balance. Note that the provided function is in Python 3 syntax.",
           "parameters": {
             "type": "object",
             "properties": {
