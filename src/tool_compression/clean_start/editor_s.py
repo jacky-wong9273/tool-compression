@@ -438,11 +438,7 @@ def _duplicate_candidate(original: str, working: str, function_text: str, pointe
     start = original.find(rest_span_text)
     if start < 0:
         return None
-    end = start + len(rest_span_text)
-    # The working text may already have lost a schema suffix; only delete the bridge when it is intact.
-    if original[end:end + 1] == ".":
-        end = end  # period after rest stays by not including it; the keep side already has no period
-    candidate = original[:start].rstrip() 
+    candidate = original[:start].rstrip()
     if original.endswith(".") and not candidate.endswith("."):
         candidate += "."
     fact = {
@@ -642,7 +638,7 @@ def _flag_candidate(original: str, schema: dict, function_text: str, pointer: st
         "note": "The prose default equals the unchanged schema default.",
     })
     ok, detail = _faithful(original, candidate, [item for item in facts if item["decision"] != "KEEP"])
-    if "whether" not in candidate.lower() or (duplicate is None and " of " in match.group(3) and False):
+    if "whether" not in candidate.lower():
         ok = False
     return {
         "ok": ok,
