@@ -48,14 +48,15 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("run")
     run.add_argument("--out", required=True, type=Path)
     run.add_argument("--pilot", action="store_true")
+    run.add_argument("--validation", action="store_true", help="the fresh validation draw, thinking off")
     run.add_argument("--live", action="store_true")
     run.add_argument("--authorize-live", action="store_true")
     run.add_argument("--thinking", help="off, on, or off,on; required with --live")
     run.add_argument(
         "--memory-prereqs",
         choices=("none", "matched"),
-        help="pilot only, required with --pilot --live: none, or the prerequisite "
-        "conversations of the scenarios the drawn memory questions use",
+        help="required with --pilot --live and with --validation: none, or the "
+        "prerequisite conversations of the scenarios the drawn questions use",
     )
     run.add_argument("--ceiling-usd", type=str)
     run.add_argument("--bfcl-root", type=Path)
@@ -136,20 +137,72 @@ def _run(args) -> int:
             return 2
     else:
         ceiling = None
-    if args.memory_prereqs and not args.pilot:
-        print("refusing: --memory-prereqs applies to --pilot; the full run sends every prerequisite", file=sys.stderr)
+    if args.validation and args.pilot:
+        print("refusing: --validation and --pilot are different draws", file=sys.stderr)
+        return 2
+    if args.memory_prereqs and not (args.pilot or args.validation):
+        print("refusing: --memory-prereqs applies to --pilot or --validation; the full run sends every prerequisite", file=sys.stderr)
         return 2
     if args.pilot and args.live and args.memory_prereqs is None:
         print("refusing: --pilot --live requires --memory-prereqs none or matched", file=sys.stderr)
         return 2
-    memory_prereqs = args.memory_prereqs or ("none" if args.pilot else "all")
+    if args.validation:
+        if modes != ("off",):
+            print("refusing: --validation is thinking off only", file=sys.stderr)
+            return 2
+        if args.memory_prereqs != "matched":
+            print("refusing: --validation requires --memory-prereqs matched", file=sys.stderr)
+            return 2
+        if args.ceiling_usd is None:
+            print("refusing: --validation requires --ceiling-usd", file=sys.stderr)
+            return 2
+        ceiling = Decimal(args.ceiling_usd)
+        if ceiling <= 0:
+            print("refusing: --ceiling-usd must be greater than 0", file=sys.stderr)
+            return 2
+    memory_prereqs = args.memory_prereqs or ("none" if args.pilot or args.validation else "all")
     reused = refuse_reuse(args.out)
     if reused:
         print(f"refusing: {reused}; use a new --out directory", file=sys.stderr)
         return 2
-    cases = _select_cases(args.pilot, memory_prereqs)
+    if args.validation:
+        from tool_compression.clean_start.validation import load_committed_cost, select_validation_cases
+
+        try:
+            cost = load_committed_cost()
+            cases = select_validation_cases()
+        except RuntimeError as exc:
+            print(f"refusing: {exc}", file=sys.stderr)
+            return 2
+        upper = Decimal(cost["planning_upper_usd"])
+        if ceiling < upper:
+            print(
+                f"refusing: validation planning upper ${upper} exceeds ceiling ${ceiling}",
+                file=sys.stderr,
+            )
+            return 2
+    else:
+        cost = None
+        cases = _select_cases(args.pilot, memory_prereqs)
     if not args.live:
-        write_plan(cases, args.out, pilot=args.pilot, thinking_modes=modes)
+        extra = None
+        if args.validation:
+            extra = {
+                "validation": True,
+                "replicate_u": False,
+                "memory_prereqs": "matched",
+                "planning_upper_usd": cost["planning_upper_usd"],
+                "first_request_floor_usd": cost["first_request_floor_usd"],
+                "structural_cap_usd": cost["structural_cap_usd"],
+            }
+        write_plan(
+            cases,
+            args.out,
+            pilot=args.pilot,
+            thinking_modes=modes,
+            ceiling_usd=str(ceiling) if args.validation else None,
+            extra=extra,
+        )
         print(f"wrote dry plan {args.out / 'run.json'}")
         return 0
     slots = build_slots(cases, modes)
@@ -177,7 +230,13 @@ def _run(args) -> int:
             ceiling_usd=ceiling,
             thinking_modes=modes,
             executor=executor,
-            identity=run_identity(cases, pilot=args.pilot, memory_prereqs=memory_prereqs),
+            identity=run_identity(
+                cases,
+                pilot=args.pilot,
+                memory_prereqs=memory_prereqs,
+                validation=args.validation,
+                cost=cost,
+            ),
         )
     except RunStopped as stopped:
         print(f"refusing before any request: {stopped.reason}", file=sys.stderr)
@@ -192,7 +251,14 @@ def _run(args) -> int:
     return 0 if result["complete"] else 1
 
 
-def run_identity(cases: list[dict], *, pilot: bool, memory_prereqs: str) -> dict:
+def run_identity(
+    cases: list[dict],
+    *,
+    pilot: bool,
+    memory_prereqs: str,
+    validation: bool = False,
+    cost: dict | None = None,
+) -> dict:
     """What makes the pilot and the full run the same pipeline on different case lists."""
     from tool_compression.clean_start.editor_s import S_RULES_VERSION
     from tool_compression.clean_start.editor_x import X_RULES_VERSION
@@ -210,6 +276,15 @@ def run_identity(cases: list[dict], *, pilot: bool, memory_prereqs: str) -> dict
     if pilot:
         draw = study_dir() / "pilot" / "draw.json"
         identity["draw_sha256"] = sha256(draw.read_bytes()).hexdigest()
+    if validation:
+        from tool_compression.clean_start.validation import DRAW_FILE
+
+        identity["validation"] = True
+        identity["replicate_u"] = False
+        identity["draw_sha256"] = sha256((study_dir() / DRAW_FILE).read_bytes()).hexdigest()
+        if cost is not None:
+            identity["planning_upper_usd"] = cost["planning_upper_usd"]
+            identity["first_request_floor_usd"] = cost["first_request_floor_usd"]
     return identity
 
 

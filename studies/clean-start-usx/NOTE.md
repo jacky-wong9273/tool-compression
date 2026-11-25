@@ -153,3 +153,5 @@ Seed `20261125`. For each kept category with at least 3 in-scope questions, `ran
 | memory_rec_sum | memory_rec_sum_32-healthcare-2, memory_rec_sum_121-student-41, memory_rec_sum_62-finance-7 |
 
 41 cases. The six web ids from the earlier 47-case draw are removed and the other 41 ids are unchanged, in the same order. Each case is rendered at `pilot/rendered/<category>/<case_id>.json` with arms U, S, X, and SX. `--memory-prereqs matched` adds the same 54 prerequisite conversations (466 user turns) for the scenarios these memory questions use. Thinking off and four arms is 95 conversations and 380 slots: 164 scoring slots and 216 prerequisite slots.
+
+5. The fresh validation draw is `validation/draw.json`, seed `20261126`. It does not reuse these 41 ids, and it does not reuse the six removed web ids. Those draws stay diagnostic. `VALIDATION.md` is the flight sheet for the parent box: case counts, the $20 fit, and the run and evaluate commands. This package does not start that run. The pilot draw, both evidence directories, and the editors stay as they are.
