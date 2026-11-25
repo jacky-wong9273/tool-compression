@@ -4,7 +4,9 @@ Base: `0c0284d5c3ca76d77b11a4db304d46953844ec66` (PR #27, stacked on #25 and #24
 
 ## Outcome in one paragraph
 
-The pilot on 25 Nov measured almost nothing about the editors. At the pilot tip, X sent byte-identical tools to U in all 22 cases that reached the provider, so SX was identical to S, and S changed only 3 of 20 single-turn requests (25 local tokens in total). The billed differences between arms are send-order cache effects, and the archived accuracy is depressed by a scoring registration defect (`underscore_to_dot=False`) that hits every arm equally: rescoring the same result files with the pinned DeepSeek FC flags gives U 20/22, S 21/22, X 21/22, SX 20/21 instead of 14/22, 14/22, 14/22, 13/21. The runner would also have crashed on the first memory trajectory and diverged from the pinned BFCL loop on memory, held-out documents and step limits. This PR fixes the runner and scoring, rewrites S and X on a structural parse of each description, and freezes an offline package. The revised editors cut 24.2% of editable description tokens (10.7% of the tools array) across the 3327 in-scope questions under local counting; X adds cues to 762 questions at 1.6% field-token cost. None of this is a measured provider saving or an accuracy result. The largest S saving (suite preamble removal on multi-turn, memory and web catalogues) has no empirical test yet.
+The pilot on 25 Nov measured almost nothing about the editors. At the pilot tip, X sent byte-identical tools to U in all 22 cases that reached the provider, so SX was identical to S, and S changed only 3 of 20 single-turn requests (25 local tokens in total). The billed differences between arms are send-order cache effects, and the archived accuracy is depressed by a scoring registration defect (`underscore_to_dot=False`) that hits every arm equally: rescoring the same result files with the pinned DeepSeek FC flags gives U 20/22, S 21/22, X 21/22, SX 20/21 instead of 14/22, 14/22, 14/22, 13/21. The runner would also have crashed on the first memory trajectory and diverged from the pinned BFCL loop on memory, held-out documents and step limits. This PR fixes the runner and scoring, rewrites S and X on a structural parse of each description, and freezes an offline package. The revised editors, on the 14-category population below, cut 24.3% of editable description tokens (10.8% of the tools array) across the 3127 in-scope questions under local counting; X adds cues to 762 questions at 1.6% field-token cost. None of this is a measured provider saving or an accuracy result. The largest S saving (suite preamble removal on multi-turn and memory catalogues) has no empirical test yet.
+
+On 25 Nov 2026 at 16:23 HKT the study dropped `web_search_base` and `web_search_no_snippet` (200 questions, 6 frozen pilot ids). Both sets are multi-tool; they leave because the pinned executor calls billable SerpAPI, which is outside the DeepSeek ceiling. The other 41 pilot ids are unchanged and stay in the same order. Memory backends stay, including the local `all-MiniLM-L6-v2` weight file. The vendored BFCL prompts and the archived 25 Nov flight, whose plan still listed those web cases, are unchanged. Editors S and X are unchanged.
 
 ## 1. Critique, ranked by severity
 
@@ -100,7 +102,7 @@ The language hint, names, negations, numbers, units, quoted literals and every n
 
 **X (`x-rules-2026-11-25.2`).** X sees the original U catalogue, never S. For each target, a rival qualifies when the two action sentences share their verb and differ in one short window (at most four words a side, at least one content word each, no negation), and the shared wording is at least as long as that window and contains a content word beyond the verb. Alternatively, the rival qualifies on interface when the required parameters differ in numeric shape. The cue is one sentence, `For <rival's own differing phrase>, use <rival>.`. It never says the target cannot do something, and banned words (`only`, `cannot`, `exclusively`, `unable`) are tested. One unrelated tool never blocks a pair, and a tool can stay uncued while its neighbours get cues. A one-tool catalogue gets no cue (X == U and SX == S on controls). Cues whose content words the rival's name already spells are dropped. `package/x_ledger.jsonl` records, for each catalogue, every cue with evidence from both sides, and the reason for each uncued tool (most often a different verb).
 
-**SX.** SX is the exact S bytes plus the exact X cue bytes at `/function/description`, separated by one space. `integrity.json` checks, on all 3327 questions: membership and order unchanged, every non-description field identical, uncued X == U, uncued SX == S, cued X == U + cue, and cued SX == S + cue. All six checks pass on every question.
+**SX.** SX is the exact S bytes plus the exact X cue bytes at `/function/description`, separated by one space. `integrity.json` checks, on all 3127 questions: membership and order unchanged, every non-description field identical, uncued X == U, uncued SX == S, cued X == U + cue, and cued SX == S + cue. All six checks pass on every question.
 
 Rejected for X: per-arm `user_id` KV-cache isolation, because it adds a request field outside the BFCL request and its effect on generation is unverified. Rotating arm order addresses the same confound with no new field.
 
@@ -111,7 +113,7 @@ Rejected for X: per-arm `user_id` KV-cache isolation, because it adds a request 
 | file | content |
 | --- | --- |
 | `token_tables.json` | field and tools tokens per arm and deltas S−U, X−U, SX−S, SX−X, SX−U, overall, excluding the pilot draw, and per category; changed questions; cued tools; cue tokens |
-| `integrity.json` | the six SX and immutability checks over 3327 questions and 1021 distinct catalogues |
+| `integrity.json` | the six SX and immutability checks over 3127 questions and 1020 distinct catalogues |
 | `s_ledger.jsonl`, `s_keep_reasons.json` | S provenance |
 | `x_ledger.jsonl` | X cues and evidence on both sides, and the reason for each uncued tool |
 | `examples.json`, `EXAMPLES.md` | edited and unchanged examples per in-scope set, with cases the rules cannot change marked |
@@ -135,14 +137,12 @@ Local counts use tiktoken `o200k_base`. "Field" means the editable description s
 | memory_kv | 155 | 155 | 155 | 159185 | −37200 (−23.4%) | +24800 (+15.6%) | +24800 (+20.3%) | −37200 (−20.2%) | −12400 (−7.8%) | 24800 | −11.5% | −3.8% |
 | memory_vector | 155 | 155 | 155 | 100285 | −29760 (−29.7%) | +3720 (+3.7%) | +3720 (+5.3%) | −29760 (−28.6%) | −26040 (−26.0%) | 3720 | −11.4% | −10.0% |
 | memory_rec_sum | 155 | 155 | 0 | 42625 | −11625 (−27.3%) | 0 | 0 | −11625 (−27.3%) | −11625 (−27.3%) | 0 | −13.0% | −13.0% |
-| web_search_base | 100 | 100 | 0 | 20800 | −3400 (−16.3%) | 0 | 0 | −3400 (−16.3%) | −3400 (−16.3%) | 0 | −5.8% | −5.8% |
-| web_search_no_snippet | 100 | 100 | 0 | 20800 | −3400 (−16.3%) | 0 | 0 | −3400 (−16.3%) | −3400 (−16.3%) | 0 | −5.8% | −5.8% |
-| **all in scope** | 3327 | 2139 | 762 | 2588843 | −625936 (−24.2%) | +40838 (+1.6%) | +40838 (+2.1%) | −625936 (−23.8%) | −585098 (−22.6%) | 40838 | −10.7% | −10.0% |
-| excluding pilot draw | 3280 | 2109 | 751 | 2549095 | −615723 (−24.2%) | +40107 (+1.6%) | +40107 (+2.1%) | −615723 (−23.8%) | −575616 (−22.6%) | 40107 | −10.7% | −10.0% |
+| **all in scope** | 3127 | 1939 | 762 | 2547243 | −619136 (−24.3%) | +40838 (+1.6%) | +40838 (+2.1%) | −619136 (−23.9%) | −578298 (−22.7%) | 40838 | −10.8% | −10.1% |
+| excluding pilot draw | 3086 | 1915 | 751 | 2508743 | −609127 (−24.3%) | +40107 (+1.6%) | +40107 (+2.1%) | −609127 (−23.9%) | −569020 (−22.7%) | 40107 | −10.8% | −10.1% |
 
-X−U equals the cue cost exactly, as composition requires. The figures excluding the 47 exposed pilot cases match the overall figures to within 0.03 percentage points.
+X−U equals the cue cost exactly, as composition requires. The figures excluding the 41-case pilot draw match the overall figures to within 0.03 percentage points.
 
-Where the rules cannot act, the table shows it. X has no cue on `live_parallel`, `live_parallel_multiple`, `live_relevance`, `memory_rec_sum` or either web set, because no pair of action sentences qualifies. S changes nothing on `live_parallel`, and live sets change by about 1% or less, because their descriptions are mostly already minimal.
+Where the rules cannot act, the table shows it. X has no cue on `live_parallel`, `live_parallel_multiple`, `live_relevance`, or `memory_rec_sum`, because no pair of action sentences qualifies. S changes nothing on `live_parallel`, and live sets change by about 1% or less, because their descriptions are mostly already minimal. The two web sets are outside this table.
 
 ## 5. Pilot, re-read from saved data (`package/pilot_2026_11_25_analysis.json`)
 
@@ -169,7 +169,7 @@ python -m tool_compression.clean_start manifest        # BFCL package byte ident
 python -m tool_compression.clean_start freeze          # pilot renders and limitations
 python -m tool_compression.clean_start package         # this package, byte for byte
 python -m tool_compression.clean_start report-pilot    # pilot analysis from archived evidence
-python -m tool_compression.clean_start run --pilot --out /tmp/plan   # dry plan, no key, no socket
+python -m tool_compression.clean_start run --pilot --thinking off --memory-prereqs matched --out /tmp/plan   # dry plan, 380 slots, no key, no socket
 (cd studies/clean-start-usx/evidence/pilot-2026-11-25-thinking-off/original && sha256sum -c ../SHA256SUMS)
 ```
 
@@ -182,14 +182,16 @@ cp -r studies/clean-start-usx/evidence/pilot-2026-11-25-thinking-off/original/ar
 python -m tool_compression.clean_start evaluate --out /tmp/rescore --bfcl-root /tmp/gorilla --thinking off
 ```
 
-A later live run needs explicit authorisation and is not started here. Its form is:
+Jacky authorised the thinking-off pilot at 16:23 HKT on 25 Nov 2026: matched memory prerequisites and a 20 USD DeepSeek ceiling. This checkout does not start it. The parent box runs:
 
 ```bash
 python -m tool_compression.clean_start run --pilot --live --authorize-live \
-  --thinking off --memory-prereqs matched --ceiling-usd <USD> \
+  --thinking off --memory-prereqs matched --ceiling-usd 20 \
   --bfcl-root /tmp/gorilla --out <new empty dir>
 python -m tool_compression.clean_start evaluate --out <same dir> --bfcl-root /tmp/gorilla --thinking off
 ```
+
+`--live` without `--thinking` is refused. A dry plan that omits `--thinking` still lists off and on. `--out` must be a new directory: one that already holds `attempts.jsonl`, `bills.jsonl`, or a `run.json` that contacted a provider is refused before a key read.
 
 ## 7. Tests added or changed
 
@@ -199,7 +201,7 @@ python -m tool_compression.clean_start evaluate --out <same dir> --bfcl-root /tm
 - The total deadline enforced on a trickling connection.
 - Per-step sidecar persistence when a trajectory stops mid-turn.
 - Refusal of output-directory reuse before the key read.
-- Preflight of backend modules and key presence.
+- Preflight of backend modules and key presence. The supported pilot has no web-search slot, so preflight does not look up `serpapi`, `bs4`, `html2text`, or `requests` and does not read `SERPAPI_API_KEY`. A synthetic web slot is still refused without that key. Evaluation registration keeps `underscore_to_dot` true.
 - Memory prompt, initialisation and flush order; the pinned decode and empty-turn rules; force quit after 21 queries.
 - Held-out documents sent without the hint.
 - Arm rotation.
@@ -208,7 +210,7 @@ python -m tool_compression.clean_start evaluate --out <same dir> --bfcl-root /tm
 `tests/test_clean_start_package.py` checks:
 - The archived evidence still matches its 170 checksums.
 - The package regenerates byte for byte and its manifest hashes hold.
-- Integrity passes on 3327 questions.
+- Integrity passes on 3127 questions.
 - X−U equals the cue cost.
 - Every S ledger fact maps back to its source span and kept spans survive.
 - The language hint is untouched.
@@ -225,8 +227,8 @@ Existing tests in `tests/test_clean_start_usx.py` keep checking arm isolation of
 
 - **No empirical result for the revised editors.** Nothing here says S, X or SX preserves accuracy or saves billed tokens. The authorised pilot is the next step, and its n is too small for anything beyond a pipeline check and gross-regression screen.
 - **Suite-context deletion is the main semantic risk** (M4). If the pilot shows multi-turn or memory regressions, this rule is the first suspect and can be dropped on its own; it is a separate `change_class` in the ledger.
-- **Memory prerequisites cost.** `--memory-prereqs matched` makes the pilot's memory portion about ten times larger. `none` keeps it small but leaves memory scores uninterpretable. That choice belongs to whoever authorises the run.
-- **External services.** `memory_vector` downloads SentenceTransformer weights on first use. Web search calls SerpAPI, which is billed separately and is not in the DeepSeek ceiling.
+- **Memory prerequisites cost.** The authorised pilot uses `--memory-prereqs matched`: 54 prerequisite conversations, 466 user turns, 216 of the 380 thinking-off slots. `none` is still a legal flag and leaves memory scores uninterpretable.
+- **Local weights, not a billable web service.** `web_search_base` and `web_search_no_snippet` are out of this study. The supported run does not read `SERPAPI_API_KEY` and does not import `serpapi`, `bs4`, or `html2text`. A web-search slot, if one were present, would still be refused without that key. `memory_vector` still imports `sentence_transformers`, `faiss`, and `numpy`. The pinned backend constructs `SentenceTransformer("all-MiniLM-L6-v2")` from the local cache at import, and preflight does not check that the weight file is present. Cache it before the first vector slot. That download is a free local file, not a billable service.
 - **Thinking on** uses the provider's default effort, and reasoning content is passed back on tool turns. Both differ from a stock BFCL handler.
 - **Provider tokenizer.** Local `o200k_base` counts track the provider on the three changed pilot cases (−25 vs −26), which is far too few to calibrate. The provider's rendering of float-suffixed and enum-bearing schemas is unverified.
 - **Cache.** Rotation balances send position across arms; it does not remove cache sharing. Per-arm `user_id` isolation was not adopted (section 3).

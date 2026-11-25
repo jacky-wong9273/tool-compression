@@ -1042,9 +1042,15 @@ UNCHANGED_PILOT = {
     "memory_kv": ["memory_kv_146-notetaker-16", "memory_kv_58-finance-3", "memory_kv_7-customer-7"],
     "memory_vector": ["memory_vector_107-student-27", "memory_vector_90-student-10", "memory_vector_123-student-43"],
     "memory_rec_sum": ["memory_rec_sum_32-healthcare-2", "memory_rec_sum_121-student-41", "memory_rec_sum_62-finance-7"],
-    "web_search_base": ["web_search_base_37", "web_search_base_46", "web_search_base_58"],
-    "web_search_no_snippet": ["web_search_no_snippet_83", "web_search_no_snippet_92", "web_search_no_snippet_58"],
 }
+REMOVED_WEB_PILOT = (
+    "web_search_base_37",
+    "web_search_base_46",
+    "web_search_base_58",
+    "web_search_no_snippet_83",
+    "web_search_no_snippet_92",
+    "web_search_no_snippet_58",
+)
 
 
 def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
@@ -1057,7 +1063,7 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     assert committed == first
     scope = load_scope()
     assert first["categories"] == scope["keep"]
-    assert len(first["rows"]) == 47
+    assert len(first["rows"]) == 41
     by_category: dict[str, list[str]] = {}
     questions = {
         category: {case["id"]: case for case in in_scope_questions(category)}
@@ -1091,6 +1097,9 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     assert by_category["live_parallel"] == ["live_parallel_6-3-0", "live_parallel_7-3-1"]
     for category, ids in UNCHANGED_PILOT.items():
         assert by_category[category] == ids
+    drawn_ids = [row["case_id"] for row in first["rows"]]
+    assert set(REMOVED_WEB_PILOT).isdisjoint(drawn_ids)
+    assert "web_search_base" not in by_category and "web_search_no_snippet" not in by_category
     note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
     for row in first["rows"]:
         assert row["case_id"] in note
@@ -1110,7 +1119,7 @@ def test_coverage_matches_the_committed_limitations_and_names_are_consistent():
     assert committed == record
     assert record["official_settlement"] is False
     assert record["unsendable"] == 0
-    assert record["in_scope_questions"] == 3327
+    assert record["in_scope_questions"] == 3127
     scope = load_scope()
     assert set(record["categories"]) == set(scope["keep"])
     assert "simple_java" not in record["categories"]
@@ -1143,7 +1152,7 @@ def test_package_command_forwards_and_dry_pilot_stays_offline(tmp_path, monkeypa
     assert plan["status"] == "not_sent"
     assert plan["provider_contacted"] is False
     assert plan["complete"] is False
-    assert plan["slots_total"] == len(build_draw()["rows"]) * 2 * 4 == 47 * 8
+    assert plan["slots_total"] == len(build_draw()["rows"]) * 2 * 4 == 41 * 8
     assert calls == []
 
 
@@ -1153,8 +1162,8 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
     assert fresh["official_settlement"] is False
     assert fresh["official_simple_multi_tool_ids"] == []
     assert fresh["scoring_questions"] == 5106
-    assert fresh["in_scope_questions"] == 3327
-    assert fresh["out_of_scope_questions"] == 1779
+    assert fresh["in_scope_questions"] == 3127
+    assert fresh["out_of_scope_questions"] == 1979
     assert fresh["drop"] == [
         "simple_python",
         "simple_java",
@@ -1162,6 +1171,8 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
         "parallel",
         "irrelevance",
         "live_simple",
+        "web_search_base",
+        "web_search_no_snippet",
     ]
     assert fresh["unscope_package"]["pull_request"] == 24
     assert fresh["unscope_package"]["tip"] == "c1df4bbf439151abad2ed79b103d401a61443412"
@@ -1253,5 +1264,10 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
         assert category in text
     note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
     assert "Study population" in note
-    assert "3327" in note
+    assert "3127" in note
+    web = next(case for case in load_questions("web_search_base") if case["id"] == "web_search_base_0")
+    assert u_tool_count(web) == 2
+    assert question_in_scope(web) is False
+    assert "web_search_base" not in fresh["in_scope_ids"]
+    assert "web_search_no_snippet" not in fresh["in_scope_ids"]
     assert "PR #24" in note

@@ -203,25 +203,3 @@ X cue: not possible in this category (no rival qualifies anywhere).
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
-## web_search_base
-
-S edit, `web_search_base_0`, `search_engine_query` `/function/description` (suite_context+direct_action):
-
-- before: 'This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the Web Search API category. Queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.'
-
-X cue: not possible in this category (no rival qualifies anywhere).
-
-Unchanged question: none; every in-scope question of this category has at least one edit.
-
-## web_search_no_snippet
-
-S edit, `web_search_no_snippet_0`, `search_engine_query` `/function/description` (suite_context+direct_action):
-
-- before: 'This tool belongs to the Web Search API category. It provides functions to search the web and browse search results. Tool description: This function queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.'
-- after: 'This tool belongs to the Web Search API category. Queries the search engine for the provided keywords and region. Note that the provided function is in Python 3 syntax.'
-
-X cue: not possible in this category (no rival qualifies anywhere).
-
-Unchanged question: none; every in-scope question of this category has at least one edit.
-

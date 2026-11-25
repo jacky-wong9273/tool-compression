@@ -453,7 +453,7 @@ def test_pilot_live_run_needs_an_explicit_memory_prerequisite_choice(tmp_path, m
     plain = _select_cases(True, "none")
     matched = _select_cases(True, "matched")
     assert [case["id"] for case in matched if not case.get("prereq")] == [case["id"] for case in plain]
-    assert len(plain) == 47
+    assert len(plain) == 41
     prereqs = [case for case in matched if case.get("prereq")]
     drawn = {(case["category"], case["scenario"]) for case in plain if case["category"].startswith("memory_")}
     assert {(case["category"], case["scenario"]) for case in prereqs} == drawn
@@ -463,6 +463,93 @@ def test_pilot_live_run_needs_an_explicit_memory_prerequisite_choice(tmp_path, m
             earlier = [item for item in prereqs if item["category"] == case["category"] and item["scenario"] == case["scenario"]]
             assert all(positions[item["id"]] < positions[case["id"]] for item in earlier)
             assert any(item["id"].endswith("-0") for item in earlier)
+
+
+def test_supported_pilot_omits_web_search_and_does_not_need_serpapi():
+    from tool_compression.clean_start.__main__ import _select_cases
+
+    cases = _select_cases(True, "matched")
+    slots = build_slots(cases, ("off",))
+    assert len(cases) == 95
+    assert sum(1 for case in cases if case.get("prereq")) == 54
+    assert len(slots) == 380
+    assert sum(1 for slot in slots if slot["prereq"]) == 216
+    assert sum(1 for slot in slots if not slot["prereq"]) == 164
+    assert {slot["thinking"] for slot in slots} == {"off"}
+    assert {slot["arm"] for slot in slots} == set(ARMS)
+    assert not any(slot["category"].startswith("web_search") for slot in slots)
+    assert not any(case["category"].startswith("web_search") for case in cases)
+    paths = [result_relative("memory_kv_7-customer-7", "off", arm) for arm in ARMS]
+    assert len(set(paths)) == 4
+    asked = []
+
+    def find_spec(name):
+        asked.append(name)
+        if name in {"serpapi", "bs4", "html2text", "requests"}:
+            raise AssertionError(f"supported scope looked up {name}")
+        return object()
+
+    problems = preflight(
+        cases, slots, bfcl_root=Path("/bfcl"),
+        environ={"DEEPSEEK_API_KEY": "present"}, find_spec=find_spec,
+    )
+    assert problems == []
+    assert "serpapi" not in asked
+    missing_key = preflight(
+        cases, slots, bfcl_root=Path("/bfcl"), environ={}, find_spec=lambda _name: object(),
+    )
+    assert missing_key == ["provider_key_missing: DEEPSEEK_API_KEY is not set"]
+    missing_faiss = preflight(
+        cases, slots, bfcl_root=Path("/bfcl"),
+        environ={"DEEPSEEK_API_KEY": "present"},
+        find_spec=lambda name: None if name == "faiss" else object(),
+    )
+    assert missing_faiss == ["backend_module_missing: MemoryAPI_vector needs faiss"]
+
+
+def test_evaluation_registration_keeps_underscore_to_dot(monkeypatch):
+    import sys
+    import types
+
+    from tool_compression.clean_start.evaluate import model_names, register_models
+    from tool_compression.clean_start.pin import REQUEST_MODEL
+
+    assert model_names(("off",)) == [
+        "deepseek-flash-thinking-off-U",
+        "deepseek-flash-thinking-off-S",
+        "deepseek-flash-thinking-off-X",
+        "deepseek-flash-thinking-off-SX",
+    ]
+    created = {}
+
+    class ModelConfig:
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+            created[kwargs["display_name"]] = kwargs
+
+    reference = types.SimpleNamespace(is_fc_model=True, underscore_to_dot=True)
+    mapping = {"DeepSeek-V3.2-Exp-FC": reference}
+    modules = {
+        "bfcl_eval": types.ModuleType("bfcl_eval"),
+        "bfcl_eval.constants": types.ModuleType("bfcl_eval.constants"),
+        "bfcl_eval.constants.model_config": types.ModuleType("bfcl_eval.constants.model_config"),
+        "bfcl_eval.model_handler": types.ModuleType("bfcl_eval.model_handler"),
+        "bfcl_eval.model_handler.api_inference": types.ModuleType("bfcl_eval.model_handler.api_inference"),
+        "bfcl_eval.model_handler.api_inference.deepseek": types.ModuleType(
+            "bfcl_eval.model_handler.api_inference.deepseek"
+        ),
+    }
+    modules["bfcl_eval.constants.model_config"].MODEL_CONFIG_MAPPING = mapping
+    modules["bfcl_eval.constants.model_config"].ModelConfig = ModelConfig
+    modules["bfcl_eval.model_handler.api_inference.deepseek"].DeepSeekAPIHandler = object
+    for name, module in modules.items():
+        monkeypatch.setitem(sys.modules, name, module)
+    register_models(model_names(("off",)))
+    for name, config in created.items():
+        assert config["model_name"] == REQUEST_MODEL
+        assert config["is_fc_model"] is True
+        assert config["underscore_to_dot"] is True
+        assert name.startswith("deepseek-flash-thinking-off-")
 
 
 class _FakeResponse:

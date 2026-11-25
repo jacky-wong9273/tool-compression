@@ -74,6 +74,33 @@ def current_digest() -> dict:
     return render_digest(documents, TiktokenCounter(LOCAL_TOKENIZER))
 
 
+def _archived_cases_removed_from_the_draw(sent: dict, on_disk: dict) -> dict:
+    """Revised-editor counts for archived pilot cases the current draw no longer freezes.
+
+    The 25 Nov evidence still names the web-search cases. They are rendered here
+    and not written back into ``pilot/rendered``.
+    """
+    from tool_compression.clean_start.load import load_questions
+    from tool_compression.clean_start.pilot import render_document
+
+    missing: dict[str, list[str]] = defaultdict(list)
+    for case_id, digest in sent.items():
+        if case_id not in on_disk:
+            missing[digest["category"]].append(case_id)
+    documents = {}
+    for category, ids in missing.items():
+        wanted = set(ids)
+        for case in load_questions(category):
+            if case["id"] in wanted:
+                documents[case["id"]] = render_document(case)
+        absent = wanted - set(documents)
+        if absent:
+            raise RuntimeError(f"archived pilot cases are not in the vendored prompts: {sorted(absent)}")
+    if not documents:
+        return {}
+    return render_digest(documents, TiktokenCounter(LOCAL_TOKENIZER))
+
+
 def _git_show(repo: Path, commit: str, path: str) -> str:
     return subprocess.run(
         ["git", "-C", str(repo), "show", f"{commit}:{path}"],
@@ -137,6 +164,7 @@ def write_pilot_report(evidence: Path, out: Path) -> dict:
     bills = _bills(original / "bills.jsonl")
     sent = json.loads((evidence / SENT_DIGEST).read_text(encoding="utf-8"))["cases"]
     now = current_digest()
+    now.update(_archived_cases_removed_from_the_draw(sent, now))
     by_slot: dict = defaultdict(list)
     order: dict = defaultdict(list)
     for row in bills:
