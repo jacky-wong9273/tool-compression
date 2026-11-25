@@ -38,6 +38,7 @@ from tool_compression.clean_start.scoring import (
     assistant_history,
     parse_fc_message,
     registry_dir,
+    result_model_name,
 )
 
 class RunStopped(RuntimeError):
@@ -172,6 +173,21 @@ def build_slots(cases: list[dict]) -> list[dict]:
                     "kind": "trajectory" if is_trajectory(case["category"]) else "single",
                 })
     return slots
+
+
+def executor_instance_name(thinking: str, arm: str) -> str:
+    """``model_name`` passed to the pinned ``execute_multi_turn_func_call``.
+
+    The pinned function stores one class instance in ``globals()`` under
+    ``{model_name}_{test_entry_id}_{class_name}_instance``, after replacing
+    ``-./:`` with ``_``. A second arm of the same thinking pass and case id
+    reuses that instance and skips ``_load_scenario`` when this name has no arm.
+    """
+    if thinking not in THINKING_ORDER:
+        raise ValueError(thinking)
+    if arm not in ARMS:
+        raise ValueError(arm)
+    return f"deepseek_flash_thinking_{thinking}_{arm}"
 
 
 def execution_config(case: dict, result_dir: Path) -> dict:
@@ -422,9 +438,9 @@ def execute(
 def _run_slot(case, slot, out_dir, transport, clock, executor, bill) -> bool:
     thinking = slot["thinking"]
     arm = slot["arm"]
-    result_dir = out_dir / "result" / registry_dir(thinking)
+    result_dir = out_dir / "result" / result_model_name(thinking, arm)
     config = execution_config(case, result_dir)
-    config["instance_name"] = f"deepseek_flash_thinking_{thinking}"
+    config["instance_name"] = executor_instance_name(thinking, arm)
     sidecar = {
         "case_id": case["id"],
         "category": case["category"],

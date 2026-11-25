@@ -64,6 +64,7 @@ from tool_compression.clean_start.runner import (
     build_slots,
     execute,
     execution_config,
+    executor_instance_name,
     request_body,
     turn_messages,
     write_plan,
@@ -747,12 +748,166 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
     assert entry["result"][0][1] == "done"
     assert entry["result"][1] == ["next"]
     assert entry["input_token_count"] == [[1000, 1000], [1000]]
-    assert executor.calls[0][1] == "deepseek_flash_thinking_off"
+    assert executor.calls[0][1] == executor_instance_name("off", "U") == "deepseek_flash_thinking_off_U"
     assert executor.calls[0][2] is True
     assert script.bodies[1]["messages"][1]["reasoning_content"] == "because"
     assert script.bodies[2]["messages"][-1] == {"role": "user", "content": HOLDOUT_USER_PROMPT}
     assert any(tool["function"]["name"] == "sort" for tool in script.bodies[2]["tools"])
     assert not any(tool["function"]["name"] == "sort" for tool in script.bodies[0]["tools"])
+
+
+def _bfcl_instance_key(model_name: str, test_entry_id: str, class_name: str) -> str:
+    """Same key as pinned gorilla ``execute_multi_turn_func_call`` at 6ea57973."""
+    instance_name = f"{model_name}_{test_entry_id}_{class_name}_instance"
+    return re.sub(r"[-./:]", "_", instance_name)
+
+
+def _snapshot_file(model_result_dir: str, case_id: str, scenario: str) -> Path:
+    """Same file as pinned ``MemoryAPI._prepare_snapshot`` at 6ea57973."""
+    category = category_from_id(case_id)
+    return Path(model_result_dir) / result_group(category) / "memory_snapshot" / f"{scenario}_final.json"
+
+
+def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
+    memory = {
+        "id": "memory_kv_0-customer-0",
+        "category": "memory_kv",
+        "question": [[{"role": "user", "content": "Remember this."}]],
+        "function": [_echo_function()],
+        "involved_classes": ["MemoryAPI_kv"],
+        "scenario": "customer",
+        "prereq": False,
+    }
+    multi = {
+        "id": "multi_turn_base_0",
+        "category": "multi_turn_base",
+        "question": [[{"role": "user", "content": "list the files"}]],
+        "function": [_echo_function()],
+        "involved_classes": ["GorillaFileSystem"],
+        "initial_config": {},
+        "prereq": False,
+    }
+    web = {
+        "id": "web_search_base_0",
+        "category": "web_search_base",
+        "question": [[{"role": "user", "content": "search"}]],
+        "function": [_echo_function()],
+        "involved_classes": ["WebSearchAPI"],
+        "prereq": False,
+    }
+    cases = [memory, multi, web]
+    slots = [
+        slot
+        for slot in build_slots(cases)
+        if slot["thinking"] == "off" and slot["arm"] in {"U", "S"}
+    ]
+    assert [(slot["case_id"], slot["arm"]) for slot in slots] == [
+        ("memory_kv_0-customer-0", "U"),
+        ("memory_kv_0-customer-0", "S"),
+        ("multi_turn_base_0", "U"),
+        ("multi_turn_base_0", "S"),
+        ("web_search_base_0", "U"),
+        ("web_search_base_0", "S"),
+    ]
+
+    class PinKeyedExecutor:
+        """Reuse rule from the pinned executor: one globals() entry per key."""
+
+        def __init__(self):
+            self.globals = {}
+            self.trace = []
+
+        def execute(self, result, case, config):
+            class_name = config["involved_classes"][0]
+            key = _bfcl_instance_key(config["instance_name"], case["id"], class_name)
+            created = key not in self.globals
+            if created:
+                self.globals[key] = {"loaded_scenario": True, "instance_name": config["instance_name"]}
+            self.trace.append({
+                "key": key,
+                "created": created,
+                "instance": self.globals[key],
+                "instance_name": config["instance_name"],
+                "initial_config": config["initial_config"],
+            })
+            return ["stored"]
+
+    executor = PinKeyedExecutor()
+    responses = []
+    for _slot in slots:
+        responses.extend([_tool_response(), _tool_response(), _content_response("done")])
+    result = execute(
+        cases,
+        slots,
+        tmp_path,
+        _Scripted(responses),
+        ceiling_usd=Decimal("1"),
+        clock=lambda: _utc(2026, 11, 25, 12, 0),
+        executor=executor,
+    )
+    assert result["complete"] is True
+    assert result["official_settlement"] is False
+    by_key: dict[str, list[dict]] = {}
+    for event in executor.trace:
+        by_key.setdefault(event["key"], []).append(event)
+    assert len(by_key) == 6
+    for events in by_key.values():
+        assert events[0]["created"] is True
+        assert len(events) == 2
+        assert events[1]["created"] is False
+        assert events[1]["instance"] is events[0]["instance"]
+    for case, class_name in (
+        (memory, "MemoryAPI_kv"),
+        (multi, "GorillaFileSystem"),
+        (web, "WebSearchAPI"),
+    ):
+        unmodified = executor_instance_name("off", "U")
+        edited = executor_instance_name("off", "S")
+        assert unmodified == "deepseek_flash_thinking_off_U"
+        assert edited == "deepseek_flash_thinking_off_S"
+        u_key = _bfcl_instance_key(unmodified, case["id"], class_name)
+        s_key = _bfcl_instance_key(edited, case["id"], class_name)
+        assert u_key != s_key
+        assert by_key[u_key][0]["instance"] is not by_key[s_key][0]["instance"]
+        shared = _bfcl_instance_key("deepseek_flash_thinking_off", case["id"], class_name)
+        assert u_key != shared and s_key != shared
+    u_memory = next(
+        event for event in executor.trace
+        if event["instance_name"].endswith("_U") and "MemoryAPI_kv" in event["initial_config"]
+    )
+    s_memory = next(
+        event for event in executor.trace
+        if event["instance_name"].endswith("_S") and "MemoryAPI_kv" in event["initial_config"]
+    )
+    u_root = Path(u_memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"])
+    s_root = Path(s_memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"])
+    assert u_root == tmp_path / "result" / "deepseek-flash-thinking-off-U"
+    assert s_root == tmp_path / "result" / "deepseek-flash-thinking-off-S"
+    u_snapshot = _snapshot_file(str(u_root), memory["id"], "customer")
+    s_snapshot = _snapshot_file(str(s_root), memory["id"], "customer")
+    assert u_snapshot != s_snapshot
+    assert u_snapshot == (
+        tmp_path
+        / "result/deepseek-flash-thinking-off-U/agentic/memory/kv/memory_snapshot/customer_final.json"
+    )
+    assert s_snapshot.name == "customer_final.json"
+    for case in cases:
+        u_result = tmp_path / result_relative(case["id"], "off", "U")
+        s_result = tmp_path / result_relative(case["id"], "off", "S")
+        assert u_result != s_result
+        assert len(u_result.read_text(encoding="utf-8").splitlines()) == 1
+        assert len(s_result.read_text(encoding="utf-8").splitlines()) == 1
+    assert not (tmp_path / "result/deepseek-flash-thinking-off").exists()
+    help_text = evaluate_instructions()
+    note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
+    snapshot = (
+        "result/deepseek-flash-thinking-<off|on>-<U|S|X|SX>/<group>/"
+        "memory_snapshot/<scenario>_final.json"
+    )
+    for text in (help_text, note):
+        assert snapshot in text
+        assert "deepseek_flash_thinking_<off|on>_<arm>" in text
+        assert "result/deepseek-flash-thinking-<off|on>/" not in text
 
 
 def test_trajectory_without_executor_stops_before_a_request(tmp_path):
