@@ -2,10 +2,10 @@
   "study": "clean-start-usx",
   "official_settlement": false,
   "kind": "preliminary",
-  "seed": "20261127",
-  "seed_reason": "20261126 is the committed validation seed, so the preliminary draw uses 20261127.",
-  "fraction": "0.0374",
-  "draw_sha256": "a82dea0cfaa00c015620c3dd0a29f65a100671d7c3e5e8abf9b3151be69ad0ca",
+  "seed": "20261128",
+  "seed_reason": "20261125 is the pilot seed, 20261126 is the committed validation seed, and 20261127 is the superseded 119-case preliminary, so this draw uses 20261128.",
+  "fraction": "0.2",
+  "draw_sha256": "2904904116ca21ad8830f4bb2dfaaf9cfd1773124315a8a26fe934f3490a785a",
   "thinking": "off",
   "replicate_u": false,
   "arms": [
@@ -20,39 +20,39 @@
     "output": "0.6"
   },
   "cache_credit": "none; every prompt token is priced as a miss",
-  "budget_cny": "80",
+  "budget_cny": "280",
   "rates_named_2026_11_26": {
     "cny_per_usd": "6.6649",
     "usd_per_cny": "0.150079",
     "source": "named by Jacky for 26 Nov 2026; not fetched by this package"
   },
-  "ceiling_usd": "12",
+  "ceiling_usd": "42",
   "ceiling_cny": {
-    "at_6.6649_cny_per_usd": "79.978800",
-    "at_0.150079_usd_per_cny": "79.957889"
+    "at_6.6649_cny_per_usd": "279.925800",
+    "at_0.150079_usd_per_cny": "279.852611"
   },
-  "pack_limit_usd": "11.50",
+  "ceiling_rule": "The live ceiling is exactly $42. 42 times 6.6649 is 279.9258 CNY, inside the 280 CNY prepaid balance. $42.01 is not this package. The superseded ceilings were $12 inside 80 CNY and $27 inside 180 CNY.",
   "cases": {
-    "conversations": 134,
-    "scoring": 119,
-    "prerequisites": 15,
+    "conversations": 738,
+    "scoring": 627,
+    "prerequisites": 111,
     "by_category": {
       "multiple": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 7,
+        "scoring_turns": 40,
         "prereq_turns": 0
       },
       "parallel_multiple": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 7,
+        "scoring_turns": 40,
         "prereq_turns": 0
       },
       "live_multiple": {
-        "scoring": 39,
+        "scoring": 211,
         "prerequisites": 0,
-        "scoring_turns": 39,
+        "scoring_turns": 211,
         "prereq_turns": 0
       },
       "live_parallel": {
@@ -62,15 +62,15 @@
         "prereq_turns": 0
       },
       "live_parallel_multiple": {
-        "scoring": 2,
+        "scoring": 5,
         "prerequisites": 0,
-        "scoring_turns": 2,
+        "scoring_turns": 5,
         "prereq_turns": 0
       },
       "live_irrelevance": {
-        "scoring": 14,
+        "scoring": 74,
         "prerequisites": 0,
-        "scoring_turns": 14,
+        "scoring_turns": 74,
         "prereq_turns": 0
       },
       "live_relevance": {
@@ -80,90 +80,174 @@
         "prereq_turns": 0
       },
       "multi_turn_base": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 24,
+        "scoring_turns": 153,
         "prereq_turns": 0
       },
       "multi_turn_miss_func": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 39,
+        "scoring_turns": 185,
         "prereq_turns": 0
       },
       "multi_turn_miss_param": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 30,
+        "scoring_turns": 193,
         "prereq_turns": 0
       },
       "multi_turn_long_context": {
-        "scoring": 7,
+        "scoring": 40,
         "prerequisites": 0,
-        "scoring_turns": 20,
+        "scoring_turns": 136,
         "prereq_turns": 0
       },
       "memory_kv": {
-        "scoring": 6,
-        "prerequisites": 5,
-        "scoring_turns": 6,
-        "prereq_turns": 24
+        "scoring": 31,
+        "prerequisites": 37,
+        "scoring_turns": 31,
+        "prereq_turns": 323
       },
       "memory_vector": {
-        "scoring": 6,
-        "prerequisites": 5,
-        "scoring_turns": 6,
-        "prereq_turns": 24
+        "scoring": 31,
+        "prerequisites": 37,
+        "scoring_turns": 31,
+        "prereq_turns": 323
       },
       "memory_rec_sum": {
-        "scoring": 6,
-        "prerequisites": 5,
-        "scoring_turns": 6,
-        "prereq_turns": 24
+        "scoring": 31,
+        "prerequisites": 37,
+        "scoring_turns": 31,
+        "prereq_turns": 323
       }
     }
   },
   "slots": {
-    "total": 536,
-    "scoring": 476,
-    "prerequisites": 60
+    "total": 2952,
+    "scoring": 2508,
+    "prerequisites": 444
   },
   "order": "single-turn, then multi-turn, then each memory category's prerequisites before its questions",
-  "memory_scenario": "notetaker",
+  "memory_pool": "all_in_scope",
+  "memory_scenarios": {
+    "memory_kv": [
+      "customer",
+      "finance",
+      "healthcare",
+      "notetaker",
+      "student"
+    ],
+    "memory_vector": [
+      "customer",
+      "finance",
+      "healthcare",
+      "notetaker",
+      "student"
+    ],
+    "memory_rec_sum": [
+      "customer",
+      "finance",
+      "healthcare",
+      "notetaker",
+      "student"
+    ]
+  },
   "pilot_overlap_ids": [
     "live_parallel_6-3-0",
     "live_parallel_7-3-1"
   ],
   "validation_overlap_ids": [
-    "live_irrelevance_236-41-0",
+    "live_irrelevance_125-11-0",
+    "live_irrelevance_181-31-0",
+    "live_irrelevance_296-73-3",
+    "live_irrelevance_519-157-0",
+    "live_irrelevance_639-202-3",
+    "live_irrelevance_648-205-2",
+    "live_irrelevance_703-230-2",
+    "live_irrelevance_715-237-2",
+    "live_irrelevance_752-263-0",
+    "live_irrelevance_788-297-0",
+    "live_irrelevance_789-298-0",
+    "live_multiple_141-54-1",
+    "live_multiple_162-63-1",
+    "live_multiple_217-93-0",
+    "live_multiple_218-94-0",
+    "live_multiple_277-128-0",
+    "live_multiple_293-130-2",
+    "live_multiple_35-11-1",
+    "live_multiple_58-22-5",
+    "live_multiple_585-157-6",
+    "live_multiple_638-161-6",
+    "live_multiple_684-164-0",
+    "live_multiple_71-31-0",
+    "live_multiple_793-174-7",
+    "live_multiple_821-177-4",
+    "live_multiple_965-207-1",
+    "live_parallel_multiple_11-10-0",
     "live_parallel_multiple_18-16-0",
-    "live_parallel_multiple_4-3-0",
-    "live_relevance_6-6-0",
-    "live_relevance_8-8-0",
-    "memory_rec_sum_153-notetaker-23",
-    "multi_turn_miss_param_6",
-    "multiple_50",
-    "multiple_53",
-    "parallel_multiple_122",
-    "parallel_multiple_187"
+    "live_parallel_multiple_19-16-1",
+    "live_parallel_multiple_23-20-0",
+    "live_parallel_multiple_7-6-0",
+    "live_relevance_0-0-0",
+    "live_relevance_7-7-0",
+    "memory_kv_148-notetaker-18",
+    "multi_turn_miss_func_15",
+    "multi_turn_miss_func_25",
+    "multi_turn_miss_param_51",
+    "multi_turn_miss_param_83",
+    "multiple_0",
+    "multiple_100",
+    "multiple_101",
+    "multiple_112",
+    "multiple_117",
+    "multiple_118",
+    "multiple_12",
+    "multiple_135",
+    "multiple_15",
+    "multiple_160",
+    "multiple_167",
+    "multiple_38",
+    "multiple_39",
+    "multiple_47",
+    "multiple_82",
+    "multiple_90",
+    "multiple_96",
+    "parallel_multiple_106",
+    "parallel_multiple_113",
+    "parallel_multiple_114",
+    "parallel_multiple_124",
+    "parallel_multiple_132",
+    "parallel_multiple_136",
+    "parallel_multiple_157",
+    "parallel_multiple_19",
+    "parallel_multiple_197",
+    "parallel_multiple_24",
+    "parallel_multiple_25",
+    "parallel_multiple_3",
+    "parallel_multiple_32",
+    "parallel_multiple_62",
+    "parallel_multiple_63",
+    "parallel_multiple_69",
+    "parallel_multiple_74"
   ],
-  "first_request_floor_tokens": 903624,
-  "first_request_floor_usd": "0.135544",
+  "first_request_floor_tokens": 4907006,
+  "first_request_floor_usd": "0.736051",
   "first_request_floor": "Local o200k_base tokens of the turn-0 message text plus the tools array, summed over the four arms, priced as off-peak cache misses, with no output and no chat template. The pinned memory instruction and core-memory text are not included. This is a lower bound on prompt spend if every slot ended after one request, not a forecast.",
-  "planning_upper_usd": "11.489930",
+  "planning_upper_usd": "95.376500",
   "planning_upper_cny": {
-    "at_6.6649_cny_per_usd": "76.579237",
-    "at_0.150079_usd_per_cny": "76.559215"
+    "at_6.6649_cny_per_usd": "635.674832",
+    "at_0.150079_usd_per_cny": "635.508629"
   },
   "planning_upper_parts_usd": {
-    "single_turn": "0.191675",
-    "trajectories": "10.722527",
-    "long_context_spike": "0.147265",
+    "single_turn": "0.965265",
+    "trajectories": "93.141259",
+    "long_context_spike": "0.841512",
     "memory_force_quit_contingency": "0.428463"
   },
-  "planning_upper": "Off-peak prices, no cache credit. A single-turn slot is its local first-request tokens plus 900 output tokens. A trajectory turn is the family's step allowance (at least 6, or the higher archived 90th percentile) at the greater of 1.5 times the mean prompt and the 95th percentile prompt across c47b186c and 0bf829c6, plus 900 output tokens. One long-context request per drawn case per arm is raised to 43803 prompt tokens. One memory turn per included backend per arm is priced at 21 steps instead of 6. Sized to stay at or under $11.50 so the $12 cap is not the way the run is expected to end.",
-  "allowance_requests": 6012,
-  "structural_cap_usd": "34.022885",
+  "planning_upper": "Off-peak prices, no cache credit. A single-turn slot is its local first-request tokens plus 900 output tokens. A trajectory turn is the family's step allowance (at least 6, or the higher archived 90th percentile) at the greater of 1.5 times the mean prompt and the 95th percentile prompt across c47b186c and 0bf829c6, plus 900 output tokens. One long-context request per drawn case per arm is raised to 43803 prompt tokens. One memory turn per included backend per arm is priced at 21 steps instead of 6. This allowance is not sized to fit under the $42 ceiling, and the draw is not shrunk to fit the old $11.50 pack limit. $42 can cover the mean path and a peak-rate leftover after 09:00 HKT more comfortably than $27. A fat-tail run priced at this allowance can still stop before the 20% sample completes. Memory is last.",
+  "allowance_requests": 46708,
+  "structural_cap_usd": "307.266045",
   "structural_cap": "The same prompt allowances with every trajectory turn taking the runner cap of 21 requests, plus the long-context spike. That is the tail if the model never finishes a turn. It is not the planning number. The hard ceiling still stops the run.",
   "prompt_allowance_tokens": {
     "multi_turn_base": 6361,
@@ -180,20 +264,20 @@
     "memory": 6
   },
   "long_context_spike_tokens": 43803,
-  "observed_mean_usd": "2.527326",
+  "observed_mean_usd": "21.572285",
   "observed_mean_cny": {
-    "at_6.6649_cny_per_usd": "16.844378",
-    "at_0.150079_usd_per_cny": "16.839974"
+    "at_6.6649_cny_per_usd": "143.777123",
+    "at_0.150079_usd_per_cny": "143.739532"
   },
-  "observed_mean_sends": "2861.997313",
+  "observed_mean_sends": "21892.190671",
   "observed_mean": "For each family, use the archived flight with the higher mean off-peak all-miss cost per arm-turn, taking that flight's prompt, output, and steps together. Apply it to this draw's user turns and four arms. The long-context spike and the 21-step memory turn are allowance tails, not part of this mean.",
   "observed_by_family": {
     "memory": {
       "flight": "c47b186c",
-      "draw_user_turns": 90,
+      "draw_user_turns": 1062,
       "mean_steps": "2.55",
-      "sends": "918.620690",
-      "usd": "1.149355",
+      "sends": "10839.724138",
+      "usd": "13.562390",
       "flights": {
         "c47b186c": {
           "requests": 296,
@@ -209,10 +293,10 @@
     },
     "multi_turn_base": {
       "flight": "c47b186c",
-      "draw_user_turns": 24,
+      "draw_user_turns": 153,
       "mean_steps": "3.36",
-      "sends": "322.285714",
-      "usd": "0.226188",
+      "sends": "2054.571429",
+      "usd": "1.441948",
       "flights": {
         "c47b186c": {
           "requests": 94,
@@ -228,10 +312,10 @@
     },
     "multi_turn_long_context": {
       "flight": "0bf829c6",
-      "draw_user_turns": 20,
+      "draw_user_turns": 136,
       "mean_steps": "4.00",
-      "sends": "320.000000",
-      "usd": "0.296025",
+      "sends": "2176.000000",
+      "usd": "2.012968",
       "flights": {
         "c47b186c": {
           "requests": 152,
@@ -247,10 +331,10 @@
     },
     "multi_turn_miss_func": {
       "flight": "0bf829c6",
-      "draw_user_turns": 39,
+      "draw_user_turns": 185,
       "mean_steps": "4.42",
-      "sends": "690.000000",
-      "usd": "0.509516",
+      "sends": "3273.076923",
+      "usd": "2.416932",
       "flights": {
         "c47b186c": {
           "requests": 160,
@@ -266,10 +350,10 @@
     },
     "multi_turn_miss_param": {
       "flight": "c47b186c",
-      "draw_user_turns": 30,
+      "draw_user_turns": 193,
       "mean_steps": "2.66",
-      "sends": "319.090909",
-      "usd": "0.277962",
+      "sends": "2052.818182",
+      "usd": "1.788223",
       "flights": {
         "c47b186c": {
           "requests": 117,
@@ -285,10 +369,10 @@
     },
     "single": {
       "flight": "c47b186c",
-      "draw_user_turns": 73,
+      "draw_user_turns": 374,
       "mean_steps": "1.00",
-      "sends": "292.000000",
-      "usd": "0.068281",
+      "sends": "1496.000000",
+      "usd": "0.349823",
       "flights": {
         "c47b186c": {
           "requests": 80,
@@ -303,46 +387,53 @@
       }
     }
   },
-  "start_hkt": "2026-11-26T18:30:00+08:00",
+  "start_hkt": "2026-11-26T18:00:00+08:00",
   "friday_peak_hkt": "2026-11-27T09:00:00+08:00",
   "duration": {
     "observed_at_1.9s": {
       "pace_seconds": "1.9",
-      "hours": "1.51",
-      "finish_hkt": "2026-11-26T20:00:37.794895+08:00",
+      "hours": "11.55",
+      "finish_hkt": "2026-11-27T05:33:15.162276+08:00",
       "before_friday_peak": true
     },
     "observed_at_2.0s": {
       "pace_seconds": "2.0",
-      "hours": "1.59",
-      "finish_hkt": "2026-11-26T20:05:23.994626+08:00",
+      "hours": "12.16",
+      "finish_hkt": "2026-11-27T06:09:44.381343+08:00",
       "before_friday_peak": true
     },
     "observed_at_3.3s": {
       "pace_seconds": "3.3",
-      "hours": "2.62",
-      "finish_hkt": "2026-11-26T21:07:24.591133+08:00",
-      "before_friday_peak": true
+      "hours": "20.07",
+      "finish_hkt": "2026-11-27T14:04:04.229216+08:00",
+      "before_friday_peak": false
     },
     "observed_memory_at_3.3s_rest_at_2.0s": {
       "pace_seconds": "memory 3.3, other 2.0",
-      "hours": "1.92",
-      "finish_hkt": "2026-11-26T20:25:18.201523+08:00",
-      "before_friday_peak": true
+      "hours": "16.08",
+      "finish_hkt": "2026-11-27T10:04:36.022722+08:00",
+      "before_friday_peak": false
+    },
+    "allowance_at_1.9s": {
+      "pace_seconds": "1.9",
+      "hours": "24.65",
+      "finish_hkt": "2026-11-27T18:39:05.200000+08:00",
+      "before_friday_peak": false
     },
     "allowance_at_2.0s": {
       "pace_seconds": "2.0",
-      "hours": "3.34",
-      "finish_hkt": "2026-11-26T21:50:24+08:00",
-      "before_friday_peak": true
+      "hours": "25.95",
+      "finish_hkt": "2026-11-27T19:56:56+08:00",
+      "before_friday_peak": false
     },
     "allowance_at_3.3s": {
       "pace_seconds": "3.3",
-      "hours": "5.51",
-      "finish_hkt": "2026-11-27T00:00:39.600000+08:00",
-      "before_friday_peak": true
+      "hours": "42.82",
+      "finish_hkt": "2026-11-28T12:48:56.400000+08:00",
+      "before_friday_peak": false
     }
   },
-  "prior_spend_not_deducted": "Tonight's authorized cap is $12. Earlier incomplete clean-start flights are not subtracted from it.",
+  "prior_spend_not_deducted": "Tonight's authorized cap is $42, inside the 280 CNY prepaid balance. Earlier incomplete clean-start flights are not subtracted from it. The superseded preliminary ceiling was $12 inside 80 CNY.",
+  "peak_continuation": "Jacky authorized this live run to continue past Friday 09:00 HKT into peak if it is still going. The leftover is likely memory, which runs last. Peak rates are double the off-peak prices used in this report. The $42 ceiling still applies and is checked before every request.",
   "full_run_follow_up": "The full in-scope thinking-off fly is 3,127 scoring questions plus 111 memory prerequisites, 12,952 slots. It is not this draw. It needs a larger budget, and the runner still has no retry and no resume."
 }

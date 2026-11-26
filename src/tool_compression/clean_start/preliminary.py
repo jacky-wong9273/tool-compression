@@ -1,4 +1,4 @@
-"""Preliminary draw for the thinking-off flight inside the 80 CNY ceiling.
+"""Preliminary 20% draw for the thinking-off flight under a $42 ceiling.
 
 The draw is local. Nothing here contacts a provider or reads a key. Question
 text, gold, and scores are not inputs to which ids are chosen. Archived bills
@@ -6,7 +6,14 @@ are read only when the cost report checks the prompt and step allowances.
 Editors are called only to count the tool text a single-turn slot would send.
 
 The 2026-11-25 pilot draw and the validation draw stay where they are. This
-module writes nothing into ``pilot/`` or ``validation/``.
+module writes nothing into ``pilot/`` or ``validation/``. The superseded
+119-case preliminary (seed 20261127, fraction 0.0374, $12 ceiling) is replaced
+by repointing this path. There is no second flag.
+
+The live ceiling is $42, inside the 280 CNY prepaid balance. The planning
+upper is an allowance. It is not required to fit under $42, and the draw is
+not shrunk to fit the old $11.50 pack limit. A fat-tail run priced at the
+allowance can stop at $42 before the 20% sample completes.
 """
 
 from __future__ import annotations
@@ -28,23 +35,28 @@ from tool_compression.clean_start.scope import in_scope_questions, study_categor
 from tool_compression.config import LOCAL_TOKENIZER
 from tool_compression.count import TiktokenCounter, dump_request
 
-# 20261126 is the committed validation seed, so this draw does not reuse it.
-SEED = "20261127"
-SEED_REASON = "20261126 is the committed validation seed, so the preliminary draw uses 20261127."
-FRACTION = Decimal("0.0374")
-FRACTION_QUANTUM = Decimal("0.0001")
+# 20261125 is the pilot seed, 20261126 is the validation seed, and 20261127 is
+# the superseded 119-case preliminary. This draw does not reuse them.
+SEED = "20261128"
+SEED_REASON = (
+    "20261125 is the pilot seed, 20261126 is the committed validation seed, "
+    "and 20261127 is the superseded 119-case preliminary, so this draw uses 20261128."
+)
+FRACTION = Decimal("0.2")
 DRAW_ALGORITHM = (
     "n = min(population, max(floor, half_up(f * population))) with half-up "
-    "rounding. f is 0.0374, the largest multiple of 0.0001 whose off-peak "
-    "planning upper is at or under $11.50. live_parallel takes every in-scope "
-    "id. live_relevance, live_parallel_multiple, and each memory backend have "
-    "floor 2; every other category has floor 1. Memory candidates are the "
-    "notetaker scenario only. The pool drops ids in the exposed pilot draw "
-    "when at least n ids remain. random.Random('clean-start-usx-preliminary:"
-    "20261127:<category>').sample(sorted(pool), n) when n is smaller than that "
-    "pool; otherwise the sorted pool is kept and sample is not called. "
-    "Python 3.12 random. Matched prerequisites are every prerequisite "
-    "conversation of each drawn memory scenario."
+    "rounding. f is 0.2. live_parallel takes every in-scope id. "
+    "live_relevance, live_parallel_multiple, and each memory backend have "
+    "floor 2; every other category has floor 1. At f = 0.2 those floors do "
+    "not bind. live_parallel is the special case that keeps both in-scope ids, "
+    "because half_up(0.2 * 2) is 0. Memory candidates are every in-scope "
+    "question, across all five scenarios. The pool drops ids in the exposed "
+    "pilot draw when at least n ids remain. random.Random("
+    "'clean-start-usx-preliminary:20261128:<category>').sample(sorted(pool), n) "
+    "when n is smaller than that pool; otherwise the sorted pool is kept and "
+    "sample is not called. Python 3.12 random. Matched prerequisites are every "
+    "prerequisite conversation of each memory scenario present in that "
+    "backend's draw."
 )
 # Binds only when it is above the rounded fraction. live_parallel is the whole population.
 MINIMUM = {
@@ -54,13 +66,13 @@ MINIMUM = {
     "memory_vector": 2,
     "memory_rec_sum": 2,
 }
-MEMORY_SCENARIO = "notetaker"
-MEMORY_SCENARIO_REASON = (
-    "notetaker has the fewest prerequisite user-turns of the five scenarios "
-    "(24, against 35, 47, 108, and 109). Matched prerequisites are every "
-    "conversation of a drawn scenario, on each backend, so a second scenario "
-    "does not fit under the ceiling. Chosen from the catalogue's turn counts, "
-    "not from flight scores."
+MEMORY_POOL = "all_in_scope"
+MEMORY_POOL_REASON = (
+    "Memory candidates are every in-scope question on the backend, all five "
+    "scenarios, not the notetaker scenario alone. Matched prerequisites are "
+    "every prerequisite conversation of each scenario the draw includes, on "
+    "that backend. The scenario mix is whatever the seed draws. It is not "
+    "chosen to fit under the ceiling."
 )
 
 # Planning allowances. The greater of ceil(1.5 times the mean prompt) and the
@@ -89,10 +101,11 @@ OUTPUT_TOKENS = 900
 MINIMUM_STEPS = 6
 FORCE_QUIT_STEPS = STEP_LIMIT + 1
 
-# 80 CNY on the rates named for 26 Nov 2026. The live ceiling is twelve dollars.
-BUDGET_CNY = Decimal("80")
-CEILING_USD = Decimal("12")
-PACK_LIMIT_USD = Decimal("11.50")
+# 280 CNY prepaid on the rates named for 26 Nov 2026. 42 * 6.6649 = 279.9258 CNY.
+# The authorized ceiling is exactly $42. $42.01 is not this package, and neither
+# is the superseded $12 / 80 CNY cap or the earlier $27 / 180 CNY recommendation.
+BUDGET_CNY = Decimal("280")
+CEILING_USD = Decimal("42")
 CNY_PER_USD = Decimal("6.6649")
 USD_PER_CNY = Decimal("0.150079")
 MILLION = Decimal(1_000_000)
@@ -100,7 +113,7 @@ MISS = OFF_PEAK_PER_MILLION["cache_miss"]
 OUTPUT_PRICE = OFF_PEAK_PER_MILLION["output"]
 
 HKT = ZoneInfo("Asia/Hong_Kong")
-START_HKT = datetime(2026, 11, 26, 18, 30, tzinfo=HKT)
+START_HKT = datetime(2026, 11, 26, 18, 0, tzinfo=HKT)
 FRIDAY_PEAK_HKT = datetime(2026, 11, 27, 9, 0, tzinfo=HKT)
 
 DRAW_FILE = Path("preliminary") / "draw.json"
@@ -269,26 +282,26 @@ def assemble_draw(fraction: Decimal = FRACTION) -> dict:
         population = len(cases)
         k = sample_size(category, population, fraction)
         pool_cases = cases
-        scenario = None
-        if is_memory(category):
-            scenario = MEMORY_SCENARIO
-            pool_cases = [case for case in cases if case.get("scenario") == MEMORY_SCENARIO]
-            if len(pool_cases) < k:
-                raise RuntimeError(f"{category} notetaker pool is smaller than {k}")
+        if is_memory(category) and len(pool_cases) < k:
+            raise RuntimeError(f"{category} in-scope pool is smaller than {k}")
         chosen, method, pool_rule, sample_pool = _choose(
             category, [case["id"] for case in pool_cases], k, exposed,
         )
         if len(chosen) != len(set(chosen)):
             raise RuntimeError(f"{category} draw repeated an id")
+        scenarios = None
+        if is_memory(category):
+            by_id = {case["id"]: case for case in pool_cases}
+            scenarios = sorted({by_id[case_id]["scenario"] for case_id in chosen})
         draws.append({
             "category": category,
             "population": population,
-            "scenario_pool": len(pool_cases) if scenario else None,
+            "scenario_pool": len(pool_cases) if is_memory(category) else None,
             "sample_pool": sample_pool,
             "frozen": len(chosen),
             "method": method,
             "pool_rule": pool_rule,
-            "scenario": scenario,
+            "scenarios": scenarios,
         })
         for position, case_id in enumerate(chosen):
             scoring.append({
@@ -298,19 +311,26 @@ def assemble_draw(fraction: Decimal = FRACTION) -> dict:
                 "position": position,
             })
     seen_memory = []
+    scenarios_by_category = {
+        row["category"]: set(row["scenarios"])
+        for row in draws
+        if row["scenarios"]
+    }
     for row in scoring:
         if is_memory(row["category"]) and row["category"] not in seen_memory:
             seen_memory.append(row["category"])
     prerequisites = []
     for category in seen_memory:
+        wanted = scenarios_by_category[category]
         for item in load_prereqs(category):
-            if item.get("scenario") != MEMORY_SCENARIO:
+            scenario = item.get("scenario")
+            if scenario not in wanted:
                 continue
             prerequisites.append({
                 "case_id": item["id"],
                 "category": category,
                 "prereq": True,
-                "scenario": MEMORY_SCENARIO,
+                "scenario": scenario,
             })
     scoring_by_category: dict[str, list[dict]] = {}
     for row in scoring:
@@ -336,15 +356,13 @@ def assemble_draw(fraction: Decimal = FRACTION) -> dict:
         "seed": SEED,
         "seed_reason": SEED_REASON,
         "fraction": str(FRACTION) if fraction == FRACTION else str(fraction),
-        "fraction_quantum": str(FRACTION_QUANTUM),
         "algorithm": DRAW_ALGORITHM,
-        "memory_scenario": MEMORY_SCENARIO,
-        "memory_scenario_reason": MEMORY_SCENARIO_REASON,
+        "memory_pool": MEMORY_POOL,
+        "memory_pool_reason": MEMORY_POOL_REASON,
         "replicate_u": False,
         "thinking": "off",
         "budget_cny": str(BUDGET_CNY),
         "ceiling_usd": str(CEILING_USD),
-        "pack_limit_usd": str(PACK_LIMIT_USD),
         "pilot_overlap_ids": sorted(set(scoring_ids) & exposed),
         "validation_overlap_ids": sorted(set(scoring_ids) & validation_case_ids()),
         "draws": draws,
@@ -373,13 +391,38 @@ def _check_committed(draw: dict) -> None:
         expected = sample_size(row["category"], len(questions[row["category"]]))
         if row["frozen"] != expected or row["population"] != len(questions[row["category"]]):
             raise RuntimeError(f"{row['category']} sample size does not match the fraction")
+    drawn_scenarios: dict[str, set[str]] = {}
+    for row in draw["draws"]:
+        if is_memory(row["category"]):
+            if row["scenario_pool"] != row["population"]:
+                raise RuntimeError(f"{row['category']} memory pool is not the full in-scope population")
+            if not row["scenarios"]:
+                raise RuntimeError(f"{row['category']} draw has no memory scenario")
+            drawn_scenarios[row["category"]] = set(row["scenarios"])
+        elif row["scenarios"] is not None or row["scenario_pool"] is not None:
+            raise RuntimeError(f"{row['category']} recorded a memory pool")
     memory_questions = [row for row in draw["order"] if is_memory(row["category"]) and not row["prereq"]]
+    seen_question_scenarios: dict[str, set[str]] = {}
     for row in memory_questions:
         case = next(case for case in questions[row["category"]] if case["id"] == row["case_id"])
-        if case.get("scenario") != MEMORY_SCENARIO:
-            raise RuntimeError("preliminary memory question is not notetaker")
+        scenario = case.get("scenario")
+        if scenario not in drawn_scenarios[row["category"]]:
+            raise RuntimeError("preliminary memory question scenario was not recorded")
         if row["case_id"] in exposed:
             raise RuntimeError("preliminary memory question reuses an exposed pilot id")
+        seen_question_scenarios.setdefault(row["category"], set()).add(scenario)
+    if seen_question_scenarios != drawn_scenarios:
+        raise RuntimeError("preliminary memory scenarios do not match the drawn questions")
+    for category, scenarios in drawn_scenarios.items():
+        expected = [
+            item["id"] for item in load_prereqs(category) if item.get("scenario") in scenarios
+        ]
+        got = [
+            row["case_id"] for row in draw["order"]
+            if row["category"] == category and row["prereq"]
+        ]
+        if got != expected:
+            raise RuntimeError(f"{category} prerequisites are not the drawn scenarios")
     live_parallel = {case["id"] for case in questions["live_parallel"]}
     if set(draw["pilot_overlap_ids"]) != live_parallel:
         raise RuntimeError("preliminary pilot overlap is not exactly the live_parallel population")
@@ -393,8 +436,8 @@ def _check_committed(draw: dict) -> None:
         if row["prereq"]:
             if seen_scoring_memory and row["category"] == last_memory:
                 raise RuntimeError("a prerequisite follows its own category's questions")
-            if row.get("scenario") != MEMORY_SCENARIO:
-                raise RuntimeError("preliminary prerequisite is not notetaker")
+            if row.get("scenario") not in drawn_scenarios[row["category"]]:
+                raise RuntimeError("preliminary prerequisite scenario was not drawn")
             seen_scoring_memory = False
         else:
             seen_scoring_memory = True
@@ -671,9 +714,13 @@ def preliminary_report() -> dict:
     draw = build_preliminary_draw()
     cases = cases_for_draw(draw)
     priced = price_cases(cases)
-    if priced["upper"] > PACK_LIMIT_USD:
+    # The allowance is the fat tail. It is above the live ceiling on this draw.
+    # Refusing that fact was the old $11.50 pack limit. Do not shrink the draw
+    # until the upper fits under $42.
+    if priced["upper"] <= CEILING_USD:
         raise RuntimeError(
-            f"preliminary planning upper {priced['upper']} exceeds the {PACK_LIMIT_USD} pack limit"
+            "preliminary planning upper fits under the ceiling; "
+            "do not shrink this 20% draw to fit $42"
         )
     observed = observed_mean(cases)
     mixed_seconds = observed["other_sends"] * Decimal("2.0") + observed["memory_sends"] * Decimal("3.3")
@@ -692,12 +739,10 @@ def preliminary_report() -> dict:
         },
     }
     allowance_finish = {
+        "allowance_at_1.9s": _finish(Decimal(priced["allowance_requests"]), Decimal("1.9")),
         "allowance_at_2.0s": _finish(Decimal(priced["allowance_requests"]), Decimal("2.0")),
         "allowance_at_3.3s": _finish(Decimal(priced["allowance_requests"]), Decimal("3.3")),
     }
-    for label, row in {**finishes, **allowance_finish}.items():
-        if not row["before_friday_peak"]:
-            raise RuntimeError(f"{label} reaches Friday peak")
     scoring = sum(1 for case in cases if not case.get("prereq"))
     prereq = len(cases) - scoring
     return {
@@ -722,7 +767,11 @@ def preliminary_report() -> dict:
         },
         "ceiling_usd": str(CEILING_USD),
         "ceiling_cny": _cny(CEILING_USD),
-        "pack_limit_usd": str(PACK_LIMIT_USD),
+        "ceiling_rule": (
+            "The live ceiling is exactly $42. 42 times 6.6649 is 279.9258 CNY, "
+            "inside the 280 CNY prepaid balance. $42.01 is not this package. "
+            "The superseded ceilings were $12 inside 80 CNY and $27 inside 180 CNY."
+        ),
         "cases": {
             "conversations": len(cases),
             "scoring": scoring,
@@ -735,7 +784,12 @@ def preliminary_report() -> dict:
             "prerequisites": prereq * len(ARMS),
         },
         "order": "single-turn, then multi-turn, then each memory category's prerequisites before its questions",
-        "memory_scenario": MEMORY_SCENARIO,
+        "memory_pool": MEMORY_POOL,
+        "memory_scenarios": {
+            row["category"]: row["scenarios"]
+            for row in draw["draws"]
+            if row["scenarios"]
+        },
         "pilot_overlap_ids": draw["pilot_overlap_ids"],
         "validation_overlap_ids": draw["validation_overlap_ids"],
         "first_request_floor_tokens": priced["floor_tokens"],
@@ -763,9 +817,12 @@ def preliminary_report() -> dict:
             f"c47b186c and 0bf829c6, plus {OUTPUT_TOKENS} output tokens. One long-context "
             f"request per drawn case per arm is raised to {LONG_CONTEXT_SPIKE_TOKENS} prompt "
             f"tokens. One memory turn per included backend per arm is priced at "
-            f"{FORCE_QUIT_STEPS} steps instead of {STEP_ALLOWANCE['memory']}. Sized to stay at "
-            f"or under ${PACK_LIMIT_USD} so the ${CEILING_USD} cap is not the way the run is "
-            f"expected to end."
+            f"{FORCE_QUIT_STEPS} steps instead of {STEP_ALLOWANCE['memory']}. This allowance "
+            f"is not sized to fit under the ${CEILING_USD} ceiling, and the draw is not "
+            f"shrunk to fit the old $11.50 pack limit. ${CEILING_USD} can cover the mean "
+            f"path and a peak-rate leftover after 09:00 HKT more comfortably than $27. "
+            f"A fat-tail run priced at this allowance can still stop before the 20% "
+            f"sample completes. Memory is last."
         ),
         "allowance_requests": priced["allowance_requests"],
         "structural_cap_usd": _usd(priced["structural"]),
@@ -787,8 +844,15 @@ def preliminary_report() -> dict:
         "friday_peak_hkt": FRIDAY_PEAK_HKT.isoformat(),
         "duration": {**finishes, **allowance_finish},
         "prior_spend_not_deducted": (
-            "Tonight's authorized cap is $12. Earlier incomplete clean-start flights are not "
-            "subtracted from it."
+            "Tonight's authorized cap is $42, inside the 280 CNY prepaid balance. "
+            "Earlier incomplete clean-start flights are not subtracted from it. "
+            "The superseded preliminary ceiling was $12 inside 80 CNY."
+        ),
+        "peak_continuation": (
+            "Jacky authorized this live run to continue past Friday 09:00 HKT into "
+            "peak if it is still going. The leftover is likely memory, which runs "
+            "last. Peak rates are double the off-peak prices used in this report. "
+            "The $42 ceiling still applies and is checked before every request."
         ),
         "full_run_follow_up": (
             "The full in-scope thinking-off fly is 3,127 scoring questions plus 111 memory "
@@ -828,8 +892,10 @@ def load_committed_cost() -> dict:
         raise RuntimeError("preliminary/cost.json does not match preliminary/draw.json")
     if report["official_settlement"] is not False:
         raise RuntimeError("preliminary official_settlement must stay false")
-    if Decimal(report["planning_upper_usd"]) > PACK_LIMIT_USD:
-        raise RuntimeError("committed preliminary upper exceeds the pack limit")
     if Decimal(report["ceiling_usd"]) != CEILING_USD:
-        raise RuntimeError("committed preliminary ceiling is not $12")
+        raise RuntimeError("committed preliminary ceiling is not $42")
+    if Decimal(report["planning_upper_usd"]) <= CEILING_USD:
+        raise RuntimeError(
+            "committed preliminary upper fits under the ceiling; this 20% draw is not shrunk to fit"
+        )
     return report

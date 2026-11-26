@@ -52,7 +52,11 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--out", required=True, type=Path)
     run.add_argument("--pilot", action="store_true")
     run.add_argument("--validation", action="store_true", help="the fresh validation draw, thinking off")
-    run.add_argument("--preliminary", action="store_true", help="the 80 CNY preliminary draw, thinking off")
+    run.add_argument(
+        "--preliminary",
+        action="store_true",
+        help="the 20% preliminary draw, thinking off, $42 ceiling",
+    )
     run.add_argument("--live", action="store_true")
     run.add_argument("--authorize-live", action="store_true")
     run.add_argument("--thinking", help="off, on, or off,on; required with --live")
@@ -193,11 +197,17 @@ def _run(args) -> int:
             return 2
         from tool_compression.clean_start.preliminary import CEILING_USD
 
-        if ceiling > CEILING_USD:
-            print(
-                f"refusing: --preliminary ceiling ${ceiling} exceeds the 80 CNY cap of ${CEILING_USD}",
-                file=sys.stderr,
-            )
+        if ceiling != CEILING_USD:
+            if ceiling > CEILING_USD:
+                print(
+                    f"refusing: --preliminary ceiling ${ceiling} exceeds the 280 CNY cap of ${CEILING_USD}",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    f"refusing: --preliminary ceiling ${ceiling} is not the authorized ${CEILING_USD} cap",
+                    file=sys.stderr,
+                )
             return 2
     memory_prereqs = args.memory_prereqs or (
         "none" if args.pilot or args.validation or args.preliminary else "all"
@@ -231,13 +241,9 @@ def _run(args) -> int:
         except RuntimeError as exc:
             print(f"refusing: {exc}", file=sys.stderr)
             return 2
-        upper = Decimal(cost["planning_upper_usd"])
-        if ceiling < upper:
-            print(
-                f"refusing: preliminary planning upper ${upper} exceeds ceiling ${ceiling}",
-                file=sys.stderr,
-            )
-            return 2
+        # The allowance upper is above the $42 ceiling on purpose. The ceiling
+        # is the live stop, checked before every request. It is not a pack
+        # limit the draw has to fit under.
     else:
         cost = None
         cases = _select_cases(args.pilot, memory_prereqs)
