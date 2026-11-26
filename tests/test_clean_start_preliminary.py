@@ -435,7 +435,7 @@ def test_preliminary_resume_check_reports_without_writing_and_live_resume_refuse
     assert main(base[:1] + ["--preliminary", "--live", "--authorize-live"] + base[2:] + ["--out", str(out)]) == 2
     assert "--resume to continue that run" in capsys.readouterr().err
     assert main(["run", "--resume", "--out", str(out)]) == 2
-    assert "--preliminary only" in capsys.readouterr().err
+    assert "--preliminary or --full only" in capsys.readouterr().err
     assert {path: path.read_bytes() for path in out.rglob("*") if path.is_file()} == snapshot
     assert calls == []
 
