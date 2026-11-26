@@ -12,12 +12,14 @@ from pathlib import Path
 from tool_compression.clean_start.pilot import build_draw, freeze, study_dir
 from tool_compression.clean_start.pin import STUDY_ID, study_manifest
 from tool_compression.clean_start.runner import (
+    RETRY_LIMIT,
     OfficialBfclExecutor,
     RunStopped,
     authorized_transport,
     build_slots,
     execute,
     parse_thinking_modes,
+    plan_summary,
     preflight,
     refuse_reuse,
     resolve_bfcl_package,
@@ -68,6 +70,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     run.add_argument("--ceiling-usd", type=str)
     run.add_argument("--bfcl-root", type=Path)
+    run.add_argument(
+        "--resume",
+        action="store_true",
+        help="--preliminary only: continue the stopped run in --out. Finished slots are skipped, "
+        "the stopped slot is sent again from its start, and recorded spend counts against the "
+        "same ceiling. Without --live it only reports what a resume would do.",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "manifest":
@@ -209,13 +218,20 @@ def _run(args) -> int:
                     file=sys.stderr,
                 )
             return 2
+    if args.resume and not args.preliminary:
+        print("refusing: --resume applies to --preliminary only", file=sys.stderr)
+        return 2
     memory_prereqs = args.memory_prereqs or (
         "none" if args.pilot or args.validation or args.preliminary else "all"
     )
-    reused = refuse_reuse(args.out)
-    if reused:
-        print(f"refusing: {reused}; use a new --out directory", file=sys.stderr)
-        return 2
+    if not args.resume:
+        reused = refuse_reuse(args.out)
+        if reused:
+            print(
+                f"refusing: {reused}; use a new --out directory, or --resume to continue that run",
+                file=sys.stderr,
+            )
+            return 2
     if args.validation:
         from tool_compression.clean_start.validation import load_committed_cost, select_validation_cases
 
@@ -233,7 +249,11 @@ def _run(args) -> int:
             )
             return 2
     elif args.preliminary:
-        from tool_compression.clean_start.preliminary import load_committed_cost, select_preliminary_cases
+        from tool_compression.clean_start.preliminary import (
+            COMMITTED_SLOT_SHA256,
+            load_committed_cost,
+            select_preliminary_cases,
+        )
 
         try:
             cost = load_committed_cost()
@@ -241,12 +261,44 @@ def _run(args) -> int:
         except RuntimeError as exc:
             print(f"refusing: {exc}", file=sys.stderr)
             return 2
-        # The allowance upper is above the $42 ceiling on purpose. The ceiling
-        # is the live stop, checked before every request. It is not a pack
-        # limit the draw has to fit under.
+        # The allowance upper is above the $42 ceiling on purpose and is not
+        # compared with it. The ceiling has to cover the observed-mean path
+        # with its Friday-peak slice billed at double.
+        peaked = Decimal(cost["observed_mean_with_friday_peak_usd"])
+        if ceiling < peaked:
+            print(
+                f"refusing: observed-mean path with the Friday peak ${peaked} exceeds ceiling ${ceiling}",
+                file=sys.stderr,
+            )
+            return 2
+        if plan_summary(build_slots(cases, modes), modes)["slot_sha256"] != COMMITTED_SLOT_SHA256:
+            print("refusing: preliminary slot order is not the committed thinking-off order", file=sys.stderr)
+            return 2
     else:
         cost = None
         cases = _select_cases(args.pilot, memory_prereqs)
+    identity = run_identity(
+        cases,
+        pilot=args.pilot,
+        memory_prereqs=memory_prereqs,
+        validation=args.validation,
+        preliminary=args.preliminary,
+        cost=cost,
+    )
+    if args.resume:
+        from tool_compression.clean_start.resume import describe, inspect_resume
+
+        try:
+            plan = inspect_resume(
+                args.out, cases, build_slots(cases, modes),
+                identity=identity, ceiling_usd=ceiling, thinking_modes=modes,
+            )
+        except RunStopped as stopped:
+            print(f"refusing to resume: {stopped.reason}", file=sys.stderr)
+            return 2
+        if not args.live:
+            print(json.dumps({"resume_check": True, "provider_contacted": False, **describe(plan)}, sort_keys=True))
+            return 0
     if not args.live:
         extra = None
         if args.validation:
@@ -303,14 +355,9 @@ def _run(args) -> int:
             ceiling_usd=ceiling,
             thinking_modes=modes,
             executor=executor,
-            identity=run_identity(
-                cases,
-                pilot=args.pilot,
-                memory_prereqs=memory_prereqs,
-                validation=args.validation,
-                preliminary=args.preliminary,
-                cost=cost,
-            ),
+            identity=identity,
+            resume=args.resume,
+            retry_limit=RETRY_LIMIT if args.preliminary else 0,
         )
     except RunStopped as stopped:
         print(f"refusing before any request: {stopped.reason}", file=sys.stderr)
@@ -320,7 +367,11 @@ def _run(args) -> int:
         "status": result["status"],
         "reason": result["reason"],
         "running_usd": result["running_usd"],
+        "session": result.get("session"),
+        "slots_sent": result.get("slots_sent"),
+        "slots_total": result.get("slots_total"),
         "uncertain_attempts": result.get("uncertain_attempts", []),
+        "unbilled_attempts": len(result.get("unbilled_attempts", [])),
     }, sort_keys=True))
     return 0 if result["complete"] else 1
 
@@ -362,10 +413,12 @@ def run_identity(
             identity["first_request_floor_usd"] = cost["first_request_floor_usd"]
     if preliminary:
         from tool_compression.clean_start.preliminary import DRAW_FILE
+        from tool_compression.clean_start.resume import source_sha256
 
         identity["preliminary"] = True
         identity["replicate_u"] = False
         identity["draw_sha256"] = sha256((study_dir() / DRAW_FILE).read_bytes()).hexdigest()
+        identity["source_sha256"] = source_sha256()
         if cost is not None:
             identity["planning_upper_usd"] = cost["planning_upper_usd"]
             identity["first_request_floor_usd"] = cost["first_request_floor_usd"]

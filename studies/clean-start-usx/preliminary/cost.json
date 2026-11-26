@@ -387,6 +387,39 @@
       }
     }
   },
+  "observed_mean_with_friday_peak_usd": "25.759637",
+  "observed_mean_with_friday_peak_cny": {
+    "at_6.6649_cny_per_usd": "171.685406",
+    "at_0.150079_usd_per_cny": "171.640517"
+  },
+  "observed_mean_with_friday_peak_worst_pace": "observed_at_3.3s",
+  "observed_mean_with_friday_peak": {
+    "observed_at_1.9s": {
+      "finish_hkt": "2026-11-27T05:33:15.162276+08:00",
+      "peak_sends": "0.000000",
+      "peak_premium_usd": "0.000000",
+      "usd": "21.572285"
+    },
+    "observed_at_2.0s": {
+      "finish_hkt": "2026-11-27T06:09:44.381343+08:00",
+      "peak_sends": "0.000000",
+      "peak_premium_usd": "0.000000",
+      "usd": "21.572285"
+    },
+    "observed_at_3.3s": {
+      "finish_hkt": "2026-11-27T14:04:04.229216+08:00",
+      "peak_sends": "3346.736126",
+      "peak_premium_usd": "4.187352",
+      "usd": "25.759637"
+    },
+    "observed_memory_at_3.3s_rest_at_2.0s": {
+      "finish_hkt": "2026-11-27T10:04:36.022722+08:00",
+      "peak_sends": "1174.552340",
+      "peak_premium_usd": "1.469570",
+      "usd": "23.041855"
+    }
+  },
+  "ceiling_check": "The check that replaced the old pack limit: at every pace profile, the observed-mean path in run order, with each send inside a rate-card peak window (09:00-12:00 and 14:00-18:00 HKT on a weekday) billed at double the off-peak price, must be at or under the $42 ceiling. The builder, the committed-cost loader, and the live CLI all refuse otherwise. The allowance upper is not compared with the ceiling.",
   "start_hkt": "2026-11-26T18:00:00+08:00",
   "friday_peak_hkt": "2026-11-27T09:00:00+08:00",
   "duration": {
@@ -435,5 +468,5 @@
   },
   "prior_spend_not_deducted": "Tonight's authorized cap is $42, inside the 280 CNY prepaid balance. Earlier incomplete clean-start flights are not subtracted from it. The superseded preliminary ceiling was $12 inside 80 CNY.",
   "peak_continuation": "Jacky authorized this live run to continue past Friday 09:00 HKT into peak if it is still going. The leftover is likely memory, which runs last. Peak rates are double the off-peak prices used in this report. The $42 ceiling still applies and is checked before every request.",
-  "full_run_follow_up": "The full in-scope thinking-off fly is 3,127 scoring questions plus 111 memory prerequisites, 12,952 slots. It is not this draw. It needs a larger budget, and the runner still has no retry and no resume."
+  "full_run_follow_up": "The full in-scope thinking-off fly is 3,127 scoring questions plus 111 memory prerequisites, 12,952 slots. It is not this draw. It needs a larger budget. Retry and --resume are wired for --preliminary only."
 }

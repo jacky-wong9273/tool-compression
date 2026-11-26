@@ -487,6 +487,15 @@ def build_package(out_dir: Path) -> dict:
                 "python -m tool_compression.clean_start run --preliminary --thinking off "
                 "--memory-prereqs matched --ceiling-usd 42 --out <new empty dir>"
             ),
+            "preliminary_resume_check": (
+                "python -m tool_compression.clean_start run --preliminary --resume --thinking off "
+                "--memory-prereqs matched --ceiling-usd 42 --out <the stopped run dir>"
+            ),
+            "preliminary_resume": (
+                "python -m tool_compression.clean_start run --preliminary --live --authorize-live "
+                "--thinking off --memory-prereqs matched --ceiling-usd 42 "
+                "--bfcl-root <pinned gorilla checkout> --out <the stopped run dir> --resume"
+            ),
         },
         "files": {},
     }
