@@ -6,10 +6,16 @@ edited. One category and one model at a time, with ``partial_eval`` so an
 incomplete run is scored only on the ids it finished. No provider is contacted:
 the handler constructor reads a key variable, so a placeholder is set for the
 duration of the call and the previous environment is restored afterwards.
+
+``partial_eval`` drops ids that have no result line without saying so. The
+summary therefore lists every skipped slot from ``failures.jsonl``: an
+all-ids accuracy counts them as not correct. Token totals and spend come from
+``bills.jsonl``.
 """
 
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 import json
 import os
@@ -36,6 +42,52 @@ def result_categories(result_dir: Path, model: str) -> list[str]:
         if "prereq" not in category:
             found.append(category)
     return found
+
+
+def _jsonl(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").split("\n") if line.strip()]
+
+
+def ledger_summary(out_dir: Path) -> dict:
+    """Skipped slots, tokens and spend of a run, from its own ledgers."""
+    from tool_compression.clean_start.runner import FAILURES_FILE, TOKEN_RULE, add_tokens, empty_tokens, token_summary
+
+    out_dir = Path(out_dir)
+    skipped: dict[str, dict[str, list[dict]]] = {}
+    count = 0
+    for row in _jsonl(out_dir / FAILURES_FILE):
+        model = result_model_name(row["thinking"], row["arm"])
+        skipped.setdefault(model, {}).setdefault(row["category"], []).append({
+            "id": row["case_id"],
+            "kind": row["kind"],
+            "prereq": row.get("prereq", False),
+            "error": row.get("error"),
+            "depends_on": row.get("depends_on"),
+        })
+        count += 1
+    total = empty_tokens()
+    by_model: dict[str, dict] = {}
+    spend = Decimal(0)
+    bills = _jsonl(out_dir / "bills.jsonl")
+    for row in bills:
+        add_tokens(total, row)
+        add_tokens(by_model.setdefault(result_model_name(row["thinking"], row["arm"]), empty_tokens()), row)
+        spend += Decimal(str(row["usd"]))
+    return {
+        "skipped_slots": count,
+        "skipped": skipped,
+        "skipped_rule": (
+            "Skipped slots have no result line, so partial_eval leaves them out. They are "
+            "incomplete, not scored. An all-ids accuracy counts them as not correct."
+        ),
+        "requests_billed": len(bills),
+        "spend_usd": str(spend),
+        "tokens": token_summary(total),
+        "tokens_by_model": {model: token_summary(tally) for model, tally in sorted(by_model.items())},
+        "token_rule": TOKEN_RULE,
+    }
 
 
 def register_models(names: list[str]) -> None:
@@ -122,6 +174,7 @@ def run_official_evaluation(out_dir: Path, bfcl_root: Path, thinking_modes: tupl
         "runs": runs,
         "ok": bool(scored) and all(run["ok"] for run in scored),
         "failed": sum(1 for run in runs if not run["ok"]),
+        "ledger": ledger_summary(out_dir),
     }
     (out_dir / "evaluate_summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
