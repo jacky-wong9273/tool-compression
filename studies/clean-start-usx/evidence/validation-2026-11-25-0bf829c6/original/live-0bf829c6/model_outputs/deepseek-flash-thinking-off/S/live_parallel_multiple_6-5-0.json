@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_6-5-0",
+  "category": "live_parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_interviewer_list": "{\"skill\": \"Python\"}"
+        },
+        {
+          "get_interviewer_list": "{\"skill\": \"Java\"}"
+        }
+      ],
+      "content": "I'll look up qualified interviewers for both Python and Java.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_PMsGdiSs0KBH8FnQh5PD3696",
+          "type": "function",
+          "function": {
+            "name": "get_interviewer_list",
+            "arguments": "{\"skill\": \"Python\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_tq5NP0JQkgY76bkPdeHq0201",
+          "type": "function",
+          "function": {
+            "name": "get_interviewer_list",
+            "arguments": "{\"skill\": \"Java\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 529,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 145,
+      "output_tokens": 83,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_interviewer_list": "{\"skill\": \"Python\"}"
+    },
+    {
+      "get_interviewer_list": "{\"skill\": \"Java\"}"
+    }
+  ]
+}

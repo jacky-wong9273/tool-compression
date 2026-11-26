@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_622-160-2",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Payment_1_MakePayment": "{\"payment_method\": \"credit card\", \"amount\": 29, \"receiver\": \"Thomas\"}"
+        }
+      ],
+      "content": "I'll send $29 to Thomas using your credit card.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_8lIw13vdMlSAyG3Uef6J0999",
+          "type": "function",
+          "function": {
+            "name": "Payment_1_MakePayment",
+            "arguments": "{\"payment_method\": \"credit card\", \"amount\": 29, \"receiver\": \"Thomas\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 640,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 640,
+      "output_tokens": 87,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Payment_1_MakePayment": "{\"payment_method\": \"credit card\", \"amount\": 29, \"receiver\": \"Thomas\"}"
+    }
+  ]
+}

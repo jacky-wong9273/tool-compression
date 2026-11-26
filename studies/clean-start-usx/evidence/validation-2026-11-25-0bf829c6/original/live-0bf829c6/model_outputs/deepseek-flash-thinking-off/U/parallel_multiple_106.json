@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_106",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "traffic_estimate": "{\"start_location\": \"San Francisco\", \"end_location\": \"Palo Alto\", \"time_period\": \"now\"}"
+        },
+        {
+          "calculate_distance": "{\"start_point\": \"San Francisco\", \"end_point\": \"Palo Alto\"}"
+        },
+        {
+          "traffic_estimate": "{\"start_location\": \"Palo Alto\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+        },
+        {
+          "weather_forecast": "{\"location\": \"Los Angeles\", \"days\": 5}"
+        }
+      ],
+      "content": "I'll help you plan your trip. Let me gather all the information you need.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_Am1XGvbim06bXV5Mbk6I4351",
+          "type": "function",
+          "function": {
+            "name": "traffic_estimate",
+            "arguments": "{\"start_location\": \"San Francisco\", \"end_location\": \"Palo Alto\", \"time_period\": \"now\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_IRcId9tVqJJjMY450gib6851",
+          "type": "function",
+          "function": {
+            "name": "calculate_distance",
+            "arguments": "{\"start_point\": \"San Francisco\", \"end_point\": \"Palo Alto\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_EdWMB59RiIOAF7trQaxt2139",
+          "type": "function",
+          "function": {
+            "name": "traffic_estimate",
+            "arguments": "{\"start_location\": \"Palo Alto\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_4PfGhhBcxEn6dimGfBgB7765",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast",
+            "arguments": "{\"location\": \"Los Angeles\", \"days\": 5}"
+          }
+        }
+      ],
+      "prompt_tokens": 668,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 156,
+      "output_tokens": 260,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "traffic_estimate": "{\"start_location\": \"San Francisco\", \"end_location\": \"Palo Alto\", \"time_period\": \"now\"}"
+    },
+    {
+      "calculate_distance": "{\"start_point\": \"San Francisco\", \"end_point\": \"Palo Alto\"}"
+    },
+    {
+      "traffic_estimate": "{\"start_location\": \"Palo Alto\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+    },
+    {
+      "weather_forecast": "{\"location\": \"Los Angeles\", \"days\": 5}"
+    }
+  ]
+}

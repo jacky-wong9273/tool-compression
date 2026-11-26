@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_2-2-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+        },
+        {
+          "ControlAppliance_execute": "{\"command\": \"침실, 공기청정기, 중지\"}"
+        }
+      ],
+      "content": "요청하신 두 가지를 처리하겠습니다.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_wntYUntthZBRqWpVKvPU3233",
+          "type": "function",
+          "function": {
+            "name": "ControlAppliance_execute",
+            "arguments": "{\"command\": \"거실, 에어컨, 실행\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_GavFIXu73qd10JDpzL5V5967",
+          "type": "function",
+          "function": {
+            "name": "ControlAppliance_execute",
+            "arguments": "{\"command\": \"침실, 공기청정기, 중지\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1450,
+      "prompt_cache_hit_tokens": 1280,
+      "prompt_cache_miss_tokens": 170,
+      "output_tokens": 100,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "ControlAppliance_execute": "{\"command\": \"거실, 에어컨, 실행\"}"
+    },
+    {
+      "ControlAppliance_execute": "{\"command\": \"침실, 공기청정기, 중지\"}"
+    }
+  ]
+}

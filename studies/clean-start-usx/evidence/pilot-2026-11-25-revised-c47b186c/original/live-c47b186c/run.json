@@ -1,0 +1,136 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "model": "deepseek-flash",
+  "arms": [
+    "U",
+    "S",
+    "X",
+    "SX"
+  ],
+  "arm_order": "rotated by case position: case i sends ARMS[i % 4:] + ARMS[:i % 4]",
+  "rate_card": {
+    "id": "deepseek-flash-2026-11-25",
+    "retrieved": "2026-11-25",
+    "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "currency": "USD",
+    "unit": "per 1_000_000 tokens",
+    "model": "deepseek-flash",
+    "served_as": "DeepSeek-V4.1-Flash-1017",
+    "off_peak": {
+      "cache_hit": "0.003",
+      "cache_miss": "0.15",
+      "output": "0.6"
+    },
+    "peak": {
+      "cache_hit": "0.006",
+      "cache_miss": "0.30",
+      "output": "1.2"
+    },
+    "peak_is_double_off_peak": true,
+    "peak_utc": [
+      "01:00-04:00",
+      "06:00-10:00"
+    ],
+    "peak_hkt": [
+      "09:00-12:00",
+      "14:00-18:00"
+    ],
+    "peak_interval": "half-open [start, end)",
+    "peak_days": "Monday-Friday",
+    "holiday_calendar": "国务院办公厅 国办发明电〔2025〕7号",
+    "holiday_dates": [
+      "2026-01-01",
+      "2026-01-02",
+      "2026-01-03",
+      "2026-02-15",
+      "2026-02-16",
+      "2026-02-17",
+      "2026-02-18",
+      "2026-02-19",
+      "2026-02-20",
+      "2026-02-21",
+      "2026-02-22",
+      "2026-02-23",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-05",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-09-25",
+      "2026-09-26",
+      "2026-09-27",
+      "2026-10-01",
+      "2026-10-02",
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-05",
+      "2026-10-06",
+      "2026-10-07"
+    ],
+    "holiday_timezone": "Asia/Shanghai",
+    "reasoning_tokens_billed_inside_output": true,
+    "output_not_added_twice": true
+  },
+  "max_tokens_sent": false,
+  "retries": 0,
+  "read_timeout_seconds": 120.0,
+  "total_deadline_seconds": 900.0,
+  "slots_sent": 140,
+  "requests_billed": 899,
+  "running_usd": "0.287883432000",
+  "partial_slots": [
+    {
+      "case_id": "memory_kv_prereq_3-customer-3",
+      "arm": "SX",
+      "thinking": "off",
+      "billed_steps": 6
+    }
+  ],
+  "slots_total": 380,
+  "ceiling_usd": "20",
+  "provider_contacted": true,
+  "identity": {
+    "study": "clean-start-usx",
+    "pilot": true,
+    "memory_prereqs": "matched",
+    "case_count": 95,
+    "prereq_count": 54,
+    "case_ids_sha256": "b7d3b0a244e0f262c6d95d8d5f38f56812045051d6f1dbc41783530bb7d74d6c",
+    "editor_rules": {
+      "S": "s-rules-2026-11-25",
+      "X": "x-rules-2026-11-25.2"
+    },
+    "runner": "tool_compression.clean_start.runner.execute",
+    "draw_sha256": "9dc5597486906feb9277d774c4752d974e6345e27218c6bb0a1664fce4c345c5"
+  },
+  "thinking_modes_authorized": [
+    "off"
+  ],
+  "prereq_slots": 216,
+  "counts": {
+    "off:U:single": 20,
+    "off:S:single": 20,
+    "off:X:single": 20,
+    "off:SX:single": 20,
+    "off:U:trajectory": 75,
+    "off:S:trajectory": 75,
+    "off:X:trajectory": 75,
+    "off:SX:trajectory": 75
+  },
+  "order": "thinking off; cases in list order; arms rotated by case position: case i sends ARMS[i % 4:] + ARMS[:i % 4]",
+  "slot_sha256": "f1974506b15582c16cf06b27dd7d2a6e6f26c7f91e2cb57e424129d17b01ff49",
+  "status": "incomplete",
+  "complete": false,
+  "reason": "provider_error:IncompleteRead",
+  "uncertain_attempts": [
+    900
+  ],
+  "partial_presented_as_complete": false
+}

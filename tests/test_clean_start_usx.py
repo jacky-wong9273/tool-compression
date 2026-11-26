@@ -26,6 +26,7 @@ from tool_compression.clean_start.categories import (
     result_group,
 )
 from tool_compression.clean_start.editor_s import edit_tool
+from tool_compression.clean_start.editor_x import qualify_catalogue
 from tool_compression.clean_start.load import (
     bfcl_root,
     identity_rows,
@@ -329,7 +330,7 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     rendered = render_tools(model_facing_tools([raw], "simple_python"))
     edited = rendered["arms"]["S"][0]["function"]
     original = rendered["arms"]["U"][0]["function"]
-    assert edited["description"].startswith("Calculate the area of a rectangle.")
+    assert edited["description"].startswith("Calculates the area of a rectangle.")
     assert edited["description"].endswith(" Note that the provided function is in Python 3 syntax.")
     width = edited["parameters"]["properties"]["width"]
     assert width["type"] == "number" and width["format"] == "float"
@@ -340,7 +341,7 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     assert "Supported values" not in unit["description"]
     assert "The unit." in unit["description"]
     internal = edited["parameters"]["properties"]["internal"]
-    assert internal["description"] == "Whether to calculate the internal angles"
+    assert internal["description"] == "Whether to calculate the internal angles."
     assert internal["default"] is True
     assert edited["parameters"]["properties"]["label"]["description"] == "A label. Default is true."
     assert edited["response"]["description"] == original["response"]["description"]
@@ -348,9 +349,17 @@ def test_editor_s_keeps_schema_facts_and_x_hides_s():
     assert rendered["arms"]["S"][0] == alone
 
     pair = {case["id"]: case for case in load_questions("multiple")}
-    compiled = compile_case(pair["multiple_34"])
+    different = model_facing_tools(pair["multiple_34"]["function"], "multiple")
+    assert not [change for change in render_tools(different)["changes"] if change["arm"] == "X"]
+    refusals = {
+        (row["function_name"], rival["function_name"]): rival["reason"]
+        for row in qualify_catalogue(different) for rival in row["rejected_rivals"]
+    }
+    assert "different objects (divisor versus multiple)" in refusals[("math_gcd", "math_lcm")]
+    assert "different objects (multiple versus divisor)" in refusals[("math_lcm", "math_gcd")]
+    compiled = compile_case(pair["multiple_12"])
     cues = {change["function"]: change for change in compiled["changes"] if change["arm"] == "X"}
-    assert set(cues) == {"math_gcd", "math_lcm"}
+    assert set(cues) == {"financial_ratios_calculate_ROA", "financial_ratios_calculate_ROE"}
     for tool_u, tool_s, tool_x, tool_sx in zip(*(compiled["arms"][arm] for arm in ARMS)):
         name = tool_u["function"]["name"]
         cue = cues.get(name, {}).get("cue", "")
@@ -387,7 +396,7 @@ def test_single_tool_control_has_no_cue_and_names_are_u_s_x_sx():
     roots = {case["id"]: case for case in load_questions("multiple")}["multiple_11"]
     compiled = compile_case(roots)
     axes = {change["function"]: change["axis"] for change in compiled["changes"] if change["arm"] == "X"}
-    assert axes["math_roots_quadratic"] == "named-coefficients-versus-ordered-array"
+    assert axes["math_roots_quadratic"] == "interface:numeric-array-versus-numeric-scalars"
     assert "math_sqrt" not in axes or axes.get("math_sqrt", "") == ""
 
 
@@ -455,7 +464,9 @@ def test_execution_config_separates_snippet_memory_and_long_context(tmp_path):
         tmp_path,
     )
     assert memory["initial_config"]["MemoryAPI_kv"]["test_category"] == "memory_kv_prereq"
-    assert memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"] == str(tmp_path)
+    # Pinned MemoryAPI._prepare_snapshot joins this with "/", so it must stay a Path.
+    assert memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"] == tmp_path
+    assert isinstance(memory["initial_config"]["MemoryAPI_kv"]["model_result_dir"], Path)
     long_context = execution_config(
         {"id": "multi_turn_long_context_0", "category": "multi_turn_long_context", "prereq": False, "initial_config": {}},
         tmp_path,
@@ -562,6 +573,7 @@ def test_two_arms_do_not_append_into_the_same_result_file(tmp_path):
         tmp_path / "run",
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     u_lines = (
@@ -589,6 +601,7 @@ def test_runner_persists_scorable_output_usage_and_spend(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off", "on"),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is True
@@ -641,6 +654,7 @@ def test_ceiling_stops_later_sends_and_partial_is_not_complete(tmp_path):
         tmp_path,
         script,
         ceiling_usd=_off_peak_cost(),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
@@ -669,10 +683,12 @@ def test_missing_usage_does_not_invent_a_bill_or_a_result(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
     assert result["reason"] == "usage_missing"
+    assert result["uncertain_attempts"] == [1]
     assert result["slots_sent"] == 0
     assert not (tmp_path / "bills.jsonl").exists()
     assert not list(tmp_path.rglob("*_result.json"))
@@ -693,6 +709,7 @@ def test_absent_cache_split_is_billed_as_all_miss_and_named(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     bill = json.loads((tmp_path / "bills.jsonl").read_text(encoding="utf-8"))
@@ -725,8 +742,12 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
         def __init__(self):
             self.calls = []
 
-        def execute(self, result, case, config):
-            self.calls.append((result, config["instance_name"], config["long_context"]))
+        def initialize(self, case, config):
+            self.calls.append(([], config["instance_name"], config["long_context"]))
+            return {"GorillaFileSystem": object()}
+
+        def execute_calls(self, strings, case, config):
+            self.calls.append((strings, config["instance_name"], config["long_context"]))
             return ["listed"]
 
     executor = Executor()
@@ -737,10 +758,12 @@ def test_trajectory_persists_nested_results_and_holdout_prompt(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
         executor=executor,
     )
     assert result["complete"] is True
+    assert executor.calls[0][0] == [] and executor.calls[1][0] == ["echo(value=1)"]
     entry = json.loads(
         (tmp_path / result_relative("multi_turn_long_context_0", "off", "U")).read_text(encoding="utf-8")
     )
@@ -804,8 +827,8 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
     assert [(slot["case_id"], slot["arm"]) for slot in slots] == [
         ("memory_kv_0-customer-0", "U"),
         ("memory_kv_0-customer-0", "S"),
-        ("multi_turn_base_0", "U"),
         ("multi_turn_base_0", "S"),
+        ("multi_turn_base_0", "U"),
         ("web_search_base_0", "U"),
         ("web_search_base_0", "S"),
     ]
@@ -817,7 +840,14 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
             self.globals = {}
             self.trace = []
 
-        def execute(self, result, case, config):
+        def initialize(self, case, config):
+            self.execute_calls([], case, config)
+            return {config["involved_classes"][0]: self.globals[self.trace[-1]["key"]]}
+
+        def memory_prompt(self, question, case, instances):
+            return question
+
+        def execute_calls(self, strings, case, config):
             class_name = config["involved_classes"][0]
             key = _bfcl_instance_key(config["instance_name"], case["id"], class_name)
             created = key not in self.globals
@@ -842,6 +872,7 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
         tmp_path,
         _Scripted(responses),
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
         executor=executor,
     )
@@ -853,9 +884,9 @@ def test_trajectory_arms_do_not_share_instances_or_snapshots(tmp_path):
     assert len(by_key) == 6
     for events in by_key.values():
         assert events[0]["created"] is True
-        assert len(events) == 2
-        assert events[1]["created"] is False
-        assert events[1]["instance"] is events[0]["instance"]
+        assert len(events) == 3
+        assert all(event["created"] is False for event in events[1:])
+        assert all(event["instance"] is events[0]["instance"] for event in events[1:])
     for case, class_name in (
         (memory, "MemoryAPI_kv"),
         (multi, "GorillaFileSystem"),
@@ -925,6 +956,7 @@ def test_trajectory_without_executor_stops_before_a_request(tmp_path):
         tmp_path,
         script,
         ceiling_usd=Decimal("1"),
+        thinking_modes=("off",),
         clock=lambda: _utc(2026, 11, 25, 12, 0),
     )
     assert result["complete"] is False
@@ -972,16 +1004,31 @@ def test_authorized_command_uses_the_injected_transport(tmp_path, monkeypatch):
     from tool_compression.clean_start.__main__ import main
 
     script = _Scripted([_content_response("ok")])
-    monkeypatch.setattr("tool_compression.clean_start.__main__._select_cases", lambda _pilot: [_simple_case()])
-    monkeypatch.setattr("tool_compression.clean_start.__main__.build_slots", lambda cases: build_slots(cases)[:1])
+    monkeypatch.setattr("tool_compression.clean_start.__main__._select_cases", lambda _pilot, _prereqs: [_simple_case()])
+    monkeypatch.setattr(
+        "tool_compression.clean_start.__main__.build_slots",
+        lambda cases, modes: build_slots(cases, modes)[:1],
+    )
     monkeypatch.setattr("tool_compression.clean_start.__main__.authorized_transport", lambda: script)
-    code = main([
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "placeholder-not-a-key")
+    assert main([
         "run", "--live", "--authorize-live", "--ceiling-usd", "1", "--out", str(tmp_path),
+    ]) == 2
+    assert script.bodies == []
+    code = main([
+        "run", "--live", "--authorize-live", "--thinking", "off", "--ceiling-usd", "1", "--out", str(tmp_path),
     ])
     assert code == 0
     assert script.bodies and script.bodies[0]["model"] == "deepseek-flash"
+    assert [body["thinking"]["type"] for body in script.bodies] == ["disabled"]
     assert (tmp_path / "bills.jsonl").is_file()
     assert list(tmp_path.rglob("*_result.json"))
+    again = _Scripted([_content_response("ok")])
+    monkeypatch.setattr("tool_compression.clean_start.__main__.authorized_transport", lambda: again)
+    assert main([
+        "run", "--live", "--authorize-live", "--thinking", "off", "--ceiling-usd", "1", "--out", str(tmp_path),
+    ]) == 2
+    assert again.bodies == []
 
 
 UNCHANGED_PILOT = {
@@ -1004,9 +1051,15 @@ UNCHANGED_PILOT = {
     "memory_kv": ["memory_kv_146-notetaker-16", "memory_kv_58-finance-3", "memory_kv_7-customer-7"],
     "memory_vector": ["memory_vector_107-student-27", "memory_vector_90-student-10", "memory_vector_123-student-43"],
     "memory_rec_sum": ["memory_rec_sum_32-healthcare-2", "memory_rec_sum_121-student-41", "memory_rec_sum_62-finance-7"],
-    "web_search_base": ["web_search_base_37", "web_search_base_46", "web_search_base_58"],
-    "web_search_no_snippet": ["web_search_no_snippet_83", "web_search_no_snippet_92", "web_search_no_snippet_58"],
 }
+REMOVED_WEB_PILOT = (
+    "web_search_base_37",
+    "web_search_base_46",
+    "web_search_base_58",
+    "web_search_no_snippet_83",
+    "web_search_no_snippet_92",
+    "web_search_no_snippet_58",
+)
 
 
 def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
@@ -1019,7 +1072,7 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     assert committed == first
     scope = load_scope()
     assert first["categories"] == scope["keep"]
-    assert len(first["rows"]) == 47
+    assert len(first["rows"]) == 41
     by_category: dict[str, list[str]] = {}
     questions = {
         category: {case["id"]: case for case in in_scope_questions(category)}
@@ -1053,6 +1106,9 @@ def test_pilot_draw_is_reproducible_and_renders_match(tmp_path):
     assert by_category["live_parallel"] == ["live_parallel_6-3-0", "live_parallel_7-3-1"]
     for category, ids in UNCHANGED_PILOT.items():
         assert by_category[category] == ids
+    drawn_ids = [row["case_id"] for row in first["rows"]]
+    assert set(REMOVED_WEB_PILOT).isdisjoint(drawn_ids)
+    assert "web_search_base" not in by_category and "web_search_no_snippet" not in by_category
     note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
     for row in first["rows"]:
         assert row["case_id"] in note
@@ -1072,14 +1128,15 @@ def test_coverage_matches_the_committed_limitations_and_names_are_consistent():
     assert committed == record
     assert record["official_settlement"] is False
     assert record["unsendable"] == 0
-    assert record["in_scope_questions"] == 3327
+    assert record["in_scope_questions"] == 3127
     scope = load_scope()
     assert set(record["categories"]) == set(scope["keep"])
     assert "simple_java" not in record["categories"]
     assert "parallel" not in record["categories"]
     assert "irrelevance" not in record["categories"]
     assert record["categories"]["live_parallel"]["questions"] == 2
-    assert record["categories"]["live_parallel"]["s_cases_different_from_u"] == 0
+    assert record["categories"]["live_parallel"]["s_cases_different_from_u"] == 2
+    assert record["categories"]["live_parallel"]["x_cases_different_from_u"] == 0
     assert record["categories"]["live_irrelevance"]["questions"] == 372
     assert "miss_func_holdout_absent_from_initial_tools" in record["categories"]["multi_turn_miss_func"]["limitations"]
     assert "memory_prereq_required_for_a_full_score" in record["categories"]["memory_kv"]["limitations"]
@@ -1105,7 +1162,7 @@ def test_package_command_forwards_and_dry_pilot_stays_offline(tmp_path, monkeypa
     assert plan["status"] == "not_sent"
     assert plan["provider_contacted"] is False
     assert plan["complete"] is False
-    assert plan["slots_total"] == len(build_draw()["rows"]) * 2 * 4 == 47 * 8
+    assert plan["slots_total"] == len(build_draw()["rows"]) * 2 * 4 == 41 * 8
     assert calls == []
 
 
@@ -1115,8 +1172,8 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
     assert fresh["official_settlement"] is False
     assert fresh["official_simple_multi_tool_ids"] == []
     assert fresh["scoring_questions"] == 5106
-    assert fresh["in_scope_questions"] == 3327
-    assert fresh["out_of_scope_questions"] == 1779
+    assert fresh["in_scope_questions"] == 3127
+    assert fresh["out_of_scope_questions"] == 1979
     assert fresh["drop"] == [
         "simple_python",
         "simple_java",
@@ -1124,6 +1181,8 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
         "parallel",
         "irrelevance",
         "live_simple",
+        "web_search_base",
+        "web_search_no_snippet",
     ]
     assert fresh["unscope_package"]["pull_request"] == 24
     assert fresh["unscope_package"]["tip"] == "c1df4bbf439151abad2ed79b103d401a61443412"
@@ -1215,5 +1274,10 @@ def test_scope_rule_census_and_runner_use_multi_tool_questions_only():
         assert category in text
     note = (study_dir() / "NOTE.md").read_text(encoding="utf-8")
     assert "Study population" in note
-    assert "3327" in note
+    assert "3127" in note
+    web = next(case for case in load_questions("web_search_base") if case["id"] == "web_search_base_0")
+    assert u_tool_count(web) == 2
+    assert question_in_scope(web) is False
+    assert "web_search_base" not in fresh["in_scope_ids"]
+    assert "web_search_no_snippet" not in fresh["in_scope_ids"]
     assert "PR #24" in note

@@ -1,0 +1,57 @@
+{
+  "case_id": "live_parallel_6-3-0",
+  "category": "live_parallel",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_snow_report": "{\"location\": \"Paris, France\"}"
+        },
+        {
+          "get_snow_report": "{\"location\": \"Bordeaux, France\"}"
+        }
+      ],
+      "content": "I'll check the snow reports for both cities.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_TQ4LdzFOoS56FlW6LOLT6877",
+          "type": "function",
+          "function": {
+            "name": "get_snow_report",
+            "arguments": "{\"location\": \"Paris, France\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_4p4eBUQnQwVzz6hrFOG23691",
+          "type": "function",
+          "function": {
+            "name": "get_snow_report",
+            "arguments": "{\"location\": \"Bordeaux, France\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 548,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 548,
+      "output_tokens": 83,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_snow_report": "{\"location\": \"Paris, France\"}"
+    },
+    {
+      "get_snow_report": "{\"location\": \"Bordeaux, France\"}"
+    }
+  ]
+}

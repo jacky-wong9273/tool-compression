@@ -1,0 +1,42 @@
+{
+  "case_id": "multiple_142",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "weather_humidity_forecast": "{\"location\": \"Miami, Florida\", \"days\": 7}"
+        }
+      ],
+      "content": "I'll check the humidity forecast for Miami over the next 7 days.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_K8zSg5uL9TTjVzvumC0T4685",
+          "type": "function",
+          "function": {
+            "name": "weather_humidity_forecast",
+            "arguments": "{\"location\": \"Miami, Florida\", \"days\": 7}"
+          }
+        }
+      ],
+      "prompt_tokens": 525,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 141,
+      "output_tokens": 75,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "weather_humidity_forecast": "{\"location\": \"Miami, Florida\", \"days\": 7}"
+    }
+  ]
+}

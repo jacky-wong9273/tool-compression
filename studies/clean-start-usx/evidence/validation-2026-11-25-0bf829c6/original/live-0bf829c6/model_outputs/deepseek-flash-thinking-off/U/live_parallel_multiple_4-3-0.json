@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_4-3-0",
+  "category": "live_parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_news_report": "{\"location\": \"Paris, France\", \"category\": \"Technology\", \"language\": \"en\"}"
+        },
+        {
+          "get_news_report": "{\"location\": \"Letterkenny, Ireland\", \"category\": \"Technology\", \"language\": \"en\"}"
+        }
+      ],
+      "content": "I'll fetch both technology news reports for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_fzQX69bfkyhtQHeNk1Dq6165",
+          "type": "function",
+          "function": {
+            "name": "get_news_report",
+            "arguments": "{\"location\": \"Paris, France\", \"category\": \"Technology\", \"language\": \"en\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_z4o69ruYLNf7anbvVGXn4004",
+          "type": "function",
+          "function": {
+            "name": "get_news_report",
+            "arguments": "{\"location\": \"Letterkenny, Ireland\", \"category\": \"Technology\", \"language\": \"en\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 662,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 534,
+      "output_tokens": 148,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_news_report": "{\"location\": \"Paris, France\", \"category\": \"Technology\", \"language\": \"en\"}"
+    },
+    {
+      "get_news_report": "{\"location\": \"Letterkenny, Ireland\", \"category\": \"Technology\", \"language\": \"en\"}"
+    }
+  ]
+}

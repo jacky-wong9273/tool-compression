@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_113",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "paint_color_trends": "{\"room\": \"Living room\", \"period\": \"Monthly\"}"
+        },
+        {
+          "weather_forecast": "{\"location\": \"Seattle\", \"days\": 5}"
+        },
+        {
+          "house_price_trends": "{\"location\": \"San Francisco, CA\", \"period\": \"Quarterly\"}"
+        }
+      ],
+      "content": "I'll help you with all three requests. Let me gather that information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_RNiH8FAs8JQcMEhXoiVR9681",
+          "type": "function",
+          "function": {
+            "name": "paint_color_trends",
+            "arguments": "{\"room\": \"Living room\", \"period\": \"Monthly\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_4Bz2RQjaVm7y0ryq9MsJ3948",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast",
+            "arguments": "{\"location\": \"Seattle\", \"days\": 5}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_UWQFtftIznlYY0xPTls56211",
+          "type": "function",
+          "function": {
+            "name": "house_price_trends",
+            "arguments": "{\"location\": \"San Francisco, CA\", \"period\": \"Quarterly\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 678,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 166,
+      "output_tokens": 172,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "paint_color_trends": "{\"room\": \"Living room\", \"period\": \"Monthly\"}"
+    },
+    {
+      "weather_forecast": "{\"location\": \"Seattle\", \"days\": 5}"
+    },
+    {
+      "house_price_trends": "{\"location\": \"San Francisco, CA\", \"period\": \"Quarterly\"}"
+    }
+  ]
+}

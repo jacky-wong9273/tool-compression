@@ -1,0 +1,77 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "study_manifest": {
+    "study": "clean-start-usx",
+    "official_settlement": false,
+    "extends_official_v1_1": false,
+    "official_v1_1": "historical and closed",
+    "bfcl_repository": "https://github.com/ShishirPatil/gorilla",
+    "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+    "bfcl_subdir": "berkeley-function-call-leaderboard",
+    "request_model": "deepseek-flash",
+    "served_as": "DeepSeek-V4.1-Flash-1017",
+    "retired_route_alias_not_sent": "deepseek-v4-flash",
+    "arms": [
+      "U",
+      "S",
+      "X",
+      "SX"
+    ],
+    "thinking_order": [
+      "off",
+      "on"
+    ],
+    "thinking_default_on_server": true,
+    "temperature_sent": 0.001,
+    "temperature_ignored_while_thinking": true,
+    "max_tokens_sent": false,
+    "rate_card_id": "deepseek-flash-2026-11-25",
+    "rate_card_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "rate_card_retrieved": "2026-11-25",
+    "paid_inference_authorized_by_this_package": false,
+    "provider_called_on_import": false
+  },
+  "bfcl_commit": "6ea57973c7a6097fd7c5915698c54c17c5b1b6c8",
+  "vendored_manifest_sha256": "bf2d151cbb2eff669ec47907710e1c9e4e18a3dd51b39723e8840c24ce9c30d4",
+  "rules": {
+    "S": "s-rules-2026-11-26",
+    "X": "x-rules-2026-11-26"
+  },
+  "tokenizer": {
+    "encoding": "o200k_base",
+    "backend": "tiktoken-0.14.0"
+  },
+  "python": "3.12.3",
+  "commands": {
+    "freeze": "python -m tool_compression.clean_start freeze",
+    "package": "python -m tool_compression.clean_start package",
+    "pilot_report": "python -m tool_compression.clean_start report-pilot",
+    "revised_pilot_report": "python -m tool_compression.clean_start report-pilot --revised",
+    "validation_flight_report": "python -m tool_compression.clean_start report-validation",
+    "before_summary": "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py population",
+    "flown_sent_digest": "PYTHONPATH=<worktree of c47b186c>/src python scripts/clean_start_sent_digest.py conversations",
+    "validation_flown_summary": "PYTHONPATH=<worktree of 0bf829c6>/src python scripts/clean_start_sent_digest.py population",
+    "validation_flown_sent_digest": "PYTHONPATH=<worktree of 0bf829c6>/src python scripts/clean_start_sent_digest.py validation",
+    "score_existing_results": "python -m tool_compression.clean_start evaluate --out <run dir> --bfcl-root <pinned gorilla checkout> --thinking off",
+    "validation_dry_plan": "python -m tool_compression.clean_start run --validation --thinking off --memory-prereqs matched --ceiling-usd 20 --out <new empty dir>",
+    "preliminary_dry_plan": "python -m tool_compression.clean_start run --preliminary --thinking off --memory-prereqs matched --ceiling-usd 42 --out <new empty dir>",
+    "preliminary_resume_check": "python -m tool_compression.clean_start run --preliminary --resume --thinking off --memory-prereqs matched --ceiling-usd 42 --out <the stopped run dir>",
+    "preliminary_resume": "python -m tool_compression.clean_start run --preliminary --live --authorize-live --thinking off --memory-prereqs matched --ceiling-usd 42 --bfcl-root <pinned gorilla checkout> --out <the stopped run dir> --resume"
+  },
+  "files": {
+    "EXAMPLES.md": "2c470333bc58f6cf8320d0b58e9cb3dde30b03ee23f75b2fa3df547ef2d70934",
+    "examples.json": "9b936dccf6547256f2d39b35db5539edd572786cc8e0dafb06a433189b54fd2c",
+    "integrity.json": "41cd6e1fe1c95847c8b3f61e7b3df4503f714639b08d642faf007af814ceb016",
+    "pilot_2026_11_25_analysis.json": "6c8a21cc6ab212a349af0e0bc648572d9a92d19c61a306361c8d967195ac2a76",
+    "pilot_2026_11_25_revised_analysis.json": "f2418c83f2b468192af64362ed3719026f841392436598dda107572ea3041e6b",
+    "revision_vs_0bf829c6.json": "35b54c37c9f91197350bf93f18582a9f548350415ed32fb7d792f683bd1139d9",
+    "revision_vs_c47b186c.json": "6ae3849d7b0e8e81f32dbf87e8261c48d3ed53e73d82e81191c1f8593f4b2587",
+    "s_keep_reasons.json": "e83ff08b0c927e836cd0b33672d0652f54c3f5952207ee02f5b2defd57f43cbb",
+    "s_ledger.jsonl": "7a4af109a3935202b77260eb79fc7408a5b4c57e0d794e20b84c71b7b0dee310",
+    "token_tables.json": "6a843776a4895b6f086b2f232ea81ec9d7fac0c2c4dc8e0eff7215ab1e3b8793",
+    "validation_20261126.json": "62e71b78f01b90c22a89dde1285177c21442f4d8355ef23ed370fc7548f6cbba",
+    "validation_2026_11_25_analysis.json": "9fb232402418493f19fb7e67fc177a6f90d4cc37503a384486221da5990bf585",
+    "x_ledger.jsonl": "905ad0de4e28fa1084e6497f05206ca987ee5aaaeefd844342840c17d46afffe"
+  }
+}

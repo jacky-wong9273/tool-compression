@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_171",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "sports_ranking": "{\"team\": \"New York Yankees\", \"league\": \"Major League Baseball\", \"season\": 2019}"
+        },
+        {
+          "sports_ranking": "{\"team\": \"Los Angeles Lakers\", \"league\": \"National Basketball Association\", \"season\": 2020}"
+        },
+        {
+          "air_quality": "{\"location\": \"Los Angeles\", \"date\": \"2020-12-25\"}"
+        },
+        {
+          "air_quality": "{\"location\": \"New York\", \"date\": \"2021-01-01\"}"
+        }
+      ],
+      "content": "I'll gather all of that information for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_G8lYCkXsWgJopJKbzTAQ7949",
+          "type": "function",
+          "function": {
+            "name": "sports_ranking",
+            "arguments": "{\"team\": \"New York Yankees\", \"league\": \"Major League Baseball\", \"season\": 2019}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_lgK0YvoBy5VUO7vJqC704879",
+          "type": "function",
+          "function": {
+            "name": "sports_ranking",
+            "arguments": "{\"team\": \"Los Angeles Lakers\", \"league\": \"National Basketball Association\", \"season\": 2020}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_RKDfs7YeXGi6MlaDkFMP0762",
+          "type": "function",
+          "function": {
+            "name": "air_quality",
+            "arguments": "{\"location\": \"Los Angeles\", \"date\": \"2020-12-25\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_SLx8h8g8JbnYTgDPa4OG1058",
+          "type": "function",
+          "function": {
+            "name": "air_quality",
+            "arguments": "{\"location\": \"New York\", \"date\": \"2021-01-01\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 540,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 540,
+      "output_tokens": 255,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "sports_ranking": "{\"team\": \"New York Yankees\", \"league\": \"Major League Baseball\", \"season\": 2019}"
+    },
+    {
+      "sports_ranking": "{\"team\": \"Los Angeles Lakers\", \"league\": \"National Basketball Association\", \"season\": 2020}"
+    },
+    {
+      "air_quality": "{\"location\": \"Los Angeles\", \"date\": \"2020-12-25\"}"
+    },
+    {
+      "air_quality": "{\"location\": \"New York\", \"date\": \"2021-01-01\"}"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_12",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "calculate_magnetic_field": "{\"current\": 4, \"distance\": 2}"
+        },
+        {
+          "calculate_voltage_difference": "{\"electric_field\": 5, \"distance\": 3}"
+        }
+      ],
+      "content": "I'll calculate both values for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_iIQ5KNNH0S486QYoamhA9623",
+          "type": "function",
+          "function": {
+            "name": "calculate_magnetic_field",
+            "arguments": "{\"current\": 4, \"distance\": 2}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_HhyF0PoeI8ec2jifJCKI7373",
+          "type": "function",
+          "function": {
+            "name": "calculate_voltage_difference",
+            "arguments": "{\"electric_field\": 5, \"distance\": 3}"
+          }
+        }
+      ],
+      "prompt_tokens": 604,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 604,
+      "output_tokens": 111,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "calculate_magnetic_field": "{\"current\": 4, \"distance\": 2}"
+    },
+    {
+      "calculate_voltage_difference": "{\"electric_field\": 5, \"distance\": 3}"
+    }
+  ]
+}

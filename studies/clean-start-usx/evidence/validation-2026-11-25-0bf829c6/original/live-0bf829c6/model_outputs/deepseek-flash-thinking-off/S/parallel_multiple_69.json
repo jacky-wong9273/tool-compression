@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_69",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "finance_property_depreciation": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5}"
+        },
+        {
+          "finance_inflation_adjustment": "{\"initial_sum\": 200000, \"years\": 5, \"inflation_rate\": 3}"
+        },
+        {
+          "finance_loan_repayment": "{\"loan_amount\": 300000, \"interest_rate\": 4, \"loan_term\": 10}"
+        },
+        {
+          "finance_property_depreciation": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5, \"monthly\": true}"
+        }
+      ],
+      "content": "I'll calculate all four values for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_iCumiD1X7r66IQObIe3W4765",
+          "type": "function",
+          "function": {
+            "name": "finance_property_depreciation",
+            "arguments": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_OTrEFHZ6ZJtOLiyy0Aur1277",
+          "type": "function",
+          "function": {
+            "name": "finance_inflation_adjustment",
+            "arguments": "{\"initial_sum\": 200000, \"years\": 5, \"inflation_rate\": 3}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_wplJwKG21tOqxre1ijbk3187",
+          "type": "function",
+          "function": {
+            "name": "finance_loan_repayment",
+            "arguments": "{\"loan_amount\": 300000, \"interest_rate\": 4, \"loan_term\": 10}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_6aCr7KXHkXSB0Gb9m6qp8530",
+          "type": "function",
+          "function": {
+            "name": "finance_property_depreciation",
+            "arguments": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5, \"monthly\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 866,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 226,
+      "output_tokens": 306,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "finance_property_depreciation": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5}"
+    },
+    {
+      "finance_inflation_adjustment": "{\"initial_sum\": 200000, \"years\": 5, \"inflation_rate\": 3}"
+    },
+    {
+      "finance_loan_repayment": "{\"loan_amount\": 300000, \"interest_rate\": 4, \"loan_term\": 10}"
+    },
+    {
+      "finance_property_depreciation": "{\"initial_cost\": 500000, \"depreciation_rate\": 2, \"years\": 5, \"monthly\": true}"
+    }
+  ]
+}

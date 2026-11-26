@@ -1,0 +1,58 @@
+{
+  "case_id": "live_multiple_190-84-0",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "game_rewards_get": "{\"game\": \"Fortnite\", \"platform\": \"Playstation\"}"
+        },
+        {
+          "game_missions_list": "{\"game\": \"Fortnite\"}"
+        }
+      ],
+      "content": "I'll look up the rewards for Fortnite on PlayStation across different missions and trophy levels.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_UXcgEw7l7nvVRRvlK4io7812",
+          "type": "function",
+          "function": {
+            "name": "game_rewards_get",
+            "arguments": "{\"game\": \"Fortnite\", \"platform\": \"Playstation\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_5ixOPZDWnwJrSShDjU6n5619",
+          "type": "function",
+          "function": {
+            "name": "game_missions_list",
+            "arguments": "{\"game\": \"Fortnite\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 872,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 872,
+      "output_tokens": 105,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "game_rewards_get": "{\"game\": \"Fortnite\", \"platform\": \"Playstation\"}"
+    },
+    {
+      "game_missions_list": "{\"game\": \"Fortnite\"}"
+    }
+  ]
+}

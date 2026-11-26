@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_130",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "portfolio_future_value": "{\"stock\": \"AAPL\", \"invested_amount\": 5000, \"expected_annual_return\": 0.07, \"years\": 10}"
+        },
+        {
+          "get_stock_info": "{\"company_name\": \"Microsoft\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+        },
+        {
+          "solve_quadratic_equation": "{\"a\": 5, \"b\": -20, \"c\": 15}"
+        }
+      ],
+      "content": "I'll help you with all three tasks. Let me run them in parallel since they're independent.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_RA6laLDBvPvy4F92c1Vi9326",
+          "type": "function",
+          "function": {
+            "name": "portfolio_future_value",
+            "arguments": "{\"stock\": \"AAPL\", \"invested_amount\": 5000, \"expected_annual_return\": 0.07, \"years\": 10}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_4BMoGZY89TYXak9njWIq1899",
+          "type": "function",
+          "function": {
+            "name": "get_stock_info",
+            "arguments": "{\"company_name\": \"Microsoft\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vYXC6rNjEQuVYXIoBJ064236",
+          "type": "function",
+          "function": {
+            "name": "solve_quadratic_equation",
+            "arguments": "{\"a\": 5, \"b\": -20, \"c\": 15}"
+          }
+        }
+      ],
+      "prompt_tokens": 810,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 810,
+      "output_tokens": 244,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "portfolio_future_value": "{\"stock\": \"AAPL\", \"invested_amount\": 5000, \"expected_annual_return\": 0.07, \"years\": 10}"
+    },
+    {
+      "get_stock_info": "{\"company_name\": \"Microsoft\", \"detail_level\": \"detailed\", \"market\": \"NASDAQ\"}"
+    },
+    {
+      "solve_quadratic_equation": "{\"a\": 5, \"b\": -20, \"c\": 15}"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_140",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "lawsuits_search": "{\"company_name\": \"Google\", \"location\": \"California\", \"year\": 2020}"
+        }
+      ],
+      "content": "I'll search for lawsuits filed against Google in California in 2020.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9LHYmbOJhysfXWqgWkhQ5100",
+          "type": "function",
+          "function": {
+            "name": "lawsuits_search",
+            "arguments": "{\"company_name\": \"Google\", \"location\": \"California\", \"year\": 2020}"
+          }
+        }
+      ],
+      "prompt_tokens": 635,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 507,
+      "output_tokens": 87,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "lawsuits_search": "{\"company_name\": \"Google\", \"location\": \"California\", \"year\": 2020}"
+    }
+  ]
+}

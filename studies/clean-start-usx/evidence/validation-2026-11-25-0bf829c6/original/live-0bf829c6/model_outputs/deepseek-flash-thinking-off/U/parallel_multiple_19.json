@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_19",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "math_gaussian_integral": "{\"function\": \"exp(-x**2)\", \"lower_limit\": -2, \"upper_limit\": 2}"
+        },
+        {
+          "math_definite_integral": "{\"function\": \"sin(x)\", \"lower_limit\": 0, \"upper_limit\": 3.1416}"
+        }
+      ],
+      "content": "I'll compute both integrals for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9o3UMlDHRVUPaeKofHlE5544",
+          "type": "function",
+          "function": {
+            "name": "math_gaussian_integral",
+            "arguments": "{\"function\": \"exp(-x**2)\", \"lower_limit\": -2, \"upper_limit\": 2}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_QhGUcFS3HPhI8JdrlCOe3493",
+          "type": "function",
+          "function": {
+            "name": "math_definite_integral",
+            "arguments": "{\"function\": \"sin(x)\", \"lower_limit\": 0, \"upper_limit\": 3.1416}"
+          }
+        }
+      ],
+      "prompt_tokens": 571,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 443,
+      "output_tokens": 157,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "math_gaussian_integral": "{\"function\": \"exp(-x**2)\", \"lower_limit\": -2, \"upper_limit\": 2}"
+    },
+    {
+      "math_definite_integral": "{\"function\": \"sin(x)\", \"lower_limit\": 0, \"upper_limit\": 3.1416}"
+    }
+  ]
+}

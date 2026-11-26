@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_24",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "investment_invest": "{\"company\": \"Google\", \"amount\": 2000}"
+        },
+        {
+          "investment_withdraw": "{\"company\": \"Apple\", \"amount\": 1000}"
+        }
+      ],
+      "content": "I'll make both transactions for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_oTvRwarF17QtFQqJTJN10920",
+          "type": "function",
+          "function": {
+            "name": "investment_invest",
+            "arguments": "{\"company\": \"Google\", \"amount\": 2000}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_qx0MJjHuzoMxkd1es5ww8625",
+          "type": "function",
+          "function": {
+            "name": "investment_withdraw",
+            "arguments": "{\"company\": \"Apple\", \"amount\": 1000}"
+          }
+        }
+      ],
+      "prompt_tokens": 456,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 328,
+      "output_tokens": 108,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "investment_invest": "{\"company\": \"Google\", \"amount\": 2000}"
+    },
+    {
+      "investment_withdraw": "{\"company\": \"Apple\", \"amount\": 1000}"
+    }
+  ]
+}

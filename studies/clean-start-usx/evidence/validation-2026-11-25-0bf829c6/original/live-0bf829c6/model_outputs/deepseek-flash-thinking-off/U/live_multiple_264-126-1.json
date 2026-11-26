@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_264-126-1",
+  "category": "live_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "EventQuery": "{\"search_string\": \"trip\", \"start_date\": \"2023-04-01\", \"end_date\": \"2023-04-30\"}"
+        }
+      ],
+      "content": "I'll search your calendar for trip-related events in April 2023.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9MUsCT2n669sxSvDt31Q4162",
+          "type": "function",
+          "function": {
+            "name": "EventQuery",
+            "arguments": "{\"search_string\": \"trip\", \"start_date\": \"2023-04-01\", \"end_date\": \"2023-04-30\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 610,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 226,
+      "output_tokens": 97,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "EventQuery": "{\"search_string\": \"trip\", \"start_date\": \"2023-04-01\", \"end_date\": \"2023-04-30\"}"
+    }
+  ]
+}

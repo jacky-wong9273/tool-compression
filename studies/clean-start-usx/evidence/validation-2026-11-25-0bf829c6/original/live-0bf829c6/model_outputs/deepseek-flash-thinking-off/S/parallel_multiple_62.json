@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_62",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "kinematics_calculate_displacement": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+        },
+        {
+          "kinematics_calculate_final_speed": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+        }
+      ],
+      "content": "I'll calculate both the displacement and final speed for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_OLlz6yNF0F8gZkAPg9RI1436",
+          "type": "function",
+          "function": {
+            "name": "kinematics_calculate_displacement",
+            "arguments": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_HZJKz9GGzlQ3tRL8TQh92347",
+          "type": "function",
+          "function": {
+            "name": "kinematics_calculate_final_speed",
+            "arguments": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+          }
+        }
+      ],
+      "prompt_tokens": 729,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 217,
+      "output_tokens": 190,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "kinematics_calculate_displacement": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+    },
+    {
+      "kinematics_calculate_final_speed": "{\"initial_speed\": 5, \"acceleration\": 2, \"time\": 10, \"rounding\": 2}"
+    }
+  ]
+}

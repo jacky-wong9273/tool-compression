@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_18-16-0",
+  "category": "live_parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+        },
+        {
+          "Events_3_FindEvents": "{\"event_type\": \"Theater\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+        }
+      ],
+      "content": "I'll search for both music and theater events in San Diego on that date.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_0LoIz9WdcYGw1fhuxHtc0692",
+          "type": "function",
+          "function": {
+            "name": "Events_3_FindEvents",
+            "arguments": "{\"event_type\": \"Music\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_mBaim3ik32ojSFejGbUa8823",
+          "type": "function",
+          "function": {
+            "name": "Events_3_FindEvents",
+            "arguments": "{\"event_type\": \"Theater\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1845,
+      "prompt_cache_hit_tokens": 1536,
+      "prompt_cache_miss_tokens": 309,
+      "output_tokens": 171,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+    },
+    {
+      "Events_3_FindEvents": "{\"event_type\": \"Theater\", \"city\": \"San Diego, CA\", \"date\": \"2023-03-01\"}"
+    }
+  ]
+}

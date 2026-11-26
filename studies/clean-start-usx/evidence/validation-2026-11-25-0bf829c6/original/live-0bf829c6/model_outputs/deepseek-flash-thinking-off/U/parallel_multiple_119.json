@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_119",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "player_stats_get_all_time_goals": "{\"player_name\": \"Cristiano Ronaldo\", \"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+        },
+        {
+          "team_stats_get_top_scorer": "{\"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+        },
+        {
+          "league_stats_get_top_scorer": "{\"league_name\": \"Premier League\", \"season\": \"2019-2020\"}"
+        }
+      ],
+      "content": "I'll gather all three pieces of information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_EioXnBn3fswikvt13qR79043",
+          "type": "function",
+          "function": {
+            "name": "player_stats_get_all_time_goals",
+            "arguments": "{\"player_name\": \"Cristiano Ronaldo\", \"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_lmPwt0lZRhOp5hRB2KIy2677",
+          "type": "function",
+          "function": {
+            "name": "team_stats_get_top_scorer",
+            "arguments": "{\"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_Z5yquZigsUZ78Sa4cDyh9101",
+          "type": "function",
+          "function": {
+            "name": "league_stats_get_top_scorer",
+            "arguments": "{\"league_name\": \"Premier League\", \"season\": \"2019-2020\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 661,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 149,
+      "output_tokens": 203,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "player_stats_get_all_time_goals": "{\"player_name\": \"Cristiano Ronaldo\", \"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+    },
+    {
+      "team_stats_get_top_scorer": "{\"team_name\": \"Manchester United\", \"competition\": \"Premier League\"}"
+    },
+    {
+      "league_stats_get_top_scorer": "{\"league_name\": \"Premier League\", \"season\": \"2019-2020\"}"
+    }
+  ]
+}

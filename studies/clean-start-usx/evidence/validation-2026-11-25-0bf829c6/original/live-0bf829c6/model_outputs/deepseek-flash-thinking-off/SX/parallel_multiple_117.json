@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_117",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "concert_book_ticket": "{\"artist\": \"Taylor Swift\", \"location\": \"New York\", \"add_ons\": [\"VIP Seating\"]}"
+        },
+        {
+          "concert_book_ticket": "{\"artist\": \"Ed Sheeran\", \"location\": \"Los Angeles\", \"add_ons\": [\"Backstage Pass\", \"Parking Pass\"]}"
+        },
+        {
+          "festival_book_ticket": "{\"festival\": \"Coachella\", \"location\": \"Indio\", \"add_ons\": [\"Camping Pass\", \"Parking Pass\"]}"
+        }
+      ],
+      "content": "I'll help you book all three tickets. Let me process these bookings for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_oCyP24ukh62OdavN4JpJ4184",
+          "type": "function",
+          "function": {
+            "name": "concert_book_ticket",
+            "arguments": "{\"artist\": \"Taylor Swift\", \"location\": \"New York\", \"add_ons\": [\"VIP Seating\"]}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_yT2kB7xK7DWZorgxdMJX6561",
+          "type": "function",
+          "function": {
+            "name": "concert_book_ticket",
+            "arguments": "{\"artist\": \"Ed Sheeran\", \"location\": \"Los Angeles\", \"add_ons\": [\"Backstage Pass\", \"Parking Pass\"]}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_V10jByR17BHV6XHls0pa6744",
+          "type": "function",
+          "function": {
+            "name": "festival_book_ticket",
+            "arguments": "{\"festival\": \"Coachella\", \"location\": \"Indio\", \"add_ons\": [\"Camping Pass\", \"Parking Pass\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 640,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 256,
+      "output_tokens": 250,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "concert_book_ticket": "{\"artist\": \"Taylor Swift\", \"location\": \"New York\", \"add_ons\": [\"VIP Seating\"]}"
+    },
+    {
+      "concert_book_ticket": "{\"artist\": \"Ed Sheeran\", \"location\": \"Los Angeles\", \"add_ons\": [\"Backstage Pass\", \"Parking Pass\"]}"
+    },
+    {
+      "festival_book_ticket": "{\"festival\": \"Coachella\", \"location\": \"Indio\", \"add_ons\": [\"Camping Pass\", \"Parking Pass\"]}"
+    }
+  ]
+}

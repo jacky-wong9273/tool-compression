@@ -8,11 +8,44 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint"
+    "x_compares_action_sentences_of_the_u_catalogue"
   ],
   "held_out_functions": [],
   "excluded_function_present": [],
-  "changes": [],
+  "changes": [
+    {
+      "arm": "S",
+      "function": "ControlAppliance_execute",
+      "pointer": "/function/description",
+      "before": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines. Note that the provided function is in Python 3 syntax.",
+      "after": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "HNA_WQA_search",
+      "pointer": "/function/description",
+      "before": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs. Note that the provided function is in Python 3 syntax.",
+      "after": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "HNA_NEWS_search",
+      "pointer": "/function/description",
+      "before": "Searches for recent events and news based on the specified keyword. Note that the provided function is in Python 3 syntax.",
+      "after": "Searches for recent events and news based on the specified keyword.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "cookbook_search_recipe",
+      "pointer": "/function/description",
+      "before": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list. Note that the provided function is in Python 3 syntax.",
+      "after": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list.",
+      "change_class": "hint_context"
+    }
+  ],
   "arms": {
     "U": [
       {
@@ -265,7 +298,7 @@
         "type": "function",
         "function": {
           "name": "ControlAppliance_execute",
-          "description": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines. Note that the provided function is in Python 3 syntax.",
+          "description": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines.",
           "parameters": {
             "type": "object",
             "required": [
@@ -289,7 +322,7 @@
         "type": "function",
         "function": {
           "name": "HNA_WQA_search",
-          "description": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs. Note that the provided function is in Python 3 syntax.",
+          "description": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs.",
           "parameters": {
             "type": "object",
             "required": [
@@ -334,7 +367,7 @@
         "type": "function",
         "function": {
           "name": "HNA_NEWS_search",
-          "description": "Searches for recent events and news based on the specified keyword. Note that the provided function is in Python 3 syntax.",
+          "description": "Searches for recent events and news based on the specified keyword.",
           "parameters": {
             "type": "object",
             "required": [
@@ -391,7 +424,7 @@
         "type": "function",
         "function": {
           "name": "cookbook_search_recipe",
-          "description": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list. Note that the provided function is in Python 3 syntax.",
+          "description": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list.",
           "parameters": {
             "type": "object",
             "required": [
@@ -675,7 +708,7 @@
         "type": "function",
         "function": {
           "name": "ControlAppliance_execute",
-          "description": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines. Note that the provided function is in Python 3 syntax.",
+          "description": "This function is designed for controlling a home appliance, checking its current status and settings, as well as monitoring indoor air properties like air quality and temperature. For control commands, the input must clearly specify 'power on' or 'start'. To check the status, the input must include the keyword '확인'. Note that this tool is not intended for describing, creating, deleting, or removing modes or routines.",
           "parameters": {
             "type": "object",
             "required": [
@@ -699,7 +732,7 @@
         "type": "function",
         "function": {
           "name": "HNA_WQA_search",
-          "description": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs. Note that the provided function is in Python 3 syntax.",
+          "description": "Retrieve up-to-date information by searching the web using keywords. This is particularly useful for queries regarding topics that change frequently, such as the current president, recent movies, or popular songs.",
           "parameters": {
             "type": "object",
             "required": [
@@ -744,7 +777,7 @@
         "type": "function",
         "function": {
           "name": "HNA_NEWS_search",
-          "description": "Searches for recent events and news based on the specified keyword. Note that the provided function is in Python 3 syntax.",
+          "description": "Searches for recent events and news based on the specified keyword.",
           "parameters": {
             "type": "object",
             "required": [
@@ -801,7 +834,7 @@
         "type": "function",
         "function": {
           "name": "cookbook_search_recipe",
-          "description": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list. Note that the provided function is in Python 3 syntax.",
+          "description": "Searches for cooking recipes based on a provided keyword. Returns a list of recipes that contain the keyword in their title or ingredients list.",
           "parameters": {
             "type": "object",
             "required": [

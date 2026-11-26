@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_0-0-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "ChaFod": "{\"foodItem\": \"Caesar salad\", \"removeIngredients\": \"anchovies\"}"
+        },
+        {
+          "ChaDri_change_drink": "{\"drink_id\": \"123\", \"new_preferences\": {\"size\": \"large\", \"temperature\": \"hot\", \"sweetness_level\": \"regular\", \"milk_type\": \"almond\"}}"
+        }
+      ],
+      "content": "I'll update both your food and drink orders now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ATr4wP1pxrZwZInygZ4A9570",
+          "type": "function",
+          "function": {
+            "name": "ChaFod",
+            "arguments": "{\"foodItem\": \"Caesar salad\", \"removeIngredients\": \"anchovies\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ZoBbOOURx1R174ScLfLz9350",
+          "type": "function",
+          "function": {
+            "name": "ChaDri_change_drink",
+            "arguments": "{\"drink_id\": \"123\", \"new_preferences\": {\"size\": \"large\", \"temperature\": \"hot\", \"sweetness_level\": \"regular\", \"milk_type\": \"almond\"}}"
+          }
+        }
+      ],
+      "prompt_tokens": 812,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 172,
+      "output_tokens": 150,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "ChaFod": "{\"foodItem\": \"Caesar salad\", \"removeIngredients\": \"anchovies\"}"
+    },
+    {
+      "ChaDri_change_drink": "{\"drink_id\": \"123\", \"new_preferences\": {\"size\": \"large\", \"temperature\": \"hot\", \"sweetness_level\": \"regular\", \"milk_type\": \"almond\"}}"
+    }
+  ]
+}

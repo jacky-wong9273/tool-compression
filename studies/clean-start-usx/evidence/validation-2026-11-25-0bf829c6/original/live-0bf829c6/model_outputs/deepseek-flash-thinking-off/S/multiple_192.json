@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_192",
+  "category": "multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "currency_conversion_convert": "{\"amount\": 150, \"from_currency\": \"EUR\", \"to_currency\": \"CAD\"}"
+        }
+      ],
+      "content": "I'll convert 150 Euros to Canadian dollars for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_45egenn0YiFL01ryDfAv3487",
+          "type": "function",
+          "function": {
+            "name": "currency_conversion_convert",
+            "arguments": "{\"amount\": 150, \"from_currency\": \"EUR\", \"to_currency\": \"CAD\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 653,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 141,
+      "output_tokens": 87,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "currency_conversion_convert": "{\"amount\": 150, \"from_currency\": \"EUR\", \"to_currency\": \"CAD\"}"
+    }
+  ]
+}

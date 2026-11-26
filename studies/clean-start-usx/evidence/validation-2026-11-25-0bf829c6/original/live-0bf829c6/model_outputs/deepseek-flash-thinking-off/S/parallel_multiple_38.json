@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_38",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "us_history_life_expectancy": "{\"year\": 1900}"
+        },
+        {
+          "us_history_life_expectancy": "{\"year\": 1950}"
+        },
+        {
+          "us_history_gdp": "{\"year\": 1900}"
+        },
+        {
+          "us_history_gdp": "{\"year\": 1950}"
+        }
+      ],
+      "content": "I'll look up the life expectancy and GDP for both years.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_VZSKNhvyPwAwYyhDBGoI5652",
+          "type": "function",
+          "function": {
+            "name": "us_history_life_expectancy",
+            "arguments": "{\"year\": 1900}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_WMkgikMPTL4tDOFekrMJ3310",
+          "type": "function",
+          "function": {
+            "name": "us_history_life_expectancy",
+            "arguments": "{\"year\": 1950}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_CLFdtdxOGRwNEDJoF8SO9587",
+          "type": "function",
+          "function": {
+            "name": "us_history_gdp",
+            "arguments": "{\"year\": 1900}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_6oVvFkjjuyzhPxd9I5jR8189",
+          "type": "function",
+          "function": {
+            "name": "us_history_gdp",
+            "arguments": "{\"year\": 1950}"
+          }
+        }
+      ],
+      "prompt_tokens": 422,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 166,
+      "output_tokens": 151,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "us_history_life_expectancy": "{\"year\": 1900}"
+    },
+    {
+      "us_history_life_expectancy": "{\"year\": 1950}"
+    },
+    {
+      "us_history_gdp": "{\"year\": 1900}"
+    },
+    {
+      "us_history_gdp": "{\"year\": 1950}"
+    }
+  ]
+}

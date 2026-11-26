@@ -1,0 +1,43 @@
+{
+  "case_id": "parallel_multiple_55",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "recipe_search": "{\"ingredient\": \"spaghetti\", \"dietary_requirements\": [\"gluten_free\"], \"isHomemade\": true}"
+        }
+      ],
+      "content": "I'll search for a homemade gluten-free spaghetti recipe, then get the prep time and nutrition info for it.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_tl0raS2aaWVnFgO1qO5r2550",
+          "type": "function",
+          "function": {
+            "name": "recipe_search",
+            "arguments": "{\"ingredient\": \"spaghetti\", \"dietary_requirements\": [\"gluten_free\"], \"isHomemade\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 585,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 201,
+      "output_tokens": 102,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "recipe_search": "{\"ingredient\": \"spaghetti\", \"dietary_requirements\": [\"gluten_free\"], \"isHomemade\": true}"
+    }
+  ]
+}

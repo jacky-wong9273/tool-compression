@@ -1,0 +1,43 @@
+{
+  "case_id": "live_relevance_13-13-0",
+  "category": "live_relevance",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Movies_1_FindMovies": "{\"location\": \"San Francisco, CA\", \"theater_name\": \"3rd Street Cinema\", \"show_type\": \"imax\"}"
+        }
+      ],
+      "content": "I'd be happy to help you get IMAX movie tickets at 3rd Street Cinema for Saturday, October 1st, 2023. Let me first find out what IMAX movies are showing there.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_7u3D444IACSy8QN6QJwR2075",
+          "type": "function",
+          "function": {
+            "name": "Movies_1_FindMovies",
+            "arguments": "{\"location\": \"San Francisco, CA\", \"theater_name\": \"3rd Street Cinema\", \"show_type\": \"imax\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1817,
+      "prompt_cache_hit_tokens": 1664,
+      "prompt_cache_miss_tokens": 153,
+      "output_tokens": 125,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Movies_1_FindMovies": "{\"location\": \"San Francisco, CA\", \"theater_name\": \"3rd Street Cinema\", \"show_type\": \"imax\"}"
+    }
+  ]
+}

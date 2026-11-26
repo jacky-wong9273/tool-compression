@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_114",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "sculpture_create_custom": "{\"item\": \"horse\", \"material\": \"Marble\", \"size\": 20}"
+        },
+        {
+          "sculpture_create_custom": "{\"item\": \"dog\", \"material\": \"Wood\", \"size\": 15}"
+        },
+        {
+          "painting_create_custom": "{\"subject\": \"sunset\", \"color\": \"Red\", \"size\": 30}"
+        },
+        {
+          "painting_create_custom": "{\"subject\": \"cityscape\", \"color\": \"Blue\", \"size\": 25}"
+        }
+      ],
+      "content": "I'll place all four orders for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_OiwZzDFSZrSKsonDsNBX3266",
+          "type": "function",
+          "function": {
+            "name": "sculpture_create_custom",
+            "arguments": "{\"item\": \"horse\", \"material\": \"Marble\", \"size\": 20}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_JLaQ4HX9gk0djVj2O0Y72206",
+          "type": "function",
+          "function": {
+            "name": "sculpture_create_custom",
+            "arguments": "{\"item\": \"dog\", \"material\": \"Wood\", \"size\": 15}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_muop4kmNErs3NcD1VyD28805",
+          "type": "function",
+          "function": {
+            "name": "painting_create_custom",
+            "arguments": "{\"subject\": \"sunset\", \"color\": \"Red\", \"size\": 30}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_yJOhGbnY5cA7RJ9K6O4q9191",
+          "type": "function",
+          "function": {
+            "name": "painting_create_custom",
+            "arguments": "{\"subject\": \"cityscape\", \"color\": \"Blue\", \"size\": 25}"
+          }
+        }
+      ],
+      "prompt_tokens": 621,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 237,
+      "output_tokens": 275,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "sculpture_create_custom": "{\"item\": \"horse\", \"material\": \"Marble\", \"size\": 20}"
+    },
+    {
+      "sculpture_create_custom": "{\"item\": \"dog\", \"material\": \"Wood\", \"size\": 15}"
+    },
+    {
+      "painting_create_custom": "{\"subject\": \"sunset\", \"color\": \"Red\", \"size\": 30}"
+    },
+    {
+      "painting_create_custom": "{\"subject\": \"cityscape\", \"color\": \"Blue\", \"size\": 25}"
+    }
+  ]
+}

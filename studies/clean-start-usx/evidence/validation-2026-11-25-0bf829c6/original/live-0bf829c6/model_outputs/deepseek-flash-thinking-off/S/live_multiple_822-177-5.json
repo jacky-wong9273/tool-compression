@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_822-177-5",
+  "category": "live_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"Seattle, WA\", \"date\": \"2023-03-12\"}"
+        }
+      ],
+      "content": "I'll search for music events in Seattle on that date.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_yRb7zBWn3lqPmJvmhaF18446",
+          "type": "function",
+          "function": {
+            "name": "Events_3_FindEvents",
+            "arguments": "{\"event_type\": \"Music\", \"city\": \"Seattle, WA\", \"date\": \"2023-03-12\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1263,
+      "prompt_cache_hit_tokens": 768,
+      "prompt_cache_miss_tokens": 495,
+      "output_tokens": 93,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Events_3_FindEvents": "{\"event_type\": \"Music\", \"city\": \"Seattle, WA\", \"date\": \"2023-03-12\"}"
+    }
+  ]
+}

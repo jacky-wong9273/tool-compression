@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_67",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "math_roots_quadratic": "{\"a\": 3, \"b\": 4, \"c\": -7}"
+        },
+        {
+          "math_roots_cubic": "{\"a\": 2, \"b\": -5, \"c\": 3, \"d\": -1}"
+        },
+        {
+          "math_roots_polynomial": "{\"coefficients\": [6, -3, 2, -1, 1], \"degree\": 4}"
+        }
+      ],
+      "content": "I'll calculate the roots for all three equations.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_3JwmmttDGHH8MAMkIl1d0302",
+          "type": "function",
+          "function": {
+            "name": "math_roots_quadratic",
+            "arguments": "{\"a\": 3, \"b\": 4, \"c\": -7}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_TO90Jc77BN57ak3AZzNl4182",
+          "type": "function",
+          "function": {
+            "name": "math_roots_cubic",
+            "arguments": "{\"a\": 2, \"b\": -5, \"c\": 3, \"d\": -1}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_xh1SfOsdNKwN4qz0tuBS3276",
+          "type": "function",
+          "function": {
+            "name": "math_roots_polynomial",
+            "arguments": "{\"coefficients\": [6, -3, 2, -1, 1], \"degree\": 4}"
+          }
+        }
+      ],
+      "prompt_tokens": 917,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 789,
+      "output_tokens": 227,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "math_roots_quadratic": "{\"a\": 3, \"b\": 4, \"c\": -7}"
+    },
+    {
+      "math_roots_cubic": "{\"a\": 2, \"b\": -5, \"c\": 3, \"d\": -1}"
+    },
+    {
+      "math_roots_polynomial": "{\"coefficients\": [6, -3, 2, -1, 1], \"degree\": 4}"
+    }
+  ]
+}

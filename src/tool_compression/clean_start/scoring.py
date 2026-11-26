@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import os
 
 from tool_compression.clean_start.categories import category_from_id, result_group
 from tool_compression.clean_start.pin import (
@@ -81,6 +82,30 @@ def assistant_history(message: dict) -> dict:
     return history
 
 
+def decode_execute(result: object) -> list[str]:
+    """Port of pinned ``convert_to_function_call`` for an FC model.
+
+    Raises exactly where the pinned decoder raises: a content string, a non-JSON
+    argument string, or arguments that are not an object. The official loop
+    ends the turn on that exception.
+    """
+    calls = [result] if isinstance(result, dict) else result
+    strings = []
+    for call in calls:
+        for name, value in call.items():
+            if isinstance(value, str):
+                value = json.loads(value)
+            strings.append(f"{name}({','.join(f'{key}={repr(item)}' for key, item in value.items())})")
+    return strings
+
+
+def is_empty_execute_response(decoded: list) -> bool:
+    """Port of pinned ``is_empty_execute_response``."""
+    if len(decoded) == 0:
+        return True
+    return len(decoded) == 1 and len(decoded[0]) == 0
+
+
 def to_execution_strings(result: object) -> list[str]:
     """Same shape as BFCL ``convert_to_function_call`` for the official executor."""
     if not isinstance(result, list):
@@ -100,9 +125,17 @@ def to_execution_strings(result: object) -> list[str]:
 def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict, arm: str) -> Path:
     path = out_dir / result_relative(case_id, thinking, arm)
     path.parent.mkdir(parents=True, exist_ok=True)
+    created = not path.exists()
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
         handle.flush()
+        os.fsync(handle.fileno())
+    if created:
+        descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
     return path
 
 
@@ -148,7 +181,12 @@ def evaluate_instructions() -> str:
         "not an incomplete result file. Do not pass all_scoring.\n\n"
         "The pinned BFCL model list has no deepseek-flash entry. Register each of "
         "the eight directory names before evaluate, with model_name "
-        f"'{REQUEST_MODEL}', is_fc_model True, and DeepSeekAPIHandler. Then, from "
+        f"'{REQUEST_MODEL}', is_fc_model True, underscore_to_dot True, and "
+        "DeepSeekAPIHandler, the same flags as the pinned DeepSeek-V3.2-Exp-FC entry. "
+        "underscore_to_dot must be True: tool names are sent with '.' replaced by '_', "
+        "and with False every dotted gold name scores as wrong_func_name. "
+        "python -m tool_compression.clean_start evaluate --out <out> --bfcl-root <checkout> "
+        "--thinking <off|on|off,on> does this registration in-process. Otherwise, from "
         "the berkeley-function-call-leaderboard checkout, run one study category "
         "and one model directory at a time. --result-dir is the directory that "
         "contains those eight model directories. Pass an absolute path when "

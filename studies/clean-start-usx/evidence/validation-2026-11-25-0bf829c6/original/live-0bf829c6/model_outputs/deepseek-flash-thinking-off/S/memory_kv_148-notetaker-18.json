@@ -1,0 +1,124 @@
+{
+  "case_id": "memory_kv_148-notetaker-18",
+  "category": "memory_kv",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_key_search": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+        },
+        {
+          "archival_memory_key_search": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+        }
+      ],
+      "content": "I don't have any information about a system downtime on Tuesday in my memory.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_19SOj8ykH5XYHDVyM3Go3792",
+          "type": "function",
+          "function": {
+            "name": "core_memory_key_search",
+            "arguments": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_GpPfgJYKFI5lLwLoFWI00797",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_key_search",
+            "arguments": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2298,
+      "prompt_cache_hit_tokens": 2048,
+      "prompt_cache_miss_tokens": 250,
+      "output_tokens": 95,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_key_search(query='system downtime Tuesday maintenance window')",
+        "archival_memory_key_search(query='system downtime Tuesday maintenance window')"
+      ],
+      "tool_outputs": [
+        "{\"ranked_results\": [[0.0, \"tax_documents_submission\"], [0.0, \"daycare_monthly_payment\"], [0.0, \"school_admission_paperwork\"], [0.0, \"pediatrician_visit\"], [0.0, \"workout_goals\"]]}",
+        "{\"ranked_results\": [[17.048845830573416, \"tuesday_downtime\"], [7.8636512654486515, \"monday_team_meeting\"], [7.8636512654486515, \"vendor_followups\"], [7.8636512654486515, \"benefits_package_review\"], [7.8636512654486515, \"leadership_slides_tweak\"]]}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 1,
+      "result": [
+        {
+          "archival_memory_retrieve": "{\"key\": \"tuesday_downtime\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_PRS5MGrLD3ITZyrWBaWK3376",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_retrieve",
+            "arguments": "{\"key\": \"tuesday_downtime\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2576,
+      "prompt_cache_hit_tokens": 2304,
+      "prompt_cache_miss_tokens": 272,
+      "output_tokens": 47,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_retrieve(key='tuesday_downtime')"
+      ],
+      "tool_outputs": [
+        "{\"value\": \"Tuesday system downtime 10 AM\\u201312 PM slowed workflow.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 2,
+      "result": "{'answer': '10 AM - 12 PM', 'context': \"Retrieved the 'tuesday_downtime' entry from archival memory, which states the Tuesday system downtime was 10 AM–12 PM.\"}",
+      "content": "{'answer': '10 AM - 12 PM', 'context': \"Retrieved the 'tuesday_downtime' entry from archival memory, which states the Tuesday system downtime was 10 AM–12 PM.\"}",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 2652,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 220,
+      "output_tokens": 46,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    }
+  ],
+  "scorable": true,
+  "result": [
+    [
+      [
+        {
+          "core_memory_key_search": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+        },
+        {
+          "archival_memory_key_search": "{\"query\": \"system downtime Tuesday maintenance window\"}"
+        }
+      ],
+      [
+        {
+          "archival_memory_retrieve": "{\"key\": \"tuesday_downtime\"}"
+        }
+      ],
+      "{'answer': '10 AM - 12 PM', 'context': \"Retrieved the 'tuesday_downtime' entry from archival memory, which states the Tuesday system downtime was 10 AM–12 PM.\"}"
+    ]
+  ],
+  "forced_quit": false
+}

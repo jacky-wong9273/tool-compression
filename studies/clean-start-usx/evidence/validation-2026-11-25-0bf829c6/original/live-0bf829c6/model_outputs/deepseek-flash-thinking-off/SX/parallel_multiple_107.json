@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_107",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "library_search_books": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+        },
+        {
+          "google_books_search": "{\"genre\": \"mystery\"}"
+        },
+        {
+          "openlibrary_books_search": "{\"genre\": \"mystery\"}"
+        }
+      ],
+      "content": "I'll help you search for a mystery novel across all three sources. Let me start with the New York City library, then check Google Books and Open Library.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_XuAmmtaATpD6Ecxpc4xM1854",
+          "type": "function",
+          "function": {
+            "name": "library_search_books",
+            "arguments": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_2gNOTv0XsOplOyvpx0Bw0061",
+          "type": "function",
+          "function": {
+            "name": "google_books_search",
+            "arguments": "{\"genre\": \"mystery\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_ADOHNMFEcKmpmV3FbHuH1088",
+          "type": "function",
+          "function": {
+            "name": "openlibrary_books_search",
+            "arguments": "{\"genre\": \"mystery\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 627,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 243,
+      "output_tokens": 155,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "library_search_books": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+    },
+    {
+      "google_books_search": "{\"genre\": \"mystery\"}"
+    },
+    {
+      "openlibrary_books_search": "{\"genre\": \"mystery\"}"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_65",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "realestate_find_properties": "{\"location\": \"San Francisco, CA\", \"propertyType\": \"condo\", \"bedrooms\": 2, \"budget\": {\"min\": 500000, \"max\": 800000}}"
+        },
+        {
+          "property_valuation_get": "{\"location\": \"Los Angeles, CA\", \"propertyType\": \"villa\", \"bedrooms\": 3, \"age\": 5}"
+        },
+        {
+          "property_valuation_get": "{\"location\": \"New York, NY\", \"propertyType\": \"apartment\", \"bedrooms\": 1, \"age\": 10}"
+        }
+      ],
+      "content": "I'll help you with all three requests. Let me look those up for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_6UInoA6E3tP0eH0Gfcfa7111",
+          "type": "function",
+          "function": {
+            "name": "realestate_find_properties",
+            "arguments": "{\"location\": \"San Francisco, CA\", \"propertyType\": \"condo\", \"bedrooms\": 2, \"budget\": {\"min\": 500000, \"max\": 800000}}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_00cbtqaakjPIXxOOYvhj8505",
+          "type": "function",
+          "function": {
+            "name": "property_valuation_get",
+            "arguments": "{\"location\": \"Los Angeles, CA\", \"propertyType\": \"villa\", \"bedrooms\": 3, \"age\": 5}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_LDcRK9DHEcAL2xTFVLAj7123",
+          "type": "function",
+          "function": {
+            "name": "property_valuation_get",
+            "arguments": "{\"location\": \"New York, NY\", \"propertyType\": \"apartment\", \"bedrooms\": 1, \"age\": 10}"
+          }
+        }
+      ],
+      "prompt_tokens": 721,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 209,
+      "output_tokens": 293,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "realestate_find_properties": "{\"location\": \"San Francisco, CA\", \"propertyType\": \"condo\", \"bedrooms\": 2, \"budget\": {\"min\": 500000, \"max\": 800000}}"
+    },
+    {
+      "property_valuation_get": "{\"location\": \"Los Angeles, CA\", \"propertyType\": \"villa\", \"bedrooms\": 3, \"age\": 5}"
+    },
+    {
+      "property_valuation_get": "{\"location\": \"New York, NY\", \"propertyType\": \"apartment\", \"bedrooms\": 1, \"age\": 10}"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_775-172-0",
+  "category": "live_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "RentalCars_3_GetCarsAvailable": "{\"city\": \"Las Vegas, NV\", \"start_date\": \"2023-10-01\", \"end_date\": \"2023-10-12\", \"pickup_time\": \"10:00\", \"car_type\": \"SUV\"}"
+        }
+      ],
+      "content": "I'll search for an SUV available in Las Vegas, NV from October 1 to October 12, 2023, with a 10:00 AM pickup.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_fmbU0BFsbLrzW8c3NZeD4581",
+          "type": "function",
+          "function": {
+            "name": "RentalCars_3_GetCarsAvailable",
+            "arguments": "{\"city\": \"Las Vegas, NV\", \"start_date\": \"2023-10-01\", \"end_date\": \"2023-10-12\", \"pickup_time\": \"10:00\", \"car_type\": \"SUV\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 845,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 205,
+      "output_tokens": 163,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "RentalCars_3_GetCarsAvailable": "{\"city\": \"Las Vegas, NV\", \"start_date\": \"2023-10-01\", \"end_date\": \"2023-10-12\", \"pickup_time\": \"10:00\", \"car_type\": \"SUV\"}"
+    }
+  ]
+}

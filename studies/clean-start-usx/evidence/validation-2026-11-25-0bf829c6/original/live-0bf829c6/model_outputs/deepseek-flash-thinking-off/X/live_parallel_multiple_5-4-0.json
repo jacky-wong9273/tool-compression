@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_5-4-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_news_report": "{\"location\": \"Paris, France\"}"
+        },
+        {
+          "get_current_weather": "{\"location\": \"Letterkenny, Ireland\", \"unit\": \"celsius\"}"
+        }
+      ],
+      "content": "I'll fetch both for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_bVSfDvEBq2JMaBykMv4W8479",
+          "type": "function",
+          "function": {
+            "name": "get_news_report",
+            "arguments": "{\"location\": \"Paris, France\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_3ig1IjKRPTcolXFzTLS42267",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"Letterkenny, Ireland\", \"unit\": \"celsius\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 524,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 140,
+      "output_tokens": 99,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_news_report": "{\"location\": \"Paris, France\"}"
+    },
+    {
+      "get_current_weather": "{\"location\": \"Letterkenny, Ireland\", \"unit\": \"celsius\"}"
+    }
+  ]
+}
