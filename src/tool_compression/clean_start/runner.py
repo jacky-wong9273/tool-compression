@@ -5,9 +5,19 @@ The default path does not read a provider key and does not open a socket.
 no max_tokens budget and no pre-send reserve. Before each request the running
 spend is compared with the ceiling and an attempt line is journalled. After each
 completed response the billed usage is recorded and the step is written to its
-sidecar, so a stopped trajectory keeps every billed step. Nothing is retried. A
-run that stops early is marked incomplete. An output directory that already
-holds provider evidence is refused, so a run is never resumed or doubled.
+sidecar, so a stopped trajectory keeps every billed step. A run that stops
+early is marked incomplete.
+
+By default nothing is retried. With ``retry_limit`` above 0, a send that fails
+in transport (timeout, dropped or incomplete read, HTTP 429 or 5xx) is sent
+again with the same body, at most ``retry_limit`` times, after the ceiling is
+checked again. Each try is its own journalled attempt, and a failed one stays
+listed as possibly billed. Nothing else in the slot has changed by then.
+
+A fresh run refuses an output directory that already holds provider evidence.
+``resume=True`` is the only way back into one: see ``resume.py``. Finished
+slots are skipped, the stopped slot is sent again from its first request, and
+the bill ledger's sum counts against the same ceiling.
 
 Trajectory categories follow the pinned BFCL function-calling loop: class
 instances are created before the first request, memory categories get the
@@ -25,9 +35,11 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
+import http.client
 import importlib.util
 import json
 import os
+import time
 
 from tool_compression.clean_start.categories import is_agentic, is_memory, is_trajectory, is_web_search
 from tool_compression.clean_start.pin import (
@@ -62,6 +74,9 @@ READ_TIMEOUT_SECONDS = 120.0
 TOTAL_DEADLINE_SECONDS = 900.0
 EVIDENCE_FILES = ("attempts.jsonl", "bills.jsonl", "run.json")
 ARM_ORDER = "rotated by case position: case i sends ARMS[i % 4:] + ARMS[:i % 4]"
+RETRY_LIMIT = 2
+RETRY_BACKOFF_SECONDS = (10.0, 30.0)
+RETRY_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
 
 
 class RunStopped(RuntimeError):
@@ -79,6 +94,18 @@ class ProviderHTTPError(RuntimeError):
         super().__init__(f"HTTP {status}")
         self.status = status
         self.body = body
+
+
+def is_transport_failure(exc: BaseException) -> bool:
+    """Failures where sending the same body again is the whole fix.
+
+    Timeouts (including the total deadline), dropped connections, incomplete
+    reads, TLS and DNS errors, and HTTP 429 or 5xx. Not other 4xx, such as 402
+    for an empty balance, and not a 200 whose body is unusable.
+    """
+    if isinstance(exc, ProviderHTTPError):
+        return exc.status in RETRY_HTTP_STATUSES
+    return isinstance(exc, (OSError, http.client.HTTPException))
 
 
 def parse_thinking_modes(text: str) -> tuple[str, ...]:
@@ -130,7 +157,8 @@ def post_chat(
     A socket timeout only bounds each read, so a server that keeps a queued
     request alive can hold it far longer. The total deadline closes the
     connection from outside and raises ``TotalDeadlineExceeded``. Either way the
-    request may already be billed, and the caller stops without retrying.
+    request may already be billed. The caller journals it as possibly billed and
+    either stops or, within its retry limit, sends the same body again.
     """
     import threading
     from urllib.parse import urlsplit
@@ -420,13 +448,29 @@ class OfficialBfclExecutor:
     def flush_prereq(self, case: dict, instances: dict) -> None:
         if len(instances) != 1:
             raise RunStopped("memory_instance_count")
-        next(iter(instances.values()))._flush_memory_to_local_file()
+        instance = next(iter(instances.values()))
+        instance._flush_memory_to_local_file()
+        folder = getattr(instance, "snapshot_folder", None)
+        written = [getattr(instance, "latest_snapshot_file", None)]
+        if folder is not None:
+            written.append(Path(folder) / f"{case['id']}.json")
+        for path in written:
+            if path is not None and Path(path).is_file():
+                _fsync_file(Path(path))
+
+
+def _fsync_file(path: Path) -> None:
+    with path.open("rb") as handle:
+        os.fsync(handle.fileno())
 
 
 def _write_json(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False, default=str) + "\n", encoding="utf-8")
+    with temporary.open("w", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, indent=2, ensure_ascii=False, default=str) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
     temporary.replace(path)
 
 
@@ -466,6 +510,8 @@ def _status(out_dir: Path, **fields) -> dict:
         "status": payload["status"],
         "reason": payload.get("reason"),
         "uncertain_attempts": payload.get("uncertain_attempts", []),
+        "unbilled_attempts": payload.get("unbilled_attempts", []),
+        "session": payload.get("session"),
         "rate_card": rate_card(),
     }
     _write_json(out_dir / "spend.json", spend)
@@ -541,19 +587,24 @@ def execute(
     clock=None,
     executor=None,
     identity: dict | None = None,
+    resume: bool = False,
+    retry_limit: int = 0,
+    sleep=None,
 ) -> dict:
-    """Send ``slots`` in order. ``thinking_modes`` is what a person authorised."""
+    """Send ``slots`` in order. ``thinking_modes`` is what a person authorised.
+
+    ``resume`` continues the run already in ``out_dir``. ``retry_limit`` is how
+    many times one failed send may be sent again.
+    """
     out_dir = Path(out_dir)
     if ceiling_usd <= 0:
         raise RunStopped("ceiling_not_positive")
+    if retry_limit < 0:
+        raise RunStopped("retry_limit_negative")
     modes = parse_thinking_modes(",".join(thinking_modes))
     leaked = sorted({slot["thinking"] for slot in slots} - set(modes))
     if leaked:
         raise RunStopped(f"thinking_mode_not_authorized:{','.join(leaked)}")
-    reused = refuse_reuse(out_dir)
-    if reused:
-        raise RunStopped(reused)
-    clock = clock or (lambda: datetime.now(timezone.utc))
     by_id = {}
     for case in cases:
         if case["id"] in by_id:
@@ -562,19 +613,50 @@ def execute(
     missing = [slot["case_id"] for slot in slots if slot["case_id"] not in by_id]
     if missing:
         raise RunStopped(f"slot_without_case:{missing[0]}")
+    plan = None
+    if resume:
+        from tool_compression.clean_start.resume import apply_resume, inspect_resume
+
+        plan = inspect_resume(
+            out_dir, cases, slots, identity=identity or {}, ceiling_usd=ceiling_usd, thinking_modes=modes,
+        )
+    else:
+        reused = refuse_reuse(out_dir)
+        if reused:
+            raise RunStopped(reused)
+    clock = clock or (lambda: datetime.now(timezone.utc))
+    sleep = sleep or time.sleep
     state = {
-        "running": Decimal("0"),
-        "sent": 0,
-        "billed": 0,
-        "attempt": 0,
+        "running": plan["prior_spend_usd"] if plan else Decimal("0"),
+        "sent": plan["finished_slots"] if plan else 0,
+        "billed": plan["prior_billed"] if plan else 0,
+        "attempt": plan["max_attempt"] if plan else 0,
         "open_attempt": None,
         "partial": [],
+        "retries": plan["prior_retries"] if plan else 0,
+        "unbilled": list(plan["unbilled_attempts"]) if plan else [],
+        "session": plan["session"] if plan else 1,
     }
+    started = clock().isoformat()
+    session_record = {"session": state["session"], "started_at": started, "resumed": plan is not None}
+    if plan:
+        applied = apply_resume(out_dir, plan, started)
+        session_record.update({
+            "prior_spend_usd": applied["prior_spend_usd"],
+            "finished_slots_skipped": applied["finished_slots"],
+            "next_slot": applied["next_slot"],
+            "abandoned_partial_usd": applied["abandoned_partial_usd"],
+            "actions": applied["actions"],
+        })
     common = {
         "slots_total": len(slots),
         "ceiling_usd": str(ceiling_usd),
         "provider_contacted": True,
         "identity": identity or {},
+        "session": state["session"],
+        "sessions": (plan["prior_sessions"] if plan else []) + [session_record],
+        "retry_limit": retry_limit,
+        "retry_backoff_seconds": list(RETRY_BACKOFF_SECONDS),
         **{key: value for key, value in plan_summary(slots, modes).items() if key != "slots_total"},
     }
 
@@ -585,6 +667,8 @@ def execute(
             requests_billed=state["billed"],
             running_usd=str(state["running"]),
             partial_slots=state["partial"],
+            retries=state["retries"],
+            unbilled_attempts=list(state["unbilled"]),
             **common,
             **fields,
         )
@@ -600,40 +684,64 @@ def execute(
             raise RunStopped("thinking_mode_not_authorized")
         if "max_tokens" in body:
             raise RunStopped("max_tokens_present")
-        if state["running"] >= ceiling_usd:
-            raise RunStopped("ceiling")
-        state["attempt"] += 1
-        number = state["attempt"]
         encoded = json.dumps(body, ensure_ascii=False, sort_keys=True).encode("utf-8")
-        sent_at = clock()
-        _append_jsonl(attempts, {
-            "attempt": number,
-            "event": "sent",
-            "case_id": slot["case_id"],
-            "arm": slot["arm"],
-            "thinking": slot["thinking"],
-            "turn": turn,
-            "step": step,
-            "sent_at": sent_at.isoformat(),
-            "body_sha256": sha256(encoded).hexdigest(),
-            "tools_sha256": sha256(json.dumps(body.get("tools") or [], ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest(),
-            "request_bytes": len(encoded),
-        })
-        state["open_attempt"] = number
-        try:
-            payload = transport(body)
-        except RunStopped:
-            raise
-        except Exception as exc:
-            _append_jsonl(attempts, {
+        tools_sha256 = sha256(
+            json.dumps(body.get("tools") or [], ensure_ascii=False, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        retry_of = None
+        tries = 0
+        while True:
+            if state["running"] >= ceiling_usd:
+                raise RunStopped("ceiling")
+            state["attempt"] += 1
+            number = state["attempt"]
+            sent_at = clock()
+            row = {
                 "attempt": number,
-                "event": "failed",
-                "at": clock().isoformat(),
-                "error": exc.__class__.__name__,
-                "http_status": getattr(exc, "status", None),
-                "may_be_billed": True,
-            })
-            raise RunStopped(f"provider_error:{exc.__class__.__name__}") from exc
+                "event": "sent",
+                "case_id": slot["case_id"],
+                "arm": slot["arm"],
+                "thinking": slot["thinking"],
+                "turn": turn,
+                "step": step,
+                "sent_at": sent_at.isoformat(),
+                "body_sha256": sha256(encoded).hexdigest(),
+                "tools_sha256": tools_sha256,
+                "request_bytes": len(encoded),
+                "session": state["session"],
+            }
+            if retry_of is not None:
+                row["retry_of"] = retry_of
+            _append_jsonl(attempts, row)
+            state["open_attempt"] = number
+            try:
+                payload = transport(body)
+            except RunStopped:
+                raise
+            except Exception as exc:
+                again = tries < retry_limit and is_transport_failure(exc)
+                _append_jsonl(attempts, {
+                    "attempt": number,
+                    "event": "failed",
+                    "at": clock().isoformat(),
+                    "error": exc.__class__.__name__,
+                    "http_status": getattr(exc, "status", None),
+                    "may_be_billed": True,
+                    "retried": again,
+                })
+                state["unbilled"].append({
+                    "attempt": number, "event": "failed", "session": state["session"],
+                    "case_id": slot["case_id"], "arm": slot["arm"],
+                })
+                if not again:
+                    raise RunStopped(f"provider_error:{exc.__class__.__name__}") from exc
+                state["open_attempt"] = None
+                state["retries"] += 1
+                sleep(RETRY_BACKOFF_SECONDS[min(tries, len(RETRY_BACKOFF_SECONDS) - 1)])
+                tries += 1
+                retry_of = number
+                continue
+            break
         try:
             message, parsed, at = _read_payload(payload, clock)
         except RunStopped as stopped:
@@ -643,6 +751,10 @@ def execute(
                 "at": clock().isoformat(),
                 "reason": stopped.reason,
                 "may_be_billed": True,
+            })
+            state["unbilled"].append({
+                "attempt": number, "event": "unusable_response", "session": state["session"],
+                "case_id": slot["case_id"], "arm": slot["arm"],
             })
             raise
         amount, band = spend_usd(
@@ -677,6 +789,7 @@ def execute(
             "running_usd": str(state["running"]),
             "request_model": REQUEST_MODEL,
             "billed": True,
+            "session": state["session"],
         })
         _append_jsonl(attempts, {"attempt": number, "event": "completed", "at": at.isoformat(), "billed": True})
         state["open_attempt"] = None
@@ -692,13 +805,17 @@ def execute(
             partial_presented_as_complete=False,
         )
 
-    for slot in slots:
+    skip = state["sent"]
+    for index, slot in enumerate(slots):
+        if index < skip:
+            continue
         if state["running"] >= ceiling_usd:
             return stop("ceiling")
         if slot["kind"] == "trajectory" and executor is None:
             return stop("trajectory_executor_required")
         case = by_id[slot["case_id"]]
         sidecar = _new_sidecar(case, slot)
+        sidecar["session"] = state["session"]
         try:
             if slot["kind"] == "single":
                 _run_single(case, slot, out_dir, send, sidecar)
