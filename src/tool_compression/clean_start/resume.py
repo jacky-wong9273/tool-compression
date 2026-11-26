@@ -1,13 +1,16 @@
 """Resume a stopped run in its own output directory.
 
 A slot is finished when its sidecar says ``finished`` and its result file holds
-exactly one line with its id. The runner stops at its first unfinished slot,
-so finished slots are a prefix of the slot order. Anything else is refused.
-The first unfinished slot is sent again from its first request: its stopped
-sidecar, and a result line it may have written before the box was lost, are
-moved under ``resume/session-<n>/``. ``attempts.jsonl`` and ``bills.jsonl``
-are never rewritten. Recorded spend is the sum of the bill ledger, and that sum
-counts against the same ceiling.
+exactly one line with its id. A slot is skipped when ``failures.jsonl`` holds
+its record; it has no result line and is not sent again. The runner stops at
+its first slot that is neither, so finished and skipped slots are a prefix of
+the slot order. Anything else is refused. The first other slot is sent again
+from its first request: its stopped sidecar, and a result line it may have
+written before the box was lost, are moved under ``resume/session-<n>/``.
+``attempts.jsonl``, ``bills.jsonl`` and ``failures.jsonl`` are never rewritten.
+A skipped slot whose sidecar was not yet marked when the box was lost is
+marked. Recorded spend is the sum of the bill ledger, and that sum counts
+against the same ceiling.
 
 Memory state. In pinned BFCL every entry of a scenario other than the ``-0``
 prerequisite loads ``<scenario>_final.json``, and only a prerequisite flush
@@ -37,6 +40,8 @@ from tool_compression.clean_start.scoring import registry_dir, result_model_name
 
 RESUME_DIR = "resume"
 RESUME_LOG = "resume.jsonl"
+FAILURES = "failures.jsonl"
+SKIP_KINDS = ("skipped", "dependency_skipped")
 
 
 def source_sha256() -> str:
@@ -145,7 +150,10 @@ def _ledgers(out_dir: Path) -> dict:
             events.setdefault(number, []).append(str(row.get("event")))
     if order != list(range(1, len(order) + 1)):
         raise _stop("resume_attempt_journal_gap")
+    from tool_compression.clean_start.runner import add_tokens, empty_tokens
+
     running = Decimal(0)
+    tokens = empty_tokens()
     billed: set[int] = set()
     for row in bills:
         number = row.get("attempt")
@@ -159,6 +167,7 @@ def _ledgers(out_dir: Path) -> dict:
         running += Decimal(str(row["usd"]))
         if Decimal(str(row["running_usd"])) != running:
             raise _stop(f"resume_bill_ledger_inconsistent:{number}")
+        add_tokens(tokens, row)
         billed.add(number)
     unbilled = []
     for number in order:
@@ -174,13 +183,40 @@ def _ledgers(out_dir: Path) -> dict:
         })
     return {
         "sent": sent,
+        "events": events,
         "bills": bills,
         "running": running,
+        "tokens": tokens,
         "unbilled": unbilled,
         "max_attempt": len(order),
         "retries": sum(1 for row in sent.values() if row.get("retry_of") is not None),
         "sessions": max([int(row.get("session", 1)) for row in sent.values()] or [0]),
     }
+
+
+def _failures(out_dir: Path, ledgers: dict, index_of: dict) -> dict[int, dict]:
+    """Skipped slots by slot index. Every skip names failed attempts that are in the journal."""
+    skipped: dict[int, dict] = {}
+    for number, row in enumerate(_rows(out_dir / FAILURES, FAILURES), 1):
+        key = (row.get("thinking"), row.get("arm"), row.get("case_id"))
+        index = index_of.get(key)
+        if row.get("kind") not in SKIP_KINDS or index is None:
+            raise _stop(f"resume_failure_record_for_no_slot:{number}")
+        if index in skipped:
+            raise _stop(f"resume_failure_recorded_twice:{row.get('case_id')}:{row.get('arm')}")
+        if row["kind"] == "skipped":
+            listed = row.get("attempts") or []
+            if not listed:
+                raise _stop(f"resume_failure_without_its_attempt:{row.get('case_id')}:{row.get('arm')}")
+            for item in listed:
+                attempt = item.get("attempt")
+                sent = ledgers["sent"].get(attempt)
+                if sent is None or "failed" not in (ledgers["events"].get(attempt) or []):
+                    raise _stop(f"resume_failure_without_its_attempt:{attempt}")
+                if (sent.get("thinking"), sent.get("arm"), sent.get("case_id")) != key:
+                    raise _stop(f"resume_failure_attempt_mismatch:{attempt}")
+        skipped[index] = row
+    return skipped
 
 
 def _result_lines(out_dir: Path) -> dict[str, list[tuple[int, dict]]]:
@@ -235,9 +271,11 @@ def inspect_resume(
             if index is None:
                 raise _stop(f"resume_result_line_for_no_slot:{label}:{number}")
             lines.setdefault(index, []).append((label, number))
+    skipped = _failures(out_dir, ledgers, index_of)
 
     first = None
     sidecar_of_first = None
+    unmarked: list[int] = []
     for index, slot in enumerate(slots):
         path = _sidecar_path(out_dir, slot)
         found = lines.get(index, [])
@@ -250,6 +288,12 @@ def inspect_resume(
             except (OSError, ValueError):
                 sidecar = {"status": "unreadable"}
         if first is None:
+            if index in skipped:
+                if found:
+                    raise _stop(f"resume_result_line_for_skipped_slot:{slot['case_id']}:{slot['arm']}")
+                if sidecar is None or sidecar.get("status") != "skipped":
+                    unmarked.append(index)
+                continue
             finished = (
                 sidecar is not None
                 and sidecar.get("status") == "finished"
@@ -260,10 +304,13 @@ def inspect_resume(
                 continue
             first = index
             sidecar_of_first = sidecar
+        elif index in skipped:
+            raise _stop(f"resume_failure_beyond_the_stop:{slot['case_id']}:{slot['arm']}")
         elif sidecar is not None or found:
             raise _stop(f"resume_finished_slots_not_a_prefix:{slot['case_id']}:{slot['arm']}")
 
     limit = len(slots) if first is None else first
+    broken = _broken_chains(slots, by_id, skipped, limit)
     abandoned = Decimal(0)
     for row in ledgers["bills"]:
         index = index_of.get((row.get("thinking"), row.get("arm"), row.get("case_id")))
@@ -277,6 +324,15 @@ def inspect_resume(
             raise _stop(f"resume_attempt_beyond_the_stop:{number}")
 
     actions: list[dict] = []
+    for index in unmarked:
+        slot = slots[index]
+        actions.append({
+            "kind": "mark_skipped",
+            "path": _relative(out_dir, _sidecar_path(out_dir, slot)),
+            "case_id": slot["case_id"],
+            "arm": slot["arm"],
+            "record": skipped[index],
+        })
     if first is not None:
         slot = slots[first]
         if first in lines:
@@ -288,7 +344,7 @@ def inspect_resume(
                 "path": _relative(out_dir, _sidecar_path(out_dir, slot)),
                 "why": f"sidecar of the slot sent again, status {sidecar_of_first.get('status')}",
             })
-    actions.extend(_memory_actions(out_dir, cases, slots, by_id, first))
+    actions.extend(_memory_actions(out_dir, cases, slots, by_id, first, set(skipped)))
 
     sessions_seen = [ledgers["sessions"], int(prior.get("session") or 1)]
     for row in _rows(out_dir / RESUME_LOG, RESUME_LOG):
@@ -314,10 +370,17 @@ def inspect_resume(
         "prior_sessions": list(prior.get("sessions") or []),
         "prior_spend_usd": ledgers["running"],
         "prior_billed": len(ledgers["bills"]),
+        "prior_tokens": ledgers["tokens"],
         "max_attempt": ledgers["max_attempt"],
         "prior_retries": ledgers["retries"],
         "unbilled_attempts": ledgers["unbilled"],
         "finished_slots": limit,
+        "prior_skipped": len(skipped),
+        "skipped_slots": [
+            {"index": index, "case_id": slots[index]["case_id"], "arm": slots[index]["arm"], "kind": row["kind"]}
+            for index, row in sorted(skipped.items())
+        ],
+        "broken_chains": broken,
         "slots_total": len(slots),
         "next_slot": next_slot,
         "abandoned_partial_usd": abandoned,
@@ -325,7 +388,31 @@ def inspect_resume(
     }
 
 
-def _memory_actions(out_dir: Path, cases, slots, by_id, first) -> list[dict]:
+def _broken_chains(slots, by_id, skipped: dict[int, dict], limit: int) -> list[dict]:
+    """Memory chains whose prerequisite was skipped. Every later slot of one is skipped too."""
+    from tool_compression.clean_start.runner import memory_chain
+
+    broken: dict[tuple, str] = {}
+    for index, slot in enumerate(slots[:limit]):
+        chain = memory_chain(slot, by_id[slot["case_id"]])
+        if chain is None:
+            continue
+        kind = skipped[index]["kind"] if index in skipped else None
+        if chain in broken:
+            if kind != "dependency_skipped":
+                raise _stop(f"resume_slot_after_its_chain_broke:{slot['case_id']}:{slot['arm']}")
+            continue
+        if kind == "dependency_skipped":
+            raise _stop(f"resume_dependency_skip_without_a_skipped_prerequisite:{slot['case_id']}:{slot['arm']}")
+        if kind == "skipped" and slot["prereq"]:
+            broken[chain] = slot["case_id"]
+    return [
+        {"thinking": key[0], "arm": key[1], "category": key[2], "scenario": key[3], "prereq": prereq}
+        for key, prereq in broken.items()
+    ]
+
+
+def _memory_actions(out_dir: Path, cases, slots, by_id, first, skipped: set[int] = frozenset()) -> list[dict]:
     chains: dict[tuple, list[int]] = {}
     for index, slot in enumerate(slots):
         case = by_id[slot["case_id"]]
@@ -343,8 +430,9 @@ def _memory_actions(out_dir: Path, cases, slots, by_id, first) -> list[dict]:
         def checkpoint(index: int) -> Path:
             return folder / "prereq_checkpoints" / f"{slots[index]['case_id']}.json"
 
-        done = [index for index in prereqs if first is None or index < first]
-        pending = [index for index in prereqs if index not in done]
+        # A skipped prerequisite never flushed: it stopped before its last turn.
+        done = [index for index in prereqs if (first is None or index < first) and index not in skipped]
+        pending = [index for index in prereqs if first is not None and index >= first]
         for index in pending[1:]:
             if checkpoint(index).exists():
                 raise _stop(f"resume_memory_checkpoint_ahead_of_the_stop:{_relative(out_dir, checkpoint(index))}")
@@ -386,6 +474,8 @@ def describe(plan: dict) -> dict:
         "prior_retries": plan["prior_retries"],
         "unbilled_attempts": plan["unbilled_attempts"],
         "finished_slots": plan["finished_slots"],
+        "skipped_slots": len(plan.get("skipped_slots") or []),
+        "broken_chains": plan.get("broken_chains") or [],
         "slots_total": plan["slots_total"],
         "next_slot": plan["next_slot"],
         "abandoned_partial_usd": str(plan["abandoned_partial_usd"]),
@@ -401,6 +491,9 @@ def _fsync_write(path: Path, data: bytes) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     temporary.replace(path)
+    from tool_compression.clean_start.runner import fsync_dir
+
+    fsync_dir(path.parent)
 
 
 def _move(out_dir: Path, session_dir: Path, relative: str) -> None:
@@ -450,6 +543,26 @@ def apply_resume(out_dir: Path, plan: dict, at: str) -> dict:
                 path.unlink()
         elif action["kind"] == "quarantine":
             _move(out_dir, session_dir, action["path"])
+        elif action["kind"] == "mark_skipped":
+            path = out_dir / action["path"]
+            sidecar = {}
+            if path.is_file():
+                _keep_copy(out_dir, session_dir, action["path"])
+                try:
+                    sidecar = json.loads(path.read_text(encoding="utf-8"))
+                except (OSError, ValueError):
+                    sidecar = {}
+            if not isinstance(sidecar, dict):
+                sidecar = {}
+            record = action["record"]
+            sidecar.setdefault("case_id", record["case_id"])
+            sidecar.setdefault("category", record.get("category"))
+            sidecar.setdefault("arm", record["arm"])
+            sidecar.setdefault("thinking", record["thinking"])
+            sidecar.setdefault("steps", [])
+            sidecar.pop("stage", None)
+            sidecar.update({"status": "skipped", "scorable": False, "skip": record, "marked_on_resume": True})
+            _fsync_write(path, (json.dumps(sidecar, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
         elif action["kind"] == "restore_snapshot":
             final = out_dir / action["path"]
             restored = (out_dir / action["from"]).read_bytes() if action["from"] else None

@@ -125,10 +125,17 @@ def to_execution_strings(result: object) -> list[str]:
 def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict, arm: str) -> Path:
     path = out_dir / result_relative(case_id, thinking, arm)
     path.parent.mkdir(parents=True, exist_ok=True)
+    created = not path.exists()
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
         handle.flush()
         os.fsync(handle.fileno())
+    if created:
+        descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
     return path
 
 
