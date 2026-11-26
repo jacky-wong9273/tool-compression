@@ -13,7 +13,9 @@ by repointing this path. There is no second flag.
 The live ceiling is $42, inside the 280 CNY prepaid balance. The planning
 upper is an allowance. It is not required to fit under $42, and the draw is
 not shrunk to fit the old $11.50 pack limit. A fat-tail run priced at the
-allowance can stop at $42 before the 20% sample completes.
+allowance can stop at $42 before the 20% sample completes. The check that
+replaced the old refusal is the observed-mean path with every send after
+Friday 09:00 HKT billed at peak, at each pace profile, at or under $42.
 """
 
 from __future__ import annotations
@@ -30,7 +32,7 @@ from tool_compression.clean_start.categories import is_memory, is_multi_turn
 from tool_compression.clean_start.load import load_prereqs
 from tool_compression.clean_start.pilot import build_draw, study_dir
 from tool_compression.clean_start.pin import ARMS, OFFICIAL_SETTLEMENT, STEP_LIMIT, STUDY_ID
-from tool_compression.clean_start.rate_card import OFF_PEAK_PER_MILLION
+from tool_compression.clean_start.rate_card import OFF_PEAK_PER_MILLION, is_peak
 from tool_compression.clean_start.scope import in_scope_questions, study_categories
 from tool_compression.config import LOCAL_TOKENIZER
 from tool_compression.count import TiktokenCounter, dump_request
@@ -116,8 +118,19 @@ HKT = ZoneInfo("Asia/Hong_Kong")
 START_HKT = datetime(2026, 11, 26, 18, 0, tzinfo=HKT)
 FRIDAY_PEAK_HKT = datetime(2026, 11, 27, 9, 0, tzinfo=HKT)
 
+PACE_PROFILES = {
+    "observed_at_1.9s": {"memory": Decimal("1.9"), "other": Decimal("1.9")},
+    "observed_at_2.0s": {"memory": Decimal("2.0"), "other": Decimal("2.0")},
+    "observed_at_3.3s": {"memory": Decimal("3.3"), "other": Decimal("3.3")},
+    "observed_memory_at_3.3s_rest_at_2.0s": {"memory": Decimal("3.3"), "other": Decimal("2.0")},
+}
+
 DRAW_FILE = Path("preliminary") / "draw.json"
 COST_FILE = Path("preliminary") / "cost.json"
+# The file bytes of the committed draw.json and the thinking-off slot order.
+# A live run, fresh or resumed, refuses anything else.
+COMMITTED_DRAW_SHA256 = "2904904116ca21ad8830f4bb2dfaaf9cfd1773124315a8a26fe934f3490a785a"
+COMMITTED_SLOT_SHA256 = "a794ab88779d6ef75a0d8928d32359512b19a9aad435587e9c53b8d502421f7f"
 C47_BILLS = Path("evidence/pilot-2026-11-25-revised-c47b186c/original/live-c47b186c/bills.jsonl")
 VALIDATION_BILLS = Path("evidence/validation-2026-11-25-0bf829c6/original/live-0bf829c6/bills.jsonl")
 FLIGHTS = (("c47b186c", C47_BILLS), ("0bf829c6", VALIDATION_BILLS))
@@ -641,6 +654,7 @@ def observed_mean(cases: list[dict]) -> dict:
         family = _family(case["category"])
         draw_turns[family] = draw_turns.get(family, 0) + len(case["question"])
     families = {}
+    rates = {}
     usd = Decimal(0)
     sends = Decimal(0)
     memory_sends = Decimal(0)
@@ -663,7 +677,9 @@ def observed_mean(cases: list[dict]) -> dict:
                 chosen_bucket = bucket
                 chosen_cost = cost
         arm_turns = Decimal(turns) * Decimal(len(ARMS))
-        family_sends = arm_turns * Decimal(chosen_bucket["requests"]) / Decimal(len(chosen_bucket["turns"]))
+        steps_per_arm_turn = Decimal(chosen_bucket["requests"]) / Decimal(len(chosen_bucket["turns"]))
+        rates[family] = {"sends": steps_per_arm_turn, "usd": chosen_cost}
+        family_sends = arm_turns * steps_per_arm_turn
         family_usd = arm_turns * chosen_cost
         usd += family_usd
         sends += family_sends
@@ -690,11 +706,76 @@ def observed_mean(cases: list[dict]) -> dict:
             "not part of this mean."
         ),
         "families": families,
+        "rates": rates,
         "usd": usd,
         "sends": sends,
         "memory_sends": memory_sends,
         "other_sends": other_sends,
     }
+
+
+def _peak_windows(days: int = 8) -> list[tuple[Decimal, Decimal]]:
+    """Rate-card peak windows as seconds after START_HKT. HKT has no DST."""
+    windows = []
+    first = START_HKT.date()
+    for offset in range(days):
+        day = first + timedelta(days=offset)
+        for begin, end in ((9, 12), (14, 18)):
+            low = datetime(day.year, day.month, day.day, begin, tzinfo=HKT)
+            high = datetime(day.year, day.month, day.day, end, tzinfo=HKT)
+            if not is_peak(low) or high <= START_HKT:
+                continue
+            windows.append((
+                Decimal(int((max(low, START_HKT) - START_HKT).total_seconds())),
+                Decimal(int((high - START_HKT).total_seconds())),
+            ))
+    return windows
+
+
+def observed_with_peak(cases: list[dict], observed: dict) -> dict:
+    """The observed-mean path in run order, with sends inside a peak window at double price.
+
+    Each case's sends are spread evenly over its own stretch of the clock at
+    the profile's pace. A send that falls inside a rate-card peak window costs
+    twice its off-peak price. Memory runs last, so the peak share is memory.
+    """
+    windows = _peak_windows()
+    profiles = {}
+    for name, pace in PACE_PROFILES.items():
+        elapsed = Decimal(0)
+        premium = Decimal(0)
+        peak_sends = Decimal(0)
+        for case in cases:
+            family = _family(case["category"])
+            rate = observed["rates"][family]
+            arm_turns = Decimal(len(case["question"])) * Decimal(len(ARMS))
+            sends = arm_turns * rate["sends"]
+            usd = arm_turns * rate["usd"]
+            seconds = sends * pace["memory" if family == "memory" else "other"]
+            low, high = elapsed, elapsed + seconds
+            overlap = sum(
+                (max(Decimal(0), min(high, end) - max(low, begin)) for begin, end in windows),
+                Decimal(0),
+            )
+            if seconds > 0 and overlap > 0:
+                premium += usd * overlap / seconds
+                peak_sends += sends * overlap / seconds
+            elapsed = high
+        done = START_HKT + timedelta(
+            microseconds=int((elapsed * Decimal(1_000_000)).to_integral_value(ROUND_HALF_UP))
+        )
+        profiles[name] = {
+            "finish_hkt": done.isoformat(),
+            "peak_sends": _usd(peak_sends),
+            "peak_premium_usd": _usd(premium),
+            "usd": _usd(observed["usd"] + premium),
+            "_usd": observed["usd"] + premium,
+        }
+    worst = max(profiles, key=lambda key: profiles[key]["_usd"])
+    highest = profiles[worst]["_usd"]
+    for row in profiles.values():
+        row.pop("_usd")
+    return {"profiles": profiles, "worst": worst, "usd": highest}
 
 
 def _finish(sends: Decimal, seconds_per_request: Decimal) -> dict:
@@ -723,6 +804,12 @@ def preliminary_report() -> dict:
             "do not shrink this 20% draw to fit $42"
         )
     observed = observed_mean(cases)
+    peaked = observed_with_peak(cases, observed)
+    if peaked["usd"] > CEILING_USD:
+        raise RuntimeError(
+            f"observed-mean path with the Friday peak (${_usd(peaked['usd'])} at "
+            f"{peaked['worst']}) exceeds the ${CEILING_USD} ceiling"
+        )
     mixed_seconds = observed["other_sends"] * Decimal("2.0") + observed["memory_sends"] * Decimal("3.3")
     mixed_done = START_HKT + timedelta(
         microseconds=int((mixed_seconds * Decimal(1_000_000)).to_integral_value(ROUND_HALF_UP))
@@ -840,6 +927,18 @@ def preliminary_report() -> dict:
         "observed_mean_sends": _usd(observed["sends"]),
         "observed_mean": observed["rule"],
         "observed_by_family": observed["families"],
+        "observed_mean_with_friday_peak_usd": _usd(peaked["usd"]),
+        "observed_mean_with_friday_peak_cny": _cny(peaked["usd"]),
+        "observed_mean_with_friday_peak_worst_pace": peaked["worst"],
+        "observed_mean_with_friday_peak": peaked["profiles"],
+        "ceiling_check": (
+            "The check that replaced the old pack limit: at every pace profile, the "
+            "observed-mean path in run order, with each send inside a rate-card peak "
+            "window (09:00-12:00 and 14:00-18:00 HKT on a weekday) billed at double "
+            "the off-peak price, must be at or under the $42 ceiling. The builder, "
+            "the committed-cost loader, and the live CLI all refuse otherwise. The "
+            "allowance upper is not compared with the ceiling."
+        ),
         "start_hkt": START_HKT.isoformat(),
         "friday_peak_hkt": FRIDAY_PEAK_HKT.isoformat(),
         "duration": {**finishes, **allowance_finish},
@@ -856,8 +955,8 @@ def preliminary_report() -> dict:
         ),
         "full_run_follow_up": (
             "The full in-scope thinking-off fly is 3,127 scoring questions plus 111 memory "
-            "prerequisites, 12,952 slots. It is not this draw. It needs a larger budget, and "
-            "the runner still has no retry and no resume."
+            "prerequisites, 12,952 slots. It is not this draw. It needs a larger budget. "
+            "Retry and --resume are wired for --preliminary only."
         ),
     }
 
@@ -898,4 +997,9 @@ def load_committed_cost() -> dict:
         raise RuntimeError(
             "committed preliminary upper fits under the ceiling; this 20% draw is not shrunk to fit"
         )
+    if report["draw_sha256"] != COMMITTED_DRAW_SHA256:
+        raise RuntimeError("preliminary/draw.json is not the committed 20% draw")
+    peaked = report.get("observed_mean_with_friday_peak_usd")
+    if peaked is None or Decimal(peaked) > CEILING_USD:
+        raise RuntimeError("committed observed-mean path with the Friday peak is not at or under $42")
     return report

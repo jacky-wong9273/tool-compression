@@ -22,7 +22,11 @@ from tool_compression.clean_start.load import load_prereqs
 from tool_compression.clean_start.pilot import build_draw, study_dir
 from tool_compression.clean_start.preliminary import (
     CEILING_USD,
+    COMMITTED_DRAW_SHA256,
+    COMMITTED_SLOT_SHA256,
     FRACTION,
+    PACE_PROFILES,
+    START_HKT,
     build_preliminary_draw,
     derived_allowances,
     load_committed_cost,
@@ -196,6 +200,22 @@ def test_cost_file_matches_the_report_and_leaves_the_upper_above_the_ceiling():
     assert duration["allowance_at_1.9s"]["before_friday_peak"] is False
     assert duration["allowance_at_2.0s"]["before_friday_peak"] is False
     assert duration["allowance_at_3.3s"]["before_friday_peak"] is False
+    assert Decimal(cost["observed_mean_with_friday_peak_usd"]) == Decimal("25.759637")
+    assert Decimal(cost["observed_mean_with_friday_peak_usd"]) <= CEILING_USD
+    assert cost["observed_mean_with_friday_peak_worst_pace"] == "observed_at_3.3s"
+    peaked = cost["observed_mean_with_friday_peak"]
+    assert set(peaked) == set(PACE_PROFILES)
+    for pace in ("observed_at_1.9s", "observed_at_2.0s"):
+        assert peaked[pace]["peak_premium_usd"] == "0.000000"
+        assert peaked[pace]["usd"] == cost["observed_mean_usd"]
+    assert peaked["observed_at_3.3s"]["peak_premium_usd"] == "4.187352"
+    assert peaked["observed_at_3.3s"]["peak_sends"] == "3346.736126"
+    assert peaked["observed_memory_at_3.3s_rest_at_2.0s"]["usd"] == "23.041855"
+    for pace, row in peaked.items():
+        assert row["finish_hkt"] == duration[pace]["finish_hkt"]
+    assert "peak window" in cost["ceiling_check"] and "$42" in cost["ceiling_check"]
+    assert cost["draw_sha256"] == COMMITTED_DRAW_SHA256 == DRAW_SHA
+    assert COMMITTED_SLOT_SHA256 == SLOT_SHA
     source = preliminary_module.__file__
     text = open(source, encoding="utf-8").read()
     assert "possible_answer" not in text
@@ -296,3 +316,135 @@ def test_preliminary_rejects_other_modes(tmp_path, argv):
 
     assert main(argv + [str(tmp_path)]) == 2
     assert not (tmp_path / "run.json").exists()
+
+
+def test_peak_windows_follow_the_rate_card():
+    from datetime import timedelta
+
+    from tool_compression.clean_start.preliminary import _peak_windows
+    from tool_compression.clean_start.rate_card import is_peak
+
+    windows = _peak_windows()
+    assert windows[:2] == [(Decimal(15 * 3600), Decimal(18 * 3600)), (Decimal(20 * 3600), Decimal(24 * 3600))]
+    for begin, end in windows:
+        assert is_peak(START_HKT + timedelta(seconds=int(begin)))
+        assert is_peak(START_HKT + timedelta(seconds=int(end) - 1))
+        assert not is_peak(START_HKT + timedelta(seconds=int(end)))
+    assert is_peak(START_HKT - timedelta(seconds=1))
+    assert not is_peak(START_HKT)
+
+
+def test_committed_cost_and_cli_refuse_a_peak_path_over_the_ceiling(tmp_path, monkeypatch, capsys):
+    root = tmp_path / "study"
+    (root / "preliminary").mkdir(parents=True)
+    (root / "preliminary" / "draw.json").write_bytes((STUDY / "preliminary" / "draw.json").read_bytes())
+    cost = json.loads((STUDY / "preliminary" / "cost.json").read_text(encoding="utf-8"))
+    cost["observed_mean_with_friday_peak_usd"] = "42.000001"
+    (root / "preliminary" / "cost.json").write_text(json.dumps(cost), encoding="utf-8")
+    monkeypatch.setattr(preliminary_module, "study_dir", lambda: root)
+    with pytest.raises(RuntimeError, match="Friday peak"):
+        load_committed_cost()
+    monkeypatch.undo()
+
+    real = load_committed_cost()
+    monkeypatch.setattr(preliminary_module, "load_committed_cost", lambda: {**real, "observed_mean_with_friday_peak_usd": "42.5"})
+    monkeypatch.setattr(
+        "tool_compression.clean_start.__main__.authorized_transport",
+        lambda: (_ for _ in ()).throw(AssertionError("transport")),
+    )
+    from tool_compression.clean_start.__main__ import main
+
+    code = main([
+        "run", "--preliminary", "--live", "--authorize-live", "--thinking", "off",
+        "--memory-prereqs", "matched", "--ceiling-usd", "42", "--out", str(tmp_path / "out"),
+    ])
+    assert code == 2
+    assert "Friday peak $42.5 exceeds ceiling $42" in capsys.readouterr().err
+    assert not (tmp_path / "out").exists()
+
+
+def test_the_builder_refuses_when_the_peak_path_would_not_fit(monkeypatch):
+    monkeypatch.setattr(preliminary_module, "CEILING_USD", Decimal("25"))
+    with pytest.raises(RuntimeError, match="Friday peak"):
+        preliminary_report()
+
+
+def _prior_preliminary_run(out):
+    from datetime import datetime, timezone
+
+    from tool_compression.clean_start.__main__ import run_identity
+    from tool_compression.clean_start.runner import ProviderHTTPError, build_slots, execute
+
+    noon = datetime(2026, 11, 26, 10, 30, tzinfo=timezone.utc)
+    text = {"choices": [{"message": {"role": "assistant", "content": "done"}}],
+            "usage": {"prompt_tokens": 100, "prompt_cache_miss_tokens": 100, "prompt_cache_hit_tokens": 0, "completion_tokens": 5}}
+    script = [text, text, text, ProviderHTTPError(500, "busy")]
+    sent = []
+
+    def transport(body):
+        sent.append(body)
+        item = script.pop(0)
+        if isinstance(item, BaseException):
+            raise item
+        return item
+
+    cases = select_preliminary_cases()
+    cost = load_committed_cost()
+    identity = run_identity(cases, pilot=False, memory_prereqs="matched", preliminary=True, cost=cost)
+    result = execute(
+        cases, build_slots(cases, ("off",)), out, transport, ceiling_usd=CEILING_USD,
+        thinking_modes=("off",), clock=lambda: noon, identity=identity,
+    )
+    assert result["slots_sent"] == 3 and len(sent) == 4
+    return result
+
+
+def test_preliminary_resume_check_reports_without_writing_and_live_resume_refuses_before_the_key(
+    tmp_path, monkeypatch, capsys,
+):
+    calls = []
+    monkeypatch.setattr(
+        "tool_compression.clean_start.__main__.authorized_transport",
+        lambda: calls.append("transport") or (_ for _ in ()).throw(AssertionError("transport")),
+    )
+    monkeypatch.setattr(
+        "tool_compression.clean_start.runner.read_provider_key",
+        lambda: (_ for _ in ()).throw(AssertionError("key")),
+    )
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    from tool_compression.clean_start.__main__ import main
+
+    out = tmp_path / "flight"
+    prior = _prior_preliminary_run(out)
+    snapshot = {path: path.read_bytes() for path in out.rglob("*") if path.is_file()}
+    base = ["run", "--preliminary", "--thinking", "off", "--memory-prereqs", "matched", "--ceiling-usd", "42"]
+
+    capsys.readouterr()
+    assert main(base + ["--resume", "--out", str(out)]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["resume_check"] is True and report["provider_contacted"] is False
+    assert report["finished_slots"] == 3 and report["slots_total"] == 2952
+    assert report["next_slot"]["index"] == 3
+    assert report["session"] == 2
+    assert report["prior_spend_usd"] == prior["running_usd"]
+    assert [row["attempt"] for row in report["unbilled_attempts"]] == [4]
+    assert {path: path.read_bytes() for path in out.rglob("*") if path.is_file()} == snapshot
+
+    assert main(base[:1] + ["--preliminary", "--live", "--authorize-live"] + base[2:] + ["--resume", "--out", str(out)]) == 2
+    assert "refusing before any request" in capsys.readouterr().err
+    assert main(base[:1] + ["--preliminary", "--live", "--authorize-live"] + base[2:] + ["--out", str(out)]) == 2
+    assert "--resume to continue that run" in capsys.readouterr().err
+    assert main(["run", "--resume", "--out", str(out)]) == 2
+    assert "--preliminary only" in capsys.readouterr().err
+    assert {path: path.read_bytes() for path in out.rglob("*") if path.is_file()} == snapshot
+    assert calls == []
+
+    run = json.loads((out / "run.json").read_text(encoding="utf-8"))
+    assert run["identity"]["draw_sha256"] == DRAW_SHA
+    assert run["slot_sha256"] == SLOT_SHA
+    run["identity"]["draw_sha256"] = "0" * 64
+    (out / "run.json").write_text(json.dumps(run), encoding="utf-8")
+    assert main(base + ["--resume", "--out", str(out)]) == 2
+    assert "refusing to resume: resume_draw_mismatch" in capsys.readouterr().err
+    assert main(base + ["--resume", "--out", str(tmp_path / "nothing")]) == 2
+    assert "resume_without_prior_run" in capsys.readouterr().err

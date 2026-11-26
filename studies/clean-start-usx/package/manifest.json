@@ -55,7 +55,9 @@
     "validation_flown_sent_digest": "PYTHONPATH=<worktree of 0bf829c6>/src python scripts/clean_start_sent_digest.py validation",
     "score_existing_results": "python -m tool_compression.clean_start evaluate --out <run dir> --bfcl-root <pinned gorilla checkout> --thinking off",
     "validation_dry_plan": "python -m tool_compression.clean_start run --validation --thinking off --memory-prereqs matched --ceiling-usd 20 --out <new empty dir>",
-    "preliminary_dry_plan": "python -m tool_compression.clean_start run --preliminary --thinking off --memory-prereqs matched --ceiling-usd 42 --out <new empty dir>"
+    "preliminary_dry_plan": "python -m tool_compression.clean_start run --preliminary --thinking off --memory-prereqs matched --ceiling-usd 42 --out <new empty dir>",
+    "preliminary_resume_check": "python -m tool_compression.clean_start run --preliminary --resume --thinking off --memory-prereqs matched --ceiling-usd 42 --out <the stopped run dir>",
+    "preliminary_resume": "python -m tool_compression.clean_start run --preliminary --live --authorize-live --thinking off --memory-prereqs matched --ceiling-usd 42 --bfcl-root <pinned gorilla checkout> --out <the stopped run dir> --resume"
   },
   "files": {
     "EXAMPLES.md": "2c470333bc58f6cf8320d0b58e9cb3dde30b03ee23f75b2fa3df547ef2d70934",
