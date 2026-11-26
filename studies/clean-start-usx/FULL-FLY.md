@@ -78,6 +78,8 @@ python -m tool_compression.clean_start evaluate \
 
 Why. On 69f33cdc, `run.json` advertised `read_timeout_seconds: 120`. Attempt 218 was sent at 18:16:31 HKT and failed with `TimeoutError` at 18:24:24 HKT, 473 s later. DeepSeek keeps a queued non-streaming request open by sending blank lines. Every byte restarted the 120 s socket timer, so the blank lines held it for about six minutes, and then 120 s of silence raised the error. A socket timeout bounds one read, not a request. The new deadline is a wall clock over the whole try, enforced from outside the reading thread. Tests run it against a local server that trickles keep-alive bytes. One test waits out the real 20 s; an opt-in test (`TC_REAL_DEADLINES=1`) waits out 20 s and then 60 s.
 
+Is 20 s long enough? The archived flights have 3,380 completed sends: 899 on c47b186c and 2,481 on 0bf829c6. Their slowest answer took 10.8 s, on a `memory_kv` prerequisite. None took more than 15 s. On 0bf829c6 the median was 1.84 s and the 99th percentile 3.25 s. So 20 s is about twice the slowest answer seen, and a try that reaches it is very likely queued, not working. Before the full fly, read the latency tail of the 20% run's `attempts.jsonl` (`completed.at` minus `sent_at`). If more than a few answers took over 15 s, raise this before flying, because the 20 s deadline would then cut real answers.
+
 The preliminary policy is unchanged: two retries after 10 s and 30 s, a 120 s socket timeout and a 900 s total deadline, then stop. The in-flight 20% run stays on 69f33cdc. It must be resumed from the 69f33cdc checkout, because a resume from this tip is refused on `source_sha256`.
 
 ## Resume
@@ -166,6 +168,15 @@ On the box that will run it, before the live command:
 - `--out` is a new empty directory on storage that outlives the box. Do not reuse a pilot, validation or preliminary directory.
 - The 20% preliminary is finished or stopped for good. Its directory and its 69f33cdc checkout are untouched.
 - The box clock is NTP-synced. It is Friday 27 Nov 2026 18:00 HKT or later, off-peak.
+
+## Risks
+
+- The 20 s / 60 s policy, the skip path and `--full --resume` are tested against local sockets and mocks, never live.
+- A try cut at its deadline may still be billed, because DeepSeek may finish it. It has no usage to record, so it is listed in `unbilled_attempts` and not counted in the running spend. The ceiling floor prices these tries in, but the provider balance is the final check.
+- A skipped memory prerequisite costs its arm 25 to 50 scoring slots. Stopping the run instead, and resuming, would keep those slots at the price of a manual resume. The package skips, as specified.
+- An outage of three or more consecutive slots stops the run, and it then needs a resume. During an outage two slots are skipped before the third stops the run. Those two stay skipped.
+- Official accuracy over all 3,127 questions counts skipped slots as incorrect. Many skips in one arm would bias the arm comparison, so read the `ledger` block before reading any accuracy.
+- A ceiling stop is final unless Jacky names a new ceiling. A resume with a different ceiling is refused, so a new ceiling needs a new decision on how to continue.
 
 ## What is in the fly
 
