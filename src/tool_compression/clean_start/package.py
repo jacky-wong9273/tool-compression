@@ -483,6 +483,10 @@ def build_package(out_dir: Path) -> dict:
                 "python -m tool_compression.clean_start run --validation --thinking off "
                 "--memory-prereqs matched --ceiling-usd 20 --out <new empty dir>"
             ),
+            "preliminary_dry_plan": (
+                "python -m tool_compression.clean_start run --preliminary --thinking off "
+                "--memory-prereqs matched --ceiling-usd 42 --out <new empty dir>"
+            ),
         },
         "files": {},
     }
