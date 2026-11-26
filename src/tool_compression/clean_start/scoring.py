@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import os
 
 from tool_compression.clean_start.categories import category_from_id, result_group
 from tool_compression.clean_start.pin import (
@@ -127,6 +128,7 @@ def append_result(out_dir: Path, case_id: str, thinking: str, entry: dict, arm: 
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
         handle.flush()
+        os.fsync(handle.fileno())
     return path
 
 
