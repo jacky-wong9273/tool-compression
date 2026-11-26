@@ -229,4 +229,6 @@ Before the live command, on the box that will run it:
 
 ## Follow-up
 
-The full in-scope thinking-off fly is still unsent: 3,127 scoring questions plus 111 memory prerequisites, 3,238 conversations, 12,952 slots. It is a follow-up for when a larger budget exists. Retry and `--resume` are wired for `--preliminary` only. The full fly would need the same wiring. This preliminary draw does not settle it. `official_settlement` stays false.
+The full in-scope thinking-off fly is still unsent: 3,127 scoring questions plus 111 memory prerequisites, 3,238 conversations, 12,952 slots. It is packaged in [FULL-FLY.md](FULL-FLY.md) behind `run --full`, with a 20 s wall-clock first deadline, one 60 s retry, skip-and-record, and `--resume`. It needs a ceiling Jacky has not named yet. This preliminary draw does not settle it. `official_settlement` stays false.
+
+The preliminary's own policy is unchanged on later tips: two retries after 10 s and 30 s, a 120 s socket timeout, and a 900 s total deadline. A run started on 69f33cdc resumes only from a 69f33cdc checkout. A later tip refuses it on `source_sha256`.
