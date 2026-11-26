@@ -8,16 +8,25 @@ completed response the billed usage is recorded and the step is written to its
 sidecar, so a stopped trajectory keeps every billed step. A run that stops
 early is marked incomplete.
 
-By default nothing is retried. With ``retry_limit`` above 0, a send that fails
-in transport (timeout, dropped or incomplete read, HTTP 429 or 5xx) is sent
-again with the same body, at most ``retry_limit`` times, after the ceiling is
-checked again. Each try is its own journalled attempt, and a failed one stays
-listed as possibly billed. Nothing else in the slot has changed by then.
+A ``SendPolicy`` says how long one try may take, how many tries a request
+gets, and what happens after the last one. By default nothing is retried and a
+failure stops the run. The preliminary policy sends a transport failure (timeout,
+dropped or incomplete read, HTTP 429 or 5xx) again with the same body at most
+twice, after 10 s and 30 s, and then stops. The full-fly policy gives the first
+try 20 s and one retry 60 s, both wall-clock from the send, and then skips the
+slot and records it in ``failures.jsonl``. Each try is its own journalled
+attempt, the ceiling is checked before each, and a failed one stays listed as
+possibly billed. Nothing else in the slot has changed by then.
+
+A skipped slot writes no result line, so official scoring sees it as missing.
+When a memory prerequisite is skipped, the rest of that arm's scenario chain is
+recorded as ``dependency_skipped`` and not sent, because its memory would not
+be the state pinned BFCL builds.
 
 A fresh run refuses an output directory that already holds provider evidence.
-``resume=True`` is the only way back into one: see ``resume.py``. Finished
-slots are skipped, the stopped slot is sent again from its first request, and
-the bill ledger's sum counts against the same ceiling.
+``resume=True`` is the only way back into one: see ``resume.py``. Finished and
+skipped slots are not sent again, the stopped slot is sent again from its first
+request, and the bill ledger's sum counts against the same ceiling.
 
 Trajectory categories follow the pinned BFCL function-calling loop: class
 instances are created before the first request, memory categories get the
@@ -31,6 +40,7 @@ the provider requires it when tools are sent.
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
 from hashlib import sha256
@@ -39,6 +49,8 @@ import http.client
 import importlib.util
 import json
 import os
+import socket
+import threading
 import time
 
 from tool_compression.clean_start.categories import is_agentic, is_memory, is_trajectory, is_web_search
@@ -72,11 +84,79 @@ from tool_compression.convert import to_openai_completions_tools
 
 READ_TIMEOUT_SECONDS = 120.0
 TOTAL_DEADLINE_SECONDS = 900.0
-EVIDENCE_FILES = ("attempts.jsonl", "bills.jsonl", "run.json")
+FAILURES_FILE = "failures.jsonl"
+EVIDENCE_FILES = ("attempts.jsonl", "bills.jsonl", FAILURES_FILE, "run.json")
 ARM_ORDER = "rotated by case position: case i sends ARMS[i % 4:] + ARMS[:i % 4]"
 RETRY_LIMIT = 2
 RETRY_BACKOFF_SECONDS = (10.0, 30.0)
 RETRY_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
+# After the deadline the socket is shut down; the worker thread then returns at
+# once. This bounds how long the caller waits for it to exit, not the deadline.
+SEVER_GRACE_SECONDS = 0.5
+DEADLINE_SCOPE = (
+    "wall clock from the start of the try: DNS, connect, TLS, request write, "
+    "response headers and the whole body. Keep-alive bytes do not extend it. "
+    "At the deadline the socket is shut down and the try fails."
+)
+
+
+@dataclass(frozen=True)
+class SendPolicy:
+    """How long one try may take, how many tries a request gets, and what follows the last.
+
+    ``attempt_deadlines`` are wall-clock seconds for the first try and each
+    retry, passed to the transport. ``None`` leaves the transport's own
+    ``READ_TIMEOUT_SECONDS`` per read and ``TOTAL_DEADLINE_SECONDS`` per try.
+    ``exhausted`` is ``stop`` or ``skip``. ``skip_streak_limit`` is how many
+    consecutive skipped slots are allowed before the next would-be skip stops
+    the run instead, so an outage does not skip its way through the catalogue.
+    """
+
+    name: str
+    retry_limit: int
+    attempt_deadlines: tuple[float, ...] | None
+    backoff_seconds: tuple[float, ...]
+    status_backoff_seconds: float | None
+    exhausted: str
+    skip_streak_limit: int | None = None
+
+    def __post_init__(self):
+        if self.retry_limit < 0:
+            raise ValueError("retry_limit must not be negative")
+        if self.exhausted not in {"stop", "skip"}:
+            raise ValueError(self.exhausted)
+        if self.attempt_deadlines is not None:
+            if len(self.attempt_deadlines) != self.retry_limit + 1 or min(self.attempt_deadlines) <= 0:
+                raise ValueError("one positive deadline per try")
+        if self.retry_limit and not self.backoff_seconds:
+            raise ValueError("a retrying policy names its backoff")
+
+    def deadline(self, tries: int) -> float | None:
+        if self.attempt_deadlines is None:
+            return None
+        return self.attempt_deadlines[tries]
+
+    def backoff(self, tries: int, exc: BaseException) -> float:
+        if self.status_backoff_seconds is not None and isinstance(exc, ProviderHTTPError):
+            return self.status_backoff_seconds
+        return self.backoff_seconds[min(tries, len(self.backoff_seconds) - 1)]
+
+    def describe(self) -> dict:
+        deadlines = None if self.attempt_deadlines is None else list(self.attempt_deadlines)
+        return {
+            "name": self.name,
+            "tries": self.retry_limit + 1,
+            "retries": self.retry_limit,
+            "attempt_deadlines_seconds": deadlines,
+            "deadline_scope": DEADLINE_SCOPE if deadlines else None,
+            "read_timeout_seconds": deadlines or READ_TIMEOUT_SECONDS,
+            "total_deadline_seconds": deadlines or TOTAL_DEADLINE_SECONDS,
+            "backoff_seconds": list(self.backoff_seconds),
+            "status_backoff_seconds": self.status_backoff_seconds,
+            "retried": "timeouts, dropped or incomplete reads, TLS and DNS errors, HTTP 429 and 5xx",
+            "after_last_failure": "skip_and_record" if self.exhausted == "skip" else "stop",
+            "skip_streak_limit": self.skip_streak_limit,
+        }
 
 
 class RunStopped(RuntimeError):
@@ -86,7 +166,23 @@ class RunStopped(RuntimeError):
 
 
 class TotalDeadlineExceeded(TimeoutError):
-    """The whole request outlived the total deadline. It may still be billed."""
+    """The try outlived its wall-clock deadline. It may still be billed."""
+
+    def __init__(self, message: str, *, deadline_seconds: float | None = None, elapsed_seconds: float | None = None):
+        super().__init__(message)
+        self.deadline_seconds = deadline_seconds
+        self.elapsed_seconds = elapsed_seconds
+
+
+class SlotSkipped(Exception):
+    """The last try of a request failed in transport under a skipping policy."""
+
+    def __init__(self, turn: int, step: int, attempts: list[dict], error: BaseException):
+        super().__init__(error.__class__.__name__)
+        self.turn = turn
+        self.step = step
+        self.attempts = attempts
+        self.error = error
 
 
 class ProviderHTTPError(RuntimeError):
@@ -106,6 +202,53 @@ def is_transport_failure(exc: BaseException) -> bool:
     if isinstance(exc, ProviderHTTPError):
         return exc.status in RETRY_HTTP_STATUSES
     return isinstance(exc, (OSError, http.client.HTTPException))
+
+
+NO_RETRY_POLICY = SendPolicy(
+    name="no-retry",
+    retry_limit=0,
+    attempt_deadlines=None,
+    backoff_seconds=(),
+    status_backoff_seconds=None,
+    exhausted="stop",
+)
+# The policy the 20% preliminary flight started with on 69f33cdc. Unchanged.
+PRELIMINARY_POLICY = SendPolicy(
+    name="retry-2-backoff-10s-30s-stop",
+    retry_limit=RETRY_LIMIT,
+    attempt_deadlines=None,
+    backoff_seconds=RETRY_BACKOFF_SECONDS,
+    status_backoff_seconds=None,
+    exhausted="stop",
+)
+# Full in-scope fly. No pause after a timeout or a dropped connection: the
+# 20 s already waited is the pause. A fast 429 or 5xx answer waits 2 s first.
+FULL_FLY_POLICY = SendPolicy(
+    name="deadline-20s-retry-60s-skip",
+    retry_limit=1,
+    attempt_deadlines=(20.0, 60.0),
+    backoff_seconds=(0.0,),
+    status_backoff_seconds=2.0,
+    exhausted="skip",
+    skip_streak_limit=2,
+)
+
+
+def legacy_policy(retry_limit: int) -> SendPolicy:
+    if retry_limit < 0:
+        raise RunStopped("retry_limit_negative")
+    if retry_limit == 0:
+        return NO_RETRY_POLICY
+    if retry_limit == RETRY_LIMIT:
+        return PRELIMINARY_POLICY
+    return SendPolicy(
+        name=f"retry-{retry_limit}-backoff-10s-30s-stop",
+        retry_limit=retry_limit,
+        attempt_deadlines=None,
+        backoff_seconds=RETRY_BACKOFF_SECONDS,
+        status_backoff_seconds=None,
+        exhausted="stop",
+    )
 
 
 def parse_thinking_modes(text: str) -> tuple[str, ...]:
@@ -144,6 +287,32 @@ def read_provider_key() -> str:
     return str(key)
 
 
+def _sever(connection, sock=None) -> None:
+    """Shut the socket down under a blocked reader, so its read returns now.
+
+    Closing a socket from another thread does not wake a thread blocked in
+    ``recv`` on Linux, and closing the buffered response can block on the lock
+    that reader holds. ``shutdown`` on the raw socket does neither. ``sock`` is
+    the socket captured at connect: ``http.client`` drops ``connection.sock``
+    once a ``Connection: close`` response has its headers. Before a socket
+    exists (DNS or connect still running) the connection is closed.
+    """
+    sock = getattr(connection, "sock", None) or sock
+    if sock is None:
+        try:
+            connection.close()
+        except Exception:
+            pass
+        return
+    try:
+        if isinstance(sock, socket.socket):
+            socket.socket.shutdown(sock, socket.SHUT_RDWR)
+        else:
+            sock.shutdown(socket.SHUT_RDWR)
+    except (OSError, AttributeError):
+        pass
+
+
 def post_chat(
     body: dict,
     api_key: str,
@@ -151,51 +320,75 @@ def post_chat(
     read_timeout: float = READ_TIMEOUT_SECONDS,
     total_deadline: float = TOTAL_DEADLINE_SECONDS,
     connection_factory=None,
+    monotonic=time.monotonic,
 ) -> dict:
-    """POST one chat completion with a per-read timeout and a total deadline.
+    """POST one chat completion. ``total_deadline`` is wall clock for the whole try.
 
-    A socket timeout only bounds each read, so a server that keeps a queued
-    request alive can hold it far longer. The total deadline closes the
-    connection from outside and raises ``TotalDeadlineExceeded``. Either way the
-    request may already be billed. The caller journals it as possibly billed and
-    either stops or, within its retry limit, sends the same body again.
+    ``read_timeout`` is the socket timeout. It bounds each socket operation, not
+    the request: DeepSeek keeps a queued non-streaming request open by sending
+    blank lines, and every byte restarts that timer. On 69f33cdc that is how a
+    request advertised at 120 s failed with ``TimeoutError`` after 473 s: the
+    blank lines kept coming for about six minutes, then 120 s of silence. The
+    deadline here is measured from the start of the try over DNS, connect, TLS,
+    the request, the headers and the body. When it passes, the socket is shut
+    down, the worker is told not to send if it has not yet, and
+    ``TotalDeadlineExceeded`` carries the deadline and the elapsed time. The
+    request may already be billed. The caller journals it as possibly billed.
     """
-    import threading
     from urllib.parse import urlsplit
 
     url = urlsplit(API_URL)
+    per_operation = min(read_timeout, total_deadline)
     if connection_factory is None:
-        import http.client
         import ssl
 
         def connection_factory():
             return http.client.HTTPSConnection(
-                url.hostname, timeout=read_timeout, context=ssl.create_default_context()
+                url.hostname, timeout=per_operation, context=ssl.create_default_context()
             )
 
     payload = json.dumps(body).encode("utf-8")
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    began = monotonic()
     connection = connection_factory()
     outcome: dict = {}
+    done = threading.Event()
+    abandoned = threading.Event()
 
     def work():
         try:
+            connect = getattr(connection, "connect", None)
+            if connect is not None and getattr(connection, "sock", None) is None:
+                connect()
+            outcome["sock"] = getattr(connection, "sock", None)
+            if abandoned.is_set():
+                raise TotalDeadlineExceeded("abandoned before the request was written")
             connection.request("POST", url.path, body=payload, headers=headers)
             response = connection.getresponse()
             outcome["status"] = response.status
             outcome["data"] = response.read()
         except BaseException as exc:
             outcome["error"] = exc
+        finally:
+            try:
+                connection.close()
+            except Exception:
+                pass
+            done.set()
 
     worker = threading.Thread(target=work, daemon=True)
     worker.start()
-    worker.join(total_deadline)
-    if worker.is_alive():
-        try:
-            connection.close()
-        finally:
-            raise TotalDeadlineExceeded(f"no complete response within {total_deadline} seconds")
-    connection.close()
+    remaining = total_deadline - (monotonic() - began)
+    if not done.wait(max(0.0, remaining)):
+        elapsed = monotonic() - began
+        abandoned.set()
+        _sever(connection, outcome.get("sock"))
+        worker.join(SEVER_GRACE_SECONDS)
+        raise TotalDeadlineExceeded(
+            f"no complete response within {total_deadline} seconds",
+            deadline_seconds=total_deadline,
+            elapsed_seconds=elapsed,
+        )
     if "error" in outcome:
         raise outcome["error"]
     if outcome.get("status") != 200:
@@ -204,12 +397,19 @@ def post_chat(
 
 
 def authorized_transport():
-    """Build the live transport. This is the first point that reads the key."""
+    """Build the live transport. This is the first point that reads the key.
+
+    Without ``deadline`` a try keeps the 120 s socket timeout and 900 s total
+    deadline the earlier flights used. With one, both are that many seconds.
+    """
     api_key = read_provider_key()
 
-    def transport(body: dict) -> dict:
-        return post_chat(body, api_key)
+    def transport(body: dict, deadline: float | None = None) -> dict:
+        if deadline is None:
+            return post_chat(body, api_key)
+        return post_chat(body, api_key, read_timeout=deadline, total_deadline=deadline)
 
+    transport.enforces_deadline = True
     return transport
 
 
@@ -457,11 +657,26 @@ class OfficialBfclExecutor:
         for path in written:
             if path is not None and Path(path).is_file():
                 _fsync_file(Path(path))
+                fsync_dir(Path(path).parent)
 
 
 def _fsync_file(path: Path) -> None:
     with path.open("rb") as handle:
         os.fsync(handle.fileno())
+
+
+def fsync_dir(path: Path) -> None:
+    """Make a rename or a new entry in ``path`` survive a power loss."""
+    try:
+        descriptor = os.open(path, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(descriptor)
+    except OSError:
+        pass
+    finally:
+        os.close(descriptor)
 
 
 def _write_json(path: Path, payload: dict) -> None:
@@ -472,14 +687,44 @@ def _write_json(path: Path, payload: dict) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     temporary.replace(path)
+    fsync_dir(path.parent)
 
 
 def _append_jsonl(path: Path, row: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    created = not path.exists()
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(row, ensure_ascii=False) + "\n")
         handle.flush()
         os.fsync(handle.fileno())
+    if created:
+        fsync_dir(path.parent)
+
+
+TOKEN_FIELDS = (
+    "prompt_tokens",
+    "prompt_cache_hit_tokens",
+    "prompt_cache_miss_tokens",
+    "output_tokens",
+    "reasoning_tokens",
+)
+TOKEN_RULE = (
+    "total_tokens is prompt_tokens plus output_tokens over every billed request in bills.jsonl. "
+    "reasoning_tokens are inside output_tokens and are not added again."
+)
+
+
+def empty_tokens() -> dict:
+    return {field: 0 for field in TOKEN_FIELDS}
+
+
+def add_tokens(tally: dict, parsed: dict) -> None:
+    for field in TOKEN_FIELDS:
+        tally[field] += int(parsed.get(field) or 0)
+
+
+def token_summary(tally: dict) -> dict:
+    return {**tally, "total_tokens": tally["prompt_tokens"] + tally["output_tokens"], "rule": TOKEN_RULE}
 
 
 def _status(out_dir: Path, **fields) -> dict:
@@ -505,6 +750,7 @@ def _status(out_dir: Path, **fields) -> dict:
         "ceiling_usd": payload.get("ceiling_usd"),
         "slots_sent": payload.get("slots_sent", 0),
         "slots_total": payload.get("slots_total", 0),
+        "slots_skipped": payload.get("slots_skipped", 0),
         "requests_billed": payload.get("requests_billed", 0),
         "complete": payload["complete"],
         "status": payload["status"],
@@ -512,6 +758,7 @@ def _status(out_dir: Path, **fields) -> dict:
         "uncertain_attempts": payload.get("uncertain_attempts", []),
         "unbilled_attempts": payload.get("unbilled_attempts", []),
         "session": payload.get("session"),
+        "tokens": payload.get("tokens"),
         "rate_card": rate_card(),
     }
     _write_json(out_dir / "spend.json", spend)
@@ -590,17 +837,26 @@ def execute(
     resume: bool = False,
     retry_limit: int = 0,
     sleep=None,
+    policy: SendPolicy | None = None,
+    monotonic=None,
 ) -> dict:
     """Send ``slots`` in order. ``thinking_modes`` is what a person authorised.
 
-    ``resume`` continues the run already in ``out_dir``. ``retry_limit`` is how
-    many times one failed send may be sent again.
+    ``resume`` continues the run already in ``out_dir``. ``policy`` decides
+    deadlines, retries and what follows the last failed try. Without it,
+    ``retry_limit`` 0 is the no-retry policy and 2 is the preliminary policy.
     """
     out_dir = Path(out_dir)
     if ceiling_usd <= 0:
         raise RunStopped("ceiling_not_positive")
     if retry_limit < 0:
         raise RunStopped("retry_limit_negative")
+    if policy is None:
+        policy = legacy_policy(retry_limit)
+    elif retry_limit and retry_limit != policy.retry_limit:
+        raise RunStopped("retry_limit_disagrees_with_policy")
+    if policy.attempt_deadlines is not None and not getattr(transport, "enforces_deadline", False):
+        raise RunStopped("transport_does_not_enforce_deadline")
     modes = parse_thinking_modes(",".join(thinking_modes))
     leaked = sorted({slot["thinking"] for slot in slots} - set(modes))
     if leaked:
@@ -626,6 +882,7 @@ def execute(
             raise RunStopped(reused)
     clock = clock or (lambda: datetime.now(timezone.utc))
     sleep = sleep or time.sleep
+    monotonic = monotonic or time.monotonic
     state = {
         "running": plan["prior_spend_usd"] if plan else Decimal("0"),
         "sent": plan["finished_slots"] if plan else 0,
@@ -636,7 +893,13 @@ def execute(
         "retries": plan["prior_retries"] if plan else 0,
         "unbilled": list(plan["unbilled_attempts"]) if plan else [],
         "session": plan["session"] if plan else 1,
+        "skipped": plan["prior_skipped"] if plan else 0,
+        "streak": 0,
+        "tokens": dict(plan["prior_tokens"]) if plan else empty_tokens(),
     }
+    broken: dict[tuple, str] = {}
+    for row in (plan["broken_chains"] if plan else []):
+        broken[(row["thinking"], row["arm"], row["category"], row["scenario"])] = row["prereq"]
     started = clock().isoformat()
     session_record = {"session": state["session"], "started_at": started, "resumed": plan is not None}
     if plan:
@@ -648,6 +911,7 @@ def execute(
             "abandoned_partial_usd": applied["abandoned_partial_usd"],
             "actions": applied["actions"],
         })
+    described = policy.describe()
     common = {
         "slots_total": len(slots),
         "ceiling_usd": str(ceiling_usd),
@@ -655,8 +919,12 @@ def execute(
         "identity": identity or {},
         "session": state["session"],
         "sessions": (plan["prior_sessions"] if plan else []) + [session_record],
-        "retry_limit": retry_limit,
-        "retry_backoff_seconds": list(RETRY_BACKOFF_SECONDS),
+        "retry_limit": policy.retry_limit,
+        "retry_backoff_seconds": list(policy.backoff_seconds),
+        "retry_policy": described,
+        "read_timeout_seconds": described["read_timeout_seconds"],
+        "total_deadline_seconds": described["total_deadline_seconds"],
+        "failures_file": FAILURES_FILE,
         **{key: value for key, value in plan_summary(slots, modes).items() if key != "slots_total"},
     }
 
@@ -664,11 +932,14 @@ def execute(
         return _status(
             out_dir,
             slots_sent=state["sent"],
+            slots_finished=state["sent"] - state["skipped"],
+            slots_skipped=state["skipped"],
             requests_billed=state["billed"],
             running_usd=str(state["running"]),
             partial_slots=state["partial"],
             retries=state["retries"],
             unbilled_attempts=list(state["unbilled"]),
+            tokens=token_summary(state["tokens"]),
             **common,
             **fields,
         )
@@ -676,6 +947,7 @@ def execute(
     status(status="running", complete=False, reason=None, uncertain_attempts=[])
     attempts = out_dir / "attempts.jsonl"
     bills = out_dir / "bills.jsonl"
+    failures = out_dir / FAILURES_FILE
 
     def send(slot: dict, body: dict, turn: int, step: int) -> tuple[dict, dict, datetime]:
         if body.get("thinking", {}).get("type") != {"off": "disabled", "on": "enabled"}[slot["thinking"]]:
@@ -690,11 +962,13 @@ def execute(
         ).hexdigest()
         retry_of = None
         tries = 0
+        failed: list[dict] = []
         while True:
             if state["running"] >= ceiling_usd:
                 raise RunStopped("ceiling")
             state["attempt"] += 1
             number = state["attempt"]
+            deadline = policy.deadline(tries)
             sent_at = clock()
             row = {
                 "attempt": number,
@@ -710,34 +984,61 @@ def execute(
                 "request_bytes": len(encoded),
                 "session": state["session"],
             }
+            if deadline is not None:
+                row["try"] = tries + 1
+                row["deadline_seconds"] = deadline
             if retry_of is not None:
                 row["retry_of"] = retry_of
             _append_jsonl(attempts, row)
             state["open_attempt"] = number
+            began = monotonic()
             try:
-                payload = transport(body)
+                payload = transport(body) if deadline is None else transport(body, deadline=deadline)
             except RunStopped:
                 raise
             except Exception as exc:
-                again = tries < retry_limit and is_transport_failure(exc)
-                _append_jsonl(attempts, {
+                elapsed = monotonic() - began
+                transport_failure = is_transport_failure(exc)
+                again = tries < policy.retry_limit and transport_failure
+                failed_at = clock()
+                outcome = {
                     "attempt": number,
                     "event": "failed",
-                    "at": clock().isoformat(),
+                    "at": failed_at.isoformat(),
                     "error": exc.__class__.__name__,
                     "http_status": getattr(exc, "status", None),
                     "may_be_billed": True,
                     "retried": again,
-                })
+                }
+                if deadline is not None:
+                    outcome["deadline_seconds"] = deadline
+                    outcome["elapsed_seconds"] = round(elapsed, 3)
+                _append_jsonl(attempts, outcome)
                 state["unbilled"].append({
                     "attempt": number, "event": "failed", "session": state["session"],
                     "case_id": slot["case_id"], "arm": slot["arm"],
                 })
+                failed.append({
+                    "attempt": number,
+                    "try": tries + 1,
+                    "sent_at": sent_at.isoformat(),
+                    "failed_at": failed_at.isoformat(),
+                    "error": exc.__class__.__name__,
+                    "http_status": getattr(exc, "status", None),
+                    "deadline_seconds": deadline,
+                    "elapsed_seconds": round(elapsed, 3),
+                    "may_be_billed": True,
+                })
                 if not again:
+                    if transport_failure and policy.exhausted == "skip":
+                        state["open_attempt"] = None
+                        raise SlotSkipped(turn, step, failed, exc) from exc
                     raise RunStopped(f"provider_error:{exc.__class__.__name__}") from exc
                 state["open_attempt"] = None
                 state["retries"] += 1
-                sleep(RETRY_BACKOFF_SECONDS[min(tries, len(RETRY_BACKOFF_SECONDS) - 1)])
+                wait = policy.backoff(tries, exc)
+                if wait > 0:
+                    sleep(wait)
                 tries += 1
                 retry_of = number
                 continue
@@ -766,6 +1067,7 @@ def execute(
         _sent_amount, band_at_send = spend_usd(cache_hit=0, cache_miss=0, output=0, at=sent_at)
         state["running"] += amount
         state["billed"] += 1
+        add_tokens(state["tokens"], parsed)
         _append_jsonl(bills, {
             "attempt": number,
             "case_id": slot["case_id"],
@@ -805,37 +1107,121 @@ def execute(
             partial_presented_as_complete=False,
         )
 
+    def stop_in_slot(slot: dict, sidecar: dict, reason: str) -> dict:
+        if sidecar["steps"] or sidecar.get("stage"):
+            sidecar["status"] = "stopped"
+            sidecar["stop_reason"] = reason
+            _write_sidecar(out_dir, slot, sidecar)
+            state["partial"].append({
+                "case_id": slot["case_id"],
+                "arm": slot["arm"],
+                "thinking": slot["thinking"],
+                "billed_steps": len(sidecar["steps"]),
+            })
+        return stop(reason)
+
+    def record_skip(slot: dict, sidecar: dict, record: dict) -> None:
+        """The failure line is durable first. A box lost before the sidecar is repaired by resume."""
+        _append_jsonl(failures, record)
+        sidecar["status"] = "skipped"
+        sidecar["scorable"] = False
+        sidecar["skip"] = record
+        sidecar.pop("stage", None)
+        _write_sidecar(out_dir, slot, sidecar)
+        state["sent"] += 1
+        state["skipped"] += 1
+        status(status="running", complete=False, reason=None, uncertain_attempts=[])
+
     skip = state["sent"]
     for index, slot in enumerate(slots):
         if index < skip:
+            continue
+        case = by_id[slot["case_id"]]
+        chain = memory_chain(slot, case)
+        sidecar = _new_sidecar(case, slot)
+        sidecar["session"] = state["session"]
+        if chain is not None and chain in broken:
+            record_skip(slot, sidecar, _skip_record(
+                "dependency_skipped", slot, case, policy, state["session"], clock(),
+                depends_on=broken[chain],
+            ))
             continue
         if state["running"] >= ceiling_usd:
             return stop("ceiling")
         if slot["kind"] == "trajectory" and executor is None:
             return stop("trajectory_executor_required")
-        case = by_id[slot["case_id"]]
-        sidecar = _new_sidecar(case, slot)
-        sidecar["session"] = state["session"]
         try:
             if slot["kind"] == "single":
                 _run_single(case, slot, out_dir, send, sidecar)
             else:
                 _run_trajectory(case, slot, out_dir, send, executor, sidecar)
+        except SlotSkipped as skipped:
+            if policy.skip_streak_limit is not None and state["streak"] >= policy.skip_streak_limit:
+                return stop_in_slot(
+                    slot, sidecar,
+                    f"skip_streak:{state['streak'] + 1}:{skipped.error.__class__.__name__}",
+                )
+            record = _skip_record(
+                "skipped", slot, case, policy, state["session"], clock(),
+                turn=skipped.turn, step=skipped.step, attempts=skipped.attempts, error=skipped.error,
+                billed_steps=len(sidecar["steps"]),
+            )
+            record_skip(slot, sidecar, record)
+            state["streak"] += 1
+            if chain is not None and slot["prereq"]:
+                broken[chain] = slot["case_id"]
+            continue
         except RunStopped as stopped:
-            if sidecar["steps"] or sidecar.get("stage"):
-                sidecar["status"] = "stopped"
-                sidecar["stop_reason"] = stopped.reason
-                _write_sidecar(out_dir, slot, sidecar)
-                state["partial"].append({
-                    "case_id": slot["case_id"],
-                    "arm": slot["arm"],
-                    "thinking": slot["thinking"],
-                    "billed_steps": len(sidecar["steps"]),
-                })
-            return stop(stopped.reason)
+            return stop_in_slot(slot, sidecar, stopped.reason)
+        state["streak"] = 0
         state["sent"] += 1
         status(status="running", complete=False, reason=None, uncertain_attempts=[])
     return status(status="complete", complete=True, reason="finished", uncertain_attempts=[])
+
+
+def memory_chain(slot: dict, case: dict) -> tuple | None:
+    """Memory slots that share one ``<scenario>_final.json``: one arm, one backend, one scenario."""
+    if not is_memory(case["category"]) or case.get("scenario") is None:
+        return None
+    return (slot["thinking"], slot["arm"], case["category"], case["scenario"])
+
+
+def _skip_record(
+    kind: str,
+    slot: dict,
+    case: dict,
+    policy: SendPolicy,
+    session: int,
+    at: datetime,
+    *,
+    turn: int | None = None,
+    step: int | None = None,
+    attempts: list[dict] | None = None,
+    error: BaseException | None = None,
+    billed_steps: int = 0,
+    depends_on: str | None = None,
+) -> dict:
+    return {
+        "kind": kind,
+        "case_id": slot["case_id"],
+        "category": slot["category"],
+        "arm": slot["arm"],
+        "thinking": slot["thinking"],
+        "prereq": bool(slot.get("prereq")),
+        "scenario": case.get("scenario") if is_memory(case["category"]) else None,
+        "turn": turn,
+        "step": step,
+        "error": None if error is None else error.__class__.__name__,
+        "http_status": None if error is None else getattr(error, "status", None),
+        "attempts": list(attempts or []),
+        "may_be_billed": bool(attempts),
+        "billed_steps_before_skip": billed_steps,
+        "depends_on": depends_on,
+        "policy": policy.name,
+        "session": session,
+        "recorded_at": at.isoformat(),
+        "scoring": "incomplete: no result line is written, so official evaluation has no output for this id and arm",
+    }
 
 
 def _new_sidecar(case: dict, slot: dict) -> dict:
