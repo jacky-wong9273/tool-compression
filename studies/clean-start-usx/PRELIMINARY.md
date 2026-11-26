@@ -4,7 +4,7 @@ This is a preliminary sample, not a completed full-set study. `official_settleme
 
 The draw is `preliminary/draw.json`. Its SHA-256 (the file bytes) is `2904904116ca21ad8830f4bb2dfaaf9cfd1773124315a8a26fe934f3490a785a`. The same digest is `draw_sha256` in `preliminary/cost.json`. Seed `20261128`, because `20261125` is the pilot seed, `20261126` is the committed validation seed, and `20261127` is the superseded 119-case preliminary. Python 3.12 `random.Random`. Editors stay `s-rules-2026-11-26` and `x-rules-2026-11-26`. SX is the exact S catalogue plus the exact X cue. The draw was chosen from ids and population counts. It does not read gold, saved answers, or scores. Archived bills are used only for the allowance and the observed-mean estimate.
 
-Gorilla pin: `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. Model `deepseek-flash`, thinking disabled, no `max_tokens`, no retry, no resume. Arms U, S, X, SX. No web-search category and no SerpAPI call. The evaluator registers `is_fc_model=True` and `underscore_to_dot=True`, and it skips result files whose names contain `prereq`.
+Gorilla pin: `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`. Model `deepseek-flash`, thinking disabled, no `max_tokens`. A send that fails in transport is sent again at most twice. A stopped run is continued with `--resume` in the same directory (see [Resume](#resume)). Arms U, S, X, SX. No web-search category and no SerpAPI call. The evaluator registers `is_fc_model=True` and `underscore_to_dot=True`, and it skips result files whose names contain `prereq`.
 
 ## Commands
 
@@ -19,7 +19,7 @@ python -m tool_compression.clean_start run --preliminary --thinking off \
 
 The plan reports `provider_contacted: false`, `thinking_modes_authorized: ["off"]`, `preliminary: true`, `pilot: false`, `ceiling_usd: null`, `slots_total: 2952`, `prereq_slots: 444`, `fraction: "0.2"`, and `planning_upper_usd: "95.376500"`. The plan's `slot_sha256` is `a794ab88779d6ef75a0d8928d32359512b19a9aad435587e9c53b8d502421f7f`.
 
-Live run, for 18:00 HKT on Thursday 26 Nov 2026. `--out` must be a new empty directory. Set `DEEPSEEK_API_KEY` on the box only. Do not set a SerpAPI key.
+Live run, for 18:00 HKT on Thursday 26 Nov 2026. `--out` must be a new empty directory on storage that outlives the box. Set `DEEPSEEK_API_KEY` on the box only. Do not set a SerpAPI key.
 
 ```bash
 python -m tool_compression.clean_start run --preliminary --live --authorize-live \
@@ -34,7 +34,80 @@ python -m tool_compression.clean_start evaluate \
   --out /path/to/new-empty-dir --bfcl-root /path/to/gorilla --thinking off
 ```
 
-The planning upper is above $42. The live command is accepted anyway. The ceiling is checked before every request and stops the run when spend reaches it. It is not a pack limit the draw has to fit under. An output directory that already holds attempts, bills, or a run that contacted a provider is refused. There is no resume.
+The planning upper is above $42. The live command is accepted anyway. The ceiling is checked before every request and stops the run when spend reaches it. It is not a pack limit the draw has to fit under. The live command refuses a ceiling below the observed-mean path with its Friday-peak slice. It also refuses a draw or slot order other than the committed ones: draw SHA-256 `2904904…` and thinking-off slot SHA-256 `a794ab…`. A fresh run refuses an output directory that already holds attempts, bills, or a run that contacted a provider. Continuing that run takes `--resume`.
+
+Exit codes: 0 means the run completed, 1 means it stopped incomplete (resume it), and 2 means it was refused before any request.
+
+## Resume
+
+If the run stops before it completes, continue it in the same directory with the same tip. That covers a provider error left after retries, a lost box, or an interrupt. A ceiling stop is final. A resume refuses any ceiling other than $42, and at $42 it would stop again before its first request. Check first. This reads the directory, prints what a resume would skip, send again, and repair, and writes nothing. It reads no key and opens no socket:
+
+```bash
+python -m tool_compression.clean_start run --preliminary --resume \
+  --thinking off --memory-prereqs matched --ceiling-usd 42 \
+  --out /path/to/the-same-dir
+```
+
+Then resume:
+
+```bash
+python -m tool_compression.clean_start run --preliminary --live --authorize-live \
+  --thinking off --memory-prereqs matched --ceiling-usd 42 \
+  --bfcl-root /path/to/gorilla --out /path/to/the-same-dir --resume
+```
+
+Repeat the same command after every stop until it exits 0. Then score the same directory with the `evaluate` command above.
+
+A resume refuses, with exit 2 before the key is read and with nothing written, unless the directory's `run.json` contacted a provider, is not complete, and matches this run exactly. The fields compared are:
+
+- `draw_sha256` `2904904116ca21ad8830f4bb2dfaaf9cfd1773124315a8a26fe934f3490a785a`;
+- `slot_sha256` `a794ab88779d6ef75a0d8928d32359512b19a9aad435587e9c53b8d502421f7f`;
+- the case ids;
+- editors `s-rules-2026-11-26` and `x-rules-2026-11-26`;
+- `source_sha256` of every `.py` file under `src/tool_compression`;
+- thinking off;
+- the $42 ceiling;
+- the rate card.
+
+It also refuses if any of these hold:
+
+- the attempt journal has a gap;
+- the bill ledger's running total does not add up;
+- the finished slots are not a prefix of the slot order;
+- a result line is duplicated, or belongs to no slot;
+- a memory snapshot matches no checkpoint it could have come from.
+
+What a resume does:
+
+- **Skips finished slots.** A slot is finished when its sidecar says `finished` and its result file holds exactly one line with its id.
+- **Sends the stopped slot again from its first request.** It does not continue a slot mid-conversation. Multi-turn class instances start again from the initial config in the new process. The slot's stopped sidecar, and any result line it wrote just before the box was lost, are moved under `resume/session-<n>/`, not deleted.
+- **Keeps memory state right.** In pinned BFCL, every memory entry other than a scenario's `-0` prerequisite loads `<scenario>_final.json`. Only a prerequisite flush writes that file, right after `prereq_checkpoints/<id>.json`. So the final file must equal the checkpoint of that arm's last finished prerequisite. Sometimes the box is lost after a prerequisite flushed but before its result line was written. The final file is then restored from the previous checkpoint, and the stale checkpoint is moved aside. Then the re-sent prerequisite starts from the right memory.
+- **Counts recorded spend against the same $42.** The running total starts at the sum of `bills.jsonl` over every session, and is checked before every request. Bills of the abandoned part of the re-sent slot stay counted, because they were billed. Attempt numbers continue, and every attempt and bill row carries `session`.
+- **Lists what may be billed but is not recorded.** Every attempt with no bill is listed in `run.json` under `unbilled_attempts`, and is not in the running total. That is a failed try, an unusable response, or a send with no outcome before a box loss. The provider dashboard is the record for those.
+- **Logs the session.** One line in `resume.jsonl`, plus a copy of the previous `run.json` and `spend.json` under `resume/session-<n>/`.
+
+Accuracy and tokens stay recoverable after any number of resumes:
+
+- **Accuracy.** The result files hold exactly one line per finished id, so `evaluate` is unchanged.
+- **All billed tokens.** These are the rows of `bills.jsonl` across sessions.
+- **Tokens of the attempt that produced a slot's result.** These are in that slot's sidecar steps. Equivalently, they are that slot's bills (same `thinking`, `case_id`, `arm`) whose `session` equals the sidecar's `session`.
+
+Do not start a fresh `--out` after a partial run. Spend would restart at $0, and $42 would no longer bound the total. `--out` must survive the box, or be copied back intact before resuming. Result lines, sidecars, ledgers, and memory flushes are fsynced as they are written. A resume's own repairs copy a file aside before replacing it atomically. A box lost during the repair leaves either the old state or the repaired one, and the next resume plans the same repair again.
+
+## Retry
+
+The preliminary live path sends a failed request again at most twice, after 10 s and then 30 s, for transport failures only:
+
+- timeouts, including the 900 s total deadline;
+- dropped connections, `IncompleteRead`, and TLS or DNS errors;
+- HTTP 429 and 5xx.
+
+The body is the same, the ceiling is checked again before each try, and each try is its own journalled attempt. A failed try is marked `may_be_billed` and listed under `unbilled_attempts`. Nothing else in the slot has changed by then: the failure comes before any tool runs or any history is appended. These are not retried:
+
+- other 4xx, including 402 for an exhausted balance;
+- a 200 whose body has no billed usage or no choice.
+
+If the second retry also fails, the run stops incomplete, and you continue it with `--resume`.
 
 ## What is in the draw
 
@@ -76,6 +149,19 @@ Scoring user turns are 1,134. With the 969 prerequisite turns, the draw has 2,10
 ## Why the ceiling does not size the draw
 
 The hard ceiling is $42. The planning upper is **$95.376500** (635.674832 CNY at 6.6649 on the unrounded product, 635.508629 CNY at 0.150079). Multiplying the rounded $95.376500 by 6.6649 gives 635.674835 CNY. The upper is above the ceiling. The draw is not shrunk to fit the old $11.50 pack limit or to fit $42. The builder used to refuse a draw whose upper exceeded $11.50. That refusal is gone. The report now refuses an upper that fits under $42, so this sample cannot be silently cut down until the allowance fits.
+
+Four refusals went with it. The builder and `load_committed_cost()` no longer refuse an upper above $11.50. The builder no longer refuses a finish at or after Friday 09:00 HKT. The CLI no longer caps the ceiling at $12 or $27, and no longer refuses a ceiling below the planning upper. In their place is one explicit check, in the builder, in `load_committed_cost()`, and in the live CLI. It prices the observed-mean path in run order, with every send that falls inside a weekday peak window billed at double, at each pace profile. The peak windows are 09:00–12:00 and 14:00–18:00 HKT. The worst profile must be at or under the ceiling:
+
+| pace | sends in peak | peak premium | observed-mean with peak | finish HKT |
+| --- | ---: | ---: | ---: | --- |
+| 1.9 s | 0 | $0.000000 | $21.572285 | 05:33:15 Fri |
+| 2.0 s | 0 | $0.000000 | $21.572285 | 06:09:44 Fri |
+| 3.3 s | 3,346.736126 | $4.187352 | **$25.759637** | 14:04:04 Fri |
+| memory 3.3 s, the rest 2.0 s | 1,174.552340 | $1.469570 | $23.041855 | 10:04:36 Fri |
+
+$25.759637 is at or under $42, so the check passes. The figure is `observed_mean_with_friday_peak_usd` in `preliminary/cost.json`.
+
+Headroom. $42 × 6.6649 is 279.9258 CNY. That leaves 0.0742 CNY, or $0.0111, under 280 CNY. The ceiling is checked before each request with no reserve, so the last request can carry the ledger past $42 by that request's cost. Memory runs last. A memory request at peak, priced at the 12,269-token allowance plus 900 output tokens, is about $0.0048, under the headroom. Attempts listed under `unbilled_attempts` can add unrecorded charges on top of that. If the prepaid balance runs out first, the provider answers 402. That is not retried, and the run stops incomplete. The cap stays $42.
 
 Prices in the allowance are off-peak, every prompt token a cache miss, no cache credit: $0.15 per million input and $0.60 per million output.
 
@@ -127,7 +213,7 @@ Expected sends are 21,892.190671. Friday peak starts 09:00 HKT, 15 hours after 1
 
 At 1.9 or 2.0 seconds per request the mean path finishes inside the off-peak window. At 3.3 seconds on memory and 2.0 seconds on the rest, it runs about an hour into Friday morning peak. The allowance path does not finish off-peak at any of these paces. The prices in the allowance and the observed-mean are off-peak. A slice that actually falls after 09:00 is billed at the peak rate.
 
-A provider error still stops the run, and there is still no retry and no resume. Earlier clean-start flights stopped at 152, 900, and 2,482 sends. This mean path is about 21,892 sends, so an early stop is still a real risk when the budget and the clock would have been enough.
+Earlier clean-start flights stopped at 152 sends (a 120 s read timeout), 900 (an `IncompleteRead`), and 2,482 (a lost box). This mean path is about 21,892 sends. With no retry and no resume, one flight would very likely have stopped early. Now a transport failure is sent again up to twice. A stop that still happens, including a lost box, is continued with `--resume`, from the stopped slot and against the same $42.
 
 ## Box preflight
 
@@ -137,8 +223,10 @@ Before the live command, on the box that will run it:
 - `all-MiniLM-L6-v2` revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` is already built in that environment. The runner's preflight checks that `sentence_transformers`, `faiss`, and `numpy` import. It does not open the weight file. The pinned backend constructs the model when the first `memory_vector` slot runs.
 - The live shell sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`.
 - `DEEPSEEK_API_KEY` is set in that shell and is not printed. No SerpAPI key is set.
-- `--out` is a new empty directory. Do not reuse a pilot, validation, or earlier preliminary directory.
+- `--out` is a new empty directory on storage that outlives the box. Do not reuse a pilot, validation, or earlier preliminary directory.
+- The checkout is the packaged tip. A resume refuses any other source tree.
+- The dry plan reports `slot_sha256` `a794ab88779d6ef75a0d8928d32359512b19a9aad435587e9c53b8d502421f7f`.
 
 ## Follow-up
 
-The full in-scope thinking-off fly is still unsent: 3,127 scoring questions plus 111 memory prerequisites, 3,238 conversations, 12,952 slots. It is a follow-up for when a larger budget exists. The runner would also need a retry or a resume before that fly is a credible single shot. This preliminary draw does not settle it. `official_settlement` stays false.
+The full in-scope thinking-off fly is still unsent: 3,127 scoring questions plus 111 memory prerequisites, 3,238 conversations, 12,952 slots. It is a follow-up for when a larger budget exists. Retry and `--resume` are wired for `--preliminary` only. The full fly would need the same wiring. This preliminary draw does not settle it. `official_settlement` stays false.
