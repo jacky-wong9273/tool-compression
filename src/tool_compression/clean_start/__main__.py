@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime, timezone
 from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
@@ -12,6 +13,7 @@ from pathlib import Path
 from tool_compression.clean_start.pilot import build_draw, freeze, study_dir
 from tool_compression.clean_start.pin import STUDY_ID, study_manifest
 from tool_compression.clean_start.runner import (
+    FULL_FLY_POLICY,
     RETRY_LIMIT,
     OfficialBfclExecutor,
     RunStopped,
@@ -59,13 +61,19 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="the 20% preliminary draw, thinking off, $42 ceiling",
     )
+    run.add_argument(
+        "--full",
+        action="store_true",
+        help="the full in-scope catalogue, thinking off, 12,952 slots: 20 s first deadline, "
+        "one 60 s retry, then the slot is skipped and recorded in failures.jsonl",
+    )
     run.add_argument("--live", action="store_true")
     run.add_argument("--authorize-live", action="store_true")
     run.add_argument("--thinking", help="off, on, or off,on; required with --live")
     run.add_argument(
         "--memory-prereqs",
         choices=("none", "matched"),
-        help="required with --pilot --live, with --validation, and with --preliminary: "
+        help="required with --pilot --live, with --validation, with --preliminary, and with --full: "
         "none, or the prerequisite conversations of the scenarios the drawn questions use",
     )
     run.add_argument("--ceiling-usd", type=str)
@@ -73,9 +81,10 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument(
         "--resume",
         action="store_true",
-        help="--preliminary only: continue the stopped run in --out. Finished slots are skipped, "
-        "the stopped slot is sent again from its start, and recorded spend counts against the "
-        "same ceiling. Without --live it only reports what a resume would do.",
+        help="--preliminary or --full: continue the stopped run in --out. Finished and skipped "
+        "slots are not sent again, the stopped slot is sent again from its start, and recorded "
+        "spend counts against the same ceiling. Without --live it only reports what a resume "
+        "would do.",
     )
 
     args = parser.parse_args(argv)
@@ -163,13 +172,12 @@ def _run(args) -> int:
             return 2
     else:
         ceiling = None
-    if sum((args.pilot, args.validation, args.preliminary)) > 1:
-        print("refusing: --pilot, --validation, and --preliminary are different draws", file=sys.stderr)
+    if sum((args.pilot, args.validation, args.preliminary, args.full)) > 1:
+        print("refusing: --pilot, --validation, --preliminary, and --full are different draws", file=sys.stderr)
         return 2
-    if args.memory_prereqs and not (args.pilot or args.validation or args.preliminary):
+    if args.memory_prereqs and not (args.pilot or args.validation or args.preliminary or args.full):
         print(
-            "refusing: --memory-prereqs applies to --pilot, --validation, or --preliminary; "
-            "the full run sends every prerequisite",
+            "refusing: --memory-prereqs applies to --pilot, --validation, --preliminary, or --full",
             file=sys.stderr,
         )
         return 2
@@ -218,8 +226,22 @@ def _run(args) -> int:
                     file=sys.stderr,
                 )
             return 2
-    if args.resume and not args.preliminary:
-        print("refusing: --resume applies to --preliminary only", file=sys.stderr)
+    if args.full:
+        if modes != ("off",):
+            print("refusing: --full is thinking off only", file=sys.stderr)
+            return 2
+        if args.memory_prereqs != "matched":
+            print("refusing: --full requires --memory-prereqs matched", file=sys.stderr)
+            return 2
+        if args.ceiling_usd is None:
+            print("refusing: --full requires --ceiling-usd; Jacky names the full-fly ceiling", file=sys.stderr)
+            return 2
+        ceiling = Decimal(args.ceiling_usd)
+        if ceiling <= 0:
+            print("refusing: --ceiling-usd must be greater than 0", file=sys.stderr)
+            return 2
+    if args.resume and not (args.preliminary or args.full):
+        print("refusing: --resume applies to --preliminary or --full only", file=sys.stderr)
         return 2
     memory_prereqs = args.memory_prereqs or (
         "none" if args.pilot or args.validation or args.preliminary else "all"
@@ -274,15 +296,52 @@ def _run(args) -> int:
         if plan_summary(build_slots(cases, modes), modes)["slot_sha256"] != COMMITTED_SLOT_SHA256:
             print("refusing: preliminary slot order is not the committed thinking-off order", file=sys.stderr)
             return 2
+    elif args.full:
+        from tool_compression.clean_start import full
+
+        try:
+            cost = full.load_committed_cost()
+            cases = full.select_full_cases()
+        except RuntimeError as exc:
+            print(f"refusing: {exc}", file=sys.stderr)
+            return 2
+        floor = Decimal(cost["ceiling_floor_usd"])
+        if ceiling < floor:
+            print(
+                f"refusing: --full ceiling ${ceiling} is under the ${floor} floor "
+                f"({cost['ceiling_floor_profile']} with its peak premium and hung tries); "
+                "the fly would stop before the observed-mean path finishes",
+                file=sys.stderr,
+            )
+            return 2
+        if plan_summary(build_slots(cases, modes), modes)["slot_sha256"] != full.COMMITTED_SLOT_SHA256:
+            print("refusing: full slot order is not the committed thinking-off order", file=sys.stderr)
+            return 2
+        if args.live:
+            problems = full.start_gate(_now(), resume=args.resume)
+            if problems:
+                for problem in problems:
+                    print(f"refusing before any request: {problem}", file=sys.stderr)
+                return 2
     else:
         cost = None
         cases = _select_cases(args.pilot, memory_prereqs)
+        if args.live and not args.pilot:
+            covered = {case["id"] for case in cases}
+            if covered >= {case["id"] for case in select_full_run_cases()}:
+                print(
+                    "refusing: the full catalogue flies only with --full (20 s / 60 s deadlines, "
+                    "skip-and-record, --resume, thinking off)",
+                    file=sys.stderr,
+                )
+                return 2
     identity = run_identity(
         cases,
         pilot=args.pilot,
         memory_prereqs=memory_prereqs,
         validation=args.validation,
         preliminary=args.preliminary,
+        full=args.full,
         cost=cost,
     )
     if args.resume:
@@ -320,12 +379,25 @@ def _run(args) -> int:
                 "structural_cap_usd": cost["structural_cap_usd"],
                 "fraction": cost["fraction"],
             }
+        if args.full:
+            extra = {
+                "full": True,
+                "replicate_u": False,
+                "memory_prereqs": "matched",
+                "observed_mean_usd": cost["observed_mean_usd"],
+                "planning_upper_usd": cost["planning_upper_usd"],
+                "ceiling_floor_usd": cost["ceiling_floor_usd"],
+                "not_before_hkt": cost["not_before_hkt"],
+                "retry_policy": FULL_FLY_POLICY.describe(),
+                "read_timeout_seconds": FULL_FLY_POLICY.describe()["read_timeout_seconds"],
+                "total_deadline_seconds": FULL_FLY_POLICY.describe()["total_deadline_seconds"],
+            }
         write_plan(
             cases,
             args.out,
             pilot=args.pilot,
             thinking_modes=modes,
-            ceiling_usd=str(ceiling) if args.validation else None,
+            ceiling_usd=str(ceiling) if args.validation or args.full else None,
             extra=extra,
         )
         print(f"wrote dry plan {args.out / 'run.json'}")
@@ -358,6 +430,7 @@ def _run(args) -> int:
             identity=identity,
             resume=args.resume,
             retry_limit=RETRY_LIMIT if args.preliminary else 0,
+            policy=FULL_FLY_POLICY if args.full else None,
         )
     except RunStopped as stopped:
         print(f"refusing before any request: {stopped.reason}", file=sys.stderr)
@@ -369,11 +442,17 @@ def _run(args) -> int:
         "running_usd": result["running_usd"],
         "session": result.get("session"),
         "slots_sent": result.get("slots_sent"),
+        "slots_skipped": result.get("slots_skipped", 0),
         "slots_total": result.get("slots_total"),
+        "tokens": result.get("tokens"),
         "uncertain_attempts": result.get("uncertain_attempts", []),
         "unbilled_attempts": len(result.get("unbilled_attempts", [])),
     }, sort_keys=True))
     return 0 if result["complete"] else 1
+
+
+def _now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 def run_identity(
@@ -383,6 +462,7 @@ def run_identity(
     memory_prereqs: str,
     validation: bool = False,
     preliminary: bool = False,
+    full: bool = False,
     cost: dict | None = None,
 ) -> dict:
     """What makes the pilot and the full run the same pipeline on different case lists."""
@@ -422,6 +502,19 @@ def run_identity(
         if cost is not None:
             identity["planning_upper_usd"] = cost["planning_upper_usd"]
             identity["first_request_floor_usd"] = cost["first_request_floor_usd"]
+    if full:
+        from tool_compression.clean_start.full import PLAN_FILE
+        from tool_compression.clean_start.resume import source_sha256
+
+        identity["full"] = True
+        identity["replicate_u"] = False
+        identity["draw_sha256"] = sha256((study_dir() / PLAN_FILE).read_bytes()).hexdigest()
+        identity["source_sha256"] = source_sha256()
+        identity["retry_policy"] = FULL_FLY_POLICY.name
+        identity["attempt_deadlines_seconds"] = list(FULL_FLY_POLICY.attempt_deadlines)
+        if cost is not None:
+            identity["planning_upper_usd"] = cost["planning_upper_usd"]
+            identity["ceiling_floor_usd"] = cost["ceiling_floor_usd"]
     return identity
 
 
