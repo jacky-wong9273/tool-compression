@@ -1,0 +1,1116 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "kind": "preliminary",
+  "seed": "20261127",
+  "seed_reason": "20261126 is the committed validation seed, so the preliminary draw uses 20261127.",
+  "fraction": "0.0374",
+  "fraction_quantum": "0.0001",
+  "algorithm": "n = min(population, max(floor, half_up(f * population))) with half-up rounding. f is 0.0374, the largest multiple of 0.0001 whose off-peak planning upper is at or under $11.50. live_parallel takes every in-scope id. live_relevance, live_parallel_multiple, and each memory backend have floor 2; every other category has floor 1. Memory candidates are the notetaker scenario only. The pool drops ids in the exposed pilot draw when at least n ids remain. random.Random('clean-start-usx-preliminary:20261127:<category>').sample(sorted(pool), n) when n is smaller than that pool; otherwise the sorted pool is kept and sample is not called. Python 3.12 random. Matched prerequisites are every prerequisite conversation of each drawn memory scenario.",
+  "memory_scenario": "notetaker",
+  "memory_scenario_reason": "notetaker has the fewest prerequisite user-turns of the five scenarios (24, against 35, 47, 108, and 109). Matched prerequisites are every conversation of a drawn scenario, on each backend, so a second scenario does not fit under the ceiling. Chosen from the catalogue's turn counts, not from flight scores.",
+  "replicate_u": false,
+  "thinking": "off",
+  "budget_cny": "80",
+  "ceiling_usd": "12",
+  "pack_limit_usd": "11.50",
+  "pilot_overlap_ids": [
+    "live_parallel_6-3-0",
+    "live_parallel_7-3-1"
+  ],
+  "validation_overlap_ids": [
+    "live_irrelevance_236-41-0",
+    "live_parallel_multiple_18-16-0",
+    "live_parallel_multiple_4-3-0",
+    "live_relevance_6-6-0",
+    "live_relevance_8-8-0",
+    "memory_rec_sum_153-notetaker-23",
+    "multi_turn_miss_param_6",
+    "multiple_50",
+    "multiple_53",
+    "parallel_multiple_122",
+    "parallel_multiple_187"
+  ],
+  "draws": [
+    {
+      "category": "multiple",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "parallel_multiple",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "live_multiple",
+      "population": 1053,
+      "scenario_pool": null,
+      "sample_pool": 1050,
+      "frozen": 39,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "live_parallel",
+      "population": 2,
+      "scenario_pool": null,
+      "sample_pool": 2,
+      "frozen": 2,
+      "method": "all_in_pool",
+      "pool_rule": "including_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "live_parallel_multiple",
+      "population": 24,
+      "scenario_pool": null,
+      "sample_pool": 21,
+      "frozen": 2,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "live_irrelevance",
+      "population": 372,
+      "scenario_pool": null,
+      "sample_pool": 369,
+      "frozen": 14,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "live_relevance",
+      "population": 11,
+      "scenario_pool": null,
+      "sample_pool": 8,
+      "frozen": 2,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "multi_turn_base",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "multi_turn_miss_func",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "multi_turn_miss_param",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "multi_turn_long_context",
+      "population": 200,
+      "scenario_pool": null,
+      "sample_pool": 197,
+      "frozen": 7,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": null
+    },
+    {
+      "category": "memory_kv",
+      "population": 155,
+      "scenario_pool": 25,
+      "sample_pool": 24,
+      "frozen": 6,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": "notetaker"
+    },
+    {
+      "category": "memory_vector",
+      "population": 155,
+      "scenario_pool": 25,
+      "sample_pool": 25,
+      "frozen": 6,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": "notetaker"
+    },
+    {
+      "category": "memory_rec_sum",
+      "population": 155,
+      "scenario_pool": 25,
+      "sample_pool": 25,
+      "frozen": 6,
+      "method": "sample",
+      "pool_rule": "excluding_exposed_pilot",
+      "scenario": "notetaker"
+    }
+  ],
+  "order": [
+    {
+      "case_id": "multiple_53",
+      "category": "multiple",
+      "prereq": false,
+      "position": 0,
+      "run_index": 0
+    },
+    {
+      "case_id": "multiple_59",
+      "category": "multiple",
+      "prereq": false,
+      "position": 1,
+      "run_index": 1
+    },
+    {
+      "case_id": "multiple_50",
+      "category": "multiple",
+      "prereq": false,
+      "position": 2,
+      "run_index": 2
+    },
+    {
+      "case_id": "multiple_145",
+      "category": "multiple",
+      "prereq": false,
+      "position": 3,
+      "run_index": 3
+    },
+    {
+      "case_id": "multiple_144",
+      "category": "multiple",
+      "prereq": false,
+      "position": 4,
+      "run_index": 4
+    },
+    {
+      "case_id": "multiple_190",
+      "category": "multiple",
+      "prereq": false,
+      "position": 5,
+      "run_index": 5
+    },
+    {
+      "case_id": "multiple_150",
+      "category": "multiple",
+      "prereq": false,
+      "position": 6,
+      "run_index": 6
+    },
+    {
+      "case_id": "parallel_multiple_61",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 0,
+      "run_index": 7
+    },
+    {
+      "case_id": "parallel_multiple_116",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 1,
+      "run_index": 8
+    },
+    {
+      "case_id": "parallel_multiple_122",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 2,
+      "run_index": 9
+    },
+    {
+      "case_id": "parallel_multiple_198",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 3,
+      "run_index": 10
+    },
+    {
+      "case_id": "parallel_multiple_37",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 4,
+      "run_index": 11
+    },
+    {
+      "case_id": "parallel_multiple_187",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 5,
+      "run_index": 12
+    },
+    {
+      "case_id": "parallel_multiple_43",
+      "category": "parallel_multiple",
+      "prereq": false,
+      "position": 6,
+      "run_index": 13
+    },
+    {
+      "case_id": "live_multiple_804-175-10",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 0,
+      "run_index": 14
+    },
+    {
+      "case_id": "live_multiple_972-212-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 1,
+      "run_index": 15
+    },
+    {
+      "case_id": "live_multiple_565-155-5",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 2,
+      "run_index": 16
+    },
+    {
+      "case_id": "live_multiple_340-133-4",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 3,
+      "run_index": 17
+    },
+    {
+      "case_id": "live_multiple_512-150-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 4,
+      "run_index": 18
+    },
+    {
+      "case_id": "live_multiple_1033-261-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 5,
+      "run_index": 19
+    },
+    {
+      "case_id": "live_multiple_239-107-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 6,
+      "run_index": 20
+    },
+    {
+      "case_id": "live_multiple_1031-259-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 7,
+      "run_index": 21
+    },
+    {
+      "case_id": "live_multiple_833-178-8",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 8,
+      "run_index": 22
+    },
+    {
+      "case_id": "live_multiple_150-58-4",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 9,
+      "run_index": 23
+    },
+    {
+      "case_id": "live_multiple_278-128-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 10,
+      "run_index": 24
+    },
+    {
+      "case_id": "live_multiple_906-186-3",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 11,
+      "run_index": 25
+    },
+    {
+      "case_id": "live_multiple_731-167-2",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 12,
+      "run_index": 26
+    },
+    {
+      "case_id": "live_multiple_1027-255-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 13,
+      "run_index": 27
+    },
+    {
+      "case_id": "live_multiple_596-158-2",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 14,
+      "run_index": 28
+    },
+    {
+      "case_id": "live_multiple_155-58-9",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 15,
+      "run_index": 29
+    },
+    {
+      "case_id": "live_multiple_873-182-10",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 16,
+      "run_index": 30
+    },
+    {
+      "case_id": "live_multiple_390-137-8",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 17,
+      "run_index": 31
+    },
+    {
+      "case_id": "live_multiple_328-132-18",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 18,
+      "run_index": 32
+    },
+    {
+      "case_id": "live_multiple_868-182-5",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 19,
+      "run_index": 33
+    },
+    {
+      "case_id": "live_multiple_418-141-7",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 20,
+      "run_index": 34
+    },
+    {
+      "case_id": "live_multiple_88-38-5",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 21,
+      "run_index": 35
+    },
+    {
+      "case_id": "live_multiple_143-55-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 22,
+      "run_index": 36
+    },
+    {
+      "case_id": "live_multiple_528-151-4",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 23,
+      "run_index": 37
+    },
+    {
+      "case_id": "live_multiple_826-178-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 24,
+      "run_index": 38
+    },
+    {
+      "case_id": "live_multiple_535-151-11",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 25,
+      "run_index": 39
+    },
+    {
+      "case_id": "live_multiple_91-40-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 26,
+      "run_index": 40
+    },
+    {
+      "case_id": "live_multiple_5-3-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 27,
+      "run_index": 41
+    },
+    {
+      "case_id": "live_multiple_97-42-1",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 28,
+      "run_index": 42
+    },
+    {
+      "case_id": "live_multiple_855-180-3",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 29,
+      "run_index": 43
+    },
+    {
+      "case_id": "live_multiple_1046-273-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 30,
+      "run_index": 44
+    },
+    {
+      "case_id": "live_multiple_110-43-8",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 31,
+      "run_index": 45
+    },
+    {
+      "case_id": "live_multiple_506-149-3",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 32,
+      "run_index": 46
+    },
+    {
+      "case_id": "live_multiple_861-181-2",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 33,
+      "run_index": 47
+    },
+    {
+      "case_id": "live_multiple_461-145-12",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 34,
+      "run_index": 48
+    },
+    {
+      "case_id": "live_multiple_265-127-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 35,
+      "run_index": 49
+    },
+    {
+      "case_id": "live_multiple_1042-269-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 36,
+      "run_index": 50
+    },
+    {
+      "case_id": "live_multiple_392-138-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 37,
+      "run_index": 51
+    },
+    {
+      "case_id": "live_multiple_1005-234-0",
+      "category": "live_multiple",
+      "prereq": false,
+      "position": 38,
+      "run_index": 52
+    },
+    {
+      "case_id": "live_parallel_6-3-0",
+      "category": "live_parallel",
+      "prereq": false,
+      "position": 0,
+      "run_index": 53
+    },
+    {
+      "case_id": "live_parallel_7-3-1",
+      "category": "live_parallel",
+      "prereq": false,
+      "position": 1,
+      "run_index": 54
+    },
+    {
+      "case_id": "live_parallel_multiple_4-3-0",
+      "category": "live_parallel_multiple",
+      "prereq": false,
+      "position": 0,
+      "run_index": 55
+    },
+    {
+      "case_id": "live_parallel_multiple_18-16-0",
+      "category": "live_parallel_multiple",
+      "prereq": false,
+      "position": 1,
+      "run_index": 56
+    },
+    {
+      "case_id": "live_irrelevance_722-240-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 0,
+      "run_index": 57
+    },
+    {
+      "case_id": "live_irrelevance_231-37-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 1,
+      "run_index": 58
+    },
+    {
+      "case_id": "live_irrelevance_686-223-1",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 2,
+      "run_index": 59
+    },
+    {
+      "case_id": "live_irrelevance_298-73-5",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 3,
+      "run_index": 60
+    },
+    {
+      "case_id": "live_irrelevance_759-270-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 4,
+      "run_index": 61
+    },
+    {
+      "case_id": "live_irrelevance_132-11-7",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 5,
+      "run_index": 62
+    },
+    {
+      "case_id": "live_irrelevance_646-205-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 6,
+      "run_index": 63
+    },
+    {
+      "case_id": "live_irrelevance_103-3-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 7,
+      "run_index": 64
+    },
+    {
+      "case_id": "live_irrelevance_802-305-6",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 8,
+      "run_index": 65
+    },
+    {
+      "case_id": "live_irrelevance_731-246-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 9,
+      "run_index": 66
+    },
+    {
+      "case_id": "live_irrelevance_261-56-4",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 10,
+      "run_index": 67
+    },
+    {
+      "case_id": "live_irrelevance_650-205-4",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 11,
+      "run_index": 68
+    },
+    {
+      "case_id": "live_irrelevance_674-215-2",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 12,
+      "run_index": 69
+    },
+    {
+      "case_id": "live_irrelevance_236-41-0",
+      "category": "live_irrelevance",
+      "prereq": false,
+      "position": 13,
+      "run_index": 70
+    },
+    {
+      "case_id": "live_relevance_8-8-0",
+      "category": "live_relevance",
+      "prereq": false,
+      "position": 0,
+      "run_index": 71
+    },
+    {
+      "case_id": "live_relevance_6-6-0",
+      "category": "live_relevance",
+      "prereq": false,
+      "position": 1,
+      "run_index": 72
+    },
+    {
+      "case_id": "multi_turn_base_182",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 0,
+      "run_index": 73
+    },
+    {
+      "case_id": "multi_turn_base_68",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 1,
+      "run_index": 74
+    },
+    {
+      "case_id": "multi_turn_base_29",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 2,
+      "run_index": 75
+    },
+    {
+      "case_id": "multi_turn_base_62",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 3,
+      "run_index": 76
+    },
+    {
+      "case_id": "multi_turn_base_64",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 4,
+      "run_index": 77
+    },
+    {
+      "case_id": "multi_turn_base_178",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 5,
+      "run_index": 78
+    },
+    {
+      "case_id": "multi_turn_base_93",
+      "category": "multi_turn_base",
+      "prereq": false,
+      "position": 6,
+      "run_index": 79
+    },
+    {
+      "case_id": "multi_turn_miss_func_159",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 0,
+      "run_index": 80
+    },
+    {
+      "case_id": "multi_turn_miss_func_65",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 1,
+      "run_index": 81
+    },
+    {
+      "case_id": "multi_turn_miss_func_178",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 2,
+      "run_index": 82
+    },
+    {
+      "case_id": "multi_turn_miss_func_180",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 3,
+      "run_index": 83
+    },
+    {
+      "case_id": "multi_turn_miss_func_142",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 4,
+      "run_index": 84
+    },
+    {
+      "case_id": "multi_turn_miss_func_162",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 5,
+      "run_index": 85
+    },
+    {
+      "case_id": "multi_turn_miss_func_59",
+      "category": "multi_turn_miss_func",
+      "prereq": false,
+      "position": 6,
+      "run_index": 86
+    },
+    {
+      "case_id": "multi_turn_miss_param_122",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 0,
+      "run_index": 87
+    },
+    {
+      "case_id": "multi_turn_miss_param_86",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 1,
+      "run_index": 88
+    },
+    {
+      "case_id": "multi_turn_miss_param_6",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 2,
+      "run_index": 89
+    },
+    {
+      "case_id": "multi_turn_miss_param_76",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 3,
+      "run_index": 90
+    },
+    {
+      "case_id": "multi_turn_miss_param_144",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 4,
+      "run_index": 91
+    },
+    {
+      "case_id": "multi_turn_miss_param_150",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 5,
+      "run_index": 92
+    },
+    {
+      "case_id": "multi_turn_miss_param_190",
+      "category": "multi_turn_miss_param",
+      "prereq": false,
+      "position": 6,
+      "run_index": 93
+    },
+    {
+      "case_id": "multi_turn_long_context_30",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 0,
+      "run_index": 94
+    },
+    {
+      "case_id": "multi_turn_long_context_160",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 1,
+      "run_index": 95
+    },
+    {
+      "case_id": "multi_turn_long_context_106",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 2,
+      "run_index": 96
+    },
+    {
+      "case_id": "multi_turn_long_context_177",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 3,
+      "run_index": 97
+    },
+    {
+      "case_id": "multi_turn_long_context_195",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 4,
+      "run_index": 98
+    },
+    {
+      "case_id": "multi_turn_long_context_82",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 5,
+      "run_index": 99
+    },
+    {
+      "case_id": "multi_turn_long_context_78",
+      "category": "multi_turn_long_context",
+      "prereq": false,
+      "position": 6,
+      "run_index": 100
+    },
+    {
+      "case_id": "memory_kv_prereq_32-notetaker-0",
+      "category": "memory_kv",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 101
+    },
+    {
+      "case_id": "memory_kv_prereq_33-notetaker-1",
+      "category": "memory_kv",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 102
+    },
+    {
+      "case_id": "memory_kv_prereq_34-notetaker-2",
+      "category": "memory_kv",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 103
+    },
+    {
+      "case_id": "memory_kv_prereq_35-notetaker-3",
+      "category": "memory_kv",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 104
+    },
+    {
+      "case_id": "memory_kv_prereq_36-notetaker-4",
+      "category": "memory_kv",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 105
+    },
+    {
+      "case_id": "memory_kv_132-notetaker-2",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 0,
+      "run_index": 106
+    },
+    {
+      "case_id": "memory_kv_152-notetaker-22",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 1,
+      "run_index": 107
+    },
+    {
+      "case_id": "memory_kv_144-notetaker-14",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 2,
+      "run_index": 108
+    },
+    {
+      "case_id": "memory_kv_149-notetaker-19",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 3,
+      "run_index": 109
+    },
+    {
+      "case_id": "memory_kv_142-notetaker-12",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 4,
+      "run_index": 110
+    },
+    {
+      "case_id": "memory_kv_131-notetaker-1",
+      "category": "memory_kv",
+      "prereq": false,
+      "position": 5,
+      "run_index": 111
+    },
+    {
+      "case_id": "memory_vector_prereq_32-notetaker-0",
+      "category": "memory_vector",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 112
+    },
+    {
+      "case_id": "memory_vector_prereq_33-notetaker-1",
+      "category": "memory_vector",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 113
+    },
+    {
+      "case_id": "memory_vector_prereq_34-notetaker-2",
+      "category": "memory_vector",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 114
+    },
+    {
+      "case_id": "memory_vector_prereq_35-notetaker-3",
+      "category": "memory_vector",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 115
+    },
+    {
+      "case_id": "memory_vector_prereq_36-notetaker-4",
+      "category": "memory_vector",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 116
+    },
+    {
+      "case_id": "memory_vector_130-notetaker-0",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 0,
+      "run_index": 117
+    },
+    {
+      "case_id": "memory_vector_154-notetaker-24",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 1,
+      "run_index": 118
+    },
+    {
+      "case_id": "memory_vector_149-notetaker-19",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 2,
+      "run_index": 119
+    },
+    {
+      "case_id": "memory_vector_150-notetaker-20",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 3,
+      "run_index": 120
+    },
+    {
+      "case_id": "memory_vector_148-notetaker-18",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 4,
+      "run_index": 121
+    },
+    {
+      "case_id": "memory_vector_135-notetaker-5",
+      "category": "memory_vector",
+      "prereq": false,
+      "position": 5,
+      "run_index": 122
+    },
+    {
+      "case_id": "memory_rec_sum_prereq_32-notetaker-0",
+      "category": "memory_rec_sum",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 123
+    },
+    {
+      "case_id": "memory_rec_sum_prereq_33-notetaker-1",
+      "category": "memory_rec_sum",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 124
+    },
+    {
+      "case_id": "memory_rec_sum_prereq_34-notetaker-2",
+      "category": "memory_rec_sum",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 125
+    },
+    {
+      "case_id": "memory_rec_sum_prereq_35-notetaker-3",
+      "category": "memory_rec_sum",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 126
+    },
+    {
+      "case_id": "memory_rec_sum_prereq_36-notetaker-4",
+      "category": "memory_rec_sum",
+      "prereq": true,
+      "scenario": "notetaker",
+      "run_index": 127
+    },
+    {
+      "case_id": "memory_rec_sum_150-notetaker-20",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 0,
+      "run_index": 128
+    },
+    {
+      "case_id": "memory_rec_sum_153-notetaker-23",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 1,
+      "run_index": 129
+    },
+    {
+      "case_id": "memory_rec_sum_149-notetaker-19",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 2,
+      "run_index": 130
+    },
+    {
+      "case_id": "memory_rec_sum_134-notetaker-4",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 3,
+      "run_index": 131
+    },
+    {
+      "case_id": "memory_rec_sum_151-notetaker-21",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 4,
+      "run_index": 132
+    },
+    {
+      "case_id": "memory_rec_sum_154-notetaker-24",
+      "category": "memory_rec_sum",
+      "prereq": false,
+      "position": 5,
+      "run_index": 133
+    }
+  ]
+}

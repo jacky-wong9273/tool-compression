@@ -52,14 +52,15 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--out", required=True, type=Path)
     run.add_argument("--pilot", action="store_true")
     run.add_argument("--validation", action="store_true", help="the fresh validation draw, thinking off")
+    run.add_argument("--preliminary", action="store_true", help="the 80 CNY preliminary draw, thinking off")
     run.add_argument("--live", action="store_true")
     run.add_argument("--authorize-live", action="store_true")
     run.add_argument("--thinking", help="off, on, or off,on; required with --live")
     run.add_argument(
         "--memory-prereqs",
         choices=("none", "matched"),
-        help="required with --pilot --live and with --validation: none, or the "
-        "prerequisite conversations of the scenarios the drawn questions use",
+        help="required with --pilot --live, with --validation, and with --preliminary: "
+        "none, or the prerequisite conversations of the scenarios the drawn questions use",
     )
     run.add_argument("--ceiling-usd", type=str)
     run.add_argument("--bfcl-root", type=Path)
@@ -149,11 +150,15 @@ def _run(args) -> int:
             return 2
     else:
         ceiling = None
-    if args.validation and args.pilot:
-        print("refusing: --validation and --pilot are different draws", file=sys.stderr)
+    if sum((args.pilot, args.validation, args.preliminary)) > 1:
+        print("refusing: --pilot, --validation, and --preliminary are different draws", file=sys.stderr)
         return 2
-    if args.memory_prereqs and not (args.pilot or args.validation):
-        print("refusing: --memory-prereqs applies to --pilot or --validation; the full run sends every prerequisite", file=sys.stderr)
+    if args.memory_prereqs and not (args.pilot or args.validation or args.preliminary):
+        print(
+            "refusing: --memory-prereqs applies to --pilot, --validation, or --preliminary; "
+            "the full run sends every prerequisite",
+            file=sys.stderr,
+        )
         return 2
     if args.pilot and args.live and args.memory_prereqs is None:
         print("refusing: --pilot --live requires --memory-prereqs none or matched", file=sys.stderr)
@@ -172,7 +177,31 @@ def _run(args) -> int:
         if ceiling <= 0:
             print("refusing: --ceiling-usd must be greater than 0", file=sys.stderr)
             return 2
-    memory_prereqs = args.memory_prereqs or ("none" if args.pilot or args.validation else "all")
+    if args.preliminary:
+        if modes != ("off",):
+            print("refusing: --preliminary is thinking off only", file=sys.stderr)
+            return 2
+        if args.memory_prereqs != "matched":
+            print("refusing: --preliminary requires --memory-prereqs matched", file=sys.stderr)
+            return 2
+        if args.ceiling_usd is None:
+            print("refusing: --preliminary requires --ceiling-usd", file=sys.stderr)
+            return 2
+        ceiling = Decimal(args.ceiling_usd)
+        if ceiling <= 0:
+            print("refusing: --ceiling-usd must be greater than 0", file=sys.stderr)
+            return 2
+        from tool_compression.clean_start.preliminary import CEILING_USD
+
+        if ceiling > CEILING_USD:
+            print(
+                f"refusing: --preliminary ceiling ${ceiling} exceeds the 80 CNY cap of ${CEILING_USD}",
+                file=sys.stderr,
+            )
+            return 2
+    memory_prereqs = args.memory_prereqs or (
+        "none" if args.pilot or args.validation or args.preliminary else "all"
+    )
     reused = refuse_reuse(args.out)
     if reused:
         print(f"refusing: {reused}; use a new --out directory", file=sys.stderr)
@@ -193,6 +222,22 @@ def _run(args) -> int:
                 file=sys.stderr,
             )
             return 2
+    elif args.preliminary:
+        from tool_compression.clean_start.preliminary import load_committed_cost, select_preliminary_cases
+
+        try:
+            cost = load_committed_cost()
+            cases = select_preliminary_cases()
+        except RuntimeError as exc:
+            print(f"refusing: {exc}", file=sys.stderr)
+            return 2
+        upper = Decimal(cost["planning_upper_usd"])
+        if ceiling < upper:
+            print(
+                f"refusing: preliminary planning upper ${upper} exceeds ceiling ${ceiling}",
+                file=sys.stderr,
+            )
+            return 2
     else:
         cost = None
         cases = _select_cases(args.pilot, memory_prereqs)
@@ -206,6 +251,16 @@ def _run(args) -> int:
                 "planning_upper_usd": cost["planning_upper_usd"],
                 "first_request_floor_usd": cost["first_request_floor_usd"],
                 "structural_cap_usd": cost["structural_cap_usd"],
+            }
+        if args.preliminary:
+            extra = {
+                "preliminary": True,
+                "replicate_u": False,
+                "memory_prereqs": "matched",
+                "planning_upper_usd": cost["planning_upper_usd"],
+                "first_request_floor_usd": cost["first_request_floor_usd"],
+                "structural_cap_usd": cost["structural_cap_usd"],
+                "fraction": cost["fraction"],
             }
         write_plan(
             cases,
@@ -247,6 +302,7 @@ def _run(args) -> int:
                 pilot=args.pilot,
                 memory_prereqs=memory_prereqs,
                 validation=args.validation,
+                preliminary=args.preliminary,
                 cost=cost,
             ),
         )
@@ -269,6 +325,7 @@ def run_identity(
     pilot: bool,
     memory_prereqs: str,
     validation: bool = False,
+    preliminary: bool = False,
     cost: dict | None = None,
 ) -> dict:
     """What makes the pilot and the full run the same pipeline on different case lists."""
@@ -292,6 +349,15 @@ def run_identity(
         from tool_compression.clean_start.validation import DRAW_FILE
 
         identity["validation"] = True
+        identity["replicate_u"] = False
+        identity["draw_sha256"] = sha256((study_dir() / DRAW_FILE).read_bytes()).hexdigest()
+        if cost is not None:
+            identity["planning_upper_usd"] = cost["planning_upper_usd"]
+            identity["first_request_floor_usd"] = cost["first_request_floor_usd"]
+    if preliminary:
+        from tool_compression.clean_start.preliminary import DRAW_FILE
+
+        identity["preliminary"] = True
         identity["replicate_u"] = False
         identity["draw_sha256"] = sha256((study_dir() / DRAW_FILE).read_bytes()).hexdigest()
         if cost is not None:
