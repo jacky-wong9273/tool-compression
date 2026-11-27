@@ -1,6 +1,8 @@
 # Independent review and revision of S, X, SX and the runner (2026-11-25)
 
-> The 0bf829c6 validation flight is diagnosed in `REVISION-0bf829c6.md`, which also describes the current editors (`s-rules-2026-11-26`, `x-rules-2026-11-26`): S states each language hint and suite membership once per request, and X refuses pairs whose action texts act on different objects. Where this review and that document disagree about the current editors, that document is current.
+> The interrupted 69f33cdc 20% flight is diagnosed in `REVISION-preliminary-69f33cdc.md`, which describes the current editors (`s-rules-2026-11-27`, `x-rules-2026-11-27`): S also drops schema-proven default clauses that say `None` or `if not specified`, empty defaults, and whitespace that ends a field; X drops cues the rival's name already spells and cues cut from a rival's `or`/`and` phrase. Where this review or `REVISION-0bf829c6.md` disagrees with it about the current editors, that document is current.
+>
+> The 0bf829c6 validation flight is diagnosed in `REVISION-0bf829c6.md`, which also describes the editors that preceded them (`s-rules-2026-11-26`, `x-rules-2026-11-26`): S states each language hint and suite membership once per request, and X refuses pairs whose action texts act on different objects. The 2026-11-27 editors keep those rules.
 >
 > The c47b186c flight (25 Nov, 16:46–17:22 HKT) is diagnosed in `REVISION-c47b186c.md`. That document also describes the editors that followed it (`s-rules-2026-11-25.2`, `x-rules-2026-11-25.3`) and the two contract changes: S sees which verbatim suite elaborations earlier tools already carry, and X decides cues on the catalogue already presented. Sections 3, 4 and 8 below are updated to those editors. The rest of this review describes the editors as they were reviewed at `0c0284d`.
 

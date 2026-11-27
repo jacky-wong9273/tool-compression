@@ -1,5 +1,7 @@
 # Diagnosis of the 0bf829c6 validation flight and revision of S, X, SX (2026-11-26)
 
+> The editors described here were revised again after the interrupted 69f33cdc 20% flight; see `REVISION-preliminary-69f33cdc.md` (`s-rules-2026-11-27`, `x-rules-2026-11-27`). Every rule below is kept.
+
 Base: the flown PR #28 tip `0bf829c6c2d24e5efa0483c7447c7ed0df4c53b9`, editors `s-rules-2026-11-25.2` and `x-rules-2026-11-25.3`. The flight's evidence is archived unmodified in `evidence/validation-2026-11-25-0bf829c6/` (archive SHA-256 `93f360f99f5fe6841374ebb737f0180b0fd4212ef524eb348965fb9713faff9d`, 1498 files, `SHA256SUMS`). `official_settlement` stays false. Nothing in this revision sent a provider request, read a key, retried, resumed, or re-ran a flight.
 
 **Both flown draws are now exposed.** The 41-case pilot and the 313-case validation draw have been flown and diagnosed case by case. They are regression and diagnostic data from here on, not unseen validation for these or any later editors. Neither draw was changed.

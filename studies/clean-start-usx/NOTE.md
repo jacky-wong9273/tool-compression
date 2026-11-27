@@ -110,23 +110,23 @@ Token bills are `bills.jsonl` (one row per completed HTTP step, with its attempt
 
 ## Editor limitations by set
 
-Every in-scope question gets the official language hint before the editors run. Since `s-rules-2026-11-26`, S keeps the hint verbatim on the first tool of the request that carries it and drops the byte-identical hint from later tools; before that, S never edited the hint. X compares each tool's action sentence with the hint, any labelled suite preamble, and a leading `This function` frame set aside, then appends the cue after the U text (after the hint wherever U has it). Response-schema descriptions are not description slots, so they stay unmodified wherever a catalogue has them. A zero in the table means the rules ran on the in-scope questions and no candidate qualified. Dropped sets are omitted here; the census above records them. Question counts in this table are the in-scope counts. Rules are `s-rules-2026-11-26` and `x-rules-2026-11-26`. S keeps each suite elaboration, membership sentence and language hint on the first tool in the request that carries it; later tools of the same suite name it as a label (`Gorilla file system: ...`). X refuses a pair whose action texts act on different objects. On held-out turns, every arm keeps the bytes of tools already sent and only the appended tools are new. `REVISION-c47b186c.md` explains the carried-elaboration and presented-prefix rules; `REVISION-0bf829c6.md` explains the hint, label and object rules.
+Every in-scope question gets the official language hint before the editors run. Since `s-rules-2026-11-26`, S keeps the hint verbatim on the first tool of the request that carries it and drops the byte-identical hint from later tools; before that, S never edited the hint. X compares each tool's action sentence with the hint, any labelled suite preamble, and a leading `This function` frame set aside, then appends the cue after the U text (after the hint wherever U has it). Response-schema descriptions are not description slots, so they stay unmodified wherever a catalogue has them. A zero in the table means the rules ran on the in-scope questions and no candidate qualified. Dropped sets are omitted here; the census above records them. Question counts in this table are the in-scope counts. Rules are `s-rules-2026-11-27` and `x-rules-2026-11-27`. S keeps each suite elaboration, membership sentence and language hint on the first tool in the request that carries it; later tools of the same suite name it as a label (`Gorilla file system: ...`). X refuses a pair whose action texts act on different objects, a pair whose rival name already spells the difference, and a pair whose rival text is one conjunct of a phrase that also names the target's object. On held-out turns, every arm keeps the bytes of tools already sent and only the appended tools are new. `REVISION-c47b186c.md` explains the carried-elaboration and presented-prefix rules; `REVISION-0bf829c6.md` explains the hint, label and object rules; `REVISION-preliminary-69f33cdc.md` explains the default-clause, trailing-space, name-spelling and coordinator rules.
 
 Every in-scope catalogue has at least two tools, so every in-scope question now has an S edit: at least one later tool drops the repeated hint. The two S differences on the unscoped record that were one-tool questions remain outside this study.
 
 | set | in-scope questions | S differs from U | X differs from U | SX differs from U | what stays unmodified |
 | --- | ---: | ---: | ---: | ---: | --- |
-| multiple | 200 | 200 | 7 | 200 | |
-| parallel_multiple | 200 | 200 | 5 | 200 | |
+| multiple | 200 | 200 | 4 | 200 | |
+| parallel_multiple | 200 | 200 | 3 | 200 | |
 | live_multiple | 1053 | 1053 | 13 | 1053 | |
 | live_parallel | 2 | 2 | 0 | 2 | same rules; no X rival qualified |
 | live_parallel_multiple | 24 | 24 | 0 | 24 | same rules; no X rival qualified |
 | live_irrelevance | 372 | 372 | 8 | 372 | |
 | live_relevance | 11 | 11 | 0 | 11 | same rules; no X rival qualified |
-| multi_turn_base | 200 | 200 | 63 | 200 | `excluded_function` stays in the catalogue because the pinned loader does not strip it; execution needs the official backend |
-| multi_turn_miss_func | 200 | 200 | 61 | 200 | held-out docs are absent from the initial tools and return on that turn, without the language hint, with the official holdout user prompt, which is sender text |
-| multi_turn_miss_param | 200 | 200 | 63 | 200 | same catalogue limitation as the base set |
-| multi_turn_long_context | 200 | 200 | 63 | 200 | the long-context flag is an executor input, not a document edit |
+| multi_turn_base | 200 | 200 | 0 | 200 | `excluded_function` stays in the catalogue because the pinned loader does not strip it; execution needs the official backend; no X rival qualified, so SX sends S's bytes |
+| multi_turn_miss_func | 200 | 200 | 0 | 200 | held-out docs are absent from the initial tools and return on that turn, without the language hint, with the official holdout user prompt, which is sender text; no X rival qualified on any stage |
+| multi_turn_miss_param | 200 | 200 | 0 | 200 | same catalogue limitation as the base set; no X rival qualified |
+| multi_turn_long_context | 200 | 200 | 0 | 200 | the long-context flag is an executor input, not a document edit; no X rival qualified |
 | memory_kv | 155 | 155 | 155 | 155 | 37 prerequisite conversations are required for a full score; the pilot sends the matched ones only with `--memory-prereqs matched`; the memory instruction prompt is the pinned BFCL one; the agentic format prompt is sender text |
 | memory_vector | 155 | 155 | 155 | 155 | same memory limitations |
 | memory_rec_sum | 155 | 155 | 0 | 155 | same memory limitations; no X rival qualified |
