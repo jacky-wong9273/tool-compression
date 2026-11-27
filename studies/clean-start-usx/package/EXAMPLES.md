@@ -105,11 +105,7 @@ S edit, `multi_turn_base_0`, `comment` `/function/description` (suite_context+su
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 - after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_base_0`, on `rmdir` naming `rm` (text:directory at current|file or):
-
-- target action text: 'Remove a directory at current directory.'
-- rival action text: 'Remove a file or directory.'
-- appended cue: 'For a file, use rm.'
+X cue: not possible in this category (no rival qualifies anywhere).
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
@@ -120,11 +116,7 @@ S edit, `multi_turn_miss_func_0`, `comment` `/function/description` (suite_conte
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 - after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_miss_func_0`, on `rmdir` naming `rm` (text:directory at current|file or):
-
-- target action text: 'Remove a directory at current directory.'
-- rival action text: 'Remove a file or directory.'
-- appended cue: 'For a file, use rm.'
+X cue: not possible in this category (no rival qualifies anywhere).
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
@@ -135,11 +127,7 @@ S edit, `multi_turn_miss_param_0`, `comment` `/function/description` (suite_cont
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 - after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_miss_param_0`, on `rmdir` naming `rm` (text:directory at current|file or):
-
-- target action text: 'Remove a directory at current directory.'
-- rival action text: 'Remove a file or directory.'
-- appended cue: 'For a file, use rm.'
+X cue: not possible in this category (no rival qualifies anywhere).
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
@@ -150,20 +138,16 @@ S edit, `multi_turn_long_context_0`, `comment` `/function/description` (suite_co
 - before: 'This tool belongs to the TwitterAPI, which provides core functionality for posting tweets, retweeting, commenting, and following users on Twitter. Tool description: Comment on a tweet for the authenticated user. Note that the provided function is in Python 3 syntax.'
 - after: 'TwitterAPI: Comment on a tweet for the authenticated user.'
 
-X cue, `multi_turn_long_context_0`, on `rmdir` naming `rm` (text:directory at current|file or):
-
-- target action text: 'Remove a directory at current directory.'
-- rival action text: 'Remove a file or directory.'
-- appended cue: 'For a file, use rm.'
+X cue: not possible in this category (no rival qualifies anywhere).
 
 Unchanged question: none; every in-scope question of this category has at least one edit.
 
 ## memory_kv
 
-S edit, `memory_kv_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context+suite_label+hint_context):
+S edit, `memory_kv_0-customer-0`, `archival_memory_add` `/function/parameters/properties/value/description` (trailing_space):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
-- after: 'Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.'
+- before: 'The value to store in the long-term memory. '
+- after: 'The value to store in the long-term memory.'
 
 X cue, `memory_kv_0-customer-0`, on `archival_memory_add` naming `core_memory_add` (text:long|short):
 
@@ -175,10 +159,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_vector
 
-S edit, `memory_vector_0-customer-0`, `archival_memory_clear` `/function/description` (suite_context+suite_label+hint_context):
+S edit, `memory_vector_0-customer-0`, `archival_memory_add` `/function/parameters/properties/text/description` (trailing_space):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.'
-- after: 'Memory suite: Clear all entries in the archival memory.'
+- before: 'The text to be added to the archival memory. '
+- after: 'The text to be added to the archival memory.'
 
 X cue, `memory_vector_0-customer-0`, on `archival_memory_retrieve_all` naming `archival_memory_retrieve` (text:all|the most similar):
 
@@ -190,10 +174,10 @@ Unchanged question: none; every in-scope question of this category has at least 
 
 ## memory_rec_sum
 
-S edit, `memory_rec_sum_0-customer-0`, `memory_clear` `/function/description` (suite_context+suite_label+hint_context):
+S edit, `memory_rec_sum_0-customer-0`, `memory_append` `/function/parameters/properties/text/description` (trailing_space):
 
-- before: 'This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.'
-- after: 'Memory suite: Clear all content in the memory, including any from previous interactions. This operation is irreversible.'
+- before: 'The text to append to the memory. '
+- after: 'The text to append to the memory.'
 
 X cue: not possible in this category (no rival qualifies anywhere).
 

@@ -46,6 +46,14 @@
     },
     {
       "arm": "S",
+      "function": "get_user_id",
+      "pointer": "/function/parameters/properties/user/description",
+      "before": "User name of the user. ",
+      "after": "User name of the user.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "list_users",
       "pointer": "/function/description",
       "before": "This tool belongs to the Message API, which is used to manage user interactions in a workspace. Tool description: List all users in the workspace. Note that the provided function is in Python 3 syntax.",
@@ -67,6 +75,14 @@
       "before": "This tool belongs to the Message API, which is used to manage user interactions in a workspace. Tool description: Log in a user with the given user ID to messeage application. Note that the provided function is in Python 3 syntax.",
       "after": "Message API: Log in a user with the given user ID to messeage application.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "message_login",
+      "pointer": "/function/parameters/properties/user_id/description",
+      "before": "User ID of the user to log in. ",
+      "after": "User ID of the user to log in.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -1516,7 +1532,7 @@
             "properties": {
               "user": {
                 "type": "string",
-                "description": "User name of the user. "
+                "description": "User name of the user."
               }
             },
             "required": [
@@ -1589,7 +1605,7 @@
             "properties": {
               "user_id": {
                 "type": "string",
-                "description": "User ID of the user to log in. "
+                "description": "User ID of the user to log in."
               }
             },
             "required": [
@@ -3652,7 +3668,7 @@
             "properties": {
               "user": {
                 "type": "string",
-                "description": "User name of the user. "
+                "description": "User name of the user."
               }
             },
             "required": [
@@ -3725,7 +3741,7 @@
             "properties": {
               "user_id": {
                 "type": "string",
-                "description": "User ID of the user to log in. "
+                "description": "User ID of the user to log in."
               }
             },
             "required": [
@@ -5823,7 +5839,7 @@
                 "properties": {
                   "user": {
                     "type": "string",
-                    "description": "User name of the user. "
+                    "description": "User name of the user."
                   }
                 },
                 "required": [
@@ -5896,7 +5912,7 @@
                 "properties": {
                   "user_id": {
                     "type": "string",
-                    "description": "User ID of the user to log in. "
+                    "description": "User ID of the user to log in."
                   }
                 },
                 "required": [
@@ -8015,7 +8031,7 @@
                 "properties": {
                   "user": {
                     "type": "string",
-                    "description": "User name of the user. "
+                    "description": "User name of the user."
                   }
                 },
                 "required": [
@@ -8088,7 +8104,7 @@
                 "properties": {
                   "user_id": {
                     "type": "string",
-                    "description": "User ID of the user to log in. "
+                    "description": "User ID of the user to log in."
                   }
                 },
                 "required": [

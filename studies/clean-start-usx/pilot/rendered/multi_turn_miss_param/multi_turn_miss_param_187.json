@@ -18,6 +18,14 @@
   "changes": [
     {
       "arm": "S",
+      "function": "close_ticket",
+      "pointer": "/function/parameters/properties/ticket_id/description",
+      "before": "ID of the ticket to be closed. ",
+      "after": "ID of the ticket to be closed.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "create_ticket",
       "pointer": "/function/description",
       "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Create a ticket in the system and queue it. Note that the provided function is in Python 3 syntax.",
@@ -27,10 +35,18 @@
     {
       "arm": "S",
       "function": "create_ticket",
+      "pointer": "/function/parameters/properties/description/description",
+      "before": "Description of the ticket. Defaults to an empty string.",
+      "after": "Description of the ticket.",
+      "change_class": "schema_guaranteed"
+    },
+    {
+      "arm": "S",
+      "function": "create_ticket",
       "pointer": "/function/parameters/properties/priority/description",
       "before": "Priority of the ticket, from 1 to 5. Defaults to 1. 5 is the highest priority. ",
-      "after": "Priority of the ticket, from 1 to 5. 5 is the highest priority. ",
-      "change_class": "schema_guaranteed"
+      "after": "Priority of the ticket, from 1 to 5. 5 is the highest priority.",
+      "change_class": "schema_guaranteed+trailing_space"
     },
     {
       "arm": "S",
@@ -50,11 +66,27 @@
     },
     {
       "arm": "S",
+      "function": "get_ticket",
+      "pointer": "/function/parameters/properties/ticket_id/description",
+      "before": "ID of the ticket to retrieve. ",
+      "after": "ID of the ticket to retrieve.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "get_user_tickets",
       "pointer": "/function/description",
       "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get all tickets created by the current user, optionally filtered by status. Note that the provided function is in Python 3 syntax.",
       "after": "Ticketing system that is part of a company: Get all tickets created by the current user, optionally filtered by status.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_user_tickets",
+      "pointer": "/function/parameters/properties/status/description",
+      "before": "Status to filter tickets by. If None, return all tickets. ",
+      "after": "Status to filter tickets by. If None, return all tickets.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -74,6 +106,14 @@
     },
     {
       "arm": "S",
+      "function": "resolve_ticket",
+      "pointer": "/function/parameters/properties/resolution/description",
+      "before": "Resolution details for the ticket. ",
+      "after": "Resolution details for the ticket.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "ticket_get_login_status",
       "pointer": "/function/description",
       "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get the login status of the currently authenticated user. Note that the provided function is in Python 3 syntax.",
@@ -87,6 +127,14 @@
       "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Authenticate a user for ticket system. Note that the provided function is in Python 3 syntax.",
       "after": "Ticketing system that is part of a company: Authenticate a user for ticket system.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "ticket_login",
+      "pointer": "/function/parameters/properties/password/description",
+      "before": "Password of the user. ",
+      "after": "Password of the user.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -151,6 +199,14 @@
       "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve all booking history for the user. Note that the provided function is in Python 3 syntax.",
       "after": "Travel system: Retrieve all booking history for the user.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_booking_history",
+      "pointer": "/function/parameters/properties/access_token/description",
+      "before": "The access token obtained from the authenticate method. ",
+      "after": "The access token obtained from the authenticate method.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -1403,7 +1459,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to be closed. "
+                "description": "ID of the ticket to be closed."
               }
             },
             "required": [
@@ -1435,12 +1491,12 @@
               },
               "description": {
                 "type": "string",
-                "description": "Description of the ticket. Defaults to an empty string.",
+                "description": "Description of the ticket.",
                 "default": ""
               },
               "priority": {
                 "type": "integer",
-                "description": "Priority of the ticket, from 1 to 5. 5 is the highest priority. ",
+                "description": "Priority of the ticket, from 1 to 5. 5 is the highest priority.",
                 "default": 1
               }
             },
@@ -1536,7 +1592,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to retrieve. "
+                "description": "ID of the ticket to retrieve."
               }
             },
             "required": [
@@ -1584,7 +1640,7 @@
             "properties": {
               "status": {
                 "type": "string",
-                "description": "Status to filter tickets by. If None, return all tickets. ",
+                "description": "Status to filter tickets by. If None, return all tickets.",
                 "default": "None"
               }
             },
@@ -1656,7 +1712,7 @@
               },
               "resolution": {
                 "type": "string",
-                "description": "Resolution details for the ticket. "
+                "description": "Resolution details for the ticket."
               }
             },
             "required": [
@@ -1710,7 +1766,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password of the user. "
+                "description": "Password of the user."
               }
             },
             "required": [
@@ -2047,7 +2103,7 @@
             "properties": {
               "access_token": {
                 "type": "string",
-                "description": "The access token obtained from the authenticate method. "
+                "description": "The access token obtained from the authenticate method."
               }
             },
             "required": [
@@ -3671,7 +3727,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to be closed. "
+                "description": "ID of the ticket to be closed."
               }
             },
             "required": [
@@ -3703,12 +3759,12 @@
               },
               "description": {
                 "type": "string",
-                "description": "Description of the ticket. Defaults to an empty string.",
+                "description": "Description of the ticket.",
                 "default": ""
               },
               "priority": {
                 "type": "integer",
-                "description": "Priority of the ticket, from 1 to 5. 5 is the highest priority. ",
+                "description": "Priority of the ticket, from 1 to 5. 5 is the highest priority.",
                 "default": 1
               }
             },
@@ -3804,7 +3860,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to retrieve. "
+                "description": "ID of the ticket to retrieve."
               }
             },
             "required": [
@@ -3852,7 +3908,7 @@
             "properties": {
               "status": {
                 "type": "string",
-                "description": "Status to filter tickets by. If None, return all tickets. ",
+                "description": "Status to filter tickets by. If None, return all tickets.",
                 "default": "None"
               }
             },
@@ -3924,7 +3980,7 @@
               },
               "resolution": {
                 "type": "string",
-                "description": "Resolution details for the ticket. "
+                "description": "Resolution details for the ticket."
               }
             },
             "required": [
@@ -3978,7 +4034,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password of the user. "
+                "description": "Password of the user."
               }
             },
             "required": [
@@ -4315,7 +4371,7 @@
             "properties": {
               "access_token": {
                 "type": "string",
-                "description": "The access token obtained from the authenticate method. "
+                "description": "The access token obtained from the authenticate method."
               }
             },
             "required": [

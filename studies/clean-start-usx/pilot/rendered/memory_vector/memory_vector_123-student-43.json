@@ -20,6 +20,14 @@
   "changes": [
     {
       "arm": "S",
+      "function": "archival_memory_add",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The text to be added to the archival memory. ",
+      "after": "The text to be added to the archival memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "archival_memory_clear",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.",
@@ -33,6 +41,14 @@
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove an entry from the archival memory. Note that the provided function is in Python 3 syntax.",
       "after": "Memory suite: Remove an entry from the archival memory.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_remove",
+      "pointer": "/function/parameters/properties/vec_id/description",
+      "before": "The ID of the entry to be removed. ",
+      "after": "The ID of the entry to be removed.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -60,11 +76,27 @@
     },
     {
       "arm": "S",
+      "function": "archival_memory_update",
+      "pointer": "/function/parameters/properties/new_text/description",
+      "before": "The new text to replace the old text. ",
+      "after": "The new text to replace the old text.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "core_memory_add",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a new entry to the core memory. Note that the provided function is in Python 3 syntax.",
       "after": "Memory suite: Add a new entry to the core memory.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_add",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The text to be added to the core memory. ",
+      "after": "The text to be added to the core memory.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -84,11 +116,27 @@
     },
     {
       "arm": "S",
+      "function": "core_memory_remove",
+      "pointer": "/function/parameters/properties/vec_id/description",
+      "before": "The ID of the entry to be removed. ",
+      "after": "The ID of the entry to be removed.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "core_memory_retrieve",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the most similar entries from the core memory. Note that the provided function is in Python 3 syntax.",
       "after": "Memory suite: Retrieve the most similar entries from the core memory.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_retrieve",
+      "pointer": "/function/parameters/properties/top_k/description",
+      "before": "The number of top similar entries to retrieve. ",
+      "after": "The number of top similar entries to retrieve.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -105,6 +153,14 @@
       "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Update an entry in the core memory. Note that the provided function is in Python 3 syntax.",
       "after": "Memory suite: Update an entry in the core memory.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_update",
+      "pointer": "/function/parameters/properties/new_text/description",
+      "before": "The new text to replace the old text. ",
+      "after": "The new text to replace the old text.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "X",
@@ -525,7 +581,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to be added to the archival memory. "
+                "description": "The text to be added to the archival memory."
               }
             },
             "required": [
@@ -574,7 +630,7 @@
             "properties": {
               "vec_id": {
                 "type": "integer",
-                "description": "The ID of the entry to be removed. "
+                "description": "The ID of the entry to be removed."
               }
             },
             "required": [
@@ -690,7 +746,7 @@
               },
               "new_text": {
                 "type": "string",
-                "description": "The new text to replace the old text. "
+                "description": "The new text to replace the old text."
               }
             },
             "required": [
@@ -719,7 +775,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to be added to the core memory. "
+                "description": "The text to be added to the core memory."
               }
             },
             "required": [
@@ -768,7 +824,7 @@
             "properties": {
               "vec_id": {
                 "type": "integer",
-                "description": "The ID of the entry to be removed. "
+                "description": "The ID of the entry to be removed."
               }
             },
             "required": [
@@ -800,7 +856,7 @@
               },
               "top_k": {
                 "type": "integer",
-                "description": "The number of top similar entries to retrieve. ",
+                "description": "The number of top similar entries to retrieve.",
                 "default": 5
               }
             },
@@ -884,7 +940,7 @@
               },
               "new_text": {
                 "type": "string",
-                "description": "The new text to replace the old text. "
+                "description": "The new text to replace the old text."
               }
             },
             "required": [
@@ -1305,7 +1361,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to be added to the archival memory. "
+                "description": "The text to be added to the archival memory."
               }
             },
             "required": [
@@ -1354,7 +1410,7 @@
             "properties": {
               "vec_id": {
                 "type": "integer",
-                "description": "The ID of the entry to be removed. "
+                "description": "The ID of the entry to be removed."
               }
             },
             "required": [
@@ -1470,7 +1526,7 @@
               },
               "new_text": {
                 "type": "string",
-                "description": "The new text to replace the old text. "
+                "description": "The new text to replace the old text."
               }
             },
             "required": [
@@ -1499,7 +1555,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to be added to the core memory. "
+                "description": "The text to be added to the core memory."
               }
             },
             "required": [
@@ -1548,7 +1604,7 @@
             "properties": {
               "vec_id": {
                 "type": "integer",
-                "description": "The ID of the entry to be removed. "
+                "description": "The ID of the entry to be removed."
               }
             },
             "required": [
@@ -1580,7 +1636,7 @@
               },
               "top_k": {
                 "type": "integer",
-                "description": "The number of top similar entries to retrieve. ",
+                "description": "The number of top similar entries to retrieve.",
                 "default": 5
               }
             },
@@ -1664,7 +1720,7 @@
               },
               "new_text": {
                 "type": "string",
-                "description": "The new text to replace the old text. "
+                "description": "The new text to replace the old text."
               }
             },
             "required": [

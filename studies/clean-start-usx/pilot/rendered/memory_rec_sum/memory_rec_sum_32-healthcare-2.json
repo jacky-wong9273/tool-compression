@@ -20,6 +20,14 @@
   "changes": [
     {
       "arm": "S",
+      "function": "memory_append",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The text to append to the memory. ",
+      "after": "The text to append to the memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "memory_clear",
       "pointer": "/function/description",
       "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
@@ -49,6 +57,14 @@
       "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Update the memory with new text. This will replace the existing memory content. Note that the provided function is in Python 3 syntax.",
       "after": "Memory suite: Update the memory with new text. This will replace the existing memory content.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "memory_update",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The new text to set as the memory. ",
+      "after": "The new text to set as the memory.",
+      "change_class": "trailing_space"
     }
   ],
   "arms": {
@@ -196,7 +212,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to append to the memory. "
+                "description": "The text to append to the memory."
               }
             },
             "required": [
@@ -299,7 +315,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The new text to set as the memory. "
+                "description": "The new text to set as the memory."
               }
             },
             "required": [
@@ -462,7 +478,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The text to append to the memory. "
+                "description": "The text to append to the memory."
               }
             },
             "required": [
@@ -565,7 +581,7 @@
             "properties": {
               "text": {
                 "type": "string",
-                "description": "The new text to set as the memory. "
+                "description": "The new text to set as the memory."
               }
             },
             "required": [

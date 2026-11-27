@@ -4,60 +4,61 @@
   "measurement": "Local counts with tiktoken o200k_base. field_tokens sums every editable description string (function and parameter descriptions; response-schema descriptions are not editable and not counted). tools_tokens counts the compact JSON of the whole tools array, the part of a request the arms change. Neither is provider-billed usage; the provider tokenizer and chat template differ. The initial catalogue of each in-scope question is counted once per question; held-out miss_func turns are not included. coverage counts, per question, every editable field S saw (edited, then once under each rule that edited it, or kept by reason) and every tool X saw (cued by axis kind, or uncued by the closest refusal). u_anatomy splits the U tools tokens: description kinds are summed field by field; outside_descriptions is tools tokens minus those fields (names, schema, JSON punctuation; approximate, since tokens do not add across field seams); hints and suite preambles are inside function descriptions, and their repeated_ parts are the occurrences after the first tool of the request that carries the same hint or membership.",
   "exposure": "pilot_draw (41 cases) and validation_draw (313 cases) have both been flown and diagnosed; they are exposed regression data, not unseen validation.",
   "rules": {
-    "S": "s-rules-2026-11-26",
-    "X": "x-rules-2026-11-26"
+    "S": "s-rules-2026-11-27",
+    "X": "x-rules-2026-11-27"
   },
   "all_in_scope": {
     "questions": 3127,
     "field_tokens": {
       "U": 2547243,
-      "S": 1476352,
-      "X": 2579752,
-      "SX": 1508861
+      "S": 1464620,
+      "X": 2576470,
+      "SX": 1493847
     },
     "tools_tokens": {
       "U": 5700811,
-      "S": 4633689,
-      "X": 5733320,
-      "SX": 4666193
+      "S": 4622554,
+      "X": 5730038,
+      "SX": 4651779
     },
     "changed_questions": {
       "S": 3127,
-      "X": 593,
+      "X": 338,
       "SX": 3127
     },
-    "cued_tools": 2943,
-    "cue_tokens": 32509,
+    "cued_tools": 2537,
+    "cue_tokens": 29227,
     "coverage": {
       "s_fields": {
-        "edited": 37918,
+        "edited": 47555,
         "edited:direct_action": 330,
         "edited:flag_normalization": 7,
         "edited:hint_context": 30762,
-        "edited:schema_guaranteed": 7033,
+        "edited:schema_guaranteed": 7359,
         "edited:suite_context": 25133,
         "edited:suite_label": 25133,
+        "edited:trailing_space": 10113,
         "edited:within_tool_duplicate": 25,
         "fields": 95707,
-        "kept:already_minimal": 54934,
-        "kept:ambiguous_source": 154,
-        "kept:no_shorter_faithful_candidate": 2701
+        "kept:already_minimal": 45623,
+        "kept:ambiguous_source": 152,
+        "kept:no_shorter_faithful_candidate": 2377
       },
       "x_tools": {
-        "cued": 2943,
+        "cued": 2537,
         "cued:interface": 6,
-        "cued:text": 2937,
+        "cued:text": 2531,
         "tools": 33889,
-        "uncued:different_actions": 28739,
+        "uncued:different_actions": 29137,
         "uncued:different_objects": 63,
         "uncued:no_leading_verb": 81,
-        "uncued:phrase_not_a_noun_phrase": 1,
-        "uncued:rival_name_spells_difference": 202,
+        "uncued:phrase_not_a_noun_phrase": 3,
+        "uncued:rival_name_spells_difference": 208,
         "uncued:shared_wording_too_short": 50,
         "uncued:window_too_long": 1810
       },
       "questions_without_s_edit": 0,
-      "questions_without_x_cue": 2534,
+      "questions_without_x_cue": 2789,
       "questions_unchanged_in_sx": 0
     },
     "u_anatomy": {
@@ -92,34 +93,34 @@
     },
     "deltas": {
       "S-U": {
-        "field_tokens": -1070891,
-        "field_percent": -42.041,
-        "tools_tokens": -1067122,
-        "tools_percent": -18.719
+        "field_tokens": -1082623,
+        "field_percent": -42.502,
+        "tools_tokens": -1078257,
+        "tools_percent": -18.914
       },
       "X-U": {
-        "field_tokens": 32509,
-        "field_percent": 1.276,
-        "tools_tokens": 32509,
-        "tools_percent": 0.57
+        "field_tokens": 29227,
+        "field_percent": 1.147,
+        "tools_tokens": 29227,
+        "tools_percent": 0.513
       },
       "SX-S": {
-        "field_tokens": 32509,
-        "field_percent": 2.202,
-        "tools_tokens": 32504,
-        "tools_percent": 0.701
+        "field_tokens": 29227,
+        "field_percent": 1.996,
+        "tools_tokens": 29225,
+        "tools_percent": 0.632
       },
       "SX-X": {
-        "field_tokens": -1070891,
-        "field_percent": -41.511,
-        "tools_tokens": -1067127,
-        "tools_percent": -18.613
+        "field_tokens": -1082623,
+        "field_percent": -42.02,
+        "tools_tokens": -1078259,
+        "tools_percent": -18.818
       },
       "SX-U": {
-        "field_tokens": -1038382,
-        "field_percent": -40.765,
-        "tools_tokens": -1034618,
-        "tools_percent": -18.149
+        "field_tokens": -1053396,
+        "field_percent": -41.354,
+        "tools_tokens": -1049032,
+        "tools_percent": -18.401
       }
     }
   },
@@ -127,53 +128,54 @@
     "questions": 3086,
     "field_tokens": {
       "U": 2508743,
-      "S": 1455009,
-      "X": 2540643,
-      "SX": 1486909
+      "S": 1443461,
+      "X": 2537418,
+      "SX": 1472136
     },
     "tools_tokens": {
       "U": 5613705,
-      "S": 4563671,
-      "X": 5645605,
-      "SX": 4595566
+      "S": 4552712,
+      "X": 5642380,
+      "SX": 4581385
     },
     "changed_questions": {
       "S": 3086,
-      "X": 584,
+      "X": 332,
       "SX": 3086
     },
-    "cued_tools": 2888,
-    "cue_tokens": 31900,
+    "cued_tools": 2489,
+    "cue_tokens": 28675,
     "coverage": {
       "s_fields": {
-        "edited": 37333,
+        "edited": 46818,
         "edited:direct_action": 329,
         "edited:flag_normalization": 6,
         "edited:hint_context": 30280,
-        "edited:schema_guaranteed": 6931,
+        "edited:schema_guaranteed": 7252,
         "edited:suite_context": 24720,
         "edited:suite_label": 24720,
+        "edited:trailing_space": 9953,
         "edited:within_tool_duplicate": 25,
         "fields": 94280,
-        "kept:already_minimal": 54138,
-        "kept:ambiguous_source": 152,
-        "kept:no_shorter_faithful_candidate": 2657
+        "kept:already_minimal": 44974,
+        "kept:ambiguous_source": 150,
+        "kept:no_shorter_faithful_candidate": 2338
       },
       "x_tools": {
-        "cued": 2888,
+        "cued": 2489,
         "cued:interface": 6,
-        "cued:text": 2882,
+        "cued:text": 2483,
         "tools": 33366,
-        "uncued:different_actions": 28303,
+        "uncued:different_actions": 28694,
         "uncued:different_objects": 61,
         "uncued:no_leading_verb": 77,
-        "uncued:phrase_not_a_noun_phrase": 1,
-        "uncued:rival_name_spells_difference": 199,
+        "uncued:phrase_not_a_noun_phrase": 3,
+        "uncued:rival_name_spells_difference": 205,
         "uncued:shared_wording_too_short": 50,
         "uncued:window_too_long": 1787
       },
       "questions_without_s_edit": 0,
-      "questions_without_x_cue": 2502,
+      "questions_without_x_cue": 2754,
       "questions_unchanged_in_sx": 0
     },
     "u_anatomy": {
@@ -208,34 +210,34 @@
     },
     "deltas": {
       "S-U": {
-        "field_tokens": -1053734,
-        "field_percent": -42.002,
-        "tools_tokens": -1050034,
-        "tools_percent": -18.705
+        "field_tokens": -1065282,
+        "field_percent": -42.463,
+        "tools_tokens": -1060993,
+        "tools_percent": -18.9
       },
       "X-U": {
-        "field_tokens": 31900,
-        "field_percent": 1.272,
-        "tools_tokens": 31900,
-        "tools_percent": 0.568
+        "field_tokens": 28675,
+        "field_percent": 1.143,
+        "tools_tokens": 28675,
+        "tools_percent": 0.511
       },
       "SX-S": {
-        "field_tokens": 31900,
-        "field_percent": 2.192,
-        "tools_tokens": 31895,
-        "tools_percent": 0.699
+        "field_tokens": 28675,
+        "field_percent": 1.987,
+        "tools_tokens": 28673,
+        "tools_percent": 0.63
       },
       "SX-X": {
-        "field_tokens": -1053734,
-        "field_percent": -41.475,
-        "tools_tokens": -1050039,
-        "tools_percent": -18.599
+        "field_tokens": -1065282,
+        "field_percent": -41.983,
+        "tools_tokens": -1060995,
+        "tools_percent": -18.804
       },
       "SX-U": {
-        "field_tokens": -1021834,
-        "field_percent": -40.731,
-        "tools_tokens": -1018139,
-        "tools_percent": -18.137
+        "field_tokens": -1036607,
+        "field_percent": -41.32,
+        "tools_tokens": -1032320,
+        "tools_percent": -18.389
       }
     }
   },
@@ -244,49 +246,50 @@
       "questions": 41,
       "field_tokens": {
         "U": 38500,
-        "S": 21343,
-        "X": 39109,
-        "SX": 21952
+        "S": 21159,
+        "X": 39052,
+        "SX": 21711
       },
       "tools_tokens": {
         "U": 87106,
-        "S": 70018,
-        "X": 87715,
-        "SX": 70627
+        "S": 69842,
+        "X": 87658,
+        "SX": 70394
       },
       "changed_questions": {
         "S": 41,
-        "X": 9,
+        "X": 6,
         "SX": 41
       },
-      "cued_tools": 55,
-      "cue_tokens": 609,
+      "cued_tools": 48,
+      "cue_tokens": 552,
       "coverage": {
         "s_fields": {
-          "edited": 585,
+          "edited": 737,
           "edited:direct_action": 1,
           "edited:flag_normalization": 1,
           "edited:hint_context": 482,
-          "edited:schema_guaranteed": 102,
+          "edited:schema_guaranteed": 107,
           "edited:suite_context": 413,
           "edited:suite_label": 413,
+          "edited:trailing_space": 160,
           "fields": 1427,
-          "kept:already_minimal": 796,
+          "kept:already_minimal": 649,
           "kept:ambiguous_source": 2,
-          "kept:no_shorter_faithful_candidate": 44
+          "kept:no_shorter_faithful_candidate": 39
         },
         "x_tools": {
-          "cued": 55,
-          "cued:text": 55,
+          "cued": 48,
+          "cued:text": 48,
           "tools": 523,
-          "uncued:different_actions": 436,
+          "uncued:different_actions": 443,
           "uncued:different_objects": 2,
           "uncued:no_leading_verb": 4,
           "uncued:rival_name_spells_difference": 3,
           "uncued:window_too_long": 23
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 32,
+        "questions_without_x_cue": 35,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -321,34 +324,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -17157,
-          "field_percent": -44.564,
-          "tools_tokens": -17088,
-          "tools_percent": -19.617
+          "field_tokens": -17341,
+          "field_percent": -45.042,
+          "tools_tokens": -17264,
+          "tools_percent": -19.82
         },
         "X-U": {
-          "field_tokens": 609,
-          "field_percent": 1.582,
-          "tools_tokens": 609,
-          "tools_percent": 0.699
+          "field_tokens": 552,
+          "field_percent": 1.434,
+          "tools_tokens": 552,
+          "tools_percent": 0.634
         },
         "SX-S": {
-          "field_tokens": 609,
-          "field_percent": 2.853,
-          "tools_tokens": 609,
-          "tools_percent": 0.87
+          "field_tokens": 552,
+          "field_percent": 2.609,
+          "tools_tokens": 552,
+          "tools_percent": 0.79
         },
         "SX-X": {
-          "field_tokens": -17157,
-          "field_percent": -43.87,
-          "tools_tokens": -17088,
-          "tools_percent": -19.481
+          "field_tokens": -17341,
+          "field_percent": -44.405,
+          "tools_tokens": -17264,
+          "tools_percent": -19.695
         },
         "SX-U": {
-          "field_tokens": -16548,
-          "field_percent": -42.982,
-          "tools_tokens": -16479,
-          "tools_percent": -18.918
+          "field_tokens": -16789,
+          "field_percent": -43.608,
+          "tools_tokens": -16712,
+          "tools_percent": -19.186
         }
       }
     },
@@ -356,52 +359,54 @@
       "questions": 313,
       "field_tokens": {
         "U": 124502,
-        "S": 93976,
-        "X": 125512,
-        "SX": 94986
+        "S": 93673,
+        "X": 125385,
+        "SX": 94556
       },
       "tools_tokens": {
         "U": 254243,
-        "S": 223813,
-        "X": 255253,
-        "SX": 224821
+        "S": 223528,
+        "X": 255126,
+        "SX": 224410
       },
       "changed_questions": {
         "S": 313,
-        "X": 23,
+        "X": 12,
         "SX": 313
       },
-      "cued_tools": 89,
-      "cue_tokens": 1010,
+      "cued_tools": 74,
+      "cue_tokens": 883,
       "coverage": {
         "s_fields": {
-          "edited": 1542,
+          "edited": 1783,
           "edited:direct_action": 46,
           "edited:flag_normalization": 5,
           "edited:hint_context": 1194,
-          "edited:schema_guaranteed": 327,
+          "edited:schema_guaranteed": 336,
           "edited:suite_context": 508,
           "edited:suite_label": 508,
+          "edited:trailing_space": 258,
           "edited:within_tool_duplicate": 4,
           "fields": 5487,
-          "kept:already_minimal": 3694,
+          "kept:already_minimal": 3462,
           "kept:ambiguous_source": 4,
-          "kept:no_shorter_faithful_candidate": 247
+          "kept:no_shorter_faithful_candidate": 238
         },
         "x_tools": {
-          "cued": 89,
+          "cued": 74,
           "cued:interface": 6,
-          "cued:text": 83,
+          "cued:text": 68,
           "tools": 1507,
-          "uncued:different_actions": 1114,
+          "uncued:different_actions": 1126,
           "uncued:different_objects": 19,
           "uncued:no_leading_verb": 11,
-          "uncued:rival_name_spells_difference": 15,
+          "uncued:phrase_not_a_noun_phrase": 1,
+          "uncued:rival_name_spells_difference": 17,
           "uncued:shared_wording_too_short": 1,
           "uncued:window_too_long": 258
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 290,
+        "questions_without_x_cue": 301,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -436,34 +441,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -30526,
-          "field_percent": -24.518,
-          "tools_tokens": -30430,
-          "tools_percent": -11.969
+          "field_tokens": -30829,
+          "field_percent": -24.762,
+          "tools_tokens": -30715,
+          "tools_percent": -12.081
         },
         "X-U": {
-          "field_tokens": 1010,
-          "field_percent": 0.811,
-          "tools_tokens": 1010,
-          "tools_percent": 0.397
+          "field_tokens": 883,
+          "field_percent": 0.709,
+          "tools_tokens": 883,
+          "tools_percent": 0.347
         },
         "SX-S": {
-          "field_tokens": 1010,
-          "field_percent": 1.075,
-          "tools_tokens": 1008,
-          "tools_percent": 0.45
+          "field_tokens": 883,
+          "field_percent": 0.943,
+          "tools_tokens": 882,
+          "tools_percent": 0.395
         },
         "SX-X": {
-          "field_tokens": -30526,
-          "field_percent": -24.321,
-          "tools_tokens": -30432,
-          "tools_percent": -11.922
+          "field_tokens": -30829,
+          "field_percent": -24.587,
+          "tools_tokens": -30716,
+          "tools_percent": -12.04
         },
         "SX-U": {
-          "field_tokens": -29516,
-          "field_percent": -23.707,
-          "tools_tokens": -29422,
-          "tools_percent": -11.572
+          "field_tokens": -29946,
+          "field_percent": -24.053,
+          "tools_tokens": -29833,
+          "tools_percent": -11.734
         }
       }
     },
@@ -471,52 +476,53 @@
       "questions": 2773,
       "field_tokens": {
         "U": 2384241,
-        "S": 1361033,
-        "X": 2415131,
-        "SX": 1391923
+        "S": 1349788,
+        "X": 2412033,
+        "SX": 1377580
       },
       "tools_tokens": {
         "U": 5359462,
-        "S": 4339858,
-        "X": 5390352,
-        "SX": 4370745
+        "S": 4329184,
+        "X": 5387254,
+        "SX": 4356975
       },
       "changed_questions": {
         "S": 2773,
-        "X": 561,
+        "X": 320,
         "SX": 2773
       },
-      "cued_tools": 2799,
-      "cue_tokens": 30890,
+      "cued_tools": 2415,
+      "cue_tokens": 27792,
       "coverage": {
         "s_fields": {
-          "edited": 35791,
+          "edited": 45035,
           "edited:direct_action": 283,
           "edited:flag_normalization": 1,
           "edited:hint_context": 29086,
-          "edited:schema_guaranteed": 6604,
+          "edited:schema_guaranteed": 6916,
           "edited:suite_context": 24212,
           "edited:suite_label": 24212,
+          "edited:trailing_space": 9695,
           "edited:within_tool_duplicate": 21,
           "fields": 88793,
-          "kept:already_minimal": 50444,
-          "kept:ambiguous_source": 148,
-          "kept:no_shorter_faithful_candidate": 2410
+          "kept:already_minimal": 41512,
+          "kept:ambiguous_source": 146,
+          "kept:no_shorter_faithful_candidate": 2100
         },
         "x_tools": {
-          "cued": 2799,
-          "cued:text": 2799,
+          "cued": 2415,
+          "cued:text": 2415,
           "tools": 31859,
-          "uncued:different_actions": 27189,
+          "uncued:different_actions": 27568,
           "uncued:different_objects": 42,
           "uncued:no_leading_verb": 66,
-          "uncued:phrase_not_a_noun_phrase": 1,
-          "uncued:rival_name_spells_difference": 184,
+          "uncued:phrase_not_a_noun_phrase": 2,
+          "uncued:rival_name_spells_difference": 188,
           "uncued:shared_wording_too_short": 49,
           "uncued:window_too_long": 1529
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 2212,
+        "questions_without_x_cue": 2453,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -551,34 +557,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -1023208,
-          "field_percent": -42.915,
-          "tools_tokens": -1019604,
-          "tools_percent": -19.024
+          "field_tokens": -1034453,
+          "field_percent": -43.387,
+          "tools_tokens": -1030278,
+          "tools_percent": -19.224
         },
         "X-U": {
-          "field_tokens": 30890,
-          "field_percent": 1.296,
-          "tools_tokens": 30890,
-          "tools_percent": 0.576
+          "field_tokens": 27792,
+          "field_percent": 1.166,
+          "tools_tokens": 27792,
+          "tools_percent": 0.519
         },
         "SX-S": {
-          "field_tokens": 30890,
-          "field_percent": 2.27,
-          "tools_tokens": 30887,
-          "tools_percent": 0.712
+          "field_tokens": 27792,
+          "field_percent": 2.059,
+          "tools_tokens": 27791,
+          "tools_percent": 0.642
         },
         "SX-X": {
-          "field_tokens": -1023208,
-          "field_percent": -42.367,
-          "tools_tokens": -1019607,
-          "tools_percent": -18.915
+          "field_tokens": -1034453,
+          "field_percent": -42.887,
+          "tools_tokens": -1030279,
+          "tools_percent": -19.124
         },
         "SX-U": {
-          "field_tokens": -992318,
-          "field_percent": -41.62,
-          "tools_tokens": -988717,
-          "tools_percent": -18.448
+          "field_tokens": -1006661,
+          "field_percent": -42.221,
+          "tools_tokens": -1002487,
+          "tools_percent": -18.705
         }
       }
     }
@@ -588,50 +594,51 @@
       "questions": 200,
       "field_tokens": {
         "U": 31608,
-        "S": 25882,
-        "X": 31789,
-        "SX": 26063
+        "S": 25877,
+        "X": 31728,
+        "SX": 25997
       },
       "tools_tokens": {
         "U": 68792,
-        "S": 63117,
-        "X": 68973,
-        "SX": 63295
+        "S": 63112,
+        "X": 68912,
+        "SX": 63231
       },
       "changed_questions": {
         "S": 200,
-        "X": 7,
+        "X": 4,
         "SX": 200
       },
-      "cued_tools": 13,
-      "cue_tokens": 181,
+      "cued_tools": 8,
+      "cue_tokens": 120,
       "coverage": {
         "s_fields": {
-          "edited": 564,
+          "edited": 568,
           "edited:direct_action": 7,
           "edited:flag_normalization": 6,
           "edited:hint_context": 357,
           "edited:schema_guaranteed": 186,
+          "edited:trailing_space": 5,
           "edited:within_tool_duplicate": 12,
           "fields": 2101,
-          "kept:already_minimal": 1284,
+          "kept:already_minimal": 1280,
           "kept:ambiguous_source": 3,
           "kept:no_shorter_faithful_candidate": 250
         },
         "x_tools": {
-          "cued": 13,
+          "cued": 8,
           "cued:interface": 3,
-          "cued:text": 10,
+          "cued:text": 5,
           "tools": 557,
           "uncued:different_actions": 344,
           "uncued:different_objects": 28,
           "uncued:no_leading_verb": 2,
-          "uncued:phrase_not_a_noun_phrase": 1,
-          "uncued:rival_name_spells_difference": 26,
+          "uncued:phrase_not_a_noun_phrase": 2,
+          "uncued:rival_name_spells_difference": 30,
           "uncued:window_too_long": 143
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 193,
+        "questions_without_x_cue": 196,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -666,34 +673,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -5726,
-          "field_percent": -18.116,
-          "tools_tokens": -5675,
-          "tools_percent": -8.25
+          "field_tokens": -5731,
+          "field_percent": -18.131,
+          "tools_tokens": -5680,
+          "tools_percent": -8.257
         },
         "X-U": {
-          "field_tokens": 181,
-          "field_percent": 0.573,
-          "tools_tokens": 181,
-          "tools_percent": 0.263
+          "field_tokens": 120,
+          "field_percent": 0.38,
+          "tools_tokens": 120,
+          "tools_percent": 0.174
         },
         "SX-S": {
-          "field_tokens": 181,
-          "field_percent": 0.699,
-          "tools_tokens": 178,
-          "tools_percent": 0.282
+          "field_tokens": 120,
+          "field_percent": 0.464,
+          "tools_tokens": 119,
+          "tools_percent": 0.189
         },
         "SX-X": {
-          "field_tokens": -5726,
-          "field_percent": -18.013,
-          "tools_tokens": -5678,
-          "tools_percent": -8.232
+          "field_tokens": -5731,
+          "field_percent": -18.063,
+          "tools_tokens": -5681,
+          "tools_percent": -8.244
         },
         "SX-U": {
-          "field_tokens": -5545,
-          "field_percent": -17.543,
-          "tools_tokens": -5497,
-          "tools_percent": -7.991
+          "field_tokens": -5611,
+          "field_percent": -17.752,
+          "tools_tokens": -5561,
+          "tools_percent": -8.084
         }
       }
     },
@@ -701,49 +708,51 @@
       "questions": 200,
       "field_tokens": {
         "U": 28032,
-        "S": 22833,
-        "X": 28171,
-        "SX": 22972
+        "S": 22832,
+        "X": 28136,
+        "SX": 22936
       },
       "tools_tokens": {
         "U": 61409,
-        "S": 56255,
-        "X": 61548,
-        "SX": 56392
+        "S": 56254,
+        "X": 61513,
+        "SX": 56357
       },
       "changed_questions": {
         "S": 200,
-        "X": 5,
+        "X": 3,
         "SX": 200
       },
-      "cued_tools": 10,
-      "cue_tokens": 139,
+      "cued_tools": 7,
+      "cue_tokens": 104,
       "coverage": {
         "s_fields": {
-          "edited": 518,
+          "edited": 519,
           "edited:direct_action": 8,
           "edited:flag_normalization": 1,
           "edited:hint_context": 320,
           "edited:schema_guaranteed": 186,
+          "edited:trailing_space": 1,
           "edited:within_tool_duplicate": 9,
           "fields": 1881,
-          "kept:already_minimal": 1179,
+          "kept:already_minimal": 1178,
           "kept:ambiguous_source": 3,
           "kept:no_shorter_faithful_candidate": 181
         },
         "x_tools": {
-          "cued": 10,
+          "cued": 7,
           "cued:interface": 3,
-          "cued:text": 7,
+          "cued:text": 4,
           "tools": 520,
           "uncued:different_actions": 301,
           "uncued:different_objects": 33,
           "uncued:no_leading_verb": 2,
-          "uncued:rival_name_spells_difference": 21,
+          "uncued:phrase_not_a_noun_phrase": 1,
+          "uncued:rival_name_spells_difference": 23,
           "uncued:window_too_long": 153
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 195,
+        "questions_without_x_cue": 197,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -778,34 +787,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -5199,
-          "field_percent": -18.547,
-          "tools_tokens": -5154,
-          "tools_percent": -8.393
+          "field_tokens": -5200,
+          "field_percent": -18.55,
+          "tools_tokens": -5155,
+          "tools_percent": -8.395
         },
         "X-U": {
-          "field_tokens": 139,
-          "field_percent": 0.496,
-          "tools_tokens": 139,
-          "tools_percent": 0.226
+          "field_tokens": 104,
+          "field_percent": 0.371,
+          "tools_tokens": 104,
+          "tools_percent": 0.169
         },
         "SX-S": {
-          "field_tokens": 139,
-          "field_percent": 0.609,
-          "tools_tokens": 137,
-          "tools_percent": 0.244
+          "field_tokens": 104,
+          "field_percent": 0.456,
+          "tools_tokens": 103,
+          "tools_percent": 0.183
         },
         "SX-X": {
-          "field_tokens": -5199,
-          "field_percent": -18.455,
+          "field_tokens": -5200,
+          "field_percent": -18.482,
           "tools_tokens": -5156,
-          "tools_percent": -8.377
+          "tools_percent": -8.382
         },
         "SX-U": {
-          "field_tokens": -5060,
-          "field_percent": -18.051,
-          "tools_tokens": -5017,
-          "tools_percent": -8.17
+          "field_tokens": -5096,
+          "field_percent": -18.179,
+          "tools_tokens": -5052,
+          "tools_percent": -8.227
         }
       }
     },
@@ -813,15 +822,15 @@
       "questions": 1053,
       "field_tokens": {
         "U": 442912,
-        "S": 402428,
+        "S": 402330,
         "X": 443211,
-        "SX": 402727
+        "SX": 402629
       },
       "tools_tokens": {
         "U": 855004,
-        "S": 814620,
+        "S": 814523,
         "X": 855303,
-        "SX": 814919
+        "SX": 814822
       },
       "changed_questions": {
         "S": 1053,
@@ -832,15 +841,16 @@
       "cue_tokens": 299,
       "coverage": {
         "s_fields": {
-          "edited": 3555,
+          "edited": 3568,
           "edited:direct_action": 232,
           "edited:hint_context": 3125,
-          "edited:schema_guaranteed": 366,
+          "edited:schema_guaranteed": 378,
+          "edited:trailing_space": 1,
           "edited:within_tool_duplicate": 3,
           "fields": 20043,
-          "kept:already_minimal": 16102,
-          "kept:ambiguous_source": 20,
-          "kept:no_shorter_faithful_candidate": 366
+          "kept:already_minimal": 16101,
+          "kept:ambiguous_source": 19,
+          "kept:no_shorter_faithful_candidate": 355
         },
         "x_tools": {
           "cued": 26,
@@ -886,10 +896,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -40484,
-          "field_percent": -9.14,
-          "tools_tokens": -40384,
-          "tools_percent": -4.723
+          "field_tokens": -40582,
+          "field_percent": -9.163,
+          "tools_tokens": -40481,
+          "tools_percent": -4.735
         },
         "X-U": {
           "field_tokens": 299,
@@ -904,16 +914,16 @@
           "tools_percent": 0.037
         },
         "SX-X": {
-          "field_tokens": -40484,
-          "field_percent": -9.134,
-          "tools_tokens": -40384,
-          "tools_percent": -4.722
+          "field_tokens": -40582,
+          "field_percent": -9.156,
+          "tools_tokens": -40481,
+          "tools_percent": -4.733
         },
         "SX-U": {
-          "field_tokens": -40185,
-          "field_percent": -9.073,
-          "tools_tokens": -40085,
-          "tools_percent": -4.688
+          "field_tokens": -40283,
+          "field_percent": -9.095,
+          "tools_tokens": -40182,
+          "tools_percent": -4.7
         }
       }
     },
@@ -1021,15 +1031,15 @@
       "questions": 24,
       "field_tokens": {
         "U": 9395,
-        "S": 8456,
+        "S": 8455,
         "X": 9395,
-        "SX": 8456
+        "SX": 8455
       },
       "tools_tokens": {
         "U": 17420,
-        "S": 16486,
+        "S": 16485,
         "X": 17420,
-        "SX": 16486
+        "SX": 16485
       },
       "changed_questions": {
         "S": 24,
@@ -1040,12 +1050,13 @@
       "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 85,
+          "edited": 86,
           "edited:direct_action": 7,
           "edited:hint_context": 71,
           "edited:schema_guaranteed": 12,
+          "edited:trailing_space": 1,
           "fields": 408,
-          "kept:already_minimal": 312,
+          "kept:already_minimal": 311,
           "kept:no_shorter_faithful_candidate": 11
         },
         "x_tools": {
@@ -1090,10 +1101,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -939,
-          "field_percent": -9.995,
-          "tools_tokens": -934,
-          "tools_percent": -5.362
+          "field_tokens": -940,
+          "field_percent": -10.005,
+          "tools_tokens": -935,
+          "tools_percent": -5.367
         },
         "X-U": {
           "field_tokens": 0,
@@ -1108,16 +1119,16 @@
           "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -939,
-          "field_percent": -9.995,
-          "tools_tokens": -934,
-          "tools_percent": -5.362
+          "field_tokens": -940,
+          "field_percent": -10.005,
+          "tools_tokens": -935,
+          "tools_percent": -5.367
         },
         "SX-U": {
-          "field_tokens": -939,
-          "field_percent": -9.995,
-          "tools_tokens": -934,
-          "tools_percent": -5.362
+          "field_tokens": -940,
+          "field_percent": -10.005,
+          "tools_tokens": -935,
+          "tools_percent": -5.367
         }
       }
     },
@@ -1125,15 +1136,15 @@
       "questions": 372,
       "field_tokens": {
         "U": 157597,
-        "S": 141868,
+        "S": 141822,
         "X": 157781,
-        "SX": 142052
+        "SX": 142006
       },
       "tools_tokens": {
         "U": 298077,
-        "S": 282394,
+        "S": 282348,
         "X": 298261,
-        "SX": 282578
+        "SX": 282532
       },
       "changed_questions": {
         "S": 372,
@@ -1144,15 +1155,15 @@
       "cue_tokens": 184,
       "coverage": {
         "s_fields": {
-          "edited": 1402,
+          "edited": 1408,
           "edited:direct_action": 73,
           "edited:hint_context": 1186,
-          "edited:schema_guaranteed": 193,
+          "edited:schema_guaranteed": 199,
           "edited:within_tool_duplicate": 1,
           "fields": 7157,
           "kept:already_minimal": 5638,
-          "kept:ambiguous_source": 4,
-          "kept:no_shorter_faithful_candidate": 113
+          "kept:ambiguous_source": 3,
+          "kept:no_shorter_faithful_candidate": 108
         },
         "x_tools": {
           "cued": 16,
@@ -1199,10 +1210,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -15729,
-          "field_percent": -9.981,
-          "tools_tokens": -15683,
-          "tools_percent": -5.261
+          "field_tokens": -15775,
+          "field_percent": -10.01,
+          "tools_tokens": -15729,
+          "tools_percent": -5.277
         },
         "X-U": {
           "field_tokens": 184,
@@ -1217,16 +1228,16 @@
           "tools_percent": 0.065
         },
         "SX-X": {
-          "field_tokens": -15729,
-          "field_percent": -9.969,
-          "tools_tokens": -15683,
-          "tools_percent": -5.258
+          "field_tokens": -15775,
+          "field_percent": -9.998,
+          "tools_tokens": -15729,
+          "tools_percent": -5.274
         },
         "SX-U": {
-          "field_tokens": -15545,
-          "field_percent": -9.864,
-          "tools_tokens": -15499,
-          "tools_percent": -5.2
+          "field_tokens": -15591,
+          "field_percent": -9.893,
+          "tools_tokens": -15545,
+          "tools_percent": -5.215
         }
       }
     },
@@ -1337,45 +1348,44 @@
       "questions": 200,
       "field_tokens": {
         "U": 397294,
-        "S": 181272,
-        "X": 398094,
-        "SX": 182072
+        "S": 179070,
+        "X": 397294,
+        "SX": 179070
       },
       "tools_tokens": {
         "U": 940391,
-        "S": 725256,
-        "X": 941191,
-        "SX": 726056
+        "S": 723204,
+        "X": 940391,
+        "SX": 723204
       },
       "changed_questions": {
         "S": 200,
-        "X": 63,
+        "X": 0,
         "SX": 200
       },
-      "cued_tools": 100,
-      "cue_tokens": 800,
+      "cued_tools": 0,
+      "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 6881,
+          "edited": 8572,
           "edited:hint_context": 5350,
-          "edited:schema_guaranteed": 1531,
+          "edited:schema_guaranteed": 1612,
           "edited:suite_context": 5215,
           "edited:suite_label": 5215,
+          "edited:trailing_space": 1816,
           "fields": 13664,
-          "kept:already_minimal": 6421,
+          "kept:already_minimal": 4811,
           "kept:ambiguous_source": 31,
-          "kept:no_shorter_faithful_candidate": 331
+          "kept:no_shorter_faithful_candidate": 250
         },
         "x_tools": {
-          "cued": 100,
-          "cued:text": 100,
           "tools": 5550,
-          "uncued:different_actions": 5387,
+          "uncued:different_actions": 5487,
           "uncued:shared_wording_too_short": 13,
           "uncued:window_too_long": 50
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 137,
+        "questions_without_x_cue": 200,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -1410,34 +1420,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -216022,
-          "field_percent": -54.373,
-          "tools_tokens": -215135,
-          "tools_percent": -22.877
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "X-U": {
-          "field_tokens": 800,
-          "field_percent": 0.201,
-          "tools_tokens": 800,
-          "tools_percent": 0.085
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-S": {
-          "field_tokens": 800,
-          "field_percent": 0.441,
-          "tools_tokens": 800,
-          "tools_percent": 0.11
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -216022,
-          "field_percent": -54.264,
-          "tools_tokens": -215135,
-          "tools_percent": -22.858
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "SX-U": {
-          "field_tokens": -215222,
-          "field_percent": -54.172,
-          "tools_tokens": -214335,
-          "tools_percent": -22.792
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         }
       }
     },
@@ -1445,45 +1455,44 @@
       "questions": 200,
       "field_tokens": {
         "U": 379202,
-        "S": 172558,
-        "X": 379988,
-        "SX": 173344
+        "S": 170528,
+        "X": 379202,
+        "SX": 170528
       },
       "tools_tokens": {
         "U": 895544,
-        "S": 689758,
-        "X": 896330,
-        "SX": 690544
+        "S": 687874,
+        "X": 895544,
+        "SX": 687874
       },
       "changed_questions": {
         "S": 200,
-        "X": 61,
+        "X": 0,
         "SX": 200
       },
-      "cued_tools": 98,
-      "cue_tokens": 786,
+      "cued_tools": 0,
+      "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 6621,
+          "edited": 8215,
           "edited:hint_context": 5128,
-          "edited:schema_guaranteed": 1493,
+          "edited:schema_guaranteed": 1558,
           "edited:suite_context": 4993,
           "edited:suite_label": 4993,
+          "edited:trailing_space": 1712,
           "fields": 12999,
-          "kept:already_minimal": 6033,
+          "kept:already_minimal": 4504,
           "kept:ambiguous_source": 31,
-          "kept:no_shorter_faithful_candidate": 314
+          "kept:no_shorter_faithful_candidate": 249
         },
         "x_tools": {
-          "cued": 98,
-          "cued:text": 98,
           "tools": 5328,
-          "uncued:different_actions": 5174,
+          "uncued:different_actions": 5272,
           "uncued:shared_wording_too_short": 11,
           "uncued:window_too_long": 45
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 139,
+        "questions_without_x_cue": 200,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -1518,34 +1527,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -206644,
-          "field_percent": -54.494,
-          "tools_tokens": -205786,
-          "tools_percent": -22.979
+          "field_tokens": -208674,
+          "field_percent": -55.03,
+          "tools_tokens": -207670,
+          "tools_percent": -23.189
         },
         "X-U": {
-          "field_tokens": 786,
-          "field_percent": 0.207,
-          "tools_tokens": 786,
-          "tools_percent": 0.088
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-S": {
-          "field_tokens": 786,
-          "field_percent": 0.455,
-          "tools_tokens": 786,
-          "tools_percent": 0.114
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -206644,
-          "field_percent": -54.382,
-          "tools_tokens": -205786,
-          "tools_percent": -22.959
+          "field_tokens": -208674,
+          "field_percent": -55.03,
+          "tools_tokens": -207670,
+          "tools_percent": -23.189
         },
         "SX-U": {
-          "field_tokens": -205858,
-          "field_percent": -54.287,
-          "tools_tokens": -205000,
-          "tools_percent": -22.891
+          "field_tokens": -208674,
+          "field_percent": -55.03,
+          "tools_tokens": -207670,
+          "tools_percent": -23.189
         }
       }
     },
@@ -1553,45 +1562,44 @@
       "questions": 200,
       "field_tokens": {
         "U": 397294,
-        "S": 181272,
-        "X": 398094,
-        "SX": 182072
+        "S": 179070,
+        "X": 397294,
+        "SX": 179070
       },
       "tools_tokens": {
         "U": 940391,
-        "S": 725256,
-        "X": 941191,
-        "SX": 726056
+        "S": 723204,
+        "X": 940391,
+        "SX": 723204
       },
       "changed_questions": {
         "S": 200,
-        "X": 63,
+        "X": 0,
         "SX": 200
       },
-      "cued_tools": 100,
-      "cue_tokens": 800,
+      "cued_tools": 0,
+      "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 6881,
+          "edited": 8572,
           "edited:hint_context": 5350,
-          "edited:schema_guaranteed": 1531,
+          "edited:schema_guaranteed": 1612,
           "edited:suite_context": 5215,
           "edited:suite_label": 5215,
+          "edited:trailing_space": 1816,
           "fields": 13664,
-          "kept:already_minimal": 6421,
+          "kept:already_minimal": 4811,
           "kept:ambiguous_source": 31,
-          "kept:no_shorter_faithful_candidate": 331
+          "kept:no_shorter_faithful_candidate": 250
         },
         "x_tools": {
-          "cued": 100,
-          "cued:text": 100,
           "tools": 5550,
-          "uncued:different_actions": 5387,
+          "uncued:different_actions": 5487,
           "uncued:shared_wording_too_short": 13,
           "uncued:window_too_long": 50
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 137,
+        "questions_without_x_cue": 200,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -1626,34 +1634,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -216022,
-          "field_percent": -54.373,
-          "tools_tokens": -215135,
-          "tools_percent": -22.877
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "X-U": {
-          "field_tokens": 800,
-          "field_percent": 0.201,
-          "tools_tokens": 800,
-          "tools_percent": 0.085
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-S": {
-          "field_tokens": 800,
-          "field_percent": 0.441,
-          "tools_tokens": 800,
-          "tools_percent": 0.11
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -216022,
-          "field_percent": -54.264,
-          "tools_tokens": -215135,
-          "tools_percent": -22.858
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "SX-U": {
-          "field_tokens": -215222,
-          "field_percent": -54.172,
-          "tools_tokens": -214335,
-          "tools_percent": -22.792
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         }
       }
     },
@@ -1661,45 +1669,44 @@
       "questions": 200,
       "field_tokens": {
         "U": 397294,
-        "S": 181272,
-        "X": 398094,
-        "SX": 182072
+        "S": 179070,
+        "X": 397294,
+        "SX": 179070
       },
       "tools_tokens": {
         "U": 940391,
-        "S": 725256,
-        "X": 941191,
-        "SX": 726056
+        "S": 723204,
+        "X": 940391,
+        "SX": 723204
       },
       "changed_questions": {
         "S": 200,
-        "X": 63,
+        "X": 0,
         "SX": 200
       },
-      "cued_tools": 100,
-      "cue_tokens": 800,
+      "cued_tools": 0,
+      "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 6881,
+          "edited": 8572,
           "edited:hint_context": 5350,
-          "edited:schema_guaranteed": 1531,
+          "edited:schema_guaranteed": 1612,
           "edited:suite_context": 5215,
           "edited:suite_label": 5215,
+          "edited:trailing_space": 1816,
           "fields": 13664,
-          "kept:already_minimal": 6421,
+          "kept:already_minimal": 4811,
           "kept:ambiguous_source": 31,
-          "kept:no_shorter_faithful_candidate": 331
+          "kept:no_shorter_faithful_candidate": 250
         },
         "x_tools": {
-          "cued": 100,
-          "cued:text": 100,
           "tools": 5550,
-          "uncued:different_actions": 5387,
+          "uncued:different_actions": 5487,
           "uncued:shared_wording_too_short": 13,
           "uncued:window_too_long": 50
         },
         "questions_without_s_edit": 0,
-        "questions_without_x_cue": 137,
+        "questions_without_x_cue": 200,
         "questions_unchanged_in_sx": 0
       },
       "u_anatomy": {
@@ -1734,34 +1741,34 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -216022,
-          "field_percent": -54.373,
-          "tools_tokens": -215135,
-          "tools_percent": -22.877
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "X-U": {
-          "field_tokens": 800,
-          "field_percent": 0.201,
-          "tools_tokens": 800,
-          "tools_percent": 0.085
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-S": {
-          "field_tokens": 800,
-          "field_percent": 0.441,
-          "tools_tokens": 800,
-          "tools_percent": 0.11
+          "field_tokens": 0,
+          "field_percent": 0.0,
+          "tools_tokens": 0,
+          "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -216022,
-          "field_percent": -54.264,
-          "tools_tokens": -215135,
-          "tools_percent": -22.858
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         },
         "SX-U": {
-          "field_tokens": -215222,
-          "field_percent": -54.172,
-          "tools_tokens": -214335,
-          "tools_percent": -22.792
+          "field_tokens": -218224,
+          "field_percent": -54.928,
+          "tools_tokens": -217187,
+          "tools_percent": -23.095
         }
       }
     },
@@ -1769,15 +1776,15 @@
       "questions": 155,
       "field_tokens": {
         "U": 159185,
-        "S": 87575,
+        "S": 86025,
         "X": 183985,
-        "SX": 112375
+        "SX": 110825
       },
       "tools_tokens": {
         "U": 323795,
-        "S": 252185,
+        "S": 250635,
         "X": 348595,
-        "SX": 276985
+        "SX": 275435
       },
       "changed_questions": {
         "S": 155,
@@ -1788,12 +1795,13 @@
       "cue_tokens": 24800,
       "coverage": {
         "s_fields": {
-          "edited": 2170,
+          "edited": 3720,
           "edited:hint_context": 2170,
           "edited:suite_context": 2170,
           "edited:suite_label": 2170,
+          "edited:trailing_space": 1550,
           "fields": 4805,
-          "kept:already_minimal": 2480,
+          "kept:already_minimal": 930,
           "kept:no_shorter_faithful_candidate": 155
         },
         "x_tools": {
@@ -1838,10 +1846,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -71610,
-          "field_percent": -44.985,
-          "tools_tokens": -71610,
-          "tools_percent": -22.116
+          "field_tokens": -73160,
+          "field_percent": -45.959,
+          "tools_tokens": -73160,
+          "tools_percent": -22.595
         },
         "X-U": {
           "field_tokens": 24800,
@@ -1851,21 +1859,21 @@
         },
         "SX-S": {
           "field_tokens": 24800,
-          "field_percent": 28.319,
+          "field_percent": 28.829,
           "tools_tokens": 24800,
-          "tools_percent": 9.834
+          "tools_percent": 9.895
         },
         "SX-X": {
-          "field_tokens": -71610,
-          "field_percent": -38.922,
-          "tools_tokens": -71610,
-          "tools_percent": -20.542
+          "field_tokens": -73160,
+          "field_percent": -39.764,
+          "tools_tokens": -73160,
+          "tools_percent": -20.987
         },
         "SX-U": {
-          "field_tokens": -46810,
-          "field_percent": -29.406,
-          "tools_tokens": -46810,
-          "tools_percent": -14.457
+          "field_tokens": -48360,
+          "field_percent": -30.38,
+          "tools_tokens": -48360,
+          "tools_percent": -14.935
         }
       }
     },
@@ -1873,15 +1881,15 @@
       "questions": 155,
       "field_tokens": {
         "U": 100285,
-        "S": 44020,
+        "S": 42935,
         "X": 104005,
-        "SX": 47740
+        "SX": 46655
       },
       "tools_tokens": {
         "U": 261175,
-        "S": 204910,
+        "S": 203825,
         "X": 264895,
-        "SX": 208630
+        "SX": 207545
       },
       "changed_questions": {
         "S": 155,
@@ -1892,12 +1900,13 @@
       "cue_tokens": 3720,
       "coverage": {
         "s_fields": {
-          "edited": 1705,
+          "edited": 2790,
           "edited:hint_context": 1705,
           "edited:suite_context": 1705,
           "edited:suite_label": 1705,
+          "edited:trailing_space": 1085,
           "fields": 3720,
-          "kept:already_minimal": 1860,
+          "kept:already_minimal": 775,
           "kept:no_shorter_faithful_candidate": 155
         },
         "x_tools": {
@@ -1943,10 +1952,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -56265,
-          "field_percent": -56.105,
-          "tools_tokens": -56265,
-          "tools_percent": -21.543
+          "field_tokens": -57350,
+          "field_percent": -57.187,
+          "tools_tokens": -57350,
+          "tools_percent": -21.958
         },
         "X-U": {
           "field_tokens": 3720,
@@ -1956,21 +1965,21 @@
         },
         "SX-S": {
           "field_tokens": 3720,
-          "field_percent": 8.451,
+          "field_percent": 8.664,
           "tools_tokens": 3720,
-          "tools_percent": 1.815
+          "tools_percent": 1.825
         },
         "SX-X": {
-          "field_tokens": -56265,
-          "field_percent": -54.098,
-          "tools_tokens": -56265,
-          "tools_percent": -21.24
+          "field_tokens": -57350,
+          "field_percent": -55.142,
+          "tools_tokens": -57350,
+          "tools_percent": -21.65
         },
         "SX-U": {
-          "field_tokens": -52545,
-          "field_percent": -52.396,
-          "tools_tokens": -52545,
-          "tools_percent": -20.119
+          "field_tokens": -53630,
+          "field_percent": -53.478,
+          "tools_tokens": -53630,
+          "tools_percent": -20.534
         }
       }
     },
@@ -1978,15 +1987,15 @@
       "questions": 155,
       "field_tokens": {
         "U": 42625,
-        "S": 22785,
+        "S": 22475,
         "X": 42625,
-        "SX": 22785
+        "SX": 22475
       },
       "tools_tokens": {
         "U": 89590,
-        "S": 69750,
+        "S": 69440,
         "X": 89590,
-        "SX": 69750
+        "SX": 69440
       },
       "changed_questions": {
         "S": 155,
@@ -1997,12 +2006,13 @@
       "cue_tokens": 0,
       "coverage": {
         "s_fields": {
-          "edited": 620,
+          "edited": 930,
           "edited:hint_context": 620,
           "edited:suite_context": 620,
           "edited:suite_label": 620,
+          "edited:trailing_space": 310,
           "fields": 1395,
-          "kept:already_minimal": 620,
+          "kept:already_minimal": 310,
           "kept:no_shorter_faithful_candidate": 155
         },
         "x_tools": {
@@ -2045,10 +2055,10 @@
       },
       "deltas": {
         "S-U": {
-          "field_tokens": -19840,
-          "field_percent": -46.545,
-          "tools_tokens": -19840,
-          "tools_percent": -22.145
+          "field_tokens": -20150,
+          "field_percent": -47.273,
+          "tools_tokens": -20150,
+          "tools_percent": -22.491
         },
         "X-U": {
           "field_tokens": 0,
@@ -2063,16 +2073,16 @@
           "tools_percent": 0.0
         },
         "SX-X": {
-          "field_tokens": -19840,
-          "field_percent": -46.545,
-          "tools_tokens": -19840,
-          "tools_percent": -22.145
+          "field_tokens": -20150,
+          "field_percent": -47.273,
+          "tools_tokens": -20150,
+          "tools_percent": -22.491
         },
         "SX-U": {
-          "field_tokens": -19840,
-          "field_percent": -46.545,
-          "tools_tokens": -19840,
-          "tools_percent": -22.145
+          "field_tokens": -20150,
+          "field_percent": -47.273,
+          "tools_tokens": -20150,
+          "tools_percent": -22.491
         }
       }
     }
