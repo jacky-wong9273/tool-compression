@@ -10,6 +10,10 @@ Rules, in ``S_RULES_VERSION``:
 - ``schema_guaranteed``: drop a parameter clause the unchanged schema states
   (pinned float suffix with ``format: float``, an enum list equal to ``enum``
   that glosses none of its values, a prose default equal to ``default``).
+  ``an empty string``, ``list``/``array`` and ``dictionary``/``object`` equal
+  ``""``, ``[]`` and ``{}``. Inside a default clause that equals the schema
+  default, the value itself (``Defaults to None.`` when ``default`` is
+  ``"None"``) and its ``if not specified`` condition are not negations.
 - ``suite_context``: when the tool's own text labels its description with
   ``Tool description:``, the first tool in the request that carries a given
   suite elaboration keeps it unchanged. A later tool whose membership sentence
@@ -28,6 +32,8 @@ Rules, in ``S_RULES_VERSION``:
   keep the verb as written.
 - ``within_tool_duplicate`` and ``flag_normalization`` (which keeps the closing
   period) as before.
+- ``trailing_space``: whitespace at the end of a description's own text, before
+  the language hint or at the end of the field, is dropped. No word changes.
 
 The only thing S learns from the rest of the catalogue is which verbatim
 request-level excerpts (suite elaborations, membership sentences, language
@@ -45,7 +51,7 @@ import re
 from tool_compression.adapter import description_slots
 from tool_compression.clean_start.descriptions import leading_frame, split_protected, suite_context, suite_preamble
 
-S_RULES_VERSION = "s-rules-2026-11-26"
+S_RULES_VERSION = "s-rules-2026-11-27"
 FLOAT_SUFFIX = " This is a float type value."
 KEEP_REASONS = ("already_minimal", "ambiguous_source", "no_shorter_faithful_candidate")
 _STOP = {
@@ -86,6 +92,12 @@ _ENUM_SENTENCE = re.compile(
 )
 _ENUM_HEAD = re.compile(r"(?i)^(?:Supported values:|Possible values are|\[Enum\]:)")
 _LIST_WORDS = {"and", "or"}
+_UNSET = r"if\s+not\s+(?:specified|provided|given)"
+_UNSET_TAIL = re.compile(rf"\s+{_UNSET}\s*$", re.IGNORECASE)
+_UNSET_WORDS = re.compile(rf"\b{_UNSET}\b", re.IGNORECASE)
+_EMPTY_STRING = {"an empty string", "empty string"}
+_EMPTY_LIST = {"an empty list", "empty list", "an empty array", "empty array"}
+_EMPTY_DICT = {"an empty dictionary", "empty dictionary", "an empty dict", "empty dict", "an empty object", "empty object"}
 
 
 def context_id(tool: dict) -> str:
@@ -200,6 +212,8 @@ def edit_tool(tool: dict, carried: frozenset[str] = frozenset()) -> tuple[dict, 
                     "so the shorter parameter text was not adopted."
                 )
                 break
+    for row in decisions:
+        _trim_trailing_space(row)
     edited = json.loads(json.dumps(tool))
     slot_index = {pointer: (container_path, key) for pointer, container_path, key in _slot_paths(edited)}
     for row in decisions:
@@ -210,6 +224,42 @@ def edit_tool(tool: dict, carried: frozenset[str] = frozenset()) -> tuple[dict, 
         container[key] = row["final"]
         slot_index[pointer] = container[key]
     return edited, decisions
+
+
+def _trim_trailing_space(row: dict) -> None:
+    """Drop whitespace that ends the field's own text, before the hint or at the end."""
+    final = row["final"]
+    head, suffix = split_protected(final)
+    trimmed = head.rstrip()
+    if trimmed == head or not trimmed:
+        return
+    original_head, _suffix = split_protected(row["original"])
+    start = len(original_head.rstrip())
+    if start == len(original_head):
+        return
+    new_final = trimmed + suffix
+    for fact in row["facts"]:
+        if fact.get("decision") == "KEEP" and fact.get("after") == final:
+            fact["after"] = new_final
+    row["facts"].append({
+        "span": [start, len(original_head)],
+        "excerpt": original_head[start:],
+        "decision": "WHITESPACE",
+        "after": "",
+        "note": "Whitespace that ends the tool's own text carries no word.",
+    })
+    whitespace_only = not row["adopted"]
+    row["candidate"] = new_final
+    row["final"] = new_final
+    row["change_class"] = "trailing_space" if whitespace_only else f"{row['change_class']}+trailing_space"
+    if whitespace_only:
+        row["adopted"] = True
+        row["keep_reason"] = None
+        row["keep_detail"] = f"{row['pointer']} drops only the whitespace that ends its own text."
+        row["nontrivial"] = True
+    row["meaningful"] = not whitespace_only
+    row["cosmetic"] = whitespace_only
+    _check_facts(row["original"], new_final, row["facts"], True)
 
 
 def _slot_paths(tool: dict):
@@ -482,9 +532,15 @@ def _sentences(text: str):
 
 def _parse_default(raw: str, schema_default):
     text = raw.strip().rstrip(".").strip()
-    text = re.sub(r"\s+if\s+not\s+(?:specified|provided|given)\s*$", "", text, flags=re.IGNORECASE).strip()
+    text = _UNSET_TAIL.sub("", text).strip()
     if len(text) >= 2 and text[0] == text[-1] and text[0] in {"'", '"'}:
         text = text[1:-1]
+    if schema_default == "" and isinstance(schema_default, str) and text.lower() in _EMPTY_STRING:
+        return ""
+    if schema_default == [] and isinstance(schema_default, list):
+        return [] if text.lower() in _EMPTY_LIST else None
+    if schema_default == {} and isinstance(schema_default, dict):
+        return {} if text.lower() in _EMPTY_DICT else None
     if isinstance(schema_default, bool):
         if text.lower() == "true":
             return True
@@ -867,7 +923,7 @@ def _faithful(original: str, candidate: str, removals: list[dict]) -> tuple[bool
         return False, "The candidate drops whether and would turn a flag into an action."
     if _INTERNAL.search(original) and not _INTERNAL.search(candidate):
         return False, "The candidate drops internal."
-    if _NEGATION.search(original) and not _NEGATION.search(candidate):
+    if _NEGATION.search(_without_default_values(original, removals)) and not _NEGATION.search(candidate):
         return False, "The candidate drops a negation."
     if _ONLY.search(original) and not _ONLY.search(candidate):
         return False, "The candidate drops only."
@@ -886,6 +942,28 @@ def _faithful(original: str, candidate: str, removals: list[dict]) -> tuple[bool
         if stem not in original_stems and stem not in _ALLOWED_NEW:
             return False, f"The candidate adds {stem}."
     return True, ""
+
+
+def _without_default_values(original: str, removals: list[dict]) -> str:
+    """``original`` with the value and the unset condition of each removed schema-default clause blanked.
+
+    A default clause is removed only when it states exactly the schema default,
+    so its ``None`` is that value and its ``if not specified`` is what a default
+    means. Any other word in the clause is still checked.
+    """
+    chars = list(original)
+    for item in removals:
+        if item.get("decision") != "SCHEMA" or not str(item.get("schema_path", "")).endswith("/default"):
+            continue
+        start, end = item["span"]
+        clause = original[start:end]
+        spans = [match.span() for match in _UNSET_WORDS.finditer(clause)]
+        value = item.get("schema_equals")
+        if isinstance(value, str) and value:
+            spans += [match.span() for match in re.finditer(rf"(?<![\w']){re.escape(value)}(?![\w'])", clause)]
+        for left, right in spans:
+            chars[start + left:start + right] = " " * (right - left)
+    return "".join(chars)
 
 
 def _conflict(original: str, schema: dict) -> str | None:

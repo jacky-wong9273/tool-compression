@@ -117,6 +117,8 @@ def test_s_adds_no_claim_and_keeps_literals_negations_and_qualifiers(corpus):
                     continue
                 assert _stems(final) <= _stems(original) | {"include", "whether"}, (pointer, original, final)
                 for word in {match.lower() for match in _KEPT_WORDS.findall(original)}:
+                    if _only_in_dropped_schema_defaults(word, original, final, container):
+                        continue
                     assert re.search(rf"\b{re.escape(word)}\b", final, re.IGNORECASE), (word, original, final)
                 head = split_protected(original)[0] if pointer == "/function/description" else original
                 schema_values = {str(value) for value in container.get("enum") or []}
@@ -126,6 +128,32 @@ def test_s_adds_no_claim_and_keeps_literals_negations_and_qualifiers(corpus):
                 for literal in _NUMBER.findall(head) + _QUOTED.findall(head):
                     if literal not in final:
                         assert literal.strip("'\"") in schema_values, (literal, original, final)
+
+
+def _only_in_dropped_schema_defaults(word: str, original: str, final: str, schema: dict) -> bool:
+    """Every occurrence of ``word`` sits in a dropped sentence that states exactly the schema default."""
+    if "default" not in schema:
+        return False
+    for match in re.finditer(rf"\b{re.escape(word)}\b", original, re.IGNORECASE):
+        start = original.rfind(". ", 0, match.start())
+        start = 0 if start < 0 else start + 2
+        end = original.find(".", match.end())
+        sentence = original[start:len(original) if end < 0 else end + 1].strip()
+        if sentence in final:
+            return False
+        stated = re.fullmatch(
+            r"(?i)defaults?\s+(?:is|to)\s+(.+?)(?:\s+if\s+not\s+(?:specified|provided|given))?\.?", sentence
+        )
+        if stated is None:
+            return False
+        value = stated.group(1).strip("'\"")
+        default = schema["default"]
+        empty = isinstance(default, (str, list, dict)) and not default and value.lower().split()[-1] in {
+            "string", "list", "array", "dictionary", "dict", "object",
+        } and "empty" in value.lower()
+        if value not in {str(default), json.dumps(default)} and not empty:
+            return False
+    return True
 
 
 def test_x_cues_join_tools_that_act_on_one_object(corpus):
@@ -163,6 +191,33 @@ def test_sx_is_exactly_s_plus_the_x_cue_and_no_arm_touches_the_schema(corpus):
                     container[key] = ""
                 skeletons.add(json.dumps(copied, sort_keys=False))
             assert len(skeletons) == 1
+
+
+def test_no_multi_turn_catalogue_gets_an_x_cue_so_sx_sends_s_bytes():
+    from tool_compression.convert import to_openai_completions_tools
+
+    rendered: dict[str, dict] = {}
+    checked = 0
+    for category in study_categories():
+        if not category.startswith("multi_turn_"):
+            continue
+        for case in in_scope_questions(category):
+            facing = model_facing_tools(case["function"], case["category"])
+            presented: list[int] = []
+            stages = [(facing, ())]
+            for turn in sorted(case.get("held_out") or {}, key=int):
+                presented.append(len(facing))
+                facing = facing + to_openai_completions_tools(deepcopy(list(case["held_out"][turn])))
+                stages.append((facing, tuple(presented)))
+            for tools, bounds in stages:
+                key = sha256(json.dumps([tools, bounds], sort_keys=True).encode("utf-8")).hexdigest()
+                if key not in rendered:
+                    rendered[key] = render_tools(deepcopy(tools), bounds)
+                arms = rendered[key]["arms"]
+                assert not any(row["cue"] for row in rendered[key]["x_decisions"]), case["id"]
+                assert arms["X"] == arms["U"] and arms["SX"] == arms["S"], case["id"]
+                checked += 1
+    assert checked >= 800
 
 
 def test_editors_never_look_ahead(corpus):

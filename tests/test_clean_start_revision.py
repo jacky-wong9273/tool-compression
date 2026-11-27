@@ -181,11 +181,148 @@ def test_x_refuses_a_cue_whose_target_already_claims_the_rival_object():
     for joined in ("Delete a file or folder.", "Delete a file and folder."):
         rows = qualify_catalogue([_tool("tool_a", joined), rival])
         assert rows[0]["cue"] == ""
-        assert "coordinator" in rows[0]["rejected_rivals"][0]["reason"]
-        assert rows[1]["cue"] == "For a file, use tool_a."
+        assert "target's differing words end in a coordinator" in rows[0]["rejected_rivals"][0]["reason"]
+        assert rows[1]["cue"] == ""
+        assert "rival's differing words end in a coordinator" in rows[1]["rejected_rivals"][0]["reason"]
     rows = qualify_catalogue([_tool("tool_a", "Delete a file from folder."), rival])
     assert rows[0]["cue"] == ""
     assert "different objects (file versus folder)" in rows[0]["no_cue_reason"]
+
+
+def test_x_name_spells_a_difference_by_abbreviation_or_compound():
+    spelled = [
+        _tool("max_value", "Find the maximum value in a list of numbers."),
+        _tool("min_value", "Find the minimum value in a list of numbers."),
+    ]
+    rows = qualify_catalogue(spelled)
+    assert [row["cue"] for row in rows] == ["", ""]
+    assert all("already spells" in row["no_cue_reason"] for row in rows)
+    opaque = [
+        _tool("tool_a", "Find the maximum value in a list of numbers."),
+        _tool("tool_b", "Find the minimum value in a list of numbers."),
+    ]
+    assert [row["cue"] for row in qualify_catalogue(opaque)] == [
+        "For the minimum value, use tool_b.",
+        "For the maximum value, use tool_a.",
+    ]
+    stores = [
+        _tool("safeway_products", "Get the vegan products at Safeway store."),
+        _tool("wholefoods_products", "Get the vegan products at Whole Foods store."),
+    ]
+    rows = qualify_catalogue(stores)
+    assert rows[0]["cue"] == ""
+    assert "already spells" in rows[0]["rejected_rivals"][0]["reason"]
+    short = [
+        _tool("set_go_mode", "Sets the golden mode of the lamp."),
+        _tool("set_red_mode", "Sets the red mode of the lamp."),
+    ]
+    assert qualify_catalogue(short)[1]["cue"] == "For the golden mode, use set_go_mode."
+    camel = [
+        _tool("AmazonGameStore_recommend", "Recommend games from the Amazon Game Store."),
+        _tool("BoardGameGeek_recommend", "Recommend games from the BoardGameGeek store."),
+    ]
+    assert qualify_catalogue(camel)[0]["cue"] == ""
+    assert "already spells" in qualify_catalogue(camel)[0]["no_cue_reason"]
+    camel[1]["function"]["name"] = "tool_b"
+    assert qualify_catalogue(camel)[0]["cue"] == "For the BoardGameGeek store, use tool_b."
+    phrase = [
+        _tool("google_books_search", "Search for a book in the Google Books library with optional parameters"),
+        _tool("openlibrary_books_search", "Search for a book in the Open Library with optional parameters"),
+    ]
+    assert qualify_catalogue(phrase)[0]["cue"] == ""
+    phrase[1]["function"]["name"] = "tool_b"
+    assert qualify_catalogue(phrase)[0]["cue"] == "For the Open Library, use tool_b."
+    inside_a_part = [
+        _tool("error_entries", "Get the error entries of the server."),
+        _tool("login_entries", "Get the log entries of the server."),
+    ]
+    assert qualify_catalogue(inside_a_part)[0]["cue"] == "For the log entries, use login_entries."
+
+
+def test_s_default_value_and_unset_condition_are_not_negations():
+    properties = {
+        "file_name": {
+            "type": "string",
+            "description": "The name of the file to write to. Defaults to None.",
+            "default": "None",
+        },
+        "host": {
+            "type": "string",
+            "description": "The host. Defaults to 'localhost' if not specified. Do not add a port.",
+            "default": "localhost",
+        },
+        "null_default": {"type": "string", "description": "The proxy. Defaults to None.", "default": None},
+        "other": {"type": "string", "description": "The mode. Defaults to none if not given.", "default": "auto"},
+    }
+    tool = _tool("writer", "Write a file.", properties, ["file_name"])
+    edited, rows = edit_catalogue([deepcopy(tool)])
+    finals = {name: value["description"] for name, value in edited[0]["function"]["parameters"]["properties"].items()}
+    assert finals == {
+        "file_name": "The name of the file to write to.",
+        "host": "The host. Do not add a port.",
+        "null_default": "The proxy. Defaults to None.",
+        "other": "The mode. Defaults to none if not given.",
+    }
+    by_pointer = {row["pointer"]: row for row in rows[0]}
+    assert by_pointer["/function/parameters/properties/file_name/description"]["change_class"] == "schema_guaranteed"
+
+
+def test_s_empty_defaults_match_empty_schema_values():
+    properties = {
+        "text": {"type": "string", "description": "Description of the ticket. Defaults to an empty string.", "default": ""},
+        "tags": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Tags to add. Default is an empty list.",
+            "default": [],
+        },
+        "extra": {"type": "object", "description": "Extra fields. Defaults to an empty object.", "default": {}},
+        "term": {"type": "string", "description": "Search term. Defaults to an empty string.", "default": "all"},
+        "items": {"type": "array", "items": {"type": "string"}, "description": "Items. Defaults to an empty list.", "default": ["a"]},
+    }
+    tool = _tool("ticket", "Create a ticket.", properties, ["text"])
+    edited, _rows = edit_catalogue([deepcopy(tool)])
+    finals = {name: value["description"] for name, value in edited[0]["function"]["parameters"]["properties"].items()}
+    assert finals == {
+        "text": "Description of the ticket.",
+        "tags": "Tags to add.",
+        "extra": "Extra fields.",
+        "term": "Search term. Defaults to an empty string.",
+        "items": "Items. Defaults to an empty list.",
+    }
+
+
+def test_s_drops_only_the_whitespace_that_ends_a_field():
+    first = _tool(
+        "first",
+        "Count lines in a file.  " + HINT,
+        {"path": {"type": "string", "description": "The file path.  "}, "mode": {"type": "string", "description": "A  mode. "}},
+        ["path"],
+    )
+    second = _tool("second", "Count words in a file. " + HINT)
+    only_hint = _tool("third", " " + HINT)
+    edited, rows = edit_catalogue(deepcopy([first, second, only_hint]))
+    assert [tool["function"]["description"] for tool in edited] == [
+        "Count lines in a file." + HINT,
+        "Count words in a file.",
+        " " + HINT,
+    ]
+    properties = edited[0]["function"]["parameters"]["properties"]
+    assert properties["path"]["description"] == "The file path."
+    assert properties["mode"]["description"] == "A  mode."
+    classes = {(index, row["pointer"]): row["change_class"] for index, tool_rows in enumerate(rows) for row in tool_rows}
+    assert classes[(0, "/function/description")] == "trailing_space"
+    assert classes[(0, "/function/parameters/properties/path/description")] == "trailing_space"
+    assert classes[(1, "/function/description")] == "hint_context+trailing_space"
+    assert classes[(2, "/function/description")] is None
+    trimmed = rows[0][0]
+    assert trimmed["cosmetic"] is True and trimmed["meaningful"] is False and trimmed["adopted"] is True
+    assert [fact["excerpt"] for fact in trimmed["facts"] if fact["decision"] == "WHITESPACE"] == ["  "]
+    for tool_rows in rows:
+        for row in tool_rows:
+            for fact in row["facts"]:
+                if fact["decision"] == "KEEP" and row["adopted"]:
+                    assert fact["after"] in row["final"]
 
 
 def test_x_cue_phrase_keeps_the_head_noun_before_of_or_on():
