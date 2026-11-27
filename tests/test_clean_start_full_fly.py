@@ -855,24 +855,94 @@ def test_full_package_numbers_and_regeneration():
     assert json.loads(json.dumps(rebuilt)) == stored
 
 
-@pytest.mark.skipif(os.environ.get("TC_FULL_PLANNING") != "1", reason="tokenises 3,238 cases, about 2 min")
-def test_full_planning_upper_recomputes_from_the_catalogue():
+def test_full_companion_is_the_revised_editor_package():
     from tool_compression.clean_start import full
+    from tool_compression.clean_start.editor_s import S_RULES_VERSION
+    from tool_compression.clean_start.editor_x import X_RULES_VERSION
+    from tool_compression.clean_start.resume import source_sha256
 
     cost = full.load_committed_cost()
-    stored = full.stored_planning(cost)
-    planning = full.compute_planning(full.select_full_cases())
-    # full/cost.json stays the plan preflighted at 6d4081e3 (s-rules-2026-11-26, x-rules-2026-11-26).
-    # Later editors may move first-request tokens only; every gate and archived-rate path is exact.
-    assert planning["allowance_requests"] == stored["allowance_requests"]
+    companion = json.loads((full.study_dir() / full.COMPANION_FILE).read_text(encoding="utf-8"))
+    assert companion["editors"] == {"S": S_RULES_VERSION, "X": X_RULES_VERSION}
+    assert (S_RULES_VERSION, X_RULES_VERSION) == ("s-rules-2026-11-27", "x-rules-2026-11-27")
+    assert companion["source_sha256"] == source_sha256()
+    assert companion["official_settlement"] is False
+    assert companion["send_policy"] == cost["send_policy"]
+    assert companion["send_policy"]["name"] == "deadline-20s-retry-60s-skip"
+    assert companion["send_policy"]["attempt_deadlines_seconds"] == [20.0, 60.0]
+    assert companion["send_policy"]["after_last_failure"] == "skip_and_record"
+    assert companion["slot_sha256"] == full.COMMITTED_SLOT_SHA256
+    assert companion["plan_sha256"] == cost["plan_sha256"]
+    assert (companion["scoring"], companion["prerequisites"], companion["slots"]) == (3127, 111, 12952)
+    assert companion["ceiling_floor_usd"] == cost["ceiling_floor_usd"] == "68.54"
+    assert companion["observed_mean_usd"] == cost["observed_mean_usd"] == "58.692511"
+    assert companion["higher_step_usd"] == cost["higher_step_usd"]
+    assert companion["planning_upper_usd"] == "254.432611"
+    assert companion["first_request_floor_tokens"] == 21972222
+    assert companion["first_request_floor_usd"] == "3.295833"
+    assert companion["planning_upper_parts_usd"]["single_turn"] == "4.824203"
     for part in ("trajectories", "long_context_spike", "memory_force_quit_contingency"):
-        assert planning["planning_upper_parts_usd"][part] == stored["planning_upper_parts_usd"][part]
-    assert planning["single_turn_allowance_usd"].keys() == stored["single_turn_allowance_usd"].keys()
-    for key in ("planning_upper_usd", "structural_cap_usd", "first_request_floor_usd"):
-        assert abs(Decimal(planning[key]) - Decimal(stored[key])) < Decimal("0.01"), key
+        assert companion["planning_upper_parts_usd"][part] == cost["planning_upper_parts_usd"][part]
+    assert companion["structural_cap_usd"] == "762.513074"
+    assert companion["planning_upper_cny"] == cost["planning_upper_cny"]
+    assert companion["allowance_with_monday_peak_usd"] == "286.003569"
+    assert companion["allowance_slowest_usd_with_peak_and_hung_tries"] == "315.465244"
+    assert "6d4081e3" in companion["frozen_plan"]
+    assert "s-rules-2026-11-26" in companion["frozen_plan"]
+    identity = companion["render_identity"]
+    assert (identity["catalogues_initial"], identity["catalogues_held_out"], identity["renders"]) == (3238, 200, 13752)
+    assert identity["tools_sha256"] == "6c1cad756f4f1608787a6069566d5dec1052f42bf4c6d5db95839acb639ae843"
+    changed = [
+        key for key, old in cost["single_turn_allowance_usd"].items()
+        if companion["single_turn_allowance_usd"][key] != old
+    ]
+    assert len(changed) == 30
+    assert set(companion["single_turn_allowance_usd"]) == set(cost["single_turn_allowance_usd"])
+    for name, row in cost["profiles"].items():
+        if row["path"] == "allowance":
+            assert companion["profiles"][name]["usd_off_peak"] == "254.432611"
+            assert companion["profiles"][name]["hours"] == row["hours"]
+            assert companion["profiles"][name]["peak_premium_usd"] == row["peak_premium_usd"]
+            continue
+        assert companion["profiles"][name] == row
+    cases = full.select_full_cases()
+    assert sum(1 for case in cases if not case.get("prereq")) == 3127
+    assert sum(1 for case in cases if case.get("prereq")) == 111
+    assert sum(len(case.get("held_out") or {}) for case in cases) == 200
+
+
+@pytest.mark.skipif(os.environ.get("TC_FULL_PLANNING") != "1", reason="tokenises the full catalogue twice, about 5 min")
+def test_full_planning_upper_recomputes_from_the_catalogue():
+    from tool_compression.clean_start import full
+    from tool_compression.clean_start.preliminary import _TOKEN_CACHE
+
+    _TOKEN_CACHE.clear()
+    cost = full.load_committed_cost()
+    cases = full.select_full_cases()
+    planning = full.compute_planning(cases)
+    companion = json.loads((full.study_dir() / full.COMPANION_FILE).read_text(encoding="utf-8"))
+    # full/cost.json stays the plan preflighted at 6d4081e3 (s-rules-2026-11-26, x-rules-2026-11-26).
+    # The companion is that report recomputed with the editors in this tree.
+    assert planning["allowance_requests"] == cost["allowance_requests"]
+    assert planning["planning_upper_usd"] == companion["planning_upper_usd"] == "254.432611"
+    assert planning["first_request_floor_tokens"] == 21972222
+    assert planning["first_request_floor_usd"] == "3.295833"
+    assert planning["structural_cap_usd"] == "762.513074"
+    assert planning["single_turn_allowance_usd"] == companion["single_turn_allowance_usd"]
+    for part in ("trajectories", "long_context_spike", "memory_force_quit_contingency"):
+        assert planning["planning_upper_parts_usd"][part] == cost["planning_upper_parts_usd"][part]
     report = full.full_report(planning)
     for key in ("ceiling_floor_usd", "ceiling_floor_profile", "observed_mean_usd", "higher_step_usd"):
-        assert report[key] == cost[key], key
+        assert report[key] == cost[key] == companion[key], key
+    assert full.render_identity(cases) == companion["render_identity"]
+    fresh = dict(report)
+    fresh["plan_sha256"] = companion["plan_sha256"]
+    fresh["single_turn_allowance_usd"] = planning["single_turn_allowance_usd"]
+    fresh["editors"] = companion["editors"]
+    fresh["source_sha256"] = companion["source_sha256"]
+    fresh["render_identity"] = companion["render_identity"]
+    fresh["frozen_plan"] = full.FROZEN_PLAN_NOTE
+    assert fresh == companion
 
 
 def test_start_gate():
