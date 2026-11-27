@@ -860,7 +860,19 @@ def test_full_planning_upper_recomputes_from_the_catalogue():
     from tool_compression.clean_start import full
 
     cost = full.load_committed_cost()
-    assert full.compute_planning(full.select_full_cases()) == full.stored_planning(cost)
+    stored = full.stored_planning(cost)
+    planning = full.compute_planning(full.select_full_cases())
+    # full/cost.json stays the plan preflighted at 6d4081e3 (s-rules-2026-11-26, x-rules-2026-11-26).
+    # Later editors may move first-request tokens only; every gate and archived-rate path is exact.
+    assert planning["allowance_requests"] == stored["allowance_requests"]
+    for part in ("trajectories", "long_context_spike", "memory_force_quit_contingency"):
+        assert planning["planning_upper_parts_usd"][part] == stored["planning_upper_parts_usd"][part]
+    assert planning["single_turn_allowance_usd"].keys() == stored["single_turn_allowance_usd"].keys()
+    for key in ("planning_upper_usd", "structural_cap_usd", "first_request_floor_usd"):
+        assert abs(Decimal(planning[key]) - Decimal(stored[key])) < Decimal("0.01"), key
+    report = full.full_report(planning)
+    for key in ("ceiling_floor_usd", "ceiling_floor_profile", "observed_mean_usd", "higher_step_usd"):
+        assert report[key] == cost[key], key
 
 
 def test_start_gate():

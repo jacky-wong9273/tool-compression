@@ -69,6 +69,7 @@ _X_REASONS = (
     ("The shared wording is shorter", "shared_wording_too_short"),
     ("The shared wording has no content word", "shared_wording_without_content"),
     ("The target's differing words end in a coordinator", "target_claims_rival_object"),
+    ("The rival's differing words end in a coordinator", "rival_claims_target_object"),
     ("The two action texts act on different objects", "different_objects"),
     ("The rival's differing phrase", "phrase_not_a_noun_phrase"),
     ("The rival's name already spells", "rival_name_spells_difference"),
@@ -443,6 +444,17 @@ def build_package(out_dir: Path) -> dict:
         "frozen_plan": (
             "validation/cost.json is the plan the 0bf829c6 flight was sized and checked against, with the "
             "editors of that commit. This file is the same report recomputed with the editors above."
+        ),
+    })
+    from tool_compression.clean_start.preliminary import preliminary_report
+
+    _write(out_dir / "preliminary_20261128.json", {
+        **preliminary_report(),
+        "editors": {"S": S_RULES_VERSION, "X": X_RULES_VERSION},
+        "frozen_plan": (
+            "preliminary/cost.json is the plan the interrupted 69f33cdc 20% flight was sized and "
+            "checked against, with editors s-rules-2026-11-26 and x-rules-2026-11-26. This file is "
+            "the same report recomputed with the editors above."
         ),
     })
     vendored = prompt_manifest()

@@ -18,6 +18,8 @@ import pytest
 
 import tool_compression.clean_start.preliminary as preliminary_module
 from tool_compression.clean_start.categories import MEMORY_SCENARIOS
+from tool_compression.clean_start.editor_s import S_RULES_VERSION
+from tool_compression.clean_start.editor_x import X_RULES_VERSION
 from tool_compression.clean_start.load import load_prereqs
 from tool_compression.clean_start.pilot import build_draw, study_dir
 from tool_compression.clean_start.preliminary import (
@@ -153,9 +155,18 @@ def test_allowances_match_the_archived_bills():
     assert derived["spike"] == 43803
 
 
-def test_cost_file_matches_the_report_and_leaves_the_upper_above_the_ceiling():
+def test_cost_file_is_the_flown_plan_and_leaves_the_upper_above_the_ceiling():
     cost = load_committed_cost()
-    assert cost == preliminary_report()
+    recomputed = json.loads((STUDY / "package" / "preliminary_20261128.json").read_text(encoding="utf-8"))
+    assert recomputed.pop("editors") == {"S": S_RULES_VERSION, "X": X_RULES_VERSION}
+    assert "69f33cdc" in recomputed.pop("frozen_plan")
+    assert set(recomputed) == set(cost)
+    editor_tokens = {
+        "first_request_floor_tokens", "first_request_floor_usd", "planning_upper_usd",
+        "planning_upper_cny", "planning_upper_parts_usd", "structural_cap_usd",
+    }
+    assert {key for key in cost if cost[key] != recomputed[key]} <= editor_tokens
+    assert recomputed["planning_upper_parts_usd"]["trajectories"] == cost["planning_upper_parts_usd"]["trajectories"]
     assert cost["official_settlement"] is False
     assert cost["thinking"] == "off"
     assert cost["replicate_u"] is False
