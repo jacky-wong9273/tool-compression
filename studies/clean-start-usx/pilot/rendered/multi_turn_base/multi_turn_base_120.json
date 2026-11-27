@@ -18,11 +18,27 @@
   "changes": [
     {
       "arm": "S",
+      "function": "add_to_watchlist",
+      "pointer": "/function/parameters/properties/stock/description",
+      "before": "the stock symbol to add to the watchlist. ",
+      "after": "the stock symbol to add to the watchlist.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "cancel_order",
       "pointer": "/function/description",
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Cancel an order. Note that the provided function is in Python 3 syntax.",
       "after": "Trading system: Cancel an order.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "cancel_order",
+      "pointer": "/function/parameters/properties/order_id/description",
+      "before": "ID of the order to cancel. ",
+      "after": "ID of the order to cancel.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -82,6 +98,14 @@
     },
     {
       "arm": "S",
+      "function": "get_available_stocks",
+      "pointer": "/function/parameters/properties/sector/description",
+      "before": "The sector to retrieve stocks from (e.g., 'Technology'). ",
+      "after": "The sector to retrieve stocks from (e.g., 'Technology').",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "get_current_time",
       "pointer": "/function/description",
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the current time. Note that the provided function is in Python 3 syntax.",
@@ -95,6 +119,14 @@
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the details of an order. Note that the provided function is in Python 3 syntax.",
       "after": "Trading system: Get the details of an order.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_order_details",
+      "pointer": "/function/parameters/properties/order_id/description",
+      "before": "ID of the order. ",
+      "after": "ID of the order.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -114,6 +146,14 @@
     },
     {
       "arm": "S",
+      "function": "get_stock_info",
+      "pointer": "/function/parameters/properties/symbol/description",
+      "before": "Symbol that uniquely identifies the stock. ",
+      "after": "Symbol that uniquely identifies the stock.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "get_symbol_by_name",
       "pointer": "/function/description",
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the symbol of a stock by company name. Note that the provided function is in Python 3 syntax.",
@@ -122,11 +162,27 @@
     },
     {
       "arm": "S",
+      "function": "get_symbol_by_name",
+      "pointer": "/function/parameters/properties/name/description",
+      "before": "Name of the company. ",
+      "after": "Name of the company.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "get_transaction_history",
       "pointer": "/function/description",
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Get the transaction history within a specified date range. Note that the provided function is in Python 3 syntax.",
       "after": "Trading system: Get the transaction history within a specified date range.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_transaction_history",
+      "pointer": "/function/parameters/properties/end_date/description",
+      "before": "End date for the history (format: 'YYYY-MM-DD'). ",
+      "after": "End date for the history (format: 'YYYY-MM-DD').",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -170,11 +226,27 @@
     },
     {
       "arm": "S",
+      "function": "place_order",
+      "pointer": "/function/parameters/properties/amount/description",
+      "before": "Number of shares to trade. ",
+      "after": "Number of shares to trade.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
       "function": "remove_stock_from_watchlist",
       "pointer": "/function/description",
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Remove a stock from the watchlist. Note that the provided function is in Python 3 syntax.",
       "after": "Trading system: Remove a stock from the watchlist.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "remove_stock_from_watchlist",
+      "pointer": "/function/parameters/properties/symbol/description",
+      "before": "Symbol of the stock to remove. ",
+      "after": "Symbol of the stock to remove.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -191,6 +263,14 @@
       "before": "This tool belongs to the trading system, which allows users to trade stocks, manage their account, and view stock information. Tool description: Handle user login. Note that the provided function is in Python 3 syntax.",
       "after": "Trading system: Handle user login.",
       "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "trading_login",
+      "pointer": "/function/parameters/properties/password/description",
+      "before": "Password for authentication. ",
+      "after": "Password for authentication.",
+      "change_class": "trailing_space"
     },
     {
       "arm": "S",
@@ -904,7 +984,7 @@
             "properties": {
               "stock": {
                 "type": "string",
-                "description": "the stock symbol to add to the watchlist. "
+                "description": "the stock symbol to add to the watchlist."
               }
             },
             "required": [
@@ -935,7 +1015,7 @@
             "properties": {
               "order_id": {
                 "type": "integer",
-                "description": "ID of the order to cancel. "
+                "description": "ID of the order to cancel."
               }
             },
             "required": [
@@ -1075,7 +1155,7 @@
             "properties": {
               "sector": {
                 "type": "string",
-                "description": "The sector to retrieve stocks from (e.g., 'Technology'). "
+                "description": "The sector to retrieve stocks from (e.g., 'Technology')."
               }
             },
             "required": [
@@ -1127,7 +1207,7 @@
             "properties": {
               "order_id": {
                 "type": "integer",
-                "description": "ID of the order. "
+                "description": "ID of the order."
               }
             },
             "required": [
@@ -1199,7 +1279,7 @@
             "properties": {
               "symbol": {
                 "type": "string",
-                "description": "Symbol that uniquely identifies the stock. "
+                "description": "Symbol that uniquely identifies the stock."
               }
             },
             "required": [
@@ -1243,7 +1323,7 @@
             "properties": {
               "name": {
                 "type": "string",
-                "description": "Name of the company. "
+                "description": "Name of the company."
               }
             },
             "required": [
@@ -1276,7 +1356,7 @@
               },
               "end_date": {
                 "type": "string",
-                "description": "End date for the history (format: 'YYYY-MM-DD'). ",
+                "description": "End date for the history (format: 'YYYY-MM-DD').",
                 "default": "None"
               }
             },
@@ -1394,7 +1474,7 @@
               },
               "amount": {
                 "type": "integer",
-                "description": "Number of shares to trade. "
+                "description": "Number of shares to trade."
               }
             },
             "required": [
@@ -1441,7 +1521,7 @@
             "properties": {
               "symbol": {
                 "type": "string",
-                "description": "Symbol of the stock to remove. "
+                "description": "Symbol of the stock to remove."
               }
             },
             "required": [
@@ -1494,7 +1574,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password for authentication. "
+                "description": "Password for authentication."
               }
             },
             "required": [
@@ -2254,7 +2334,7 @@
             "properties": {
               "stock": {
                 "type": "string",
-                "description": "the stock symbol to add to the watchlist. "
+                "description": "the stock symbol to add to the watchlist."
               }
             },
             "required": [
@@ -2285,7 +2365,7 @@
             "properties": {
               "order_id": {
                 "type": "integer",
-                "description": "ID of the order to cancel. "
+                "description": "ID of the order to cancel."
               }
             },
             "required": [
@@ -2425,7 +2505,7 @@
             "properties": {
               "sector": {
                 "type": "string",
-                "description": "The sector to retrieve stocks from (e.g., 'Technology'). "
+                "description": "The sector to retrieve stocks from (e.g., 'Technology')."
               }
             },
             "required": [
@@ -2477,7 +2557,7 @@
             "properties": {
               "order_id": {
                 "type": "integer",
-                "description": "ID of the order. "
+                "description": "ID of the order."
               }
             },
             "required": [
@@ -2549,7 +2629,7 @@
             "properties": {
               "symbol": {
                 "type": "string",
-                "description": "Symbol that uniquely identifies the stock. "
+                "description": "Symbol that uniquely identifies the stock."
               }
             },
             "required": [
@@ -2593,7 +2673,7 @@
             "properties": {
               "name": {
                 "type": "string",
-                "description": "Name of the company. "
+                "description": "Name of the company."
               }
             },
             "required": [
@@ -2626,7 +2706,7 @@
               },
               "end_date": {
                 "type": "string",
-                "description": "End date for the history (format: 'YYYY-MM-DD'). ",
+                "description": "End date for the history (format: 'YYYY-MM-DD').",
                 "default": "None"
               }
             },
@@ -2744,7 +2824,7 @@
               },
               "amount": {
                 "type": "integer",
-                "description": "Number of shares to trade. "
+                "description": "Number of shares to trade."
               }
             },
             "required": [
@@ -2791,7 +2871,7 @@
             "properties": {
               "symbol": {
                 "type": "string",
-                "description": "Symbol of the stock to remove. "
+                "description": "Symbol of the stock to remove."
               }
             },
             "required": [
@@ -2844,7 +2924,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password for authentication. "
+                "description": "Password for authentication."
               }
             },
             "required": [

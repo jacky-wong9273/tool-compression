@@ -124,15 +124,7 @@
       "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
       "change_class": "suite_context+suite_label+hint_context"
     },
-    "X_cue": {
-      "case_id": "multi_turn_base_0",
-      "target": "rmdir",
-      "rival": "rm",
-      "cue": "For a file, use rm.",
-      "target_action": "Remove a directory at current directory.",
-      "rival_action": "Remove a file or directory.",
-      "axis": "text:directory at current|file or"
-    },
+    "X_cue": null,
     "unchanged": null
   },
   "multi_turn_miss_func": {
@@ -144,15 +136,7 @@
       "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
       "change_class": "suite_context+suite_label+hint_context"
     },
-    "X_cue": {
-      "case_id": "multi_turn_miss_func_0",
-      "target": "rmdir",
-      "rival": "rm",
-      "cue": "For a file, use rm.",
-      "target_action": "Remove a directory at current directory.",
-      "rival_action": "Remove a file or directory.",
-      "axis": "text:directory at current|file or"
-    },
+    "X_cue": null,
     "unchanged": null
   },
   "multi_turn_miss_param": {
@@ -164,15 +148,7 @@
       "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
       "change_class": "suite_context+suite_label+hint_context"
     },
-    "X_cue": {
-      "case_id": "multi_turn_miss_param_0",
-      "target": "rmdir",
-      "rival": "rm",
-      "cue": "For a file, use rm.",
-      "target_action": "Remove a directory at current directory.",
-      "rival_action": "Remove a file or directory.",
-      "axis": "text:directory at current|file or"
-    },
+    "X_cue": null,
     "unchanged": null
   },
   "multi_turn_long_context": {
@@ -184,25 +160,17 @@
       "after": "TwitterAPI: Comment on a tweet for the authenticated user.",
       "change_class": "suite_context+suite_label+hint_context"
     },
-    "X_cue": {
-      "case_id": "multi_turn_long_context_0",
-      "target": "rmdir",
-      "rival": "rm",
-      "cue": "For a file, use rm.",
-      "target_action": "Remove a directory at current directory.",
-      "rival_action": "Remove a file or directory.",
-      "axis": "text:directory at current|file or"
-    },
+    "X_cue": null,
     "unchanged": null
   },
   "memory_kv": {
     "S_edit": {
       "case_id": "memory_kv_0-customer-0",
-      "function": "archival_memory_clear",
-      "pointer": "/function/description",
-      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "after": "Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.",
-      "change_class": "suite_context+suite_label+hint_context"
+      "function": "archival_memory_add",
+      "pointer": "/function/parameters/properties/value/description",
+      "before": "The value to store in the long-term memory. ",
+      "after": "The value to store in the long-term memory.",
+      "change_class": "trailing_space"
     },
     "X_cue": {
       "case_id": "memory_kv_0-customer-0",
@@ -218,11 +186,11 @@
   "memory_vector": {
     "S_edit": {
       "case_id": "memory_vector_0-customer-0",
-      "function": "archival_memory_clear",
-      "pointer": "/function/description",
-      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all entries in the archival memory. Note that the provided function is in Python 3 syntax.",
-      "after": "Memory suite: Clear all entries in the archival memory.",
-      "change_class": "suite_context+suite_label+hint_context"
+      "function": "archival_memory_add",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The text to be added to the archival memory. ",
+      "after": "The text to be added to the archival memory.",
+      "change_class": "trailing_space"
     },
     "X_cue": {
       "case_id": "memory_vector_0-customer-0",
@@ -238,11 +206,11 @@
   "memory_rec_sum": {
     "S_edit": {
       "case_id": "memory_rec_sum_0-customer-0",
-      "function": "memory_clear",
-      "pointer": "/function/description",
-      "before": "This tool belongs to the memory suite, which provides APIs to manage memory data via recursive summarization. Tool description: Clear all content in the memory, including any from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
-      "after": "Memory suite: Clear all content in the memory, including any from previous interactions. This operation is irreversible.",
-      "change_class": "suite_context+suite_label+hint_context"
+      "function": "memory_append",
+      "pointer": "/function/parameters/properties/text/description",
+      "before": "The text to append to the memory. ",
+      "after": "The text to append to the memory.",
+      "change_class": "trailing_space"
     },
     "X_cue": null,
     "unchanged": null
