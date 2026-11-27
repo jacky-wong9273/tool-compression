@@ -10,7 +10,9 @@ arm-turn, its prompt, output and steps together. The higher-step path takes,
 for each family, the flight with more steps per arm-turn instead. The planning
 upper is the preliminary's allowance on the full catalogue. It tokenises every
 first request locally, which takes about two minutes, so ``write_full_files``
-stores it and the CLI reads the stored value.
+stores it and the CLI reads the stored value. ``full/cost.json`` remains that
+gate file. ``package/full_20261127.json`` is the same report recomputed with
+the current editors; the CLI does not read it.
 
 Time is serial, one request at a time. A hang costs the 20 s first deadline on
 top of the retry that then succeeds, so a profile's seconds per send are its
@@ -33,8 +35,11 @@ from pathlib import Path
 import json
 
 from tool_compression.clean_start.categories import is_memory, is_multi_turn
+from tool_compression.clean_start.editor_s import S_RULES_VERSION
+from tool_compression.clean_start.editor_x import X_RULES_VERSION
 from tool_compression.clean_start.pilot import study_dir
 from tool_compression.clean_start.pin import ARMS, OFFICIAL_SETTLEMENT, STUDY_ID
+from tool_compression.clean_start.resume import source_sha256
 from tool_compression.clean_start.preliminary import (
     CNY_PER_USD,
     FLIGHTS,
@@ -56,7 +61,7 @@ from tool_compression.clean_start.preliminary import (
     price_cases,
 )
 from tool_compression.clean_start.rate_card import is_peak, rate_card
-from tool_compression.clean_start.runner import FULL_FLY_POLICY, build_slots, plan_summary
+from tool_compression.clean_start.runner import FULL_FLY_POLICY, arm_tools, build_slots, plan_summary
 from tool_compression.clean_start.scope import select_full_run_cases, study_categories
 
 NOT_BEFORE_HKT = datetime(2026, 11, 27, 18, 0, tzinfo=HKT)
@@ -68,6 +73,14 @@ THINKING = ("off",)
 COMMITTED_SLOT_SHA256 = "8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f"
 PLAN_FILE = Path("full") / "plan.json"
 COST_FILE = Path("full") / "cost.json"
+COMPANION_FILE = Path("package") / "full_20261127.json"
+FROZEN_PLAN_NOTE = (
+    "full/cost.json is the gate file the CLI reads. It was priced at 6d4081e3 "
+    "with editors s-rules-2026-11-26 and x-rules-2026-11-26. This file is the same "
+    "report recomputed with the editors above. The ceiling floor, the observed-mean "
+    "path and the higher-step path match that gate file. The CLI records the gate "
+    "file's planning_upper_usd in the run identity. It does not read this file."
+)
 HANG_SECONDS = Decimal(str(FULL_FLY_POLICY.attempt_deadlines[0]))
 TEN_HOURS = Decimal(36000)
 TEN_HOUR_PACES = (Decimal("1.9"), Decimal("2.0"))
@@ -509,6 +522,72 @@ def write_full_files(planning: dict | None = None) -> dict:
         "planning_upper_usd": report["planning_upper_usd"],
         "ceiling_floor_usd": report["ceiling_floor_usd"],
     }
+
+
+def render_identity(cases: list[dict]) -> dict:
+    """Digest of every deterministic tools array the full fly can send.
+
+    One line per render: ``case_id``, catalogue state, arm, and ``tools_sha256``,
+    separated by NUL and ended by a newline. ``tools_sha256`` is
+    ``sha256(json.dumps(tools, ensure_ascii=False, sort_keys=True))``, the
+    formula ``attempts.jsonl`` records. The state is ``initial``, then
+    ``held_out:<turn>`` after each held-out batch, in the order the runner
+    appends those batches. Arms are U, S, X, SX. Memory instructions injected
+    at execution are not tools and are not in this digest. Later turns of a
+    trajectory also depend on the model, so they are not pre-packaged.
+    """
+    digest = sha256()
+    renders = 0
+    held_catalogues = 0
+    for case in cases:
+        sequence: list[tuple[str, list | None]] = [("initial", None)]
+        batches: list[list[dict]] = []
+        for turn in sorted(case.get("held_out") or {}, key=int):
+            batches = batches + [list(case["held_out"][turn])]
+            sequence.append((f"held_out:{turn}", list(batches)))
+        for state_name, held in sequence:
+            if state_name != "initial":
+                held_catalogues += 1
+            for arm in ARMS:
+                tools = arm_tools(case["function"], case["category"], arm, held)
+                tools_sha = sha256(
+                    json.dumps(tools, ensure_ascii=False, sort_keys=True).encode("utf-8")
+                ).hexdigest()
+                digest.update(f"{case['id']}\0{state_name}\0{arm}\0{tools_sha}\n".encode())
+                renders += 1
+    return {
+        "formula": (
+            "sha256 of one line per render: case_id, state, arm, tools_sha256, "
+            "separated by NUL and ended by a newline. tools_sha256 is "
+            "sha256(json.dumps(tools, ensure_ascii=False, sort_keys=True)), the "
+            "attempts.jsonl formula. state is initial, then held_out:<turn> after "
+            "each held-out batch in the order the runner appends them. Arms are "
+            "U, S, X, SX."
+        ),
+        "catalogues_initial": len(cases),
+        "catalogues_held_out": held_catalogues,
+        "renders": renders,
+        "tools_sha256": digest.hexdigest(),
+    }
+
+
+def recomputed_document(planning: dict | None = None) -> dict:
+    """``full/cost.json`` recomputed with the editors in this tree.
+
+    The CLI keeps reading ``full/cost.json``. This document is the companion.
+    """
+    cases = select_full_cases()
+    identity = render_identity(cases)
+    if planning is None:
+        planning = compute_planning(cases)
+    report = full_report(planning)
+    report["plan_sha256"] = plan_sha256(_dumps(build_plan()))
+    report["single_turn_allowance_usd"] = planning["single_turn_allowance_usd"]
+    report["editors"] = {"S": S_RULES_VERSION, "X": X_RULES_VERSION}
+    report["source_sha256"] = source_sha256()
+    report["render_identity"] = identity
+    report["frozen_plan"] = FROZEN_PLAN_NOTE
+    return report
 
 
 def stored_planning(cost: dict) -> dict:

@@ -1,10 +1,10 @@
 # Full in-scope flight, thinking off, 12,952 slots
 
-This is the package for the full in-scope clean-start fly. It is not started, and nothing in this package contacts a provider or reads a key. `official_settlement` is false. Jacky has not named a ceiling for it: the $42 / 280 CNY cap belongs to the 20% preliminary only.
+This is the package for the full in-scope clean-start fly on editors `s-rules-2026-11-27` and `x-rules-2026-11-27`. It is not started, and nothing in this package contacts a provider or reads a key. `official_settlement` is false. Jacky named the ceiling $68.54 (457 CNY at 6.6649; the gate file prices that amount at 456.81 CNY). The $42 / 280 CNY cap belongs to the 20% preliminary only. This package is cleared for a later box preflight. It is not a live-start clearance, and these editors have not been flown.
 
-Scope: 3,127 in-scope scoring questions in the 14 in-scope categories, plus the 111 memory prerequisites their scenarios load. That is 3,238 conversations on arms U, S, X and SX, thinking off: 12,952 slots. Every prerequisite scenario is one an in-scope question uses, so the full catalogue's prerequisites and the matched prerequisites are the same 111 conversations. Editors were `s-rules-2026-11-26` and `x-rules-2026-11-26` when this package was preflighted at `6d4081e3`. This branch carries `s-rules-2026-11-27` and `x-rules-2026-11-27` (`REVISION-preliminary-69f33cdc.md`): a fly from it sends the revised editors, needs its own box preflight, and cannot resume a run started at `6d4081e3`, because the run identity records the editor rules. `full/cost.json` stays the plan priced at `6d4081e3`; under the revised editors its gates (ceiling floor, observed-mean and higher-step paths) are unchanged and its first-request figures move by less than a cent. SX is exact S, then X. Out of scope: the official simple sets, web-search sets, SerpAPI, and thinking on. Gorilla pin `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`, model `deepseek-flash`, no `max_tokens`.
+Scope: 3,127 in-scope scoring questions in the 14 in-scope categories, plus the 111 memory prerequisites their scenarios load. That is 3,238 conversations on arms U, S, X and SX, thinking off: 12,952 slots. Every prerequisite scenario is one an in-scope question uses, so the full catalogue's prerequisites and the matched prerequisites are the same 111 conversations. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27` (`REVISION-preliminary-69f33cdc.md`). SX is exact S, then X. A run started on this package cannot resume a run started at `6d4081e3` or `69f33cdc`, because the run identity records the editor rules and `source_sha256`. `full/cost.json` stays the gate file the CLI reads. It was priced at `6d4081e3` under `s-rules-2026-11-26` and `x-rules-2026-11-26`. Its ceiling floor ($68.54), observed-mean path ($58.692511) and higher-step path are unchanged under these editors. `package/full_20261127.json` is the same report recomputed with these editors: the planning upper moves from $254.432685 to $254.432611, the first-request floor from 22,002,459 tokens ($3.300369) to 21,972,222 tokens ($3.295833), and the single-turn allowance part from $4.824277 to $4.824203. Thirty of 1,862 single-turn case allowances change. Allowance-path totals move by less than a cent, and their six-decimal peak premiums do not. The dry plan reports the gate file's `planning_upper_usd` `254.432685`, which is the value the live run records. Out of scope: the official simple sets, web-search sets, SerpAPI, and thinking on. Gorilla pin `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`, model `deepseek-flash`, no `max_tokens`.
 
-Committed files: `full/plan.json` (SHA-256 `fe1059fc5fdb15c59d9aa985072a6a9952cf949e59e149cfd4c4d407dd5326ac`, the case ids in run order) and `full/cost.json` (cost, time, peak and ceiling floor; it records the plan digest). Thinking-off slot SHA-256: `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`. The live CLI refuses any other plan or slot order.
+Committed files: `full/plan.json` (SHA-256 `fe1059fc5fdb15c59d9aa985072a6a9952cf949e59e149cfd4c4d407dd5326ac`, the case ids in run order), `full/cost.json` (the CLI gate file: cost, time, peak and ceiling floor; it records the plan digest), and `package/full_20261127.json` (that report recomputed with these editors, plus `source_sha256` and the tools-render digest). Thinking-off slot SHA-256: `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`. The live CLI refuses any other plan or slot order. `source_sha256` of every `.py` file under `src/tool_compression`: `ef5b9ad9f1ead3fd011c94f398fe9b49950a374210a51d71e94d20ebc89005c0`. Tools-render digest, 3,238 initial catalogues and 200 held-out catalogues, 13,752 arm renders, in the `attempts.jsonl` `tools_sha256` formula: `6c1cad756f4f1608787a6069566d5dec1052f42bf4c6d5db95839acb639ae843`. The live command renders each request when it sends it. It does not read a pre-rendered prompt file. That digest is every deterministic tools array: the initial catalogue and each held-out catalogue, on U, S, X and SX. Memory instructions and later trajectory turns are not in it, because later turns depend on the model. `python -m tool_compression.clean_start package` does not recompute the companion. A package written into this directory hashes the file that is already there. A package written to an empty directory omits it.
 
 ## Start gates
 
@@ -12,11 +12,11 @@ All of these must hold before the live command. The CLI enforces the first, the 
 
 1. Not before **Friday 27 Nov 2026 18:00:00 HKT**. The CLI reads the box clock, so the box clock must be NTP-synced.
 2. The packaged tip is pushed, and the box checkout is exactly that tip. `source_sha256` of `src/tool_compression` is in the run identity.
-3. This package is CLEARED, pending the box preflight below.
+3. This package is CLEARED for the box preflight below. That clearance is not a live start.
 4. The box preflight passes.
 5. The fresh start is off-peak. The CLI refuses a fresh `--full` start inside a rate-card peak window (weekdays 09:00-12:00 and 14:00-18:00 HKT). Friday 18:00 is off-peak. A `--resume` is allowed in peak; the ceiling still applies.
 6. The 20% preliminary, and every other clean-start live run, is finished or stopped for good. The CLI cannot see another box's run.
-7. Jacky has named a ceiling. `--full` without `--ceiling-usd` exits 2. A ceiling under the **$68.54 floor** (456.81 CNY) exits 2. The prepaid balance must cover the ceiling.
+7. Jacky named **$68.54**. `--full` without `--ceiling-usd` exits 2. A ceiling under the **$68.54 floor** (456.81 CNY) exits 2. The prepaid balance must cover the ceiling.
 8. `official_settlement` stays false.
 
 Do not fly the superseded 119-case / $12 command, tip `90f675da`, tip `00452963`, or any full 12,952-slot command without `--full`. The plain `run --live` path now refuses the full catalogue. Only `--full` has the 20 s / 60 s deadlines, skip-and-record, and `--resume`.
@@ -27,16 +27,16 @@ Dry plan. No `--live`. Writes `run.json`, reads no key, opens no socket:
 
 ```bash
 python -m tool_compression.clean_start run --full --thinking off \
-  --memory-prereqs matched --ceiling-usd <CEILING_USD> --out /tmp/full-plan
+    --memory-prereqs matched --ceiling-usd 68.54 --out /tmp/full-plan
 ```
 
 The plan reports `provider_contacted: false`, `full: true`, `slots_total: 12952`, `slot_sha256` `8fff8cd9…`, `read_timeout_seconds: [20.0, 60.0]`, `total_deadline_seconds: [20.0, 60.0]`, and `retry_policy.after_last_failure: "skip_and_record"`.
 
-Live run. `--out` is a new empty directory on storage that outlives the box. `DEEPSEEK_API_KEY` is set in that shell only and is never printed. No SerpAPI key is set. `<CEILING_USD>` is the ceiling Jacky names, at least 68.54:
+Live run. `--out` is a new empty directory on storage that outlives the box. `DEEPSEEK_API_KEY` is set in that shell only and is never printed. No SerpAPI key is set. The ceiling is the $68.54 Jacky named:
 
 ```bash
 python -m tool_compression.clean_start run --full --live --authorize-live \
-  --thinking off --memory-prereqs matched --ceiling-usd <CEILING_USD> \
+  --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
   --bfcl-root /path/to/gorilla --out /path/to/new-empty-dir
 ```
 
@@ -46,7 +46,7 @@ Resume check. Reads the directory, prints what a resume would skip, send again a
 
 ```bash
 python -m tool_compression.clean_start run --full --resume \
-  --thinking off --memory-prereqs matched --ceiling-usd <CEILING_USD> \
+  --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
   --out /path/to/the-same-dir
 ```
 
@@ -54,7 +54,7 @@ Resume. Same tip, same `--out`, same ceiling. Repeat after every stop until it e
 
 ```bash
 python -m tool_compression.clean_start run --full --live --authorize-live \
-  --thinking off --memory-prereqs matched --ceiling-usd <CEILING_USD> \
+  --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
   --bfcl-root /path/to/gorilla --out /path/to/the-same-dir --resume
 ```
 
@@ -118,7 +118,7 @@ Each time profile is serial, starting Friday 18:00 HKT. Seconds per send are the
 | planning allowance, 1.9 s, 1.5% hangs | 139,988 | 85.55 | Tue 1 Dec 07:33 | $26.44 | $284.69 |
 | planning allowance, 3.3 s, 3% hangs | 139,988 | 151.65 | Fri 4 Dec 01:39 | $53.40 | $315.47 |
 
-The observed mean is $58.692511 (391.18 CNY) over 70,144.24 sends. The higher-step path is 81,987.11 sends at $56.949778. It costs less, because the flight with more steps per turn is the cheaper one per turn for memory and `miss_param`. The off-peak planning upper is $254.432685 (1,695.77 CNY) over 139,988 allowance requests.
+The observed mean is $58.692511 (391.18 CNY) over 70,144.24 sends. The higher-step path is 81,987.11 sends at $56.949778. It costs less, because the flight with more steps per turn is the cheaper one per turn for memory and `miss_param`. The off-peak planning upper in the gate file is $254.432685 (1,695.77 CNY) over 139,988 allowance requests. The recomputed companion records $254.432611; 1,695.77 CNY is unchanged at the cent.
 
 **Ceiling floor: $68.54 (456.81 CNY).** This is the costliest observed-mean or higher-step profile (mean, 3.3 s, 3% hangs), with its Monday peak premium and its hung first tries billed. The CLI refuses a lower ceiling. A ceiling at the floor should finish the mean paths, but not an allowance-sized fat tail. It is not a recommendation; Jacky names the ceiling.
 
@@ -163,8 +163,8 @@ On the box that will run it, before the live command:
 - The Gorilla checkout is `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`.
 - `all-MiniLM-L6-v2` revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` is already built. `sentence_transformers`, `faiss` and `numpy` import. The live shell sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`.
 - `DEEPSEEK_API_KEY` is set in that shell and is not printed. No SerpAPI key is set.
-- The repository checkout is the packaged tip, and `git status` is clean. A resume refuses any other source tree.
-- The dry plan reports `slot_sha256` `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f` and `read_timeout_seconds` `[20.0, 60.0]`.
+- The repository checkout is the packaged tip, and `git status` is clean. A resume refuses any other source tree. `source_sha256` is `ef5b9ad9f1ead3fd011c94f398fe9b49950a374210a51d71e94d20ebc89005c0`. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27`.
+- The dry plan reports `slot_sha256` `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`, `read_timeout_seconds` `[20.0, 60.0]`, and the gate file's `planning_upper_usd` `254.432685`.
 - `--out` is a new empty directory on storage that outlives the box. Do not reuse a pilot, validation or preliminary directory.
 - The 20% preliminary is finished or stopped for good. Its directory and its 69f33cdc checkout are untouched.
 - The box clock is NTP-synced. It is Friday 27 Nov 2026 18:00 HKT or later, off-peak.
@@ -172,6 +172,7 @@ On the box that will run it, before the live command:
 ## Risks
 
 - The 20 s / 60 s policy, the skip path and `--full --resume` are tested against local sockets and mocks, never live.
+- Editors `s-rules-2026-11-27` and `x-rules-2026-11-27` have not been flown. This sheet clears a box preflight. It does not clear a live start.
 - A try cut at its deadline may still be billed, because DeepSeek may finish it. It has no usage to record, so it is listed in `unbilled_attempts` and not counted in the running spend. The ceiling floor prices these tries in, but the provider balance is the final check.
 - A skipped memory prerequisite costs its arm 25 to 50 scoring slots. Stopping the run instead, and resuming, would keep those slots at the price of a manual resume. The package skips, as specified.
 - An outage of three or more consecutive slots stops the run, and it then needs a resume. During an outage two slots are skipped before the third stops the run. Those two stay skipped.

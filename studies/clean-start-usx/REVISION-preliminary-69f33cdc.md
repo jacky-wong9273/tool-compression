@@ -103,7 +103,7 @@ On the slice, the revision changes S on 5 of 322 cases and X on none. On the 32-
 
 The frozen plans stay as flown or preflighted:
 - `preliminary/cost.json` is the 69f33cdc plan. `package/preliminary_20261128.json` recomputes it with the revised editors: the first-request floor falls from 4,907,006 to 4,899,890 tokens and the planning upper from $95.376500 to $95.376489.
-- `full/cost.json` is the plan preflighted at `6d4081e3`. Recomputed with the revised editors, the ceiling floor ($68.54), the observed-mean path ($58.692511) and the higher-step path are unchanged. The planning upper moves from $254.432685 to $254.432611, and the first-request floor from 22,002,459 to 21,972,222 tokens.
+- `full/cost.json` is the plan preflighted at `6d4081e3`. Recomputed with the revised editors, the ceiling floor ($68.54), the observed-mean path ($58.692511) and the higher-step path are unchanged. The planning upper moves from $254.432685 to $254.432611, and the first-request floor from 22,002,459 to 21,972,222 tokens. Those figures, the tools-render digest, and `source_sha256` are in `package/full_20261127.json`. The CLI still reads `full/cost.json`.
 
 ## 6. Options not taken
 
