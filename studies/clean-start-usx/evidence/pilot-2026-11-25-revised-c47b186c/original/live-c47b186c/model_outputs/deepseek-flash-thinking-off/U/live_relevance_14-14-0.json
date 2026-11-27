@@ -1,0 +1,58 @@
+{
+  "case_id": "live_relevance_14-14-0",
+  "category": "live_relevance",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "HNA_NEWS_search": "{\"keyword\": \"China\", \"sort_by\": \"date\"}"
+        },
+        {
+          "HNA_WQA_search": "{\"keyword\": \"China current events news today\"}"
+        }
+      ],
+      "content": "I'll search for recent news about China to give you a current picture.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_m2zV7kFdu3WQ9LxsUjO86220",
+          "type": "function",
+          "function": {
+            "name": "HNA_NEWS_search",
+            "arguments": "{\"keyword\": \"China\", \"sort_by\": \"date\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_2thpCJBXiuO7KnmmlYOp1660",
+          "type": "function",
+          "function": {
+            "name": "HNA_WQA_search",
+            "arguments": "{\"keyword\": \"China current events news today\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1431,
+      "prompt_cache_hit_tokens": 1280,
+      "prompt_cache_miss_tokens": 151,
+      "output_tokens": 107,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "HNA_NEWS_search": "{\"keyword\": \"China\", \"sort_by\": \"date\"}"
+    },
+    {
+      "HNA_WQA_search": "{\"keyword\": \"China current events news today\"}"
+    }
+  ]
+}

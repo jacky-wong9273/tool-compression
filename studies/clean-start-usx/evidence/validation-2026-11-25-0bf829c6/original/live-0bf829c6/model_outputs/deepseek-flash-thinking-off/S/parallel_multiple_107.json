@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_107",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "library_search_books": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+        },
+        {
+          "google_books_search": "{\"genre\": \"mystery\"}"
+        },
+        {
+          "openlibrary_books_search": "{\"genre\": \"mystery\"}"
+        }
+      ],
+      "content": "I'll help you search for a mystery novel. Let me start with the New York City library, then check Google Books and Open Library.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_h6X5YZV2Qab54PqnMmY95965",
+          "type": "function",
+          "function": {
+            "name": "library_search_books",
+            "arguments": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_DZRGBGHGKTsckq2A8GAG6769",
+          "type": "function",
+          "function": {
+            "name": "google_books_search",
+            "arguments": "{\"genre\": \"mystery\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_tH59iBLTumiCLYBbMWS73038",
+          "type": "function",
+          "function": {
+            "name": "openlibrary_books_search",
+            "arguments": "{\"genre\": \"mystery\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 603,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 603,
+      "output_tokens": 151,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "library_search_books": "{\"location\": \"New York City\", \"genre\": \"mystery\"}"
+    },
+    {
+      "google_books_search": "{\"genre\": \"mystery\"}"
+    },
+    {
+      "openlibrary_books_search": "{\"genre\": \"mystery\"}"
+    }
+  ]
+}

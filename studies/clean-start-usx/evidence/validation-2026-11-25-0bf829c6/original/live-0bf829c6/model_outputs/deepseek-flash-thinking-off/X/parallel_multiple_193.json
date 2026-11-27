@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_193",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_scientist_for_discovery": "{\"discovery\": \"Relativity Theory\"}"
+        },
+        {
+          "flight_book": "{\"departure_location\": \"Los Angeles\", \"destination_location\": \"New York\", \"date\": \"2022-12-25\", \"time\": \"10:00 AM\", \"direct_flight\": true}"
+        },
+        {
+          "game_stats_fetch_player_statistics": "{\"game\": \"Call of Duty\", \"username\": \"gamer123\", \"platform\": \"PlayStation\"}"
+        },
+        {
+          "event_finder_find_upcoming": "{\"location\": \"San Francisco, CA\", \"genre\": \"rock\", \"days_ahead\": 14}"
+        }
+      ],
+      "content": "I'll help you with all of these requests. Let me make the calls in parallel since they're independent.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_A7gBQwATIHJhbxTQUKFI2120",
+          "type": "function",
+          "function": {
+            "name": "get_scientist_for_discovery",
+            "arguments": "{\"discovery\": \"Relativity Theory\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_cEiYANYmApXmNk0lHFbl5105",
+          "type": "function",
+          "function": {
+            "name": "flight_book",
+            "arguments": "{\"departure_location\": \"Los Angeles\", \"destination_location\": \"New York\", \"date\": \"2022-12-25\", \"time\": \"10:00 AM\", \"direct_flight\": true}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_28uQQVDlR2zkWg9DJ0Pw2164",
+          "type": "function",
+          "function": {
+            "name": "game_stats_fetch_player_statistics",
+            "arguments": "{\"game\": \"Call of Duty\", \"username\": \"gamer123\", \"platform\": \"PlayStation\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_R1Bto5436O0cXfeZbOgg9167",
+          "type": "function",
+          "function": {
+            "name": "event_finder_find_upcoming",
+            "arguments": "{\"location\": \"San Francisco, CA\", \"genre\": \"rock\", \"days_ahead\": 14}"
+          }
+        }
+      ],
+      "prompt_tokens": 925,
+      "prompt_cache_hit_tokens": 768,
+      "prompt_cache_miss_tokens": 157,
+      "output_tokens": 314,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_scientist_for_discovery": "{\"discovery\": \"Relativity Theory\"}"
+    },
+    {
+      "flight_book": "{\"departure_location\": \"Los Angeles\", \"destination_location\": \"New York\", \"date\": \"2022-12-25\", \"time\": \"10:00 AM\", \"direct_flight\": true}"
+    },
+    {
+      "game_stats_fetch_player_statistics": "{\"game\": \"Call of Duty\", \"username\": \"gamer123\", \"platform\": \"PlayStation\"}"
+    },
+    {
+      "event_finder_find_upcoming": "{\"location\": \"San Francisco, CA\", \"genre\": \"rock\", \"days_ahead\": 14}"
+    }
+  ]
+}

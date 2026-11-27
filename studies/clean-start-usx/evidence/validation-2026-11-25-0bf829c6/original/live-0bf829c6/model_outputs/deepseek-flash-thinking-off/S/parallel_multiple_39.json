@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_39",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "scientist_info_get_birthdate": "{\"name\": \"Nikola Tesla\"}"
+        },
+        {
+          "scientist_info_get_famous_discovery": "{\"name\": \"Nikola Tesla\"}"
+        }
+      ],
+      "content": "I'll look up both pieces of information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_cbPQm2VMpJH2REVDyYQb1292",
+          "type": "function",
+          "function": {
+            "name": "scientist_info_get_birthdate",
+            "arguments": "{\"name\": \"Nikola Tesla\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_iGBcS8VFV2rqK6Ar7mwd1506",
+          "type": "function",
+          "function": {
+            "name": "scientist_info_get_famous_discovery",
+            "arguments": "{\"name\": \"Nikola Tesla\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 442,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 186,
+      "output_tokens": 92,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "scientist_info_get_birthdate": "{\"name\": \"Nikola Tesla\"}"
+    },
+    {
+      "scientist_info_get_famous_discovery": "{\"name\": \"Nikola Tesla\"}"
+    }
+  ]
+}

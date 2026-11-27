@@ -1,0 +1,526 @@
+{
+  "case_id": "memory_kv_prereq_35-notetaker-3",
+  "category": "memory_kv",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"daycare_schedule\", \"value\": \"Daycare: Drop-off 8 AM, pick-up 5 PM. Monthly payment due Friday. Pack an extra set of clothes (last set got muddy).\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_b7EI0pIqSXUFSXVOFxZH1133",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"daycare_schedule\", \"value\": \"Daycare: Drop-off 8 AM, pick-up 5 PM. Monthly payment due Friday. Pack an extra set of clothes (last set got muddy).\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2538,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 2538,
+      "output_tokens": 89,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='daycare_schedule',value='Daycare: Drop-off 8 AM, pick-up 5 PM. Monthly payment due Friday. Pack an extra set of clothes (last set got muddy).')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 1,
+      "result": "Got it — saved to memory:\n\n- **Daycare hours:** drop-off 8 AM, pick-up 5 PM\n- **Monthly payment:** due Friday\n- **Reminder:** pack an extra set of clothes (last set got muddy)\n\nNote that Friday is stacking up: the daycare payment and your tax documents are both due that day. Want me to keep a running \"Friday\" list so nothing slips?",
+      "content": "Got it — saved to memory:\n\n- **Daycare hours:** drop-off 8 AM, pick-up 5 PM\n- **Monthly payment:** due Friday\n- **Reminder:** pack an extra set of clothes (last set got muddy)\n\nNote that Friday is stacking up: the daycare payment and your tax documents are both due that day. Want me to keep a running \"Friday\" list so nothing slips?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 2648,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 216,
+      "output_tokens": 84,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 1,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_1TXhZgMyNhK94NGpaSOk0637",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2755,
+      "prompt_cache_hit_tokens": 2560,
+      "prompt_cache_miss_tokens": 195,
+      "output_tokens": 77,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='elementary_school_tasks',value='Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.')"
+      ],
+      "tool_outputs": [
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 1,
+      "result": [
+        {
+          "core_memory_retrieve_all": "{}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_mPFwf6xgYWq0ikvIv0Kj1443",
+          "type": "function",
+          "function": {
+            "name": "core_memory_retrieve_all",
+            "arguments": "{}"
+          }
+        }
+      ],
+      "prompt_tokens": 2858,
+      "prompt_cache_hit_tokens": 2688,
+      "prompt_cache_miss_tokens": 170,
+      "output_tokens": 26,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_retrieve_all()"
+      ],
+      "tool_outputs": [
+        "{\"tax_documents_submission\": \"URGENT: Submit tax documents before Friday.\", \"fix_kitchen_sink_leak\": \"Household: Fix leaky kitchen sink \\u2014 look up a YouTube how-to if needed.\", \"mop_kitchen_floor\": \"Household: Mop kitchen floor \\u2014 sticky from last night's spill.\", \"car_maintenance_sunday\": \"Car(Sunday): Wash and vacuum; check tire pressure; refill windshield wiper fluid.\", \"organizing_tasks\": \"Organizing: Sort closet & donate old clothes; shred old mail; restock pantry(low on rice and cereal).\", \"diy_fixes\": \"DIY fixes: Tighten loose cabinet handle; replace bathroom lightbulb; patch minor wall scuffs.\", \"daycare_schedule\": \"Daycare: Drop-off 8 AM, pick-up 5 PM. Monthly payment due Friday. Pack an extra set of clothes(last set got muddy).\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 2,
+      "result": [
+        {
+          "archival_memory_add": "{\"key\": \"household_chores_list\", \"value\": \"Household: Fix leaky kitchen sink (look up a YouTube how-to if needed); mop kitchen floor (sticky from last night's spill); DIY fixes: tighten loose cabinet handle, replace bathroom lightbulb, patch minor wall scuffs.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"organizing_and_errands\", \"value\": \"Organizing: Sort closet & donate old clothes; shred old mail; restock pantry (low on rice and cereal). Car (Sunday): wash and vacuum, check tire pressure, refill windshield wiper fluid.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ur6Sugdiut0ICqhYar6v3974",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"household_chores_list\", \"value\": \"Household: Fix leaky kitchen sink (look up a YouTube how-to if needed); mop kitchen floor (sticky from last night's spill); DIY fixes: tighten loose cabinet handle, replace bathroom lightbulb, patch minor wall scuffs.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_wYxrvdClN6oFyjtTRvEd0411",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"organizing_and_errands\", \"value\": \"Organizing: Sort closet & donate old clothes; shred old mail; restock pantry (low on rice and cereal). Car (Sunday): wash and vacuum, check tire pressure, refill windshield wiper fluid.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3100,
+      "prompt_cache_hit_tokens": 2816,
+      "prompt_cache_miss_tokens": 284,
+      "output_tokens": 202,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_add(key='household_chores_list',value=\"Household: Fix leaky kitchen sink (look up a YouTube how-to if needed); mop kitchen floor (sticky from last night's spill); DIY fixes: tighten loose cabinet handle, replace bathroom lightbulb, patch minor wall scuffs.\")",
+        "archival_memory_add(key='organizing_and_errands',value='Organizing: Sort closet & donate old clothes; shred old mail; restock pantry (low on rice and cereal). Car (Sunday): wash and vacuum, check tire pressure, refill windshield wiper fluid.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 3,
+      "result": [
+        {
+          "core_memory_remove": "{\"key\": \"fix_kitchen_sink_leak\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"mop_kitchen_floor\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"diy_fixes\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"organizing_tasks\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"car_maintenance_sunday\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_xNoVBsh68TalvEHOA8yD2423",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"fix_kitchen_sink_leak\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_U0bHNgH6f9yj9X6MY9Zt6121",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"mop_kitchen_floor\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_1qTlpyYFpJo9WfKOMdO54607",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"diy_fixes\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_car1JERhmdEI6ovijOc56775",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"organizing_tasks\"}"
+          }
+        },
+        {
+          "index": 4,
+          "id": "call_04_rn50leJb5XzpghW4b1aj6462",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"car_maintenance_sunday\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3336,
+      "prompt_cache_hit_tokens": 3200,
+      "prompt_cache_miss_tokens": 136,
+      "output_tokens": 187,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_remove(key='fix_kitchen_sink_leak')",
+        "core_memory_remove(key='mop_kitchen_floor')",
+        "core_memory_remove(key='diy_fixes')",
+        "core_memory_remove(key='organizing_tasks')",
+        "core_memory_remove(key='car_maintenance_sunday')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 4,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_cFXqHw4WSZD3w1E1Rp9j3589",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3602,
+      "prompt_cache_hit_tokens": 3456,
+      "prompt_cache_miss_tokens": 146,
+      "output_tokens": 77,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='elementary_school_tasks',value='Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 5,
+      "result": "Saved the school items:\n\n- **Finalize admission paperwork**\n- **Orientation — next Thursday**\n- **Research after-school programs**\n\nMy core memory was full, so I moved the household chores (sink leak, mopping, DIY fixes) and the organizing/car tasks into long-term memory — they're still there and I can pull them up anytime.\n\nYour upcoming calendar now looks like:\n- **Friday:** daycare monthly payment + tax documents\n- **Next Thursday:** school orientation\n- **Sunday:** car maintenance (wash/vacuum, tire pressure, wiper fluid)\n\nWant me to add the admission paperwork to a \"this week\" priority list?",
+      "content": "Saved the school items:\n\n- **Finalize admission paperwork**\n- **Orientation — next Thursday**\n- **Research after-school programs**\n\nMy core memory was full, so I moved the household chores (sink leak, mopping, DIY fixes) and the organizing/car tasks into long-term memory — they're still there and I can pull them up anytime.\n\nYour upcoming calendar now looks like:\n- **Friday:** daycare monthly payment + tax documents\n- **Next Thursday:** school orientation\n- **Sunday:** car maintenance (wash/vacuum, tire pressure, wiper fluid)\n\nWant me to add the admission paperwork to a \"this week\" priority list?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3700,
+      "prompt_cache_hit_tokens": 3456,
+      "prompt_cache_miss_tokens": 244,
+      "output_tokens": 134,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 2,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"pediatrician_and_health\", \"value\": \"Kid's health: Schedule pediatrician visit (cold not improving). Vaccine schedule — next shots due in ~2 months. Monitor food allergies; keep a log if symptoms flare up.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_Pw9qaUgyh5HxTGxDsjXd7597",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"pediatrician_and_health\", \"value\": \"Kid's health: Schedule pediatrician visit (cold not improving). Vaccine schedule — next shots due in ~2 months. Monitor food allergies; keep a log if symptoms flare up.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3879,
+      "prompt_cache_hit_tokens": 3712,
+      "prompt_cache_miss_tokens": 167,
+      "output_tokens": 94,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='pediatrician_and_health',value=\"Kid's health: Schedule pediatrician visit (cold not improving). Vaccine schedule — next shots due in ~2 months. Monitor food allergies; keep a log if symptoms flare up.\")"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 1,
+      "result": "Saved the health items:\n\n- **Schedule pediatrician visit** — kid's cold isn't improving\n- **Vaccines:** next shots due in about two months (worth noting on the calendar)\n- **Food allergies:** monitor and keep a log if symptoms flare up\n\nSince the cold has lingered, I'd suggest calling the pediatrician today or tomorrow rather than waiting — want me to bump that to the top of your priority list alongside the Friday deadlines?",
+      "content": "Saved the health items:\n\n- **Schedule pediatrician visit** — kid's cold isn't improving\n- **Vaccines:** next shots due in about two months (worth noting on the calendar)\n- **Food allergies:** monitor and keep a log if symptoms flare up\n\nSince the cold has lingered, I'd suggest calling the pediatrician today or tomorrow rather than waiting — want me to bump that to the top of your priority list alongside the Friday deadlines?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3994,
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 154,
+      "output_tokens": 92,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 3,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"family_time_activities\", \"value\": \"Family time: Take kid to park this weekend; pick out a new bedtime story book; help with counting practice (teacher says focus on numbers 1-20).\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_H1Nim9Z0jNce3tG7Q7ws9330",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"family_time_activities\", \"value\": \"Family time: Take kid to park this weekend; pick out a new bedtime story book; help with counting practice (teacher says focus on numbers 1-20).\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 4123,
+      "prompt_cache_hit_tokens": 3968,
+      "prompt_cache_miss_tokens": 155,
+      "output_tokens": 90,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='family_time_activities',value='Family time: Take kid to park this weekend; pick out a new bedtime story book; help with counting practice (teacher says focus on numbers 1-20).')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 3,
+      "step": 1,
+      "result": "Saved the family time items:\n\n- **Park trip** — this weekend\n- **New bedtime story book** — pick one out together\n- **Counting practice** — focus on numbers 1–20 (per teacher)\n\nYour weekend is shaping up: park trip, counting practice, plus the car maintenance on Sunday. Want me to sketch a loose weekend plan so it doesn't all pile up?",
+      "content": "Saved the family time items:\n\n- **Park trip** — this weekend\n- **New bedtime story book** — pick one out together\n- **Counting practice** — focus on numbers 1–20 (per teacher)\n\nYour weekend is shaping up: park trip, counting practice, plus the car maintenance on Sunday. Want me to sketch a loose weekend plan so it doesn't all pile up?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 4234,
+      "prompt_cache_hit_tokens": 4096,
+      "prompt_cache_miss_tokens": 138,
+      "output_tokens": 80,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 4,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"shopping_list\", \"value\": \"Shopping: More diapers; school supplies (crayons, notebooks, glue sticks); extra snacks for daycare bag.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_eMArhwrkC81HOOq61Ifl4446",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"shopping_list\", \"value\": \"Shopping: More diapers; school supplies (crayons, notebooks, glue sticks); extra snacks for daycare bag.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 4345,
+      "prompt_cache_hit_tokens": 4096,
+      "prompt_cache_miss_tokens": 249,
+      "output_tokens": 79,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='shopping_list',value='Shopping: More diapers; school supplies (crayons, notebooks, glue sticks); extra snacks for daycare bag.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 4,
+      "step": 1,
+      "result": "Saved the shopping list:\n\n- **Diapers**\n- **School supplies:** crayons, notebooks, glue sticks\n- **Extra snacks** for the daycare bag\n\nHeads up: the pantry is also low on rice and cereal (from your organizing list), so you may want to add those to the same trip. Want me to combine everything into one master shopping list?",
+      "content": "Saved the shopping list:\n\n- **Diapers**\n- **School supplies:** crayons, notebooks, glue sticks\n- **Extra snacks** for the daycare bag\n\nHeads up: the pantry is also low on rice and cereal (from your organizing list), so you may want to add those to the same trip. Want me to combine everything into one master shopping list?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 4445,
+      "prompt_cache_hit_tokens": 4224,
+      "prompt_cache_miss_tokens": 221,
+      "output_tokens": 76,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    }
+  ],
+  "scorable": true,
+  "result": [
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"daycare_schedule\", \"value\": \"Daycare: Drop-off 8 AM, pick-up 5 PM. Monthly payment due Friday. Pack an extra set of clothes (last set got muddy).\"}"
+        }
+      ],
+      "Got it — saved to memory:\n\n- **Daycare hours:** drop-off 8 AM, pick-up 5 PM\n- **Monthly payment:** due Friday\n- **Reminder:** pack an extra set of clothes (last set got muddy)\n\nNote that Friday is stacking up: the daycare payment and your tax documents are both due that day. Want me to keep a running \"Friday\" list so nothing slips?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_retrieve_all": "{}"
+        }
+      ],
+      [
+        {
+          "archival_memory_add": "{\"key\": \"household_chores_list\", \"value\": \"Household: Fix leaky kitchen sink (look up a YouTube how-to if needed); mop kitchen floor (sticky from last night's spill); DIY fixes: tighten loose cabinet handle, replace bathroom lightbulb, patch minor wall scuffs.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"organizing_and_errands\", \"value\": \"Organizing: Sort closet & donate old clothes; shred old mail; restock pantry (low on rice and cereal). Car (Sunday): wash and vacuum, check tire pressure, refill windshield wiper fluid.\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_remove": "{\"key\": \"fix_kitchen_sink_leak\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"mop_kitchen_floor\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"diy_fixes\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"organizing_tasks\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"car_maintenance_sunday\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_add": "{\"key\": \"elementary_school_tasks\", \"value\": \"Elementary school: Finalize admission paperwork; attend orientation next Thursday; research after-school programs.\"}"
+        }
+      ],
+      "Saved the school items:\n\n- **Finalize admission paperwork**\n- **Orientation — next Thursday**\n- **Research after-school programs**\n\nMy core memory was full, so I moved the household chores (sink leak, mopping, DIY fixes) and the organizing/car tasks into long-term memory — they're still there and I can pull them up anytime.\n\nYour upcoming calendar now looks like:\n- **Friday:** daycare monthly payment + tax documents\n- **Next Thursday:** school orientation\n- **Sunday:** car maintenance (wash/vacuum, tire pressure, wiper fluid)\n\nWant me to add the admission paperwork to a \"this week\" priority list?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"pediatrician_and_health\", \"value\": \"Kid's health: Schedule pediatrician visit (cold not improving). Vaccine schedule — next shots due in ~2 months. Monitor food allergies; keep a log if symptoms flare up.\"}"
+        }
+      ],
+      "Saved the health items:\n\n- **Schedule pediatrician visit** — kid's cold isn't improving\n- **Vaccines:** next shots due in about two months (worth noting on the calendar)\n- **Food allergies:** monitor and keep a log if symptoms flare up\n\nSince the cold has lingered, I'd suggest calling the pediatrician today or tomorrow rather than waiting — want me to bump that to the top of your priority list alongside the Friday deadlines?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"family_time_activities\", \"value\": \"Family time: Take kid to park this weekend; pick out a new bedtime story book; help with counting practice (teacher says focus on numbers 1-20).\"}"
+        }
+      ],
+      "Saved the family time items:\n\n- **Park trip** — this weekend\n- **New bedtime story book** — pick one out together\n- **Counting practice** — focus on numbers 1–20 (per teacher)\n\nYour weekend is shaping up: park trip, counting practice, plus the car maintenance on Sunday. Want me to sketch a loose weekend plan so it doesn't all pile up?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"shopping_list\", \"value\": \"Shopping: More diapers; school supplies (crayons, notebooks, glue sticks); extra snacks for daycare bag.\"}"
+        }
+      ],
+      "Saved the shopping list:\n\n- **Diapers**\n- **School supplies:** crayons, notebooks, glue sticks\n- **Extra snacks** for the daycare bag\n\nHeads up: the pantry is also low on rice and cereal (from your organizing list), so you may want to add those to the same trip. Want me to combine everything into one master shopping list?"
+    ]
+  ],
+  "forced_quit": false
+}

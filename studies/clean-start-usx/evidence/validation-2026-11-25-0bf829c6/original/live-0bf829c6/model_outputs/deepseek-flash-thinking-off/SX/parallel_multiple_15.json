@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_15",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "restaurant_search": "{\"location\": \"New York, NY\", \"cuisine\": \"Chinese\"}"
+        },
+        {
+          "restaurant_search": "{\"location\": \"Los Angeles, CA\", \"cuisine\": \"Italian\", \"rating\": 4.0}"
+        },
+        {
+          "flight_search": "{\"_from\": \"New York\", \"to\": \"Los Angeles\", \"type\": \"round-trip\"}"
+        }
+      ],
+      "content": "I'll help you with all three requests. Let me search for the restaurants and flight simultaneously.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_XUfmJIeGH0VOQ3pPdNYY3629",
+          "type": "function",
+          "function": {
+            "name": "restaurant_search",
+            "arguments": "{\"location\": \"New York, NY\", \"cuisine\": \"Chinese\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Jh0hFliq2AupDZfZ9AA87699",
+          "type": "function",
+          "function": {
+            "name": "restaurant_search",
+            "arguments": "{\"location\": \"Los Angeles, CA\", \"cuisine\": \"Italian\", \"rating\": 4.0}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_Cqdxv7q6iXwyiZ0Ehszz5695",
+          "type": "function",
+          "function": {
+            "name": "flight_search",
+            "arguments": "{\"_from\": \"New York\", \"to\": \"Los Angeles\", \"type\": \"round-trip\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 518,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 390,
+      "output_tokens": 207,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "restaurant_search": "{\"location\": \"New York, NY\", \"cuisine\": \"Chinese\"}"
+    },
+    {
+      "restaurant_search": "{\"location\": \"Los Angeles, CA\", \"cuisine\": \"Italian\", \"rating\": 4.0}"
+    },
+    {
+      "flight_search": "{\"_from\": \"New York\", \"to\": \"Los Angeles\", \"type\": \"round-trip\"}"
+    }
+  ]
+}

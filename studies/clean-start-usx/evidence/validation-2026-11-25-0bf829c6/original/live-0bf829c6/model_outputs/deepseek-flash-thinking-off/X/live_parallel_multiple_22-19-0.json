@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_22-19-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_current_weather": "{\"location\": \"Boston, MA\", \"unit\": \"fahrenheit\"}"
+        },
+        {
+          "get_current_weather": "{\"location\": \"San Francisco, CA\", \"unit\": \"fahrenheit\"}"
+        }
+      ],
+      "content": "I'll check the current weather for both cities for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_d0F9JquMYLgorAjcOMek8183",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"Boston, MA\", \"unit\": \"fahrenheit\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_cIsq3TxeRjwxUEfH0OCd2226",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"San Francisco, CA\", \"unit\": \"fahrenheit\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1522,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1522,
+      "output_tokens": 119,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_current_weather": "{\"location\": \"Boston, MA\", \"unit\": \"fahrenheit\"}"
+    },
+    {
+      "get_current_weather": "{\"location\": \"San Francisco, CA\", \"unit\": \"fahrenheit\"}"
+    }
+  ]
+}

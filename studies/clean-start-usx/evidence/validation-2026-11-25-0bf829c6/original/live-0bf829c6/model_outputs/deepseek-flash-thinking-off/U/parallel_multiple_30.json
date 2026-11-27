@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_30",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "legal_case_find_parties": "{\"party_name\": \"Charles Dickens\", \"city\": \"Boston\"}"
+        },
+        {
+          "legal_case_find_parties": "{\"party_name\": \"University of California\", \"city\": \"Los Angeles\"}"
+        }
+      ],
+      "content": "I'll search for both sets of cases.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_T2qZ3WxrXQiwqmRCRgRe6330",
+          "type": "function",
+          "function": {
+            "name": "legal_case_find_parties",
+            "arguments": "{\"party_name\": \"Charles Dickens\", \"city\": \"Boston\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_9TclI3q3zG9FuxPWvXv41699",
+          "type": "function",
+          "function": {
+            "name": "legal_case_find_parties",
+            "arguments": "{\"party_name\": \"University of California\", \"city\": \"Los Angeles\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 556,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 556,
+      "output_tokens": 119,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "legal_case_find_parties": "{\"party_name\": \"Charles Dickens\", \"city\": \"Boston\"}"
+    },
+    {
+      "legal_case_find_parties": "{\"party_name\": \"University of California\", \"city\": \"Los Angeles\"}"
+    }
+  ]
+}

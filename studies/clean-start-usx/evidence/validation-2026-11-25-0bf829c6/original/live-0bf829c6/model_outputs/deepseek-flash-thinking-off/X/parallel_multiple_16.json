@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_16",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "calculate_factorial": "{\"number\": 8}"
+        },
+        {
+          "generate_prime": "{\"start\": 1, \"end\": 50}"
+        }
+      ],
+      "content": "I'll calculate both for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_9lsaXUdWk2Ui7X7pMKzQ3396",
+          "type": "function",
+          "function": {
+            "name": "calculate_factorial",
+            "arguments": "{\"number\": 8}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_9M3O9CVVyTLR1pE6Bxna0050",
+          "type": "function",
+          "function": {
+            "name": "generate_prime",
+            "arguments": "{\"start\": 1, \"end\": 50}"
+          }
+        }
+      ],
+      "prompt_tokens": 503,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 247,
+      "output_tokens": 88,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "calculate_factorial": "{\"number\": 8}"
+    },
+    {
+      "generate_prime": "{\"start\": 1, \"end\": 50}"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_32",
+  "category": "parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "weather_forecast_temperature": "{\"location\": \"Boston, USA\", \"days\": 10}"
+        },
+        {
+          "weather_forecast_humidity": "{\"location\": \"Boston, USA\", \"days\": 10}"
+        },
+        {
+          "weather_forecast_precipitation": "{\"location\": \"Rome, Italy\", \"days\": 10}"
+        }
+      ],
+      "content": "I'll get those forecasts for you now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_UXHPSQweGZTHvBcUcG6Q2670",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast_temperature",
+            "arguments": "{\"location\": \"Boston, USA\", \"days\": 10}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_IcmtopPt44yeGNqFaodr1120",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast_humidity",
+            "arguments": "{\"location\": \"Boston, USA\", \"days\": 10}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_RnYM1HD3Wd6PFgBLpTH55650",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast_precipitation",
+            "arguments": "{\"location\": \"Rome, Italy\", \"days\": 10}"
+          }
+        }
+      ],
+      "prompt_tokens": 576,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 192,
+      "output_tokens": 168,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "weather_forecast_temperature": "{\"location\": \"Boston, USA\", \"days\": 10}"
+    },
+    {
+      "weather_forecast_humidity": "{\"location\": \"Boston, USA\", \"days\": 10}"
+    },
+    {
+      "weather_forecast_precipitation": "{\"location\": \"Rome, Italy\", \"days\": 10}"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_12-10-1",
+  "category": "live_parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_class_info": "{\"class_name\": \"Weather\"}"
+        },
+        {
+          "get_signature": "{\"class_name\": \"Weather\", \"method_name\": \"get_weather\"}"
+        }
+      ],
+      "content": "I'll look up the `Weather` class information and the `get_weather` method signature.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_FJoUfizKjomuaMLfIdoI8722",
+          "type": "function",
+          "function": {
+            "name": "get_class_info",
+            "arguments": "{\"class_name\": \"Weather\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_B6dxq3jkNj3CSYUEN3kj2316",
+          "type": "function",
+          "function": {
+            "name": "get_signature",
+            "arguments": "{\"class_name\": \"Weather\", \"method_name\": \"get_weather\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 991,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 479,
+      "output_tokens": 107,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_class_info": "{\"class_name\": \"Weather\"}"
+    },
+    {
+      "get_signature": "{\"class_name\": \"Weather\", \"method_name\": \"get_weather\"}"
+    }
+  ]
+}

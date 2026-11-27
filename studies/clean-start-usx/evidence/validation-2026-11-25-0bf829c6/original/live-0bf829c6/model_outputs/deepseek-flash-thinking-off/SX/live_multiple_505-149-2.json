@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_505-149-2",
+  "category": "live_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Flights_4_SearchOnewayFlight": "{\"origin_airport\": \"San Diego\", \"destination_airport\": \"Chicago\", \"departure_date\": \"2023-05-20\", \"seating_class\": \"Business\", \"airlines\": \"American Airlines\"}"
+        }
+      ],
+      "content": "I'll search for that flight for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_EWfbJpIYmUlTXMlhWGtX5100",
+          "type": "function",
+          "function": {
+            "name": "Flights_4_SearchOnewayFlight",
+            "arguments": "{\"origin_airport\": \"San Diego\", \"destination_airport\": \"Chicago\", \"departure_date\": \"2023-05-20\", \"seating_class\": \"Business\", \"airlines\": \"American Airlines\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1763,
+      "prompt_cache_hit_tokens": 1536,
+      "prompt_cache_miss_tokens": 227,
+      "output_tokens": 135,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Flights_4_SearchOnewayFlight": "{\"origin_airport\": \"San Diego\", \"destination_airport\": \"Chicago\", \"departure_date\": \"2023-05-20\", \"seating_class\": \"Business\", \"airlines\": \"American Airlines\"}"
+    }
+  ]
+}

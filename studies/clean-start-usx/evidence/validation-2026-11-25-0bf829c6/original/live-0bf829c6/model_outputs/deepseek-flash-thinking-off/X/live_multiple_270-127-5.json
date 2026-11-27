@@ -1,0 +1,43 @@
+{
+  "case_id": "live_multiple_270-127-5",
+  "category": "live_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "Weather_1_GetWeather": "{\"city\": \"New York, NY\", \"date\": \"2023-04-17\"}"
+        }
+      ],
+      "content": "I'll check the weather in New York, NY for that date.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_2cv26jxnZREg2rRe6NNR1971",
+          "type": "function",
+          "function": {
+            "name": "Weather_1_GetWeather",
+            "arguments": "{\"city\": \"New York, NY\", \"date\": \"2023-04-17\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 1810,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1810,
+      "output_tokens": 78,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "Weather_1_GetWeather": "{\"city\": \"New York, NY\", \"date\": \"2023-04-17\"}"
+    }
+  ]
+}

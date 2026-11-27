@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_66",
+  "category": "multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "traffic_estimate": "{\"start_location\": \"Las Vegas\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+        }
+      ],
+      "content": "I'll check the traffic estimate for that route this weekend.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_r0GhPvzalHStk7biofKP3902",
+          "type": "function",
+          "function": {
+            "name": "traffic_estimate",
+            "arguments": "{\"start_location\": \"Las Vegas\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 585,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 201,
+      "output_tokens": 89,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "traffic_estimate": "{\"start_location\": \"Las Vegas\", \"end_location\": \"Los Angeles\", \"time_period\": \"weekend\"}"
+    }
+  ]
+}

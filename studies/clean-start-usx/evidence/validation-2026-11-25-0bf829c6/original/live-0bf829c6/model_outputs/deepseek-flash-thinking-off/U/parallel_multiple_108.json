@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_108",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "five_factor_model_analyse": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+        },
+        {
+          "MBTI_analyse": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+        }
+      ],
+      "content": "I'll analyze your personality using both frameworks. Let me run both analyses.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_shx3w3cKTnLyNgsRSfxK1856",
+          "type": "function",
+          "function": {
+            "name": "five_factor_model_analyse",
+            "arguments": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ewDjErbUH1sCqSW8QrFx7708",
+          "type": "function",
+          "function": {
+            "name": "MBTI_analyse",
+            "arguments": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 766,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 766,
+      "output_tokens": 233,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "five_factor_model_analyse": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+    },
+    {
+      "MBTI_analyse": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+    }
+  ]
+}

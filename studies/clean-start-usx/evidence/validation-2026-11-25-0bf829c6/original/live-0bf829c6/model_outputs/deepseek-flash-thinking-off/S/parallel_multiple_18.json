@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_18",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "currency_conversion": "{\"amount\": 10, \"from_currency\": \"USD\", \"to_currency\": \"EUR\"}"
+        },
+        {
+          "banking_service": "{\"account_id\": \"987654\", \"amount\": 10}"
+        }
+      ],
+      "content": "I'll help you with both tasks.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_eXYzBCoaeh79bkbGCFdM5815",
+          "type": "function",
+          "function": {
+            "name": "currency_conversion",
+            "arguments": "{\"amount\": 10, \"from_currency\": \"USD\", \"to_currency\": \"EUR\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_OgjNzYhV0kezzIZXqOUs8759",
+          "type": "function",
+          "function": {
+            "name": "banking_service",
+            "arguments": "{\"account_id\": \"987654\", \"amount\": 10}"
+          }
+        }
+      ],
+      "prompt_tokens": 470,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 214,
+      "output_tokens": 128,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "currency_conversion": "{\"amount\": 10, \"from_currency\": \"USD\", \"to_currency\": \"EUR\"}"
+    },
+    {
+      "banking_service": "{\"account_id\": \"987654\", \"amount\": 10}"
+    }
+  ]
+}

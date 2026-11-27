@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_102",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "financial_compound_interest": "{\"principle\": 5000, \"rate\": 0.04, \"time\": 5, \"n\": 4}"
+        },
+        {
+          "financial_simple_interest": "{\"principle\": 5000, \"rate\": 0.035, \"time\": 5}"
+        }
+      ],
+      "content": "I'll calculate both investment options for John.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_qCIFVzrvMMTVI3vmYuNX0338",
+          "type": "function",
+          "function": {
+            "name": "financial_compound_interest",
+            "arguments": "{\"principle\": 5000, \"rate\": 0.04, \"time\": 5, \"n\": 4}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ud04DAsP5BFEDsObKTws3853",
+          "type": "function",
+          "function": {
+            "name": "financial_simple_interest",
+            "arguments": "{\"principle\": 5000, \"rate\": 0.035, \"time\": 5}"
+          }
+        }
+      ],
+      "prompt_tokens": 665,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 537,
+      "output_tokens": 167,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "financial_compound_interest": "{\"principle\": 5000, \"rate\": 0.04, \"time\": 5, \"n\": 4}"
+    },
+    {
+      "financial_simple_interest": "{\"principle\": 5000, \"rate\": 0.035, \"time\": 5}"
+    }
+  ]
+}

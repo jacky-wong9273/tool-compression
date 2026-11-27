@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_15-13-0",
+  "category": "live_parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "sum": "{\"a\": 1, \"b\": 2}"
+        },
+        {
+          "getCurrentTime": "{\"timezone\": \"Europe/Berlin\", \"include_date\": true}"
+        }
+      ],
+      "content": "I'll do both for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_QFrBqCy7boKhL0KhWcJU3744",
+          "type": "function",
+          "function": {
+            "name": "sum",
+            "arguments": "{\"a\": 1, \"b\": 2}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_TXiqqj4B1TifYkgITVXf1640",
+          "type": "function",
+          "function": {
+            "name": "getCurrentTime",
+            "arguments": "{\"timezone\": \"Europe/Berlin\", \"include_date\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 597,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 213,
+      "output_tokens": 108,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "sum": "{\"a\": 1, \"b\": 2}"
+    },
+    {
+      "getCurrentTime": "{\"timezone\": \"Europe/Berlin\", \"include_date\": true}"
+    }
+  ]
+}

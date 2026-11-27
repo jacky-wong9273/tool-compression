@@ -8,10 +8,10 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint",
+    "x_compares_action_sentences_of_the_u_catalogue",
     "response_descriptions_left_unmodified",
     "memory_prereq_required_for_a_full_score",
-    "memory_instruction_prompt_not_invented",
+    "memory_instruction_prompt_from_pinned_bfcl",
     "agentic_format_prompt_left_unmodified",
     "trajectory_requires_official_backend"
   ],
@@ -19,84 +19,308 @@
   "excluded_function_present": [],
   "changes": [
     {
+      "arm": "S",
+      "function": "archival_memory_add",
+      "pointer": "/function/parameters/properties/value/description",
+      "before": "The value to store in the long-term memory. ",
+      "after": "The value to store in the long-term memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_clear",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_key_search",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_key_search",
+      "pointer": "/function/parameters/properties/k/description",
+      "before": "The number of results to return. ",
+      "after": "The number of results to return.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_list_keys",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the long-term memory. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: List all keys currently in the long-term memory.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_remove",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the long-term memory. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Remove a key-value pair from the long-term memory.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_remove",
+      "pointer": "/function/parameters/properties/key/description",
+      "before": "The key to remove from the long-term memory. Case-sensitive. ",
+      "after": "The key to remove from the long-term memory. Case-sensitive.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_replace",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the long-term memory with a new value. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Replace a key-value pair in the long-term memory with a new value.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_replace",
+      "pointer": "/function/parameters/properties/value/description",
+      "before": "The new value associated with the key. ",
+      "after": "The new value associated with the key.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_retrieve",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "archival_memory_retrieve",
+      "pointer": "/function/parameters/properties/key/description",
+      "before": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. ",
+      "after": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_add",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_add",
+      "pointer": "/function/parameters/properties/value/description",
+      "before": "The value to store in the short-term memory. ",
+      "after": "The value to store in the short-term memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_clear",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_key_search",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_key_search",
+      "pointer": "/function/parameters/properties/k/description",
+      "before": "The number of results to return. ",
+      "after": "The number of results to return.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_list_keys",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the short-term memory. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: List all keys currently in the short-term memory.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_remove",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the short-term memory. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Remove a key-value pair from the short-term memory.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_remove",
+      "pointer": "/function/parameters/properties/key/description",
+      "before": "The key to remove from the short-term memory. Case-sensitive. ",
+      "after": "The key to remove from the short-term memory. Case-sensitive.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_replace",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the short-term memory with a new value. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Replace a key-value pair in the short-term memory with a new value.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_replace",
+      "pointer": "/function/parameters/properties/value/description",
+      "before": "The new value associated with the key. ",
+      "after": "The new value associated with the key.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_retrieve",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_retrieve",
+      "pointer": "/function/parameters/properties/key/description",
+      "before": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. ",
+      "after": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "core_memory_retrieve_all",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve all key-value pairs from the short-term memory. Note that the provided function is in Python 3 syntax.",
+      "after": "Memory suite: Retrieve all key-value pairs from the short-term memory.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
       "arm": "X",
       "function": "archival_memory_add",
       "pointer": "/function/description",
       "rival": "core_memory_add",
-      "cue": "Unlike core_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term.",
-      "axis": "shared-head-term"
+      "cue": "For the short-term memory, use core_memory_add.",
+      "axis": "text:long|short"
+    },
+    {
+      "arm": "X",
+      "function": "archival_memory_clear",
+      "pointer": "/function/description",
+      "rival": "core_memory_clear",
+      "cue": "For the short-term memory, use core_memory_clear.",
+      "axis": "text:long|short"
     },
     {
       "arm": "X",
       "function": "archival_memory_key_search",
       "pointer": "/function/description",
       "rival": "core_memory_key_search",
-      "cue": "Unlike core_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term.",
-      "axis": "shared-head-term"
+      "cue": "For the short-term memory, use core_memory_key_search.",
+      "axis": "text:long|short"
+    },
+    {
+      "arm": "X",
+      "function": "archival_memory_list_keys",
+      "pointer": "/function/description",
+      "rival": "core_memory_list_keys",
+      "cue": "For the short-term memory, use core_memory_list_keys.",
+      "axis": "text:long|short"
     },
     {
       "arm": "X",
       "function": "archival_memory_remove",
       "pointer": "/function/description",
       "rival": "core_memory_remove",
-      "cue": "Unlike core_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term.",
-      "axis": "shared-head-term"
+      "cue": "For the short-term memory, use core_memory_remove.",
+      "axis": "text:long|short"
     },
     {
       "arm": "X",
       "function": "archival_memory_replace",
       "pointer": "/function/description",
       "rival": "core_memory_replace",
-      "cue": "Unlike core_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term.",
-      "axis": "shared-head-term"
+      "cue": "For the short-term memory, use core_memory_replace.",
+      "axis": "text:long|short"
     },
     {
       "arm": "X",
       "function": "archival_memory_retrieve",
       "pointer": "/function/description",
       "rival": "core_memory_retrieve",
-      "cue": "Unlike core_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term.",
-      "axis": "shared-head-term"
+      "cue": "For the short-term memory, use core_memory_retrieve.",
+      "axis": "text:long|short"
     },
     {
       "arm": "X",
       "function": "core_memory_add",
       "pointer": "/function/description",
       "rival": "archival_memory_add",
-      "cue": "Unlike archival_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term.",
-      "axis": "shared-head-term"
+      "cue": "For the long-term memory, use archival_memory_add.",
+      "axis": "text:short|long"
+    },
+    {
+      "arm": "X",
+      "function": "core_memory_clear",
+      "pointer": "/function/description",
+      "rival": "archival_memory_clear",
+      "cue": "For the long-term memory, use archival_memory_clear.",
+      "axis": "text:short|long"
     },
     {
       "arm": "X",
       "function": "core_memory_key_search",
       "pointer": "/function/description",
       "rival": "archival_memory_key_search",
-      "cue": "Unlike archival_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term.",
-      "axis": "shared-head-term"
+      "cue": "For the long-term memory, use archival_memory_key_search.",
+      "axis": "text:short|long"
+    },
+    {
+      "arm": "X",
+      "function": "core_memory_list_keys",
+      "pointer": "/function/description",
+      "rival": "archival_memory_list_keys",
+      "cue": "For the long-term memory, use archival_memory_list_keys.",
+      "axis": "text:short|long"
     },
     {
       "arm": "X",
       "function": "core_memory_remove",
       "pointer": "/function/description",
       "rival": "archival_memory_remove",
-      "cue": "Unlike archival_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term.",
-      "axis": "shared-head-term"
+      "cue": "For the long-term memory, use archival_memory_remove.",
+      "axis": "text:short|long"
     },
     {
       "arm": "X",
       "function": "core_memory_replace",
       "pointer": "/function/description",
       "rival": "archival_memory_replace",
-      "cue": "Unlike archival_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term.",
-      "axis": "shared-head-term"
+      "cue": "For the long-term memory, use archival_memory_replace.",
+      "axis": "text:short|long"
     },
     {
       "arm": "X",
       "function": "core_memory_retrieve",
       "pointer": "/function/description",
       "rival": "archival_memory_retrieve",
-      "cue": "Unlike archival_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term.",
-      "axis": "shared-head-term"
+      "cue": "For the long-term memory, use archival_memory_retrieve.",
+      "axis": "text:short|long"
     }
   ],
   "arms": {
@@ -564,7 +788,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The value to store in the long-term memory. "
+                "description": "The value to store in the long-term memory."
               }
             },
             "required": [
@@ -587,7 +811,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -608,7 +832,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -618,7 +842,7 @@
               },
               "k": {
                 "type": "integer",
-                "description": "The number of results to return. ",
+                "description": "The number of results to return.",
                 "default": 5
               }
             },
@@ -652,7 +876,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the long-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: List all keys currently in the long-term memory.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -676,13 +900,13 @@
         "type": "function",
         "function": {
           "name": "archival_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the long-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Remove a key-value pair from the long-term memory.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to remove from the long-term memory. Case-sensitive. "
+                "description": "The key to remove from the long-term memory. Case-sensitive."
               }
             },
             "required": [
@@ -704,7 +928,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the long-term memory with a new value. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Replace a key-value pair in the long-term memory with a new value.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -714,7 +938,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The new value associated with the key. "
+                "description": "The new value associated with the key."
               }
             },
             "required": [
@@ -737,13 +961,13 @@
         "type": "function",
         "function": {
           "name": "archival_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. "
+                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory."
               }
             },
             "required": [
@@ -765,7 +989,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_add",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -775,7 +999,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The value to store in the short-term memory. "
+                "description": "The value to store in the short-term memory."
               }
             },
             "required": [
@@ -798,7 +1022,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -819,7 +1043,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -829,7 +1053,7 @@
               },
               "k": {
                 "type": "integer",
-                "description": "The number of results to return. ",
+                "description": "The number of results to return.",
                 "default": 5
               }
             },
@@ -863,7 +1087,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: List all keys currently in the short-term memory.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -887,13 +1111,13 @@
         "type": "function",
         "function": {
           "name": "core_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Remove a key-value pair from the short-term memory.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to remove from the short-term memory. Case-sensitive. "
+                "description": "The key to remove from the short-term memory. Case-sensitive."
               }
             },
             "required": [
@@ -915,7 +1139,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the short-term memory with a new value. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Replace a key-value pair in the short-term memory with a new value.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -925,7 +1149,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The new value associated with the key. "
+                "description": "The new value associated with the key."
               }
             },
             "required": [
@@ -948,13 +1172,13 @@
         "type": "function",
         "function": {
           "name": "core_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. "
+                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory."
               }
             },
             "required": [
@@ -976,7 +1200,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_retrieve_all",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve all key-value pairs from the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Retrieve all key-value pairs from the short-term memory.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1003,7 +1227,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_add",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. Unlike core_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_add.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1036,7 +1260,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_clear.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1057,7 +1281,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. Unlike core_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_key_search.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1101,7 +1325,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the long-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the long-term memory. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_list_keys.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1125,7 +1349,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the long-term memory. Note that the provided function is in Python 3 syntax. Unlike core_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the long-term memory. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_remove.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1153,7 +1377,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the long-term memory with a new value. Note that the provided function is in Python 3 syntax. Unlike core_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the long-term memory with a new value. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_replace.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1186,7 +1410,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. Unlike core_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_retrieve.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1214,7 +1438,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_add",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. Unlike archival_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_add.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1247,7 +1471,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_clear.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1268,7 +1492,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. Unlike archival_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_key_search.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1312,7 +1536,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the short-term memory. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_list_keys.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1336,7 +1560,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the short-term memory. Note that the provided function is in Python 3 syntax. Unlike archival_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the short-term memory. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_remove.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1364,7 +1588,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the short-term memory with a new value. Note that the provided function is in Python 3 syntax. Unlike archival_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the short-term memory with a new value. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_replace.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1397,7 +1621,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. Unlike archival_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. For the long-term memory, use archival_memory_retrieve.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1452,7 +1676,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_add",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. Unlike core_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term.",
+          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the long-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. For the short-term memory, use core_memory_add.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1462,7 +1686,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The value to store in the long-term memory. "
+                "description": "The value to store in the long-term memory."
               }
             },
             "required": [
@@ -1485,7 +1709,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Clear all key-value pairs from the long-term memory, including those from previous interactions. This operation is irreversible. For the short-term memory, use core_memory_clear.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1506,7 +1730,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. Unlike core_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term.",
+          "description": "Memory suite: Search for key names in the long-term memory that are similar to the query using BM25+ algorithm. For the short-term memory, use core_memory_key_search.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1516,7 +1740,7 @@
               },
               "k": {
                 "type": "integer",
-                "description": "The number of results to return. ",
+                "description": "The number of results to return.",
                 "default": 5
               }
             },
@@ -1550,7 +1774,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the long-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: List all keys currently in the long-term memory. For the short-term memory, use core_memory_list_keys.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1574,13 +1798,13 @@
         "type": "function",
         "function": {
           "name": "archival_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the long-term memory. Note that the provided function is in Python 3 syntax. Unlike core_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term.",
+          "description": "Memory suite: Remove a key-value pair from the long-term memory. For the short-term memory, use core_memory_remove.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to remove from the long-term memory. Case-sensitive. "
+                "description": "The key to remove from the long-term memory. Case-sensitive."
               }
             },
             "required": [
@@ -1602,7 +1826,7 @@
         "type": "function",
         "function": {
           "name": "archival_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the long-term memory with a new value. Note that the provided function is in Python 3 syntax. Unlike core_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term.",
+          "description": "Memory suite: Replace a key-value pair in the long-term memory with a new value. For the short-term memory, use core_memory_replace.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1612,7 +1836,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The new value associated with the key. "
+                "description": "The new value associated with the key."
               }
             },
             "required": [
@@ -1635,13 +1859,13 @@
         "type": "function",
         "function": {
           "name": "archival_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. Unlike core_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term.",
+          "description": "Memory suite: Retrieve the value associated with a key from the long-term memory. This function does not support partial key matching or similarity search. For the short-term memory, use core_memory_retrieve.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. "
+                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory."
               }
             },
             "required": [
@@ -1663,7 +1887,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_add",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. Note that the provided function is in Python 3 syntax. Unlike archival_memory_add, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Add a key value pair to the short term.",
+          "description": "Memory suite: Add a key-value pair to the short-term memory. Make sure to use meaningful keys for easy retrieval later. For the long-term memory, use archival_memory_add.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1673,7 +1897,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The value to store in the short-term memory. "
+                "description": "The value to store in the short-term memory."
               }
             },
             "required": [
@@ -1696,7 +1920,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_clear",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Clear all key-value pairs from the short-term memory, including those from previous interactions. This operation is irreversible. For the long-term memory, use archival_memory_clear.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1717,7 +1941,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_key_search",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. Note that the provided function is in Python 3 syntax. Unlike archival_memory_key_search, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Search for key names in the short term.",
+          "description": "Memory suite: Search for key names in the short-term memory that are similar to the query using BM25+ algorithm. For the long-term memory, use archival_memory_key_search.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1727,7 +1951,7 @@
               },
               "k": {
                 "type": "integer",
-                "description": "The number of results to return. ",
+                "description": "The number of results to return.",
                 "default": 5
               }
             },
@@ -1761,7 +1985,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_list_keys",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: List all keys currently in the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: List all keys currently in the short-term memory. For the long-term memory, use archival_memory_list_keys.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1785,13 +2009,13 @@
         "type": "function",
         "function": {
           "name": "core_memory_remove",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Remove a key-value pair from the short-term memory. Note that the provided function is in Python 3 syntax. Unlike archival_memory_remove, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Remove a key value pair from the short term.",
+          "description": "Memory suite: Remove a key-value pair from the short-term memory. For the long-term memory, use archival_memory_remove.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to remove from the short-term memory. Case-sensitive. "
+                "description": "The key to remove from the short-term memory. Case-sensitive."
               }
             },
             "required": [
@@ -1813,7 +2037,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_replace",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Replace a key-value pair in the short-term memory with a new value. Note that the provided function is in Python 3 syntax. Unlike archival_memory_replace, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Replace a key value pair in the short term.",
+          "description": "Memory suite: Replace a key-value pair in the short-term memory with a new value. For the long-term memory, use archival_memory_replace.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1823,7 +2047,7 @@
               },
               "value": {
                 "type": "string",
-                "description": "The new value associated with the key. "
+                "description": "The new value associated with the key."
               }
             },
             "required": [
@@ -1846,13 +2070,13 @@
         "type": "function",
         "function": {
           "name": "core_memory_retrieve",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. Note that the provided function is in Python 3 syntax. Unlike archival_memory_retrieve, which this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the long term, this this tool belongs to the memory suite which provides APIs to interact with a key value based memory system Tool description Retrieve the value associated with a key from the short term.",
+          "description": "Memory suite: Retrieve the value associated with a key from the short-term memory. This function does not support partial key matching or similarity search. For the long-term memory, use archival_memory_retrieve.",
           "parameters": {
             "type": "object",
             "properties": {
               "key": {
                 "type": "string",
-                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory. "
+                "description": "The key to retrieve. Case-sensitive. The key must match exactly with the key stored in the memory."
               }
             },
             "required": [
@@ -1874,7 +2098,7 @@
         "type": "function",
         "function": {
           "name": "core_memory_retrieve_all",
-          "description": "This tool belongs to the memory suite, which provides APIs to interact with a key-value based memory system. Tool description: Retrieve all key-value pairs from the short-term memory. Note that the provided function is in Python 3 syntax.",
+          "description": "Memory suite: Retrieve all key-value pairs from the short-term memory.",
           "parameters": {
             "type": "object",
             "properties": {},

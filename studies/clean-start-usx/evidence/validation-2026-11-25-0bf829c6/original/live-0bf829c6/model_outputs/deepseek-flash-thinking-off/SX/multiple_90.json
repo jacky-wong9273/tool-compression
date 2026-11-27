@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_90",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "restaurant_find_group": "{\"location\": \"Seattle, WA\", \"cuisine\": [\"Seafood\"], \"group_size\": 5}"
+        }
+      ],
+      "content": "I'll search for seafood restaurants in Seattle that can accommodate your group of 5.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_g3fiTaKkhcmYd1a6NXvS6047",
+          "type": "function",
+          "function": {
+            "name": "restaurant_find_group",
+            "arguments": "{\"location\": \"Seattle, WA\", \"cuisine\": [\"Seafood\"], \"group_size\": 5}"
+          }
+        }
+      ],
+      "prompt_tokens": 561,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 177,
+      "output_tokens": 96,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "restaurant_find_group": "{\"location\": \"Seattle, WA\", \"cuisine\": [\"Seafood\"], \"group_size\": 5}"
+    }
+  ]
+}

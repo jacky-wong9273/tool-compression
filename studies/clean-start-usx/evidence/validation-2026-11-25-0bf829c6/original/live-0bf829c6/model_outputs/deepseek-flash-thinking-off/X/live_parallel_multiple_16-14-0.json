@@ -1,0 +1,58 @@
+{
+  "case_id": "live_parallel_multiple_16-14-0",
+  "category": "live_parallel_multiple",
+  "arm": "X",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_area_of_square": "{\"size\": 5}"
+        },
+        {
+          "get_current_weather": "{\"location\": \"Queenstown, Singapore\"}"
+        }
+      ],
+      "content": "I'll help you with both of those.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_UI2RfuMlMtkEV8ZXWXkG3968",
+          "type": "function",
+          "function": {
+            "name": "get_area_of_square",
+            "arguments": "{\"size\": 5}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_ezGyhh4ANK8b0iLkY5B67818",
+          "type": "function",
+          "function": {
+            "name": "get_current_weather",
+            "arguments": "{\"location\": \"Queenstown, Singapore\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 508,
+      "prompt_cache_hit_tokens": 256,
+      "prompt_cache_miss_tokens": 252,
+      "output_tokens": 81,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_area_of_square": "{\"size\": 5}"
+    },
+    {
+      "get_current_weather": "{\"location\": \"Queenstown, Singapore\"}"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_161",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "chess_rating": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+        },
+        {
+          "solve_quadratic": "{\"a\": 2, \"b\": -3, \"c\": 1}"
+        },
+        {
+          "calculate_cagr": "{\"initial_value\": 5000, \"final_value\": 8000, \"period_in_years\": 5}"
+        }
+      ],
+      "content": "I'll help you with all three calculations. Let me run them now.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_qzfx12TiwsL8IFD2sE3X7837",
+          "type": "function",
+          "function": {
+            "name": "chess_rating",
+            "arguments": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Y8PT3deTB2FAHdCsYCce8641",
+          "type": "function",
+          "function": {
+            "name": "solve_quadratic",
+            "arguments": "{\"a\": 2, \"b\": -3, \"c\": 1}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_jNC1yC3bJv5m1PrgYZzr0736",
+          "type": "function",
+          "function": {
+            "name": "calculate_cagr",
+            "arguments": "{\"initial_value\": 5000, \"final_value\": 8000, \"period_in_years\": 5}"
+          }
+        }
+      ],
+      "prompt_tokens": 714,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 202,
+      "output_tokens": 205,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "chess_rating": "{\"player_name\": \"Magnus Carlsen\", \"variant\": \"classical\"}"
+    },
+    {
+      "solve_quadratic": "{\"a\": 2, \"b\": -3, \"c\": 1}"
+    },
+    {
+      "calculate_cagr": "{\"initial_value\": 5000, \"final_value\": 8000, \"period_in_years\": 5}"
+    }
+  ]
+}

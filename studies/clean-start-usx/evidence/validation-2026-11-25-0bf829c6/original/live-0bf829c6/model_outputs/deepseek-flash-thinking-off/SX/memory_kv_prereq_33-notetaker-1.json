@@ -1,0 +1,1133 @@
+{
+  "case_id": "memory_kv_prereq_33-notetaker-1",
+  "category": "memory_kv",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        }
+      ],
+      "content": "I'll capture these three new tasks in memory.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_ho4qLST6YMKVt1yclOe06570",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_mn5rrT52TOwuNRKniYt24163",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_YtffjGsc1zRb6YiVnNIh5111",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2333,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 2333,
+      "output_tokens": 194,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='tax_documents_submission',value='URGENT: Submit tax documents before Friday.')",
+        "core_memory_add(key='credit_card_statement_review',value='Review credit card statement for errors.')",
+        "core_memory_add(key='auto_repair_engine_noise',value='Call auto repair shop about weird noise in the engine.')"
+      ],
+      "tool_outputs": [
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}",
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}",
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 1,
+      "result": [
+        {
+          "archival_memory_add": "{\"key\": \"password_change_task\", \"value\": \"IT updated security protocols — change passwords ASAP (noted Monday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"client_proposal_legal_approval\", \"value\": \"Client proposal draft is ready — send it for legal approval (noted Wednesday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"new_hire_onboarding\", \"value\": \"Onboard new hire — schedule a one-on-one (noted Wednesday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"dev_team_checkin\", \"value\": \"Project deadline approaching — check in with Dev team (noted Thursday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"sales_data_mistake\", \"value\": \"Caught a mistake in last month's sales data — needs correction/follow-up (noted Thursday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"training_session_prep\", \"value\": \"Training session next Monday — prep materials this weekend (noted Friday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"vendor_followup_status\", \"value\": \"Vendor follow-ups: two responded, one still pending (as of Friday).\"}"
+        }
+      ],
+      "content": "Core memory is full, so I'll move the older, lower-priority items to archival memory to make room for these urgent tasks.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_2N9wgw3z6SAB07TF0aUF2608",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"password_change_task\", \"value\": \"IT updated security protocols — change passwords ASAP (noted Monday).\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Id8AZiGCSUFtPOHYUtcg4099",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"client_proposal_legal_approval\", \"value\": \"Client proposal draft is ready — send it for legal approval (noted Wednesday).\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vLApofY0rqXx7f7GWgoh9149",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"new_hire_onboarding\", \"value\": \"Onboard new hire — schedule a one-on-one (noted Wednesday).\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_78VH3IQun1uBOIl7FOJD1770",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"dev_team_checkin\", \"value\": \"Project deadline approaching — check in with Dev team (noted Thursday).\"}"
+          }
+        },
+        {
+          "index": 4,
+          "id": "call_04_mfL2zwl7Ob09vFbkbC879848",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"sales_data_mistake\", \"value\": \"Caught a mistake in last month's sales data — needs correction/follow-up (noted Thursday).\"}"
+          }
+        },
+        {
+          "index": 5,
+          "id": "call_05_DuFF8yzUUMgvlC6OUwOY1014",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"training_session_prep\", \"value\": \"Training session next Monday — prep materials this weekend (noted Friday).\"}"
+          }
+        },
+        {
+          "index": 6,
+          "id": "call_06_iwI3rnSROt2A3n2Qm3id4211",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"vendor_followup_status\", \"value\": \"Vendor follow-ups: two responded, one still pending (as of Friday).\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 2597,
+      "prompt_cache_hit_tokens": 2432,
+      "prompt_cache_miss_tokens": 165,
+      "output_tokens": 494,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_add(key='password_change_task',value='IT updated security protocols — change passwords ASAP (noted Monday).')",
+        "archival_memory_add(key='client_proposal_legal_approval',value='Client proposal draft is ready — send it for legal approval (noted Wednesday).')",
+        "archival_memory_add(key='new_hire_onboarding',value='Onboard new hire — schedule a one-on-one (noted Wednesday).')",
+        "archival_memory_add(key='dev_team_checkin',value='Project deadline approaching — check in with Dev team (noted Thursday).')",
+        "archival_memory_add(key='sales_data_mistake',value=\"Caught a mistake in last month's sales data — needs correction/follow-up (noted Thursday).\")",
+        "archival_memory_add(key='training_session_prep',value='Training session next Monday — prep materials this weekend (noted Friday).')",
+        "archival_memory_add(key='vendor_followup_status',value='Vendor follow-ups: two responded, one still pending (as of Friday).')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 2,
+      "result": [
+        {
+          "core_memory_remove": "{\"key\": \"password_change_task\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"client_proposal_legal_approval\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"new_hire_onboarding\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"dev_team_checkin\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"sales_data_mistake\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"training_session_prep\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"vendor_followup_status\"}"
+        }
+      ],
+      "content": "All older items are safely archived. Now I'll clear them from core memory and add the new urgent tasks.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_r3hI2rAVhNiFg5tS4TH04619",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"password_change_task\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_m1OStljmtGB4KL9ZRO5W0451",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"client_proposal_legal_approval\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_eKF5mJwVc7L5cKzCrggd1704",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"new_hire_onboarding\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_MqmJezLJZXRW9oOY8oSG2667",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"dev_team_checkin\"}"
+          }
+        },
+        {
+          "index": 4,
+          "id": "call_04_bt9NrMzBQ6WB5DyeYzFX3153",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"sales_data_mistake\"}"
+          }
+        },
+        {
+          "index": 5,
+          "id": "call_05_c7EFBRcL1nDa2qMeG68D4235",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"training_session_prep\"}"
+          }
+        },
+        {
+          "index": 6,
+          "id": "call_06_V5PPzdRDae2KsalmIgHY5290",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"vendor_followup_status\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3200,
+      "prompt_cache_hit_tokens": 2944,
+      "prompt_cache_miss_tokens": 256,
+      "output_tokens": 275,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_remove(key='password_change_task')",
+        "core_memory_remove(key='client_proposal_legal_approval')",
+        "core_memory_remove(key='new_hire_onboarding')",
+        "core_memory_remove(key='dev_team_checkin')",
+        "core_memory_remove(key='sales_data_mistake')",
+        "core_memory_remove(key='training_session_prep')",
+        "core_memory_remove(key='vendor_followup_status')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 3,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_o3GGCAVJwSKbBDgdtIrG1378",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_4k6BOYy9WAFtPJM54c6D3600",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_0oGDRnIcc0ZpjJhrfWjL9736",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 3584,
+      "prompt_cache_hit_tokens": 3328,
+      "prompt_cache_miss_tokens": 256,
+      "output_tokens": 185,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='tax_documents_submission',value='URGENT: Submit tax documents before Friday.')",
+        "core_memory_add(key='credit_card_statement_review',value='Review credit card statement for errors.')",
+        "core_memory_add(key='auto_repair_engine_noise',value='Call auto repair shop about weird noise in the engine.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 0,
+      "step": 4,
+      "result": "All three tasks are captured. Here's your current list:\n\n**Urgent — this week**\n1. **Submit tax documents before Friday** ⏰\n2. **Review credit card statement** for errors\n3. **Call auto repair shop** about the weird engine noise\n\n**Archived (still tracked, retrievable anytime)**\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on approaching deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA couple of notes: the training session is next Monday, so that prep is the next thing with a hard date after Friday's tax deadline. And the pending vendor reply is still outstanding — want me to keep it on the front burner instead of archived?",
+      "content": "All three tasks are captured. Here's your current list:\n\n**Urgent — this week**\n1. **Submit tax documents before Friday** ⏰\n2. **Review credit card statement** for errors\n3. **Call auto repair shop** about the weird engine noise\n\n**Archived (still tracked, retrievable anytime)**\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on approaching deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA couple of notes: the training session is next Monday, so that prep is the next thing with a hard date after Friday's tax deadline. And the pending vendor reply is still outstanding — want me to keep it on the front burner instead of archived?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 3824,
+      "prompt_cache_hit_tokens": 3584,
+      "prompt_cache_miss_tokens": 240,
+      "output_tokens": 184,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 1,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+        }
+      ],
+      "content": "I'll add these three work tasks. Core memory has room now, so let me check what's there and add them.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_0bxpHy80kJ9LWr7boYFj9030",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_9t4JJCpXFYKQPJRpauO27408",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_guF8qnC73HahyoJd6RLg4166",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 4032,
+      "prompt_cache_hit_tokens": 3840,
+      "prompt_cache_miss_tokens": 192,
+      "output_tokens": 202,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='quarterly_budget_finalize',value='Work: Finalize quarterly budget.')",
+        "core_memory_add(key='vendor_contract_review',value='Work: Review vendor contract before signing.')",
+        "core_memory_add(key='security_compliance_training',value='Work: Finish security compliance training module.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 1,
+      "step": 1,
+      "result": "All three work tasks are saved:\n\n**Work tasks added**\n1. **Finalize quarterly budget**\n2. **Review vendor contract** before signing\n3. **Finish security compliance training module**\n\n**Your full active list now:**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n\nOne connection worth flagging: the **vendor contract review** pairs with the archived note that one vendor follow-up is still pending — you may want to resolve that before signing. Also, the **security compliance training** overlaps with the archived IT password-change task, so you could knock both out in one sitting.\n\nWant me to move any of the archived items back into active memory, or keep them tucked away for now?",
+      "content": "All three work tasks are saved:\n\n**Work tasks added**\n1. **Finalize quarterly budget**\n2. **Review vendor contract** before signing\n3. **Finish security compliance training module**\n\n**Your full active list now:**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n\nOne connection worth flagging: the **vendor contract review** pairs with the archived note that one vendor follow-up is still pending — you may want to resolve that before signing. Also, the **security compliance training** overlaps with the archived IT password-change task, so you could knock both out in one sitting.\n\nWant me to move any of the archived items back into active memory, or keep them tucked away for now?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 4289,
+      "prompt_cache_hit_tokens": 4096,
+      "prompt_cache_miss_tokens": 193,
+      "output_tokens": 182,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 2,
+      "step": 0,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_CG04rTeCCd1dnko9YqwT8348",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_MJDMjX0RVPtXwX3dftCo7774",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_qrprZdZGhws2U6c7Fe9N5535",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 4490,
+      "prompt_cache_hit_tokens": 4352,
+      "prompt_cache_miss_tokens": 138,
+      "output_tokens": 170,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='laptop_backup',value='Tech: Back up laptop files.')",
+        "core_memory_add(key='phone_software_update',value='Tech: Update phone software.')",
+        "core_memory_add(key='cancel_unused_subscriptions',value='Tech: Cancel unused subscriptions.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}",
+        "{\"error\": \"Core memory is full. Please clear some entries.\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 1,
+      "result": [
+        {
+          "archival_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+        }
+      ],
+      "content": "Core memory filled up mid-batch. I'll archive the older, non-urgent items to make room.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_MkMITlFEdCWDpAUk8z2h6620",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_bYogTMBp6SzxYcnSukHw3776",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_Tin48aGKJ7FBjMnX9S220009",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_PQ98tVv0ckU8XgTjbjMu7656",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+          }
+        },
+        {
+          "index": 4,
+          "id": "call_04_ZyulvLiG6AwOGvUL0AhP1297",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 4725,
+      "prompt_cache_hit_tokens": 4480,
+      "prompt_cache_miss_tokens": 245,
+      "output_tokens": 323,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_add(key='credit_card_statement_review',value='Review credit card statement for errors.')",
+        "archival_memory_add(key='auto_repair_engine_noise',value='Call auto repair shop about weird noise in the engine.')",
+        "archival_memory_add(key='quarterly_budget_finalize',value='Work: Finalize quarterly budget.')",
+        "archival_memory_add(key='vendor_contract_review',value='Work: Review vendor contract before signing.')",
+        "archival_memory_add(key='security_compliance_training',value='Work: Finish security compliance training module.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 2,
+      "result": [
+        {
+          "core_memory_remove": "{\"key\": \"credit_card_statement_review\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"auto_repair_engine_noise\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"quarterly_budget_finalize\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"vendor_contract_review\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"security_compliance_training\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_J1uiDiBfNezcPEi7YwMy7080",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"credit_card_statement_review\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_qStzyy5AOfVdnyPoaRvs4048",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"auto_repair_engine_noise\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_u2R9vZAfOkcw4gqtzhml5756",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"quarterly_budget_finalize\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_8s8LV5VOIfalxTRY5hiS8956",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"vendor_contract_review\"}"
+          }
+        },
+        {
+          "index": 4,
+          "id": "call_04_XIjr0v2wYRlLcWd3JNzR7872",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"security_compliance_training\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 5127,
+      "prompt_cache_hit_tokens": 4992,
+      "prompt_cache_miss_tokens": 135,
+      "output_tokens": 190,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_remove(key='credit_card_statement_review')",
+        "core_memory_remove(key='auto_repair_engine_noise')",
+        "core_memory_remove(key='quarterly_budget_finalize')",
+        "core_memory_remove(key='vendor_contract_review')",
+        "core_memory_remove(key='security_compliance_training')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 3,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_XusoSrSH0euA1RNAZqym0079",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_i6nKdeVq5IJJ822mo1em0578",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 5396,
+      "prompt_cache_hit_tokens": 5248,
+      "prompt_cache_miss_tokens": 148,
+      "output_tokens": 116,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='phone_software_update',value='Tech: Update phone software.')",
+        "core_memory_add(key='cancel_unused_subscriptions',value='Tech: Cancel unused subscriptions.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 2,
+      "step": 4,
+      "result": "All three tech tasks are saved.\n\n**Tech tasks added**\n1. **Back up laptop files**\n2. **Update phone software**\n3. **Cancel unused subscriptions**\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n\n**Archived (still tracked, retrievable anytime):**\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA useful pairing: **backing up your laptop** is a smart thing to do *before* the phone software update and any password changes — get your data safe first. And **canceling unused subscriptions** ties in nicely with reviewing your credit card statement, since that's where you'd spot the recurring charges.\n\nYour core memory is at capacity, so from here on I'll keep rotating older items into the archive as new ones come in. Just say the word if you want anything pulled back to the front.",
+      "content": "All three tech tasks are saved.\n\n**Tech tasks added**\n1. **Back up laptop files**\n2. **Update phone software**\n3. **Cancel unused subscriptions**\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n\n**Archived (still tracked, retrievable anytime):**\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA useful pairing: **backing up your laptop** is a smart thing to do *before* the phone software update and any password changes — get your data safe first. And **canceling unused subscriptions** ties in nicely with reviewing your credit card statement, since that's where you'd spot the recurring charges.\n\nYour core memory is at capacity, so from here on I'll keep rotating older items into the archive as new ones come in. Just say the word if you want anything pulled back to the front.",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 5550,
+      "prompt_cache_hit_tokens": 5376,
+      "prompt_cache_miss_tokens": 174,
+      "output_tokens": 288,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    },
+    {
+      "turn": 3,
+      "step": 0,
+      "result": [
+        {
+          "archival_memory_add": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_W8nzoj5ZKCueTak7g8iE3571",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Wx15oJ9aJbwWtT3BiXYk4954",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_ClL64IDASNQvoqECoZYP5195",
+          "type": "function",
+          "function": {
+            "name": "archival_memory_add",
+            "arguments": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 5867,
+      "prompt_cache_hit_tokens": 5632,
+      "prompt_cache_miss_tokens": 235,
+      "output_tokens": 173,
+      "reasoning_tokens": null,
+      "executed": [
+        "archival_memory_add(key='laptop_backup',value='Tech: Back up laptop files.')",
+        "archival_memory_add(key='phone_software_update',value='Tech: Update phone software.')",
+        "archival_memory_add(key='cancel_unused_subscriptions',value='Tech: Cancel unused subscriptions.')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}",
+        "{\"status\": \"Key added.\"}"
+      ]
+    },
+    {
+      "turn": 3,
+      "step": 1,
+      "result": [
+        {
+          "core_memory_remove": "{\"key\": \"laptop_backup\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"phone_software_update\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"cancel_unused_subscriptions\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_6u7wV2koqnB6XYYojpsw2926",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"laptop_backup\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_31p48nvqeYHw4YzOh2dc0949",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"phone_software_update\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_wyx7TplfU74Zq18exHHW9592",
+          "type": "function",
+          "function": {
+            "name": "core_memory_remove",
+            "arguments": "{\"key\": \"cancel_unused_subscriptions\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 6089,
+      "prompt_cache_hit_tokens": 5888,
+      "prompt_cache_miss_tokens": 201,
+      "output_tokens": 112,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_remove(key='laptop_backup')",
+        "core_memory_remove(key='phone_software_update')",
+        "core_memory_remove(key='cancel_unused_subscriptions')"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}",
+        "{\"status\": \"Key removed.\"}"
+      ]
+    },
+    {
+      "turn": 3,
+      "step": 2,
+      "result": [
+        {
+          "core_memory_add": "{\"key\": \"dentist_appointment\", \"value\": \"Personal: Schedule dentist appointment.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"gym_three_times_week\", \"value\": \"Personal: Stick to gym 3x this week.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"call_mom\", \"value\": \"Personal: Call mom — it's been a while.\"}"
+        }
+      ],
+      "content": "",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_Qb0dVJpl97GZudITDo2y3341",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"dentist_appointment\", \"value\": \"Personal: Schedule dentist appointment.\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_mJzRuD4K0b7GWk0goo4x9402",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"gym_three_times_week\", \"value\": \"Personal: Stick to gym 3x this week.\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_yfUdRNtHdG2l3WfklWD39227",
+          "type": "function",
+          "function": {
+            "name": "core_memory_add",
+            "arguments": "{\"key\": \"call_mom\", \"value\": \"Personal: Call mom — it's been a while.\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 6250,
+      "prompt_cache_hit_tokens": 6016,
+      "prompt_cache_miss_tokens": 234,
+      "output_tokens": 181,
+      "reasoning_tokens": null,
+      "executed": [
+        "core_memory_add(key='dentist_appointment',value='Personal: Schedule dentist appointment.')",
+        "core_memory_add(key='gym_three_times_week',value='Personal: Stick to gym 3x this week.')",
+        "core_memory_add(key='call_mom',value=\"Personal: Call mom — it's been a while.\")"
+      ],
+      "tool_outputs": [
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}",
+        "{\"status\": \"Key-value pair added.\"}"
+      ]
+    },
+    {
+      "turn": 3,
+      "step": 3,
+      "result": "All three personal items are saved.\n\n**Personal tasks added**\n1. **Schedule dentist appointment**\n2. **Stick to gym 3x this week**\n3. **Call mom** — it's been a while\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Schedule dentist appointment\n- Gym 3x this week\n- Call mom\n\n**Archived (still tracked, retrievable anytime):**\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nTwo timing notes: the **gym 3x** goal is a this-week commitment, so it competes with the Friday tax deadline for your time — worth blocking the gym days now. And the **training session is next Monday**, so that weekend prep is your next hard deadline after taxes.\n\nYou've now got a lot in the archive. Want me to give you a consolidated \"everything outstanding\" rundown, or a suggested priority order for the week?",
+      "content": "All three personal items are saved.\n\n**Personal tasks added**\n1. **Schedule dentist appointment**\n2. **Stick to gym 3x this week**\n3. **Call mom** — it's been a while\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Schedule dentist appointment\n- Gym 3x this week\n- Call mom\n\n**Archived (still tracked, retrievable anytime):**\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nTwo timing notes: the **gym 3x** goal is a this-week commitment, so it competes with the Friday tax deadline for your time — worth blocking the gym days now. And the **training session is next Monday**, so that weekend prep is your next hard deadline after taxes.\n\nYou've now got a lot in the archive. Want me to give you a consolidated \"everything outstanding\" rundown, or a suggested priority order for the week?",
+      "reasoning_content": null,
+      "tool_calls": null,
+      "prompt_tokens": 6486,
+      "prompt_cache_hit_tokens": 6272,
+      "prompt_cache_miss_tokens": 214,
+      "output_tokens": 305,
+      "reasoning_tokens": null,
+      "turn_end": "decode_error:AttributeError"
+    }
+  ],
+  "scorable": true,
+  "result": [
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        }
+      ],
+      [
+        {
+          "archival_memory_add": "{\"key\": \"password_change_task\", \"value\": \"IT updated security protocols — change passwords ASAP (noted Monday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"client_proposal_legal_approval\", \"value\": \"Client proposal draft is ready — send it for legal approval (noted Wednesday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"new_hire_onboarding\", \"value\": \"Onboard new hire — schedule a one-on-one (noted Wednesday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"dev_team_checkin\", \"value\": \"Project deadline approaching — check in with Dev team (noted Thursday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"sales_data_mistake\", \"value\": \"Caught a mistake in last month's sales data — needs correction/follow-up (noted Thursday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"training_session_prep\", \"value\": \"Training session next Monday — prep materials this weekend (noted Friday).\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"vendor_followup_status\", \"value\": \"Vendor follow-ups: two responded, one still pending (as of Friday).\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_remove": "{\"key\": \"password_change_task\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"client_proposal_legal_approval\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"new_hire_onboarding\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"dev_team_checkin\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"sales_data_mistake\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"training_session_prep\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"vendor_followup_status\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_add": "{\"key\": \"tax_documents_submission\", \"value\": \"URGENT: Submit tax documents before Friday.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        }
+      ],
+      "All three tasks are captured. Here's your current list:\n\n**Urgent — this week**\n1. **Submit tax documents before Friday** ⏰\n2. **Review credit card statement** for errors\n3. **Call auto repair shop** about the weird engine noise\n\n**Archived (still tracked, retrievable anytime)**\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on approaching deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA couple of notes: the training session is next Monday, so that prep is the next thing with a hard date after Friday's tax deadline. And the pending vendor reply is still outstanding — want me to keep it on the front burner instead of archived?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+        }
+      ],
+      "All three work tasks are saved:\n\n**Work tasks added**\n1. **Finalize quarterly budget**\n2. **Review vendor contract** before signing\n3. **Finish security compliance training module**\n\n**Your full active list now:**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n\nOne connection worth flagging: the **vendor contract review** pairs with the archived note that one vendor follow-up is still pending — you may want to resolve that before signing. Also, the **security compliance training** overlaps with the archived IT password-change task, so you could knock both out in one sitting.\n\nWant me to move any of the archived items back into active memory, or keep them tucked away for now?"
+    ],
+    [
+      [
+        {
+          "core_memory_add": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      [
+        {
+          "archival_memory_add": "{\"key\": \"credit_card_statement_review\", \"value\": \"Review credit card statement for errors.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"auto_repair_engine_noise\", \"value\": \"Call auto repair shop about weird noise in the engine.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"quarterly_budget_finalize\", \"value\": \"Work: Finalize quarterly budget.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"vendor_contract_review\", \"value\": \"Work: Review vendor contract before signing.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"security_compliance_training\", \"value\": \"Work: Finish security compliance training module.\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_remove": "{\"key\": \"credit_card_statement_review\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"auto_repair_engine_noise\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"quarterly_budget_finalize\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"vendor_contract_review\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"security_compliance_training\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      "All three tech tasks are saved.\n\n**Tech tasks added**\n1. **Back up laptop files**\n2. **Update phone software**\n3. **Cancel unused subscriptions**\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n\n**Archived (still tracked, retrievable anytime):**\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nA useful pairing: **backing up your laptop** is a smart thing to do *before* the phone software update and any password changes — get your data safe first. And **canceling unused subscriptions** ties in nicely with reviewing your credit card statement, since that's where you'd spot the recurring charges.\n\nYour core memory is at capacity, so from here on I'll keep rotating older items into the archive as new ones come in. Just say the word if you want anything pulled back to the front."
+    ],
+    [
+      [
+        {
+          "archival_memory_add": "{\"key\": \"laptop_backup\", \"value\": \"Tech: Back up laptop files.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"phone_software_update\", \"value\": \"Tech: Update phone software.\"}"
+        },
+        {
+          "archival_memory_add": "{\"key\": \"cancel_unused_subscriptions\", \"value\": \"Tech: Cancel unused subscriptions.\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_remove": "{\"key\": \"laptop_backup\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"phone_software_update\"}"
+        },
+        {
+          "core_memory_remove": "{\"key\": \"cancel_unused_subscriptions\"}"
+        }
+      ],
+      [
+        {
+          "core_memory_add": "{\"key\": \"dentist_appointment\", \"value\": \"Personal: Schedule dentist appointment.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"gym_three_times_week\", \"value\": \"Personal: Stick to gym 3x this week.\"}"
+        },
+        {
+          "core_memory_add": "{\"key\": \"call_mom\", \"value\": \"Personal: Call mom — it's been a while.\"}"
+        }
+      ],
+      "All three personal items are saved.\n\n**Personal tasks added**\n1. **Schedule dentist appointment**\n2. **Stick to gym 3x this week**\n3. **Call mom** — it's been a while\n\n**Active list (core memory):**\n- ⏰ Submit tax documents before Friday *(urgent)*\n- Schedule dentist appointment\n- Gym 3x this week\n- Call mom\n\n**Archived (still tracked, retrievable anytime):**\n- Back up laptop files\n- Update phone software\n- Cancel unused subscriptions\n- Review credit card statement for errors\n- Call auto repair shop about engine noise\n- Finalize quarterly budget\n- Review vendor contract before signing\n- Finish security compliance training module\n- Change passwords (IT security update)\n- Send client proposal for legal approval\n- Schedule one-on-one with new hire\n- Check in with Dev team on deadline\n- Correct last month's sales data mistake\n- Prep training materials this weekend (session next Monday)\n- Vendor follow-ups: one still pending\n\nTwo timing notes: the **gym 3x** goal is a this-week commitment, so it competes with the Friday tax deadline for your time — worth blocking the gym days now. And the **training session is next Monday**, so that weekend prep is your next hard deadline after taxes.\n\nYou've now got a lot in the archive. Want me to give you a consolidated \"everything outstanding\" rundown, or a suggested priority order for the week?"
+    ]
+  ],
+  "forced_quit": false
+}

@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_39",
+  "category": "multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "ride_hailing_get_rides": "{\"source\": \"New York\", \"destination\": \"Philadelphia\", \"max_cost\": 50}"
+        }
+      ],
+      "content": "I'll search for rides from New York to Philadelphia within your $50 budget.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_xh4UjrscYXRIZ2PWX6tt3781",
+          "type": "function",
+          "function": {
+            "name": "ride_hailing_get_rides",
+            "arguments": "{\"source\": \"New York\", \"destination\": \"Philadelphia\", \"max_cost\": 50}"
+          }
+        }
+      ],
+      "prompt_tokens": 518,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 134,
+      "output_tokens": 90,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "ride_hailing_get_rides": "{\"source\": \"New York\", \"destination\": \"Philadelphia\", \"max_cost\": 50}"
+    }
+  ]
+}

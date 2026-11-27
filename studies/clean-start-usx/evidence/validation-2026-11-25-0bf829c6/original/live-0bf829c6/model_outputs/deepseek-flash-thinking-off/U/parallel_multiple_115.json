@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_115",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "artwork_search_find": "{\"type\": \"installation\", \"location\": \"New York\", \"era\": \"modern\"}"
+        },
+        {
+          "park_search_find": "{\"facilities\": [\"playground\", \"picnic area\"], \"location\": \"New York\"}"
+        },
+        {
+          "tourist_attraction_find": "{\"attractionType\": \"monument\", \"location\": \"New York\"}"
+        }
+      ],
+      "content": "I'll help you plan your trip to New York! Let me search for all three attractions for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_1kYVq0STy9Z5X0jwxBKR4102",
+          "type": "function",
+          "function": {
+            "name": "artwork_search_find",
+            "arguments": "{\"type\": \"installation\", \"location\": \"New York\", \"era\": \"modern\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_eb1grdAzChvPwdP6NZp87304",
+          "type": "function",
+          "function": {
+            "name": "park_search_find",
+            "arguments": "{\"facilities\": [\"playground\", \"picnic area\"], \"location\": \"New York\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_Q5saI73fFqrHQpvTA2yj2888",
+          "type": "function",
+          "function": {
+            "name": "tourist_attraction_find",
+            "arguments": "{\"attractionType\": \"monument\", \"location\": \"New York\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 643,
+      "prompt_cache_hit_tokens": 509,
+      "prompt_cache_miss_tokens": 134,
+      "output_tokens": 202,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "artwork_search_find": "{\"type\": \"installation\", \"location\": \"New York\", \"era\": \"modern\"}"
+    },
+    {
+      "park_search_find": "{\"facilities\": [\"playground\", \"picnic area\"], \"location\": \"New York\"}"
+    },
+    {
+      "tourist_attraction_find": "{\"attractionType\": \"monument\", \"location\": \"New York\"}"
+    }
+  ]
+}

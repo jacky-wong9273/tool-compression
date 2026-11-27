@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_104",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "air_quality_forecast": "{\"location\": \"New York\", \"days\": 5}"
+        },
+        {
+          "weather_forecast": "{\"location\": \"Los Angeles\", \"days\": 7}"
+        },
+        {
+          "news": "{\"topic\": \"global warming\", \"days\": 3}"
+        },
+        {
+          "air_quality_forecast": "{\"location\": \"Beijing\", \"days\": 2}"
+        }
+      ],
+      "content": "I'll gather all of that information for you at once.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_nbKyCHcx7r5XTKtQ5oEB0996",
+          "type": "function",
+          "function": {
+            "name": "air_quality_forecast",
+            "arguments": "{\"location\": \"New York\", \"days\": 5}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_czOYckiEzmSGX3mLyjJj3179",
+          "type": "function",
+          "function": {
+            "name": "weather_forecast",
+            "arguments": "{\"location\": \"Los Angeles\", \"days\": 7}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_7K0QCi0Smc4MedCDDm026809",
+          "type": "function",
+          "function": {
+            "name": "news",
+            "arguments": "{\"topic\": \"global warming\", \"days\": 3}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_nLZQXXBowhNigs8GiyGd6019",
+          "type": "function",
+          "function": {
+            "name": "air_quality_forecast",
+            "arguments": "{\"location\": \"Beijing\", \"days\": 2}"
+          }
+        }
+      ],
+      "prompt_tokens": 589,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 205,
+      "output_tokens": 208,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "air_quality_forecast": "{\"location\": \"New York\", \"days\": 5}"
+    },
+    {
+      "weather_forecast": "{\"location\": \"Los Angeles\", \"days\": 7}"
+    },
+    {
+      "news": "{\"topic\": \"global warming\", \"days\": 3}"
+    },
+    {
+      "air_quality_forecast": "{\"location\": \"Beijing\", \"days\": 2}"
+    }
+  ]
+}

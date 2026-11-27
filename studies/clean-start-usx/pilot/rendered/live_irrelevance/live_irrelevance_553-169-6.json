@@ -8,11 +8,52 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint"
+    "x_compares_action_sentences_of_the_u_catalogue"
   ],
   "held_out_functions": [],
   "excluded_function_present": [],
-  "changes": [],
+  "changes": [
+    {
+      "arm": "S",
+      "function": "tts_tool",
+      "pointer": "/function/description",
+      "before": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly. Note that the provided function is in Python 3 syntax.",
+      "after": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "write_markdown_tool",
+      "pointer": "/function/description",
+      "before": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file. Note that the provided function is in Python 3 syntax.",
+      "after": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "write_html_tool",
+      "pointer": "/function/description",
+      "before": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation. Note that the provided function is in Python 3 syntax.",
+      "after": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "search_web_tool",
+      "pointer": "/function/description",
+      "before": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source. Note that the provided function is in Python 3 syntax.",
+      "after": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source.",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_url_content",
+      "pointer": "/function/description",
+      "before": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided. Note that the provided function is in Python 3 syntax.",
+      "after": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided.",
+      "change_class": "hint_context"
+    }
+  ],
   "arms": {
     "U": [
       {
@@ -214,7 +255,7 @@
         "type": "function",
         "function": {
           "name": "tts_tool",
-          "description": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly. Note that the provided function is in Python 3 syntax.",
+          "description": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly.",
           "parameters": {
             "type": "object",
             "required": [
@@ -249,7 +290,7 @@
         "type": "function",
         "function": {
           "name": "write_markdown_tool",
-          "description": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file. Note that the provided function is in Python 3 syntax.",
+          "description": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file.",
           "parameters": {
             "type": "object",
             "required": [
@@ -273,7 +314,7 @@
         "type": "function",
         "function": {
           "name": "write_html_tool",
-          "description": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation. Note that the provided function is in Python 3 syntax.",
+          "description": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation.",
           "parameters": {
             "type": "object",
             "required": [
@@ -297,7 +338,7 @@
         "type": "function",
         "function": {
           "name": "search_web_tool",
-          "description": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source. Note that the provided function is in Python 3 syntax.",
+          "description": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source.",
           "parameters": {
             "type": "object",
             "required": [
@@ -330,7 +371,7 @@
         "type": "function",
         "function": {
           "name": "get_url_content",
-          "description": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided. Note that the provided function is in Python 3 syntax.",
+          "description": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided.",
           "parameters": {
             "type": "object",
             "required": [
@@ -556,7 +597,7 @@
         "type": "function",
         "function": {
           "name": "tts_tool",
-          "description": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly. Note that the provided function is in Python 3 syntax.",
+          "description": "Converts the provided text content to speech and saves the resulting audio to a file. This function is intended for voice narration and should be used accordingly.",
           "parameters": {
             "type": "object",
             "required": [
@@ -591,7 +632,7 @@
         "type": "function",
         "function": {
           "name": "write_markdown_tool",
-          "description": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file. Note that the provided function is in Python 3 syntax.",
+          "description": "Writes the provided content to a Markdown (.md) file on the disk. This function should be used when there is a need to persist text data in Markdown format as a result of a user action or a process that requires saving information in a structured text file.",
           "parameters": {
             "type": "object",
             "required": [
@@ -615,7 +656,7 @@
         "type": "function",
         "function": {
           "name": "write_html_tool",
-          "description": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation. Note that the provided function is in Python 3 syntax.",
+          "description": "Writes an HTML file to disk with the given content. Ensures HTML tags within the content are properly closed. This function should be used when there is a need to save HTML content to a file as part of a 'save' operation.",
           "parameters": {
             "type": "object",
             "required": [
@@ -639,7 +680,7 @@
         "type": "function",
         "function": {
           "name": "search_web_tool",
-          "description": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source. Note that the provided function is in Python 3 syntax.",
+          "description": "Executes a search query using the DuckDuckGo search engine and returns a specified number of search results from a given source.",
           "parameters": {
             "type": "object",
             "required": [
@@ -672,7 +713,7 @@
         "type": "function",
         "function": {
           "name": "get_url_content",
-          "description": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided. Note that the provided function is in Python 3 syntax.",
+          "description": "Scrapes the specified URL for textual data and returns the content as a string. This function is useful for extracting information from web pages when a URL is provided.",
           "parameters": {
             "type": "object",
             "required": [

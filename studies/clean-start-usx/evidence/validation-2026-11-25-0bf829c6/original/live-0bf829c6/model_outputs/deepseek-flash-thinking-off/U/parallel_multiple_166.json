@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_166",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "park_information": "{\"park_name\": \"Yellowstone National Park\", \"information\": [\"Elevation\", \"Area\"]}"
+        },
+        {
+          "calculate_stock_return": "{\"investment_amount\": 5000, \"annual_growth_rate\": 0.07, \"holding_period\": 10, \"dividends\": true}"
+        },
+        {
+          "legal_case_fetch": "{\"case_id\": \"LC12345\", \"details\": true}"
+        },
+        {
+          "park_information": "{\"park_name\": \"Yosemite National Park\", \"information\": [\"Location\", \"Established Year\"]}"
+        }
+      ],
+      "content": "I'll help you with all four tasks. Let me gather that information for you.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_dkkHI1g5v6U9ro5iqpBg7008",
+          "type": "function",
+          "function": {
+            "name": "park_information",
+            "arguments": "{\"park_name\": \"Yellowstone National Park\", \"information\": [\"Elevation\", \"Area\"]}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_JpK3YuqqgtjED6ol2d2k7194",
+          "type": "function",
+          "function": {
+            "name": "calculate_stock_return",
+            "arguments": "{\"investment_amount\": 5000, \"annual_growth_rate\": 0.07, \"holding_period\": 10, \"dividends\": true}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_vFfd0IaAB2qKUbVD51sh8215",
+          "type": "function",
+          "function": {
+            "name": "legal_case_fetch",
+            "arguments": "{\"case_id\": \"LC12345\", \"details\": true}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_7cb5lRYTbQeYLNsywcxw5587",
+          "type": "function",
+          "function": {
+            "name": "park_information",
+            "arguments": "{\"park_name\": \"Yosemite National Park\", \"information\": [\"Location\", \"Established Year\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 777,
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 649,
+      "output_tokens": 274,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "park_information": "{\"park_name\": \"Yellowstone National Park\", \"information\": [\"Elevation\", \"Area\"]}"
+    },
+    {
+      "calculate_stock_return": "{\"investment_amount\": 5000, \"annual_growth_rate\": 0.07, \"holding_period\": 10, \"dividends\": true}"
+    },
+    {
+      "legal_case_fetch": "{\"case_id\": \"LC12345\", \"details\": true}"
+    },
+    {
+      "park_information": "{\"park_name\": \"Yosemite National Park\", \"information\": [\"Location\", \"Established Year\"]}"
+    }
+  ]
+}

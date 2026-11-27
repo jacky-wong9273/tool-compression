@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_118",
+  "category": "multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "imdb_find_movies_by_actor": "{\"actor_name\": \"Leonardo DiCaprio\", \"year\": 2010}"
+        }
+      ],
+      "content": "I'll search the IMDB database for Leonardo DiCaprio's movies from 2010.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_2xB06u0n3S3yMFMalxem8114",
+          "type": "function",
+          "function": {
+            "name": "imdb_find_movies_by_actor",
+            "arguments": "{\"actor_name\": \"Leonardo DiCaprio\", \"year\": 2010}"
+          }
+        }
+      ],
+      "prompt_tokens": 779,
+      "prompt_cache_hit_tokens": 640,
+      "prompt_cache_miss_tokens": 139,
+      "output_tokens": 84,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "imdb_find_movies_by_actor": "{\"actor_name\": \"Leonardo DiCaprio\", \"year\": 2010}"
+    }
+  ]
+}

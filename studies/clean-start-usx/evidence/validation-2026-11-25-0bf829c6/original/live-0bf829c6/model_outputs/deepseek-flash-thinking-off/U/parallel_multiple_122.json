@@ -1,0 +1,73 @@
+{
+  "case_id": "parallel_multiple_122",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "games_update_find": "{\"game\": \"Call of Duty\", \"platform\": \"Playstation\", \"region\": \"European\"}"
+        },
+        {
+          "games_price_find": "{\"game\": \"Call of Duty\", \"platform\": \"Xbox\"}"
+        },
+        {
+          "games_reviews_find": "{\"game\": \"FIFA 21\", \"region\": \"American\"}"
+        }
+      ],
+      "content": "I'll help you with those three requests. Let me look them up.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_3n9FzOG3GnvSYoZ4CDLt9205",
+          "type": "function",
+          "function": {
+            "name": "games_update_find",
+            "arguments": "{\"game\": \"Call of Duty\", \"platform\": \"Playstation\", \"region\": \"European\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_rc84ajl0jTYwhx0WiEHd8073",
+          "type": "function",
+          "function": {
+            "name": "games_price_find",
+            "arguments": "{\"game\": \"Call of Duty\", \"platform\": \"Xbox\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_NZe7TMv4o0QOHE26FIkm6343",
+          "type": "function",
+          "function": {
+            "name": "games_reviews_find",
+            "arguments": "{\"game\": \"FIFA 21\", \"region\": \"American\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 635,
+      "prompt_cache_hit_tokens": 384,
+      "prompt_cache_miss_tokens": 251,
+      "output_tokens": 187,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "games_update_find": "{\"game\": \"Call of Duty\", \"platform\": \"Playstation\", \"region\": \"European\"}"
+    },
+    {
+      "games_price_find": "{\"game\": \"Call of Duty\", \"platform\": \"Xbox\"}"
+    },
+    {
+      "games_reviews_find": "{\"game\": \"FIFA 21\", \"region\": \"American\"}"
+    }
+  ]
+}

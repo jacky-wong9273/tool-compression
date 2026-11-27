@@ -1,0 +1,87 @@
+{
+  "case_id": "parallel_multiple_191",
+  "category": "parallel_multiple",
+  "arm": "U",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "find_card_in_deck": "{\"rank\": \"King\", \"suit\": \"Hearts\"}"
+        },
+        {
+          "recipe_unit_conversion": "{\"value\": 2, \"from_unit\": \"cup\", \"to_unit\": \"tablespoon\"}"
+        },
+        {
+          "currency_exchange_convert": "{\"base_currency\": \"EUR\", \"target_currency\": \"USD\", \"amount\": 100}"
+        },
+        {
+          "local_nursery_find": "{\"location\": \"San Francisco\", \"plant_types\": [\"Annual\", \"Tree\"]}"
+        }
+      ],
+      "content": "I'll help you with all four tasks. Let me run them in parallel.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_GxLfdUCSM6C0I2bqJ8C04499",
+          "type": "function",
+          "function": {
+            "name": "find_card_in_deck",
+            "arguments": "{\"rank\": \"King\", \"suit\": \"Hearts\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_4J3PRXnHm0AqBrx0xq1D9997",
+          "type": "function",
+          "function": {
+            "name": "recipe_unit_conversion",
+            "arguments": "{\"value\": 2, \"from_unit\": \"cup\", \"to_unit\": \"tablespoon\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_fONbcyvTIWIeeAzBx4gI8350",
+          "type": "function",
+          "function": {
+            "name": "currency_exchange_convert",
+            "arguments": "{\"base_currency\": \"EUR\", \"target_currency\": \"USD\", \"amount\": 100}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_6bnn4eeQIQljAtXG58DQ3010",
+          "type": "function",
+          "function": {
+            "name": "local_nursery_find",
+            "arguments": "{\"location\": \"San Francisco\", \"plant_types\": [\"Annual\", \"Tree\"]}"
+          }
+        }
+      ],
+      "prompt_tokens": 1052,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 1052,
+      "output_tokens": 261,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "find_card_in_deck": "{\"rank\": \"King\", \"suit\": \"Hearts\"}"
+    },
+    {
+      "recipe_unit_conversion": "{\"value\": 2, \"from_unit\": \"cup\", \"to_unit\": \"tablespoon\"}"
+    },
+    {
+      "currency_exchange_convert": "{\"base_currency\": \"EUR\", \"target_currency\": \"USD\", \"amount\": 100}"
+    },
+    {
+      "local_nursery_find": "{\"location\": \"San Francisco\", \"plant_types\": [\"Annual\", \"Tree\"]}"
+    }
+  ]
+}

@@ -1,0 +1,623 @@
+{
+  "study": "clean-start-usx",
+  "official_settlement": false,
+  "source": {
+    "evidence": "evidence/pilot-2026-11-25-revised-c47b186c",
+    "flown_tip": "c47b186c6004e69840db3537ebe532dc22f638a8",
+    "flown_rules": {
+      "S": "s-rules-2026-11-25",
+      "X": "x-rules-2026-11-25.2"
+    },
+    "current_editor_rules": {
+      "S": "s-rules-2026-11-27",
+      "X": "x-rules-2026-11-27"
+    },
+    "status": "incomplete",
+    "reason": "provider_error:IncompleteRead",
+    "provider_sends": 900,
+    "billed_responses": 899,
+    "uncertain_attempts": [
+      900
+    ],
+    "running_usd": "0.287883432000",
+    "thinking": "off",
+    "band": [
+      "peak"
+    ]
+  },
+  "measurement_notes": [
+    "No request was sent for this report. Every number comes from the archived evidence or local counting.",
+    "Arms were rotated per case, and arms with byte-identical tools (U and X, S and SX on most cases) share provider prefix cache, so cache-miss and USD differences between arms are confounded by send order.",
+    "first_request compares turn 0 step 0 of each matched case. The runner builds identical messages for every arm, so the prompt-token difference there is the tools array as the provider tokenizes it.",
+    "Accuracy covers 32 cases all four arms finished. A one-case difference is not evidence; identical_tools_noise shows how often arms sending byte-identical tools still behave differently.",
+    "Accuracy is from the archived official scorer output (underscore_to_dot=True).",
+    "identical_model_behaviour compares executed calls per step for trajectories (the multi-turn checker scores calls and state, not text) and the decoded result for single-turn cases.",
+    "local_tools_tokens_initial_catalogue counts the tools array before any held-out turn: flown_editors from the digest of the flown commit, current_editors from source.current_editor_rules."
+  ],
+  "sent_bytes": {
+    "sent_attempts": 900,
+    "matched_flown_digest": 900,
+    "unmatched_attempts": [],
+    "matched_by_state": {
+      "held_out": 115,
+      "initial": 785
+    }
+  },
+  "accuracy": {
+    "official_scores": {
+      "live_irrelevance": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "live_multiple": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "live_parallel_multiple": {
+        "S": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "live_parallel_multiple_8-7-0"
+          ]
+        },
+        "SX": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "live_parallel_multiple_8-7-0"
+          ]
+        },
+        "U": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "live_parallel_multiple_8-7-0"
+          ]
+        },
+        "X": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "live_parallel_multiple_8-7-0"
+          ]
+        }
+      },
+      "live_parallel": {
+        "S": {
+          "correct": 2,
+          "total": 2,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 2,
+          "total": 2,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 2,
+          "total": 2,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 2,
+          "total": 2,
+          "failed_ids": []
+        }
+      },
+      "live_relevance": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "multi_turn_base": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "multi_turn_long_context": {
+        "S": {
+          "correct": 0,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_long_context_140",
+            "multi_turn_long_context_31",
+            "multi_turn_long_context_6"
+          ]
+        },
+        "SX": {
+          "correct": 0,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_long_context_140",
+            "multi_turn_long_context_31",
+            "multi_turn_long_context_6"
+          ]
+        },
+        "U": {
+          "correct": 1,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_long_context_140",
+            "multi_turn_long_context_31"
+          ]
+        },
+        "X": {
+          "correct": 2,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_long_context_140"
+          ]
+        }
+      },
+      "multi_turn_miss_func": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "multi_turn_miss_param": {
+        "S": {
+          "correct": 1,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_miss_param_187",
+            "multi_turn_miss_param_31"
+          ]
+        },
+        "SX": {
+          "correct": 0,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_miss_param_187",
+            "multi_turn_miss_param_31",
+            "multi_turn_miss_param_78"
+          ]
+        },
+        "U": {
+          "correct": 1,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_miss_param_187",
+            "multi_turn_miss_param_31"
+          ]
+        },
+        "X": {
+          "correct": 1,
+          "total": 3,
+          "failed_ids": [
+            "multi_turn_miss_param_187",
+            "multi_turn_miss_param_31"
+          ]
+        }
+      },
+      "multiple": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      },
+      "parallel_multiple": {
+        "S": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "SX": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "U": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        },
+        "X": {
+          "correct": 3,
+          "total": 3,
+          "failed_ids": []
+        }
+      }
+    },
+    "matched_cases": 32,
+    "matched_correct": {
+      "U": 27,
+      "S": 26,
+      "X": 28,
+      "SX": 25
+    },
+    "paired_discordance": {
+      "S-U": {
+        "both_correct": 26,
+        "left_only": 0,
+        "right_only": 1,
+        "both_wrong": 5,
+        "cases": 32
+      },
+      "X-U": {
+        "both_correct": 27,
+        "left_only": 1,
+        "right_only": 0,
+        "both_wrong": 4,
+        "cases": 32
+      },
+      "SX-S": {
+        "both_correct": 25,
+        "left_only": 0,
+        "right_only": 1,
+        "both_wrong": 6,
+        "cases": 32
+      },
+      "SX-X": {
+        "both_correct": 25,
+        "left_only": 0,
+        "right_only": 3,
+        "both_wrong": 4,
+        "cases": 32
+      },
+      "SX-U": {
+        "both_correct": 25,
+        "left_only": 0,
+        "right_only": 2,
+        "both_wrong": 5,
+        "cases": 32
+      }
+    },
+    "discordant_cases": [
+      {
+        "case_id": "multi_turn_long_context_31",
+        "category": "multi_turn_long_context",
+        "passed": {
+          "U": false,
+          "S": false,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_long_context_6",
+        "category": "multi_turn_long_context",
+        "passed": {
+          "U": true,
+          "S": false,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": false,
+          "SX=S": false,
+          "SX=X": false,
+          "SX=U": false
+        }
+      },
+      {
+        "case_id": "multi_turn_miss_param_78",
+        "category": "multi_turn_miss_param",
+        "passed": {
+          "U": true,
+          "S": true,
+          "X": true,
+          "SX": false
+        },
+        "identical_sent_tools": {
+          "S=U": false,
+          "X=U": true,
+          "SX=S": true,
+          "SX=X": false,
+          "SX=U": false
+        }
+      }
+    ]
+  },
+  "identical_tools_noise": {
+    "trajectory": {
+      "identical_model_behaviour": 4,
+      "outcome_differs": 1,
+      "pairs_with_identical_sent_tools": 16
+    },
+    "single_turn": {
+      "identical_model_behaviour": 62,
+      "outcome_differs": 0,
+      "pairs_with_identical_sent_tools": 72
+    }
+  },
+  "tokens": {
+    "matched_billed_by_arm": {
+      "U": {
+        "requests": 150,
+        "prompt": 660201,
+        "cache_hit": 613248,
+        "cache_miss": 46953,
+        "output": 14902,
+        "usd": "0.035647788000",
+        "usd_parts": {
+          "cache_hit": "0.003679488000",
+          "cache_miss": "0.014085900000",
+          "output": "0.017882400000"
+        },
+        "correct": 27
+      },
+      "S": {
+        "requests": 155,
+        "prompt": 603367,
+        "cache_hit": 550396,
+        "cache_miss": 52971,
+        "output": 15889,
+        "usd": "0.038260476000",
+        "usd_parts": {
+          "cache_hit": "0.003302376000",
+          "cache_miss": "0.015891300000",
+          "output": "0.019066800000"
+        },
+        "correct": 26
+      },
+      "X": {
+        "requests": 154,
+        "prompt": 697092,
+        "cache_hit": 644992,
+        "cache_miss": 52100,
+        "output": 16224,
+        "usd": "0.038968752000",
+        "usd_parts": {
+          "cache_hit": "0.003869952000",
+          "cache_miss": "0.015630000000",
+          "output": "0.019468800000"
+        },
+        "correct": 28
+      },
+      "SX": {
+        "requests": 144,
+        "prompt": 557223,
+        "cache_hit": 508032,
+        "cache_miss": 49191,
+        "output": 15295,
+        "usd": "0.036159492000",
+        "usd_parts": {
+          "cache_hit": "0.003048192000",
+          "cache_miss": "0.014757300000",
+          "output": "0.018354000000"
+        },
+        "correct": 25
+      }
+    },
+    "first_request": {
+      "cases": 32,
+      "prompt_tokens": {
+        "U": 71820,
+        "S": 63337,
+        "X": 72007,
+        "SX": 63524
+      },
+      "delta_vs_U": {
+        "S": {
+          "tokens": -8483,
+          "percent": -11.811
+        },
+        "X": {
+          "tokens": 187,
+          "percent": 0.26
+        },
+        "SX": {
+          "tokens": -8296,
+          "percent": -11.551
+        }
+      }
+    },
+    "first_request_cache_by_send_position": {
+      "1": {
+        "requests": 32,
+        "prompt": 67459,
+        "cache_miss": 28803
+      },
+      "2": {
+        "requests": 32,
+        "prompt": 67881,
+        "cache_miss": 29225
+      },
+      "3": {
+        "requests": 32,
+        "prompt": 67406,
+        "cache_miss": 13134
+      },
+      "4": {
+        "requests": 32,
+        "prompt": 67942,
+        "cache_miss": 11882
+      }
+    },
+    "local_tools_tokens_initial_catalogue": {
+      "flown_editors": {
+        "scoring": {
+          "U": 87106,
+          "S": 77112,
+          "X": 87837,
+          "SX": 77843
+        },
+        "prereq": {
+          "U": 75524,
+          "S": 66674,
+          "X": 79284,
+          "SX": 70434
+        }
+      },
+      "current_editors": {
+        "scoring": {
+          "U": 87106,
+          "S": 69842,
+          "X": 87658,
+          "SX": 70394
+        },
+        "prereq": {
+          "U": 75524,
+          "S": 58580,
+          "X": 79284,
+          "SX": 62340
+        }
+      }
+    }
+  },
+  "runner": {
+    "forced_quit_slots": [
+      {
+        "case_id": "memory_kv_prereq_2-customer-2",
+        "arm": "U",
+        "steps": 30
+      }
+    ],
+    "partial_slots": [
+      {
+        "case_id": "memory_kv_prereq_3-customer-3",
+        "arm": "SX",
+        "thinking": "off",
+        "billed_steps": 6,
+        "sidecar_status": "stopped",
+        "result_row_written": false
+      }
+    ],
+    "memory_snapshots": {
+      "U/kv/memory_snapshot/customer_final.json": {
+        "checkpoints": [
+          "memory_kv_prereq_0-customer-0.json",
+          "memory_kv_prereq_1-customer-1.json",
+          "memory_kv_prereq_2-customer-2.json"
+        ],
+        "final_equals_last_checkpoint": true
+      },
+      "S/kv/memory_snapshot/customer_final.json": {
+        "checkpoints": [
+          "memory_kv_prereq_0-customer-0.json",
+          "memory_kv_prereq_1-customer-1.json",
+          "memory_kv_prereq_2-customer-2.json"
+        ],
+        "final_equals_last_checkpoint": true
+      },
+      "X/kv/memory_snapshot/customer_final.json": {
+        "checkpoints": [
+          "memory_kv_prereq_0-customer-0.json",
+          "memory_kv_prereq_1-customer-1.json",
+          "memory_kv_prereq_2-customer-2.json"
+        ],
+        "final_equals_last_checkpoint": true
+      },
+      "SX/kv/memory_snapshot/customer_final.json": {
+        "checkpoints": [
+          "memory_kv_prereq_0-customer-0.json",
+          "memory_kv_prereq_1-customer-1.json",
+          "memory_kv_prereq_2-customer-2.json"
+        ],
+        "final_equals_last_checkpoint": true
+      }
+    }
+  }
+}

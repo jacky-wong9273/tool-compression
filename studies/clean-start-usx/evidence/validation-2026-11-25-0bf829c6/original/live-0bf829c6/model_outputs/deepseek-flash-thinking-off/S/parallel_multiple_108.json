@@ -1,0 +1,58 @@
+{
+  "case_id": "parallel_multiple_108",
+  "category": "parallel_multiple",
+  "arm": "S",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "five_factor_model_analyse": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+        },
+        {
+          "MBTI_analyse": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+        }
+      ],
+      "content": "I'll analyze your personality using both frameworks based on the preferences you've described.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_TPjDfEUwQdiYyGKwMXF47289",
+          "type": "function",
+          "function": {
+            "name": "five_factor_model_analyse",
+            "arguments": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_Zwihxm4uq3YzE2JWkubj5586",
+          "type": "function",
+          "function": {
+            "name": "MBTI_analyse",
+            "arguments": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 766,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 254,
+      "output_tokens": 234,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "five_factor_model_analyse": "{\"talkative\": true, \"nervous\": false, \"artistic_interests\": true, \"lazy\": false, \"forgiving\": true}"
+    },
+    {
+      "MBTI_analyse": "{\"thinking_vs_feeling\": \"feeling\", \"introverted_vs_extroverted\": \"extroverted\", \"judging_vs_perceiving\": \"perceiving\", \"sensing_vs_intuition\": \"intuition\"}"
+    }
+  ]
+}

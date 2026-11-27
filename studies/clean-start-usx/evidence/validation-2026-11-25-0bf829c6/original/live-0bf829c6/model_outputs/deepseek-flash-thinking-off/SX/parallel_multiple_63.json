@@ -1,0 +1,88 @@
+{
+  "case_id": "parallel_multiple_63",
+  "category": "parallel_multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "weather_get_by_city_date": "{\"city\": \"New York City\", \"date\": \"2020-12-25\"}"
+        },
+        {
+          "weather_get_by_city_date": "{\"city\": \"New York City\", \"date\": \"2021-01-01\"}"
+        },
+        {
+          "weather_get_by_coordinates_date": "{\"coordinates\": [40.7128, -74.006], \"date\": \"2021-01-15\"}"
+        },
+        {
+          "weather_get_forecast_by_coordinates": "{\"coordinates\": [40.7128, -74.006], \"days_ahead\": 10}"
+        }
+      ],
+      "content": "I'll gather all that weather information for you. Let me make these calls in parallel.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_N9RGTtoEfgMNNJ1x6GPD9800",
+          "type": "function",
+          "function": {
+            "name": "weather_get_by_city_date",
+            "arguments": "{\"city\": \"New York City\", \"date\": \"2020-12-25\"}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_3rJf5yayJXi0xEmHfC089320",
+          "type": "function",
+          "function": {
+            "name": "weather_get_by_city_date",
+            "arguments": "{\"city\": \"New York City\", \"date\": \"2021-01-01\"}"
+          }
+        },
+        {
+          "index": 2,
+          "id": "call_02_o7TtTHcEIcaQjEOWW41I6050",
+          "type": "function",
+          "function": {
+            "name": "weather_get_by_coordinates_date",
+            "arguments": "{\"coordinates\": [40.7128, -74.006], \"date\": \"2021-01-15\"}"
+          }
+        },
+        {
+          "index": 3,
+          "id": "call_03_yxpyqgWYPHt1cf4XD6v54439",
+          "type": "function",
+          "function": {
+            "name": "weather_get_forecast_by_coordinates",
+            "arguments": "{\"coordinates\": [40.7128, -74.006], \"days_ahead\": 10}"
+          }
+        }
+      ],
+      "prompt_tokens": 714,
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 202,
+      "output_tokens": 261,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "weather_get_by_city_date": "{\"city\": \"New York City\", \"date\": \"2020-12-25\"}"
+    },
+    {
+      "weather_get_by_city_date": "{\"city\": \"New York City\", \"date\": \"2021-01-01\"}"
+    },
+    {
+      "weather_get_by_coordinates_date": "{\"coordinates\": [40.7128, -74.006], \"date\": \"2021-01-15\"}"
+    },
+    {
+      "weather_get_forecast_by_coordinates": "{\"coordinates\": [40.7128, -74.006], \"days_ahead\": 10}"
+    }
+  ]
+}

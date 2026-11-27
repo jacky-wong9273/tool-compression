@@ -1,0 +1,43 @@
+{
+  "case_id": "multiple_137",
+  "category": "multiple",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "lawsuit_search": "{\"company\": \"Google\", \"start_date\": \"2021-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+        }
+      ],
+      "content": "I'll search for ongoing lawsuits related to Google filed in California after January 1, 2021.",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_AVCLZHWwhLx6Aa8YTEf40136",
+          "type": "function",
+          "function": {
+            "name": "lawsuit_search",
+            "arguments": "{\"company\": \"Google\", \"start_date\": \"2021-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+          }
+        }
+      ],
+      "prompt_tokens": 719,
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 719,
+      "output_tokens": 113,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "lawsuit_search": "{\"company\": \"Google\", \"start_date\": \"2021-01-01\", \"location\": \"California\", \"status\": \"ongoing\"}"
+    }
+  ]
+}

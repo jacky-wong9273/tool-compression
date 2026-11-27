@@ -1,0 +1,58 @@
+{
+  "case_id": "live_irrelevance_746-257-0",
+  "category": "live_irrelevance",
+  "arm": "SX",
+  "thinking": "off",
+  "request_model": "deepseek-flash",
+  "status": "finished",
+  "steps": [
+    {
+      "turn": 0,
+      "step": 0,
+      "result": [
+        {
+          "get_service_providers": "{\"province_id\": 1, \"is_package\": true}"
+        },
+        {
+          "get_service_providers": "{\"province_id\": 1, \"is_excellent\": true}"
+        }
+      ],
+      "content": "I'd be happy to help you see promotions! However, I don't have a specific tool for viewing promotions directly. Let me help you find service providers that might have promotional offerings.\n\nCould you tell me a bit more about what you're looking for? For example:\n- What type of service are you interested in (cleaning, massage, etc.)?\n- Which province/city are you in?\n- Any specific requirements (budget, availability, etc.)?\n\nIn the meantime, let me check for service providers that are marked as \"excellent\" or offer package deals, which often come with promotions. Let me search in a common area like Bangkok:",
+      "reasoning_content": null,
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_00_dGF8YiyASMZsGmlm7qey1320",
+          "type": "function",
+          "function": {
+            "name": "get_service_providers",
+            "arguments": "{\"province_id\": 1, \"is_package\": true}"
+          }
+        },
+        {
+          "index": 1,
+          "id": "call_01_J42uFf0OpcYbtoo97VsU4321",
+          "type": "function",
+          "function": {
+            "name": "get_service_providers",
+            "arguments": "{\"province_id\": 1, \"is_excellent\": true}"
+          }
+        }
+      ],
+      "prompt_tokens": 1367,
+      "prompt_cache_hit_tokens": 1152,
+      "prompt_cache_miss_tokens": 215,
+      "output_tokens": 243,
+      "reasoning_tokens": null
+    }
+  ],
+  "scorable": true,
+  "result": [
+    {
+      "get_service_providers": "{\"province_id\": 1, \"is_package\": true}"
+    },
+    {
+      "get_service_providers": "{\"province_id\": 1, \"is_excellent\": true}"
+    }
+  ]
+}

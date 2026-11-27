@@ -8,7 +8,7 @@
   "unmodified_reason": null,
   "limitations": [
     "language_hint_is_official_preparation",
-    "x_qualifies_under_the_language_hint",
+    "x_compares_action_sentences_of_the_u_catalogue",
     "response_descriptions_left_unmodified",
     "excluded_function_left_in_catalogue",
     "trajectory_requires_official_backend"
@@ -18,11 +18,155 @@
   "changes": [
     {
       "arm": "S",
+      "function": "close_ticket",
+      "pointer": "/function/parameters/properties/ticket_id/description",
+      "before": "ID of the ticket to be closed. ",
+      "after": "ID of the ticket to be closed.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "create_ticket",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Create a ticket in the system and queue it. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Create a ticket in the system and queue it.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "create_ticket",
+      "pointer": "/function/parameters/properties/description/description",
+      "before": "Description of the ticket. Defaults to an empty string.",
+      "after": "Description of the ticket.",
+      "change_class": "schema_guaranteed"
+    },
+    {
+      "arm": "S",
       "function": "create_ticket",
       "pointer": "/function/parameters/properties/priority/description",
       "before": "Priority of the ticket, from 1 to 5. Defaults to 1. 5 is the highest priority. ",
       "after": "Priority of the ticket, from 1 to 5. 5 is the highest priority.",
-      "change_class": "schema_guaranteed"
+      "change_class": "schema_guaranteed+trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "edit_ticket",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Modify the details of an existing ticket. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Modify the details of an existing ticket.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_ticket",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get a specific ticket by its ID. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Get a specific ticket by its ID.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_ticket",
+      "pointer": "/function/parameters/properties/ticket_id/description",
+      "before": "ID of the ticket to retrieve. ",
+      "after": "ID of the ticket to retrieve.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "get_user_tickets",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get all tickets created by the current user, optionally filtered by status. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Get all tickets created by the current user, optionally filtered by status.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_user_tickets",
+      "pointer": "/function/parameters/properties/status/description",
+      "before": "Status to filter tickets by. If None, return all tickets. ",
+      "after": "Status to filter tickets by. If None, return all tickets.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "logout",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Log out the current user. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Log out the current user.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "resolve_ticket",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Resolve a ticket with a resolution. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Resolve a ticket with a resolution.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "resolve_ticket",
+      "pointer": "/function/parameters/properties/resolution/description",
+      "before": "Resolution details for the ticket. ",
+      "after": "Resolution details for the ticket.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "ticket_get_login_status",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get the login status of the currently authenticated user. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Get the login status of the currently authenticated user.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "ticket_login",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Authenticate a user for ticket system. Note that the provided function is in Python 3 syntax.",
+      "after": "Ticketing system that is part of a company: Authenticate a user for ticket system.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "ticket_login",
+      "pointer": "/function/parameters/properties/password/description",
+      "before": "Password of the user. ",
+      "after": "Password of the user.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "authenticate_travel",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API Note that the provided function is in Python 3 syntax.",
+      "after": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API",
+      "change_class": "hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "book_flight",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Book a flight given the travel information. From and To should be the airport codes in the IATA format. Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Book a flight given the travel information. From and To should be the airport codes in the IATA format.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "cancel_booking",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Cancel a booking Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Cancel a booking",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "compute_exchange_rate",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Compute the exchange rate between two currencies Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Compute the exchange rate between two currencies",
+      "change_class": "suite_context+suite_label+hint_context"
     },
     {
       "arm": "S",
@@ -34,6 +178,86 @@
     },
     {
       "arm": "S",
+      "function": "contact_customer_support",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Contact travel booking customer support, get immediate support on an issue with an online call. Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Contact travel booking customer support, get immediate support on an issue with an online call.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_all_credit_cards",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get all registered credit cards Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get all registered credit cards",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_booking_history",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve all booking history for the user. Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Retrieve all booking history for the user.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_booking_history",
+      "pointer": "/function/parameters/properties/access_token/description",
+      "before": "The access token obtained from the authenticate method. ",
+      "after": "The access token obtained from the authenticate method.",
+      "change_class": "trailing_space"
+    },
+    {
+      "arm": "S",
+      "function": "get_budget_fiscal_year",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the budget fiscal year Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get the budget fiscal year",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_credit_card_balance",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the balance of a credit card Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get the balance of a credit card",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_flight_cost",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the list of cost of a flight in USD based on location, date, and class Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get the list of cost of a flight in USD based on location, date, and class",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "get_nearest_airport_by_city",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the nearest airport to the given location Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get the nearest airport to the given location",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "list_all_airports",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: List all available airports Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: List all available airports",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "purchase_insurance",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Purchase insurance Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Purchase insurance",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
       "function": "purchase_insurance",
       "pointer": "/function/parameters/properties/insurance_cost/description",
       "before": "The cost of the insurance This is a float type value.",
@@ -42,11 +266,51 @@
     },
     {
       "arm": "S",
+      "function": "register_credit_card",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Register a credit card Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Register a credit card",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "retrieve_invoice",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve the invoice for a booking. Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Retrieve the invoice for a booking.",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "set_budget_limit",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Set the budget limit for the user Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Set the budget limit for the user",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
       "function": "set_budget_limit",
       "pointer": "/function/parameters/properties/budget_limit/description",
       "before": "The budget limit to set in USD This is a float type value.",
       "after": "The budget limit to set in USD",
       "change_class": "schema_guaranteed"
+    },
+    {
+      "arm": "S",
+      "function": "travel_get_login_status",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the status of the login Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Get the status of the login",
+      "change_class": "suite_context+suite_label+hint_context"
+    },
+    {
+      "arm": "S",
+      "function": "verify_traveler_information",
+      "pointer": "/function/description",
+      "before": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Verify the traveler information Note that the provided function is in Python 3 syntax.",
+      "after": "Travel system: Verify the traveler information",
+      "change_class": "suite_context+suite_label+hint_context"
     }
   ],
   "arms": {
@@ -1195,7 +1459,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to be closed. "
+                "description": "ID of the ticket to be closed."
               }
             },
             "required": [
@@ -1217,7 +1481,7 @@
         "type": "function",
         "function": {
           "name": "create_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Create a ticket in the system and queue it. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Create a ticket in the system and queue it.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1227,7 +1491,7 @@
               },
               "description": {
                 "type": "string",
-                "description": "Description of the ticket. Defaults to an empty string.",
+                "description": "Description of the ticket.",
                 "default": ""
               },
               "priority": {
@@ -1271,7 +1535,7 @@
         "type": "function",
         "function": {
           "name": "edit_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Modify the details of an existing ticket. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Modify the details of an existing ticket.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1322,13 +1586,13 @@
         "type": "function",
         "function": {
           "name": "get_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get a specific ticket by its ID. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get a specific ticket by its ID.",
           "parameters": {
             "type": "object",
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to retrieve. "
+                "description": "ID of the ticket to retrieve."
               }
             },
             "required": [
@@ -1370,13 +1634,13 @@
         "type": "function",
         "function": {
           "name": "get_user_tickets",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get all tickets created by the current user, optionally filtered by status. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get all tickets created by the current user, optionally filtered by status.",
           "parameters": {
             "type": "object",
             "properties": {
               "status": {
                 "type": "string",
-                "description": "Status to filter tickets by. If None, return all tickets. ",
+                "description": "Status to filter tickets by. If None, return all tickets.",
                 "default": "None"
               }
             },
@@ -1417,7 +1681,7 @@
         "type": "function",
         "function": {
           "name": "logout",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Log out the current user. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Log out the current user.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1438,7 +1702,7 @@
         "type": "function",
         "function": {
           "name": "resolve_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Resolve a ticket with a resolution. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Resolve a ticket with a resolution.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1448,7 +1712,7 @@
               },
               "resolution": {
                 "type": "string",
-                "description": "Resolution details for the ticket. "
+                "description": "Resolution details for the ticket."
               }
             },
             "required": [
@@ -1471,7 +1735,7 @@
         "type": "function",
         "function": {
           "name": "ticket_get_login_status",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get the login status of the currently authenticated user. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get the login status of the currently authenticated user.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1492,7 +1756,7 @@
         "type": "function",
         "function": {
           "name": "ticket_login",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Authenticate a user for ticket system. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Authenticate a user for ticket system.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1502,7 +1766,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password of the user. "
+                "description": "Password of the user."
               }
             },
             "required": [
@@ -1525,7 +1789,7 @@
         "type": "function",
         "function": {
           "name": "authenticate_travel",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1590,7 +1854,7 @@
         "type": "function",
         "function": {
           "name": "book_flight",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Book a flight given the travel information. From and To should be the airport codes in the IATA format. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Book a flight given the travel information. From and To should be the airport codes in the IATA format.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1685,7 +1949,7 @@
         "type": "function",
         "function": {
           "name": "cancel_booking",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Cancel a booking Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Cancel a booking",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1718,7 +1982,7 @@
         "type": "function",
         "function": {
           "name": "compute_exchange_rate",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Compute the exchange rate between two currencies Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Compute the exchange rate between two currencies",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1757,7 +2021,7 @@
         "type": "function",
         "function": {
           "name": "contact_customer_support",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Contact travel booking customer support, get immediate support on an issue with an online call. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Contact travel booking customer support, get immediate support on an issue with an online call.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1790,7 +2054,7 @@
         "type": "function",
         "function": {
           "name": "get_all_credit_cards",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get all registered credit cards Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get all registered credit cards",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -1833,13 +2097,13 @@
         "type": "function",
         "function": {
           "name": "get_booking_history",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve all booking history for the user. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Retrieve all booking history for the user.",
           "parameters": {
             "type": "object",
             "properties": {
               "access_token": {
                 "type": "string",
-                "description": "The access token obtained from the authenticate method. "
+                "description": "The access token obtained from the authenticate method."
               }
             },
             "required": [
@@ -1887,7 +2151,7 @@
         "type": "function",
         "function": {
           "name": "get_budget_fiscal_year",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the budget fiscal year Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the budget fiscal year",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1919,7 +2183,7 @@
         "type": "function",
         "function": {
           "name": "get_credit_card_balance",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the balance of a credit card Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the balance of a credit card",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1952,7 +2216,7 @@
         "type": "function",
         "function": {
           "name": "get_flight_cost",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the list of cost of a flight in USD based on location, date, and class Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the list of cost of a flight in USD based on location, date, and class",
           "parameters": {
             "type": "object",
             "properties": {
@@ -1998,7 +2262,7 @@
         "type": "function",
         "function": {
           "name": "get_nearest_airport_by_city",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the nearest airport to the given location Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the nearest airport to the given location",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2026,7 +2290,7 @@
         "type": "function",
         "function": {
           "name": "list_all_airports",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: List all available airports Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: List all available airports",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2050,7 +2314,7 @@
         "type": "function",
         "function": {
           "name": "purchase_insurance",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Purchase insurance Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Purchase insurance",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2103,7 +2367,7 @@
         "type": "function",
         "function": {
           "name": "register_credit_card",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Register a credit card Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Register a credit card",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2151,7 +2415,7 @@
         "type": "function",
         "function": {
           "name": "retrieve_invoice",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve the invoice for a booking. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Retrieve the invoice for a booking.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2219,7 +2483,7 @@
         "type": "function",
         "function": {
           "name": "set_budget_limit",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Set the budget limit for the user Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Set the budget limit for the user",
           "parameters": {
             "type": "object",
             "properties": {
@@ -2253,7 +2517,7 @@
         "type": "function",
         "function": {
           "name": "travel_get_login_status",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the status of the login Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the status of the login",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -2274,7 +2538,7 @@
         "type": "function",
         "function": {
           "name": "verify_traveler_information",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Verify the traveler information Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Verify the traveler information",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3463,7 +3727,7 @@
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to be closed. "
+                "description": "ID of the ticket to be closed."
               }
             },
             "required": [
@@ -3485,7 +3749,7 @@
         "type": "function",
         "function": {
           "name": "create_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Create a ticket in the system and queue it. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Create a ticket in the system and queue it.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3495,7 +3759,7 @@
               },
               "description": {
                 "type": "string",
-                "description": "Description of the ticket. Defaults to an empty string.",
+                "description": "Description of the ticket.",
                 "default": ""
               },
               "priority": {
@@ -3539,7 +3803,7 @@
         "type": "function",
         "function": {
           "name": "edit_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Modify the details of an existing ticket. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Modify the details of an existing ticket.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3590,13 +3854,13 @@
         "type": "function",
         "function": {
           "name": "get_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get a specific ticket by its ID. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get a specific ticket by its ID.",
           "parameters": {
             "type": "object",
             "properties": {
               "ticket_id": {
                 "type": "integer",
-                "description": "ID of the ticket to retrieve. "
+                "description": "ID of the ticket to retrieve."
               }
             },
             "required": [
@@ -3638,13 +3902,13 @@
         "type": "function",
         "function": {
           "name": "get_user_tickets",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get all tickets created by the current user, optionally filtered by status. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get all tickets created by the current user, optionally filtered by status.",
           "parameters": {
             "type": "object",
             "properties": {
               "status": {
                 "type": "string",
-                "description": "Status to filter tickets by. If None, return all tickets. ",
+                "description": "Status to filter tickets by. If None, return all tickets.",
                 "default": "None"
               }
             },
@@ -3685,7 +3949,7 @@
         "type": "function",
         "function": {
           "name": "logout",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Log out the current user. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Log out the current user.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -3706,7 +3970,7 @@
         "type": "function",
         "function": {
           "name": "resolve_ticket",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Resolve a ticket with a resolution. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Resolve a ticket with a resolution.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3716,7 +3980,7 @@
               },
               "resolution": {
                 "type": "string",
-                "description": "Resolution details for the ticket. "
+                "description": "Resolution details for the ticket."
               }
             },
             "required": [
@@ -3739,7 +4003,7 @@
         "type": "function",
         "function": {
           "name": "ticket_get_login_status",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Get the login status of the currently authenticated user. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Get the login status of the currently authenticated user.",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -3760,7 +4024,7 @@
         "type": "function",
         "function": {
           "name": "ticket_login",
-          "description": "This tool belongs to the ticketing system that is part of a company, which allows users to create, view, and manage support business tickets. Tool description: Authenticate a user for ticket system. Note that the provided function is in Python 3 syntax.",
+          "description": "Ticketing system that is part of a company: Authenticate a user for ticket system.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3770,7 +4034,7 @@
               },
               "password": {
                 "type": "string",
-                "description": "Password of the user. "
+                "description": "Password of the user."
               }
             },
             "required": [
@@ -3793,7 +4057,7 @@
         "type": "function",
         "function": {
           "name": "authenticate_travel",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API Note that the provided function is in Python 3 syntax.",
+          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Authenticate the user with the travel API",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3858,7 +4122,7 @@
         "type": "function",
         "function": {
           "name": "book_flight",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Book a flight given the travel information. From and To should be the airport codes in the IATA format. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Book a flight given the travel information. From and To should be the airport codes in the IATA format.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3953,7 +4217,7 @@
         "type": "function",
         "function": {
           "name": "cancel_booking",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Cancel a booking Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Cancel a booking",
           "parameters": {
             "type": "object",
             "properties": {
@@ -3986,7 +4250,7 @@
         "type": "function",
         "function": {
           "name": "compute_exchange_rate",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Compute the exchange rate between two currencies Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Compute the exchange rate between two currencies",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4025,7 +4289,7 @@
         "type": "function",
         "function": {
           "name": "contact_customer_support",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Contact travel booking customer support, get immediate support on an issue with an online call. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Contact travel booking customer support, get immediate support on an issue with an online call.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4058,7 +4322,7 @@
         "type": "function",
         "function": {
           "name": "get_all_credit_cards",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get all registered credit cards Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get all registered credit cards",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -4101,13 +4365,13 @@
         "type": "function",
         "function": {
           "name": "get_booking_history",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve all booking history for the user. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Retrieve all booking history for the user.",
           "parameters": {
             "type": "object",
             "properties": {
               "access_token": {
                 "type": "string",
-                "description": "The access token obtained from the authenticate method. "
+                "description": "The access token obtained from the authenticate method."
               }
             },
             "required": [
@@ -4155,7 +4419,7 @@
         "type": "function",
         "function": {
           "name": "get_budget_fiscal_year",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the budget fiscal year Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the budget fiscal year",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4187,7 +4451,7 @@
         "type": "function",
         "function": {
           "name": "get_credit_card_balance",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the balance of a credit card Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the balance of a credit card",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4220,7 +4484,7 @@
         "type": "function",
         "function": {
           "name": "get_flight_cost",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the list of cost of a flight in USD based on location, date, and class Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the list of cost of a flight in USD based on location, date, and class",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4266,7 +4530,7 @@
         "type": "function",
         "function": {
           "name": "get_nearest_airport_by_city",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the nearest airport to the given location Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the nearest airport to the given location",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4294,7 +4558,7 @@
         "type": "function",
         "function": {
           "name": "list_all_airports",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: List all available airports Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: List all available airports",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -4318,7 +4582,7 @@
         "type": "function",
         "function": {
           "name": "purchase_insurance",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Purchase insurance Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Purchase insurance",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4371,7 +4635,7 @@
         "type": "function",
         "function": {
           "name": "register_credit_card",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Register a credit card Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Register a credit card",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4419,7 +4683,7 @@
         "type": "function",
         "function": {
           "name": "retrieve_invoice",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Retrieve the invoice for a booking. Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Retrieve the invoice for a booking.",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4487,7 +4751,7 @@
         "type": "function",
         "function": {
           "name": "set_budget_limit",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Set the budget limit for the user Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Set the budget limit for the user",
           "parameters": {
             "type": "object",
             "properties": {
@@ -4521,7 +4785,7 @@
         "type": "function",
         "function": {
           "name": "travel_get_login_status",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Get the status of the login Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Get the status of the login",
           "parameters": {
             "type": "object",
             "properties": {},
@@ -4542,7 +4806,7 @@
         "type": "function",
         "function": {
           "name": "verify_traveler_information",
-          "description": "This tool belongs to the travel system, which allows users to book flights, manage credit cards, and view budget information. Tool description: Verify the traveler information Note that the provided function is in Python 3 syntax.",
+          "description": "Travel system: Verify the traveler information",
           "parameters": {
             "type": "object",
             "properties": {
