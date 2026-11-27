@@ -20,11 +20,22 @@ The cue is one positive sentence naming one rival:
 fits and does not say the target cannot do it. A text cue is dropped, and the
 next rival tried, when the rival's name already spells every content word of
 its differing window: the name is in the request, so such a cue says nothing new.
+The name spells a word when the word is one of its parts, when a part of at
+least three letters is the word's leading abbreviation (``min`` for
+``minimum``), or when words of the cue phrase that include the whole differing
+window, written together, are a run of whole parts (``Whole Foods`` in
+``wholefoods_vegan_products``, ``the Open Library`` in
+``openlibrary_books_search``). A run never ends inside a part: ``log`` is not
+spelled by ``login_entries``.
 
 A pair is also refused when the target's own text claims the object the rival's
 phrase names: the target's differing words end in ``or``/``and`` joined to the
 shared wording (``Remove a file or directory`` against ``Remove a directory ...``).
-A cue there would send a use the target documents to the rival.
+A cue there would send a use the target documents to the rival. The same holds
+the other way round: when the rival's differing words end in ``or``/``and``
+joined to the shared wording, the rival's own text claims the target's object
+too, and its phrase would be one conjunct cut from that coordination
+(``For a file, use rm.`` from ``Remove a file or directory``).
 
 Both action texts must also act on the same object: the head noun of the
 verb's direct object (``_object_head``) has to match. ``Get the login status``
@@ -50,7 +61,8 @@ import re
 
 from tool_compression.clean_start.descriptions import action_sentence
 
-X_RULES_VERSION = "x-rules-2026-11-26"
+X_RULES_VERSION = "x-rules-2026-11-27"
+MIN_ABBREVIATION_LETTERS = 3
 CUE_POINTER = "/function/description"
 CUE_SEPARATOR = " "
 BANNED = ("only this", "cannot", "can't", "exclusively", "unable to", "does not handle", "can't handle")
@@ -230,7 +242,7 @@ def _pair(target: dict, rival: dict) -> tuple[dict | None, str]:
         problem = (
             _window_problem(mid_t, mid_r)
             or _context_problem(target_words, prefix, suffix, mid_t, mid_r)
-            or _scope_problem(mid_t, suffix)
+            or _scope_problem(mid_t, mid_r, suffix)
         )
         if problem:
             return None, problem
@@ -321,13 +333,19 @@ def _context_problem(words: list, prefix: int, suffix: int, mid_t: list, mid_r: 
     return None
 
 
-def _scope_problem(mid_t: list, suffix: int) -> str | None:
-    """The target's own text must not claim what the rival's phrase names."""
+def _scope_problem(mid_t: list, mid_r: list, suffix: int) -> str | None:
+    """Neither tool's own text may claim the other's object through a coordinator."""
     words_t = [word.lower() for word, _span in mid_t]
     if suffix and words_t and words_t[-1] in _COORDINATORS:
         return (
             "The target's differing words end in a coordinator joined to the shared wording, so the "
             "target's own text claims the object the rival's phrase names."
+        )
+    words_r = [word.lower() for word, _span in mid_r]
+    if suffix and words_r and words_r[-1] in _COORDINATORS:
+        return (
+            "The rival's differing words end in a coordinator joined to the shared wording, so the "
+            "rival's own text also claims the target's object and its phrase would be one conjunct."
         )
     return None
 
@@ -473,14 +491,56 @@ def _redundant_with_name(item: dict) -> str | None:
     """
     if item["kind"] != "text":
         return None
-    differing = {
-        _lemma(word)
-        for word in item["evidence"]["rival"]["differing_words"]
-        if word.lower() not in _STOP
-    }
-    if differing and differing <= _name_tokens(item["function_name"]):
+    words = [word for word in item["evidence"]["rival"]["differing_words"] if word.lower() not in _STOP]
+    if not words:
+        return None
+    name = item["function_name"]
+    tokens = _name_tokens(name)
+    if {_lemma(word) for word in words} <= tokens:
+        return "The rival's name already spells its differing words."
+    if all(_abbreviated(word, tokens) for word in words):
+        return "The rival's name already spells its differing words."
+    if _phrase_spelled(item["evidence"]["rival"], _name_runs(name)):
         return "The rival's name already spells its differing words."
     return None
+
+
+def _phrase_spelled(rival: dict, runs: set[str]) -> bool:
+    """Some words of the cue phrase that include the whole differing window, written
+    together, are a run of whole name parts: ``the Open Library`` (window ``Open``)
+    in ``openlibrary_books_search``."""
+    phrase = [word.lower() for word in re.findall(r"[A-Za-z0-9]+", rival.get("cue_phrase") or "")]
+    window = [word.lower() for word in re.findall(r"[A-Za-z0-9]+", " ".join(rival["differing_words"]))]
+    while window and window[0] in _STOP:
+        window.pop(0)
+    while window and window[-1] in _STOP:
+        window.pop()
+    if not window:
+        return False
+    for at in range(len(phrase) - len(window) + 1):
+        if phrase[at:at + len(window)] != window:
+            continue
+        for start in range(at + 1):
+            for end in range(at + len(window), len(phrase) + 1):
+                if "".join(phrase[start:end]) in runs:
+                    return True
+    return False
+
+
+def _abbreviated(word: str, tokens: set[str]) -> bool:
+    lowered = word.lower()
+    return any(
+        len(token) >= MIN_ABBREVIATION_LETTERS and len(lowered) > len(token) and lowered.startswith(token)
+        for token in tokens
+    )
+
+
+def _name_runs(name: str) -> set[str]:
+    """Every run of whole consecutive name parts, written together in lower case:
+    ``BoardGameGeek_recommend`` gives ``boardgamegeek``, ``wholefoods_vegan`` gives
+    ``wholefoods``."""
+    parts = [part.lower() for part in re.findall(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+", name)]
+    return {"".join(parts[start:end]) for start in range(len(parts)) for end in range(start + 1, len(parts) + 1)}
 
 
 def _name_tokens(name: str) -> set[str]:
