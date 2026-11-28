@@ -16,6 +16,8 @@ import http.client
 import json
 import os
 import socket
+import ssl
+import subprocess
 import threading
 import time
 
@@ -203,8 +205,9 @@ class _Server:
     and never answers. Any dict is sent back as a complete JSON response.
     """
 
-    def __init__(self, behaviours):
+    def __init__(self, behaviours, tls=None):
         self.behaviours = list(behaviours)
+        self.tls = tls
         self.requests = 0
         self.closed_by_client = []
         self.listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -220,6 +223,12 @@ class _Server:
                 connection, _ = self.listener.accept()
             except OSError:
                 return
+            if self.tls is not None:
+                try:
+                    connection = self.tls.wrap_socket(connection, server_side=True)
+                except ssl.SSLError:
+                    connection.close()
+                    continue
             behaviour = self.behaviours.pop(0) if self.behaviours else "silent"
             threading.Thread(target=self._serve, args=(connection, behaviour), daemon=True).start()
 
@@ -249,15 +258,16 @@ class _Server:
             if not self._read_request(connection):
                 return
             self.requests += 1
-            if behaviour in ("trickle", "trickle_close"):
+            if behaviour in ("trickle", "trickle_close", "slow"):
                 close = b"Connection: close\r\n" if behaviour == "trickle_close" else b""
                 connection.sendall(
                     b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n" + close
                     + b"Transfer-Encoding: chunked\r\n\r\n"
                 )
+                pause = 0.15 if behaviour == "slow" else 0.05
                 while time.monotonic() - started < 120:
                     connection.sendall(b"1\r\n\n\r\n")
-                    time.sleep(0.05)
+                    time.sleep(pause)
             elif behaviour == "silent":
                 connection.settimeout(120)
                 if connection.recv(1) == b"":
@@ -376,6 +386,175 @@ def test_a_complete_answer_inside_the_deadline_is_returned():
     payload = post_chat({}, "placeholder", read_timeout=2.0, total_deadline=2.0, connection_factory=server.factory(2.0))
     server.close()
     assert payload["choices"][0]["message"]["content"] == "fine"
+
+
+def test_a_wall_clock_jump_cuts_keepalive_bytes_before_the_monotonic_budget():
+    """Civil time steps forward while the provider keeps the stream alive.
+
+    The monotonic budget is still 10 s and the socket timeout is 30 s. Neither
+    may keep the call open after ``time.time`` has passed the deadline.
+    """
+    server = _Server(["trickle"])
+    started = time.monotonic()
+    origin = time.time()
+
+    def wall():
+        if time.monotonic() - started >= 0.12:
+            return origin + 3600.0
+        return origin
+
+    began = time.monotonic()
+    with pytest.raises(TotalDeadlineExceeded) as late:
+        post_chat(
+            {}, "placeholder", read_timeout=30.0, total_deadline=10.0, wall=wall,
+            connection_factory=server.factory(30.0),
+        )
+    elapsed = time.monotonic() - began
+    deadline = time.monotonic() + 2
+    while not server.closed_by_client and time.monotonic() < deadline:
+        time.sleep(0.02)
+    server.close()
+    assert elapsed < 0.75
+    assert late.value.deadline_seconds == 10.0
+    assert late.value.elapsed_seconds < 0.75
+    assert server.closed_by_client and server.closed_by_client[0] < 1.0
+
+
+def test_a_backward_wall_clock_does_not_extend_a_keepalive_stream():
+    server = _Server(["trickle"])
+    stuck = time.time() - 10_000.0
+
+    def wall():
+        return stuck
+
+    began = time.monotonic()
+    with pytest.raises(TotalDeadlineExceeded) as late:
+        post_chat(
+            {}, "placeholder", read_timeout=30.0, total_deadline=0.35, wall=wall,
+            connection_factory=server.factory(30.0),
+        )
+    elapsed = time.monotonic() - began
+    server.close()
+    assert 0.35 <= elapsed < 0.35 + SLACK
+    assert late.value.deadline_seconds == 0.35
+    assert 0.35 <= late.value.elapsed_seconds < 0.35 + SLACK
+
+
+def test_slow_bytes_cannot_postpone_a_long_socket_timeout():
+    """One byte at a time, each well inside the socket timeout, forever."""
+    server = _Server(["slow"])
+    began = time.monotonic()
+    with pytest.raises(TotalDeadlineExceeded):
+        post_chat(
+            {}, "placeholder", read_timeout=30.0, total_deadline=0.4,
+            connection_factory=server.factory(30.0),
+        )
+    elapsed = time.monotonic() - began
+    deadline = time.monotonic() + 2
+    while not server.closed_by_client and time.monotonic() < deadline:
+        time.sleep(0.02)
+    server.close()
+    assert 0.4 <= elapsed < 0.4 + SLACK
+    assert server.closed_by_client and server.closed_by_client[0] < 0.4 + SLACK
+
+
+def _tls_pair(directory: Path):
+    key = directory / "key.pem"
+    cert = directory / "cert.pem"
+    subprocess.check_call(
+        [
+            "openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
+            "-keyout", str(key), "-out", str(cert), "-days", "1", "-subj", "/CN=localhost",
+        ],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    server_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_ctx.load_cert_chain(cert, key)
+    client_ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    client_ctx.check_hostname = False
+    client_ctx.verify_mode = ssl.CERT_NONE
+    return server_ctx, client_ctx
+
+
+def test_tls_keepalive_bytes_are_cut_by_shutting_the_raw_socket(tmp_path):
+    server_ctx, client_ctx = _tls_pair(tmp_path)
+    server = _Server(["trickle"], tls=server_ctx)
+
+    def factory(timeout):
+        return lambda: http.client.HTTPSConnection(
+            "127.0.0.1", server.port, timeout=timeout, context=client_ctx,
+        )
+
+    began = time.monotonic()
+    with pytest.raises(TotalDeadlineExceeded):
+        post_chat(
+            {}, "placeholder", read_timeout=30.0, total_deadline=0.4,
+            connection_factory=factory(30.0),
+        )
+    elapsed = time.monotonic() - began
+    deadline = time.monotonic() + 2
+    while not server.closed_by_client and time.monotonic() < deadline:
+        time.sleep(0.02)
+    server.close()
+    assert 0.4 <= elapsed < 0.4 + SLACK
+    assert server.closed_by_client and server.closed_by_client[0] < 0.4 + SLACK + 0.3
+
+
+def _stall_sent_lines(monkeypatch, when):
+    from tool_compression.clean_start import runner as runner_mod
+
+    real = runner_mod._append_jsonl
+
+    def slow(path, row):
+        if row.get("event") == "sent" and when(row):
+            time.sleep(0.45)
+        real(path, row)
+
+    monkeypatch.setattr(runner_mod, "_append_jsonl", slow)
+
+
+def test_a_sent_line_stall_spends_the_first_deadline_and_the_retry_is_sent(tmp_path, monkeypatch):
+    _stall_sent_lines(monkeypatch, lambda row: row.get("try") == 1)
+    transport = _Deadlined([_text("after the stall")])
+    policy = SendPolicy("stall", 1, (0.15, 0.4), (0.0,), 2.0, "skip", skip_streak_limit=2)
+    cases = [_single("multiple_0")]
+    result = execute(
+        cases, _u_slots(cases), tmp_path, transport, ceiling_usd=Decimal("1"),
+        thinking_modes=("off",), clock=_clock, identity=IDENTITY, policy=policy,
+    )
+    assert result["complete"] is True and result["slots_skipped"] == 0 and result["retries"] == 1
+    assert transport.deadlines == [0.4]
+    failed = [row for row in _lines(tmp_path / "attempts.jsonl") if row["event"] == "failed"]
+    assert len(failed) == 1
+    assert failed[0]["error"] == "TotalDeadlineExceeded"
+    assert failed[0]["may_be_billed"] is True and failed[0]["retried"] is True
+    assert failed[0]["deadline_seconds"] == 0.15
+    assert 0.15 <= failed[0]["elapsed_seconds"] < 0.45 + SLACK
+    bills = _lines(tmp_path / "bills.jsonl")
+    assert [row["attempt"] for row in bills] == [2]
+    assert not (tmp_path / "failures.jsonl").exists()
+
+
+def test_two_sent_line_stalls_skip_and_record_without_calling_the_provider(tmp_path, monkeypatch):
+    _stall_sent_lines(monkeypatch, lambda row: True)
+    transport = _Deadlined([_text("not sent")])
+    policy = SendPolicy("stall", 1, (0.12, 0.2), (0.0,), 2.0, "skip", skip_streak_limit=2)
+    cases = [_single("multiple_0")]
+    result = execute(
+        cases, _u_slots(cases), tmp_path, transport, ceiling_usd=Decimal("1"),
+        thinking_modes=("off",), clock=_clock, identity=IDENTITY, policy=policy,
+    )
+    assert result["complete"] is True and result["slots_skipped"] == 1 and result["retries"] == 1
+    assert transport.deadlines == []
+    assert not (tmp_path / "bills.jsonl").exists()
+    record = _lines(tmp_path / "failures.jsonl")[0]
+    assert record["kind"] == "skipped" and record["may_be_billed"] is True
+    assert record["policy"] == "stall"
+    assert [(row["try"], row["error"], row["deadline_seconds"], row["may_be_billed"]) for row in record["attempts"]] == [
+        (1, "TotalDeadlineExceeded", 0.12, True),
+        (2, "TotalDeadlineExceeded", 0.2, True),
+    ]
+    assert all(row["elapsed_seconds"] >= row["deadline_seconds"] for row in record["attempts"])
 
 
 def test_the_live_transport_maps_the_policy_deadline_onto_both_timeouts(monkeypatch):

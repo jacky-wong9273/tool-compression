@@ -30,7 +30,7 @@
       20.0,
       60.0
     ],
-    "deadline_scope": "wall clock from the start of the try: DNS, connect, TLS, request write, response headers and the whole body. Keep-alive bytes do not extend it. At the deadline the socket is shut down and the try fails.",
+    "deadline_scope": "from the journaled start of the try, including the sent-line fsync, DNS, connect, TLS, request write, response headers and the whole body. A timer thread shuts the socket down when monotonic time reaches the budget, or sooner if civil time jumps ahead. Keep-alive bytes do not extend it, and a backward civil-time step cannot extend it either.",
     "read_timeout_seconds": [
       20.0,
       60.0
