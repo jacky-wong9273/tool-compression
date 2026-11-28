@@ -12,6 +12,16 @@ A skipped slot whose sidecar was not yet marked when the box was lost is
 marked. Recorded spend is the sum of the bill ledger, and that sum counts
 against the same ceiling.
 
+Continue-from. ``--continue-from PRIOR --out NEW`` is the only path that
+accepts a different ``source_sha256``. It copies ``PRIOR`` to ``NEW`` and then
+resumes ``NEW``. ``PRIOR`` is not modified. The copy is what ``apply_resume``
+repairs, so the memory-checkpoint rules below are unchanged. The new run
+records ``continue_from`` — the prior directory, the prior ``source_sha256``,
+and the new one — beside the identity, not as an identity key. Its identity
+``source_sha256`` is the code that continues the run. A later ``--resume`` of
+``NEW`` matches that code. A ``--resume`` of ``PRIOR`` still refuses the new
+source. Every other identity field still has to match.
+
 Memory state. In pinned BFCL every entry of a scenario other than the ``-0``
 prerequisite loads ``<scenario>_final.json``, and only a prerequisite flush
 writes it, right after ``prereq_checkpoints/<id>.json``. So
@@ -34,18 +44,24 @@ import os
 import shutil
 
 from tool_compression.clean_start.categories import is_memory, result_group
-from tool_compression.clean_start.pin import OFFICIAL_SETTLEMENT, REQUEST_MODEL, STUDY_ID
+from tool_compression.clean_start.pin import ARMS, OFFICIAL_SETTLEMENT, REQUEST_MODEL, STUDY_ID
 from tool_compression.clean_start.rate_card import rate_card
 from tool_compression.clean_start.scoring import registry_dir, result_model_name, result_relative
 
 RESUME_DIR = "resume"
 RESUME_LOG = "resume.jsonl"
 FAILURES = "failures.jsonl"
+CONTINUE_FROM_FILE = "continue-from.json"
 SKIP_KINDS = ("skipped", "dependency_skipped")
 
 
 def source_sha256() -> str:
-    """Every ``.py`` file under ``src/tool_compression``. A resume runs the code that started the run."""
+    """Every ``.py`` file under ``src/tool_compression``. A resume runs the code that started the run.
+
+    ``--continue-from`` is the explicit exception: the new directory's identity
+    records this hash, and ``continue_from`` records the hash of the run that
+    was copied.
+    """
     root = Path(__file__).resolve().parents[1]
     digest = sha256()
     for path in sorted(root.rglob("*.py")):
@@ -104,19 +120,31 @@ def _prior_run(out_dir: Path) -> dict:
     return prior
 
 
-def _check_identity(prior: dict, *, identity: dict, slots: list[dict], modes: tuple[str, ...], ceiling_usd: Decimal) -> None:
+def _check_identity(
+    prior: dict,
+    *,
+    identity: dict,
+    slots: list[dict],
+    modes: tuple[str, ...],
+    ceiling_usd: Decimal,
+    accept_new_source: bool = False,
+) -> None:
     from tool_compression.clean_start.runner import plan_summary
 
     if prior.get("study") != STUDY_ID or prior.get("model") != REQUEST_MODEL:
         raise _stop("resume_study_mismatch")
     if prior.get("official_settlement") is not OFFICIAL_SETTLEMENT:
         raise _stop("resume_official_settlement_mismatch")
+    if list(prior.get("arms") or []) != list(ARMS):
+        raise _stop("resume_arms_mismatch")
     if prior.get("complete"):
         raise _stop("resume_already_complete")
     before = prior.get("identity") or {}
     if before.get("draw_sha256") != identity.get("draw_sha256"):
         raise _stop("resume_draw_mismatch")
     for key in sorted(set(before) | set(identity)):
+        if key == "source_sha256" and accept_new_source:
+            continue
         if before.get(key) != identity.get(key):
             raise _stop(f"resume_identity_mismatch:{key}")
     if prior.get("slot_sha256") != plan_summary(slots, modes)["slot_sha256"] or prior.get("slots_total") != len(slots):
@@ -251,12 +279,20 @@ def inspect_resume(
     identity: dict,
     ceiling_usd: Decimal,
     thinking_modes: tuple[str, ...],
+    accept_new_source: bool = False,
 ) -> dict:
-    """What a resume of ``out_dir`` would skip, send again, and repair. Writes nothing."""
+    """What a resume of ``out_dir`` would skip, send again, and repair. Writes nothing.
+
+    ``accept_new_source`` is only for ``--continue-from``. It lets ``source_sha256``
+    differ and reports both hashes. Every other field is still compared.
+    """
     out_dir = Path(out_dir)
     modes = tuple(thinking_modes)
     prior = _prior_run(out_dir)
-    _check_identity(prior, identity=identity, slots=slots, modes=modes, ceiling_usd=ceiling_usd)
+    _check_identity(
+        prior, identity=identity, slots=slots, modes=modes, ceiling_usd=ceiling_usd,
+        accept_new_source=accept_new_source,
+    )
     ledgers = _ledgers(out_dir)
     by_id = {case["id"]: case for case in cases}
     index_of = {(slot["thinking"], slot["arm"], slot["case_id"]): index for index, slot in enumerate(slots)}
@@ -364,7 +400,7 @@ def inspect_resume(
             "thinking": slot["thinking"],
             "prereq": slot["prereq"],
         }
-    return {
+    described = {
         "session": max(sessions_seen) + 1,
         "prior_status": {key: prior.get(key) for key in ("status", "reason", "running_usd", "slots_sent")},
         "prior_sessions": list(prior.get("sessions") or []),
@@ -385,7 +421,15 @@ def inspect_resume(
         "next_slot": next_slot,
         "abandoned_partial_usd": abandoned,
         "actions": actions,
+        "continue_from": prior.get("continue_from"),
     }
+    if accept_new_source:
+        before = prior.get("identity") or {}
+        described["accepted_source_sha256"] = {
+            "prior": before.get("source_sha256"),
+            "new": identity.get("source_sha256"),
+        }
+    return described
 
 
 def _broken_chains(slots, by_id, skipped: dict[int, dict], limit: int) -> list[dict]:
@@ -465,7 +509,7 @@ def _memory_actions(out_dir: Path, cases, slots, by_id, first, skipped: set[int]
 
 def describe(plan: dict) -> dict:
     """JSON form of a resume plan."""
-    return {
+    described = {
         "session": plan["session"],
         "prior_status": plan["prior_status"],
         "prior_spend_usd": str(plan["prior_spend_usd"]),
@@ -481,6 +525,11 @@ def describe(plan: dict) -> dict:
         "abandoned_partial_usd": str(plan["abandoned_partial_usd"]),
         "actions": plan["actions"],
     }
+    if plan.get("continue_from"):
+        described["continue_from"] = plan["continue_from"]
+    if plan.get("accepted_source_sha256"):
+        described["accepted_source_sha256"] = plan["accepted_source_sha256"]
+    return described
 
 
 def _fsync_write(path: Path, data: bytes) -> None:
@@ -583,4 +632,127 @@ def apply_resume(out_dir: Path, plan: dict, at: str) -> dict:
         handle.flush()
         os.fsync(handle.fileno())
     _fsync_write(session_dir / "plan.json", (json.dumps(record, indent=2, ensure_ascii=False) + "\n").encode("utf-8"))
+    return record
+
+
+def continue_from_record(prior_out: Path, prior_source: str | None, new_source: str | None) -> dict:
+    """The cutover written beside the identity. It is not an identity key."""
+    return {
+        "kind": "continue-from",
+        "prior_out": str(Path(prior_out).resolve()),
+        "prior_source_sha256": prior_source,
+        "source_sha256": new_source,
+    }
+
+
+def runs_overlap(prior_out: Path, new_out: Path) -> bool:
+    """True when the two directories are the same path or one contains the other."""
+    prior = Path(prior_out).resolve()
+    new = Path(new_out).resolve()
+    return prior == new or prior.is_relative_to(new) or new.is_relative_to(prior)
+
+
+def bind_continue_from(
+    plan: dict,
+    record: dict | None,
+    identity: dict | None,
+    *,
+    accept_new_source: bool,
+) -> tuple[dict | None, bool]:
+    """The continue-from record to keep, and whether this session introduces it.
+
+    A normal resume carries a record already stored on the run. The explicit
+    path has to pass the record, and it has to name the source hashes inspect
+    just accepted. A second session does not invent a different cutover.
+    """
+    existing = plan.get("continue_from")
+    if not accept_new_source:
+        if record is not None:
+            raise _stop("continue_from_requires_accept_new_source")
+        return existing, False
+    if not isinstance(record, dict) or record.get("kind") != "continue-from":
+        raise _stop("continue_from_required")
+    if not record.get("prior_out"):
+        raise _stop("continue_from_prior_out_missing")
+    if existing is not None:
+        if existing != record:
+            raise _stop("continue_from_conflict")
+        return existing, False
+    accepted = plan.get("accepted_source_sha256")
+    if not isinstance(accepted, dict):
+        raise _stop("continue_from_required")
+    if record.get("prior_source_sha256") != accepted.get("prior"):
+        raise _stop("continue_from_prior_source_mismatch")
+    if record.get("source_sha256") != (identity or {}).get("source_sha256"):
+        raise _stop("continue_from_source_mismatch")
+    return record, True
+
+
+def _read_continue_marker(path: Path) -> dict | None:
+    if not path.is_file():
+        return None
+    try:
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        raise _stop("continue_from_marker_unreadable") from None
+    if not isinstance(record, dict):
+        raise _stop("continue_from_marker_unreadable")
+    return record
+
+
+def stage_continue_from(
+    prior_out: Path,
+    new_out: Path,
+    cases: list[dict],
+    slots: list[dict],
+    *,
+    identity: dict,
+    ceiling_usd: Decimal,
+    thinking_modes: tuple[str, ...],
+) -> dict:
+    """Copy ``prior_out`` to ``new_out`` and return the continue-from record.
+
+    The prior directory is only read. A later call with the same prior and the
+    same new source leaves a staged copy where it is, so a box lost after the
+    copy is resumed on that copy instead of copied again. The copy is then
+    resumed with the same rules as ``--resume``.
+    """
+    prior_out = Path(prior_out)
+    new_out = Path(new_out)
+    if runs_overlap(prior_out, new_out):
+        raise _stop("continue_from_out_overlaps_prior")
+    plan = inspect_resume(
+        prior_out, cases, slots, identity=identity, ceiling_usd=ceiling_usd,
+        thinking_modes=thinking_modes, accept_new_source=True,
+    )
+    accepted = plan["accepted_source_sha256"]
+    record = continue_from_record(prior_out, accepted["prior"], accepted["new"])
+    if new_out.exists():
+        marker = _read_continue_marker(new_out / CONTINUE_FROM_FILE)
+        if marker == record:
+            return record
+        if marker is not None and marker.get("kind") == "continue-from":
+            raise _stop("continue_from_staged_for_another_source")
+        if new_out.is_dir() and not any(new_out.iterdir()):
+            new_out.rmdir()
+        else:
+            raise _stop("continue_from_out_exists")
+    staging = new_out.with_name(f".{new_out.name}.continue-from-tmp")
+    if runs_overlap(prior_out, staging):
+        raise _stop("continue_from_out_overlaps_prior")
+    if staging.exists():
+        if not staging.is_dir():
+            raise _stop("continue_from_staging_exists")
+        staged = _read_continue_marker(staging / CONTINUE_FROM_FILE)
+        if staged == record and not new_out.exists():
+            os.rename(staging, new_out)
+            return record
+        shutil.rmtree(staging)
+    new_out.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(prior_out, staging)
+    _fsync_write(
+        staging / CONTINUE_FROM_FILE,
+        (json.dumps(record, indent=2, sort_keys=True) + "\n").encode("utf-8"),
+    )
+    os.rename(staging, new_out)
     return record

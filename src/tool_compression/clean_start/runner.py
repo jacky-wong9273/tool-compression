@@ -24,9 +24,12 @@ recorded as ``dependency_skipped`` and not sent, because its memory would not
 be the state pinned BFCL builds.
 
 A fresh run refuses an output directory that already holds provider evidence.
-``resume=True`` is the only way back into one: see ``resume.py``. Finished and
+``resume=True`` continues one in place: see ``resume.py``. Finished and
 skipped slots are not sent again, the stopped slot is sent again from its first
 request, and the bill ledger's sum counts against the same ceiling.
+``accept_new_source`` is only for a directory copied by ``--continue-from``.
+It lets ``source_sha256`` differ, and the run records that cutover beside the
+identity. The directory that was copied is not one this function writes.
 
 Trajectory categories follow the pinned BFCL function-calling loop: class
 instances are created before the first request, memory categories get the
@@ -1007,12 +1010,16 @@ def execute(
     sleep=None,
     policy: SendPolicy | None = None,
     monotonic=None,
+    accept_new_source: bool = False,
+    continue_from: dict | None = None,
 ) -> dict:
     """Send ``slots`` in order. ``thinking_modes`` is what a person authorised.
 
     ``resume`` continues the run already in ``out_dir``. ``policy`` decides
     deadlines, retries and what follows the last failed try. Without it,
     ``retry_limit`` 0 is the no-retry policy and 2 is the preliminary policy.
+    ``accept_new_source`` with ``continue_from`` is the copied-run path: the
+    identity ``source_sha256`` may differ, and the cutover is stored on the run.
     """
     out_dir = Path(out_dir)
     if ceiling_usd <= 0:
@@ -1038,13 +1045,23 @@ def execute(
     if missing:
         raise RunStopped(f"slot_without_case:{missing[0]}")
     plan = None
+    carried = None
+    introduced = False
     if resume:
-        from tool_compression.clean_start.resume import apply_resume, inspect_resume
+        from tool_compression.clean_start.resume import apply_resume, bind_continue_from, inspect_resume
 
         plan = inspect_resume(
             out_dir, cases, slots, identity=identity or {}, ceiling_usd=ceiling_usd, thinking_modes=modes,
+            accept_new_source=accept_new_source,
         )
+        carried, introduced = bind_continue_from(
+            plan, continue_from, identity, accept_new_source=accept_new_source,
+        )
+        if introduced:
+            plan["continue_from"] = carried
     else:
+        if accept_new_source or continue_from is not None:
+            raise RunStopped("continue_from_requires_resume")
         reused = refuse_reuse(out_dir)
         if reused:
             raise RunStopped(reused)
@@ -1070,6 +1087,8 @@ def execute(
         broken[(row["thinking"], row["arm"], row["category"], row["scenario"])] = row["prereq"]
     started = clock().isoformat()
     session_record = {"session": state["session"], "started_at": started, "resumed": plan is not None}
+    if introduced and carried is not None:
+        session_record["continue_from"] = carried
     if plan:
         applied = apply_resume(out_dir, plan, started)
         session_record.update({
@@ -1095,6 +1114,8 @@ def execute(
         "failures_file": FAILURES_FILE,
         **{key: value for key, value in plan_summary(slots, modes).items() if key != "slots_total"},
     }
+    if carried:
+        common["continue_from"] = carried
 
     def status(**fields) -> dict:
         return _status(
