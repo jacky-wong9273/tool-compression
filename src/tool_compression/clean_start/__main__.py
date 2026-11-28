@@ -84,7 +84,18 @@ def main(argv: list[str] | None = None) -> int:
         help="--preliminary or --full: continue the stopped run in --out. Finished and skipped "
         "slots are not sent again, the stopped slot is sent again from its start, and recorded "
         "spend counts against the same ceiling. Without --live it only reports what a resume "
-        "would do.",
+        "would do. A different source_sha256 is refused; use --continue-from for that.",
+    )
+    run.add_argument(
+        "--continue-from",
+        type=Path,
+        metavar="PRIOR_OUT",
+        help="--full: copy a stopped run to a new --out and resume the copy. The prior directory "
+        "is not modified. source_sha256 may differ; the plan, slots, editors, arms, study, model, "
+        "official settlement, retry policy, deadlines, memory prerequisites, thinking mode, ceiling "
+        "and rate card must still match. Finished and skipped slots are not sent again, a stopped "
+        "slot starts again at try 1, and the copied bill ledger counts against the same ceiling. "
+        "Without --live it only reports. Later stops of the new directory use --resume.",
     )
 
     args = parser.parse_args(argv)
@@ -240,13 +251,22 @@ def _run(args) -> int:
         if ceiling <= 0:
             print("refusing: --ceiling-usd must be greater than 0", file=sys.stderr)
             return 2
+    if args.continue_from and args.resume:
+        print(
+            "refusing: --continue-from copies a stopped run into a new --out; it is not --resume",
+            file=sys.stderr,
+        )
+        return 2
+    if args.continue_from and not args.full:
+        print("refusing: --continue-from applies to --full only", file=sys.stderr)
+        return 2
     if args.resume and not (args.preliminary or args.full):
         print("refusing: --resume applies to --preliminary or --full only", file=sys.stderr)
         return 2
     memory_prereqs = args.memory_prereqs or (
         "none" if args.pilot or args.validation or args.preliminary else "all"
     )
-    if not args.resume:
+    if not args.resume and not args.continue_from:
         reused = refuse_reuse(args.out)
         if reused:
             print(
@@ -318,7 +338,7 @@ def _run(args) -> int:
             print("refusing: full slot order is not the committed thinking-off order", file=sys.stderr)
             return 2
         if args.live:
-            problems = full.start_gate(_now(), resume=args.resume)
+            problems = full.start_gate(_now(), resume=args.resume or bool(args.continue_from))
             if problems:
                 for problem in problems:
                     print(f"refusing before any request: {problem}", file=sys.stderr)
@@ -344,19 +364,34 @@ def _run(args) -> int:
         full=args.full,
         cost=cost,
     )
-    if args.resume:
-        from tool_compression.clean_start.resume import describe, inspect_resume
+    if args.resume or args.continue_from:
+        from tool_compression.clean_start.resume import describe, inspect_resume, runs_overlap
 
+        if args.continue_from and runs_overlap(args.continue_from, args.out):
+            print("refusing to continue: continue_from_out_overlaps_prior", file=sys.stderr)
+            return 2
+        source = args.continue_from if args.continue_from else args.out
         try:
             plan = inspect_resume(
-                args.out, cases, build_slots(cases, modes),
+                source, cases, build_slots(cases, modes),
                 identity=identity, ceiling_usd=ceiling, thinking_modes=modes,
+                accept_new_source=bool(args.continue_from),
             )
         except RunStopped as stopped:
-            print(f"refusing to resume: {stopped.reason}", file=sys.stderr)
+            label = "continue" if args.continue_from else "resume"
+            print(f"refusing to {label}: {stopped.reason}", file=sys.stderr)
             return 2
         if not args.live:
-            print(json.dumps({"resume_check": True, "provider_contacted": False, **describe(plan)}, sort_keys=True))
+            payload = {"resume_check": True, "provider_contacted": False, **describe(plan)}
+            if args.continue_from:
+                from tool_compression.clean_start.resume import continue_from_record
+
+                accepted = plan["accepted_source_sha256"]
+                payload["continue_from_check"] = True
+                payload["continue_from"] = continue_from_record(
+                    args.continue_from, accepted["prior"], accepted["new"],
+                )
+            print(json.dumps(payload, sort_keys=True))
             return 0
     if not args.live:
         extra = None
@@ -416,6 +451,22 @@ def _run(args) -> int:
         except (FileNotFoundError, ImportError) as exc:
             print(f"refusing before any request: {exc}", file=sys.stderr)
             return 2
+    resume = args.resume
+    accept_new_source = False
+    continue_record = None
+    if args.continue_from:
+        from tool_compression.clean_start.resume import stage_continue_from
+
+        try:
+            continue_record = stage_continue_from(
+                args.continue_from, args.out, cases, slots,
+                identity=identity, ceiling_usd=ceiling, thinking_modes=modes,
+            )
+        except RunStopped as stopped:
+            print(f"refusing to continue: {stopped.reason}", file=sys.stderr)
+            return 2
+        resume = True
+        accept_new_source = True
     # Key read and socket use happen only after the checks above.
     transport = authorized_transport()
     try:
@@ -428,9 +479,11 @@ def _run(args) -> int:
             thinking_modes=modes,
             executor=executor,
             identity=identity,
-            resume=args.resume,
+            resume=resume,
             retry_limit=RETRY_LIMIT if args.preliminary else 0,
             policy=FULL_FLY_POLICY if args.full else None,
+            accept_new_source=accept_new_source,
+            continue_from=continue_record,
         )
     except RunStopped as stopped:
         print(f"refusing before any request: {stopped.reason}", file=sys.stderr)

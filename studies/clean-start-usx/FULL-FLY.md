@@ -2,9 +2,9 @@
 
 This is the package for the full in-scope clean-start fly on editors `s-rules-2026-11-27` and `x-rules-2026-11-27`. It is not started, and nothing in this package contacts a provider or reads a key. `official_settlement` is false. Jacky named the ceiling $68.54 (457 CNY at 6.6649; the gate file prices that amount at 456.81 CNY). The $42 / 280 CNY cap belongs to the 20% preliminary only. This package is cleared for a later box preflight. It is not a live-start clearance, and these editors have not been flown.
 
-Scope: 3,127 in-scope scoring questions in the 14 in-scope categories, plus the 111 memory prerequisites their scenarios load. That is 3,238 conversations on arms U, S, X and SX, thinking off: 12,952 slots. Every prerequisite scenario is one an in-scope question uses, so the full catalogue's prerequisites and the matched prerequisites are the same 111 conversations. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27` (`REVISION-preliminary-69f33cdc.md`). SX is exact S, then X. A run started on this package cannot resume a run started at `6d4081e3` or `69f33cdc`, because the run identity records the editor rules and `source_sha256`. `full/cost.json` stays the gate file the CLI reads. It was priced at `6d4081e3` under `s-rules-2026-11-26` and `x-rules-2026-11-26`. Its ceiling floor ($68.54), observed-mean path ($58.692511) and higher-step path are unchanged under these editors. `package/full_20261127.json` is the same report recomputed with these editors: the planning upper moves from $254.432685 to $254.432611, the first-request floor from 22,002,459 tokens ($3.300369) to 21,972,222 tokens ($3.295833), and the single-turn allowance part from $4.824277 to $4.824203. Thirty of 1,862 single-turn case allowances change. Allowance-path totals move by less than a cent, and their six-decimal peak premiums do not. The dry plan reports the gate file's `planning_upper_usd` `254.432685`, which is the value the live run records. Out of scope: the official simple sets, web-search sets, SerpAPI, and thinking on. Gorilla pin `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`, model `deepseek-flash`, no `max_tokens`.
+Scope: 3,127 in-scope scoring questions in the 14 in-scope categories, plus the 111 memory prerequisites their scenarios load. That is 3,238 conversations on arms U, S, X and SX, thinking off: 12,952 slots. Every prerequisite scenario is one an in-scope question uses, so the full catalogue's prerequisites and the matched prerequisites are the same 111 conversations. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27` (`REVISION-preliminary-69f33cdc.md`). SX is exact S, then X. A run started on this package cannot resume a run started at `6d4081e3` or `69f33cdc`, because the run identity records the editor rules and `source_sha256`. `--continue-from` does not cross an editor change: it accepts a different `source_sha256` and still refuses a different editor, plan, or slot order. `full/cost.json` stays the gate file the CLI reads. It was priced at `6d4081e3` under `s-rules-2026-11-26` and `x-rules-2026-11-26`. Its ceiling floor ($68.54), observed-mean path ($58.692511) and higher-step path are unchanged under these editors. `package/full_20261127.json` is the same report recomputed with these editors: the planning upper moves from $254.432685 to $254.432611, the first-request floor from 22,002,459 tokens ($3.300369) to 21,972,222 tokens ($3.295833), and the single-turn allowance part from $4.824277 to $4.824203. Thirty of 1,862 single-turn case allowances change. Allowance-path totals move by less than a cent, and their six-decimal peak premiums do not. The dry plan reports the gate file's `planning_upper_usd` `254.432685`, which is the value the live run records. Out of scope: the official simple sets, web-search sets, SerpAPI, and thinking on. Gorilla pin `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`, model `deepseek-flash`, no `max_tokens`.
 
-Committed files: `full/plan.json` (SHA-256 `fe1059fc5fdb15c59d9aa985072a6a9952cf949e59e149cfd4c4d407dd5326ac`, the case ids in run order), `full/cost.json` (the CLI gate file: cost, time, peak and ceiling floor; it records the plan digest), and `package/full_20261127.json` (that report recomputed with these editors, plus `source_sha256` and the tools-render digest). Thinking-off slot SHA-256: `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`. The live CLI refuses any other plan or slot order. `source_sha256` of every `.py` file under `src/tool_compression`: `e19490caab93fac8d8cc07e6756d12b6fe586f4aa7b95096481c6b4617378c71`. Tools-render digest, 3,238 initial catalogues and 200 held-out catalogues, 13,752 arm renders, in the `attempts.jsonl` `tools_sha256` formula: `6c1cad756f4f1608787a6069566d5dec1052f42bf4c6d5db95839acb639ae843`. The live command renders each request when it sends it. It does not read a pre-rendered prompt file. That digest is every deterministic tools array: the initial catalogue and each held-out catalogue, on U, S, X and SX. Memory instructions and later trajectory turns are not in it, because later turns depend on the model. `python -m tool_compression.clean_start package` does not recompute the companion. A package written into this directory hashes the file that is already there. A package written to an empty directory omits it.
+Committed files: `full/plan.json` (SHA-256 `fe1059fc5fdb15c59d9aa985072a6a9952cf949e59e149cfd4c4d407dd5326ac`, the case ids in run order), `full/cost.json` (the CLI gate file: cost, time, peak and ceiling floor; it records the plan digest), and `package/full_20261127.json` (that report recomputed with these editors, plus `source_sha256` and the tools-render digest). Thinking-off slot SHA-256: `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`. The live CLI refuses any other plan or slot order. `source_sha256` of every `.py` file under `src/tool_compression`: `a5387c09a7ab68ce6b0b75474d5e725a4b3583d35018a4079b652aa967cfdbdd`. Tools-render digest, 3,238 initial catalogues and 200 held-out catalogues, 13,752 arm renders, in the `attempts.jsonl` `tools_sha256` formula: `6c1cad756f4f1608787a6069566d5dec1052f42bf4c6d5db95839acb639ae843`. The live command renders each request when it sends it. It does not read a pre-rendered prompt file. That digest is every deterministic tools array: the initial catalogue and each held-out catalogue, on U, S, X and SX. Memory instructions and later trajectory turns are not in it, because later turns depend on the model. `python -m tool_compression.clean_start package` does not recompute the companion. A package written into this directory hashes the file that is already there. A package written to an empty directory omits it.
 
 ## Start gates
 
@@ -14,12 +14,12 @@ All of these must hold before the live command. The CLI enforces the first, the 
 2. The packaged tip is pushed, and the box checkout is exactly that tip. `source_sha256` of `src/tool_compression` is in the run identity.
 3. This package is CLEARED for the box preflight below. That clearance is not a live start.
 4. The box preflight passes.
-5. The fresh start is off-peak. The CLI refuses a fresh `--full` start inside a rate-card peak window (weekdays 09:00-12:00 and 14:00-18:00 HKT). Friday 18:00 is off-peak. A `--resume` is allowed in peak; the ceiling still applies.
+5. The fresh start is off-peak. The CLI refuses a fresh `--full` start inside a rate-card peak window (weekdays 09:00-12:00 and 14:00-18:00 HKT). Friday 18:00 is off-peak. A `--resume` or a `--continue-from` is allowed in peak; the ceiling still applies.
 6. The 20% preliminary, and every other clean-start live run, is finished or stopped for good. The CLI cannot see another box's run.
 7. Jacky named **$68.54**. `--full` without `--ceiling-usd` exits 2. A ceiling under the **$68.54 floor** (456.81 CNY) exits 2. The prepaid balance must cover the ceiling.
 8. `official_settlement` stays false.
 
-Do not fly the superseded 119-case / $12 command, tip `90f675da`, tip `00452963`, or any full 12,952-slot command without `--full`. The plain `run --live` path now refuses the full catalogue. Only `--full` has the 20 s / 60 s deadlines, skip-and-record, and `--resume`.
+Do not fly the superseded 119-case / $12 command, tip `90f675da`, tip `00452963`, or any full 12,952-slot command without `--full`. The plain `run --live` path now refuses the full catalogue. Only `--full` has the 20 s / 60 s deadlines, skip-and-record, `--resume`, and `--continue-from`.
 
 ## Commands
 
@@ -50,13 +50,36 @@ python -m tool_compression.clean_start run --full --resume \
   --out /path/to/the-same-dir
 ```
 
-Resume. Same tip, same `--out`, same ceiling. Repeat after every stop until it exits 0:
+Resume. Same tip, same `--out`, same ceiling. Repeat after every stop until it exits 0. This refuses a different `source_sha256`. The run that started at `ae57892` recorded `ef5b9ad9f1ead3fd011c94f398fe9b49950a374210a51d71e94d20ebc89005c0`. This tip's hash is `a5387c09a7ab68ce6b0b75474d5e725a4b3583d35018a4079b652aa967cfdbdd`, so `--resume` of that directory on this tip exits 2 with `resume_identity_mismatch:source_sha256` and writes nothing.
 
 ```bash
 python -m tool_compression.clean_start run --full --live --authorize-live \
   --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
   --bfcl-root /path/to/gorilla --out /path/to/the-same-dir --resume
 ```
+
+Continue from a new source. This is the path for the stopped `ae57892` fly. `--continue-from` is the frozen directory. `--out` is a new directory. The frozen directory is not modified: `attempts.jsonl`, `bills.jsonl`, `failures.jsonl`, `run.json`, `spend.json`, and the sidecars stay as they are. Do not edit them. The command copies that tree and resumes the copy. `source_sha256` may differ. The plan hash, slot order, editors, arms, study, model, `official_settlement`, retry policy, attempt deadlines, memory prerequisites, thinking mode, ceiling, and rate card must still match. Finished and skipped slots are not sent again. A slot whose journal ends on a sent line with no completed or failed line is sent again from try 1. The copied bill ledger counts against the same `$68.54`. It does not grant a fresh ceiling.
+
+Check. Reads the frozen directory, writes nothing, including nothing in the new directory:
+
+```bash
+python -m tool_compression.clean_start run --full --continue-from /path/to/live-ae57892d \
+  --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
+  --out /path/to/new-empty-dir
+```
+
+The report has `continue_from_check: true` and a `continue_from` object: `kind` is `continue-from`, `prior_out` is the frozen directory, `prior_source_sha256` is the hash in that run, and `source_sha256` is this tip. `next_slot` is the first unfinished slot.
+
+Live continue. Same flags, plus the live gates. Peak is allowed, as for `--resume`. The box checkout is this tip.
+
+```bash
+python -m tool_compression.clean_start run --full --live --authorize-live \
+  --continue-from /path/to/live-ae57892d \
+  --thinking off --memory-prereqs matched --ceiling-usd 68.54 \
+  --bfcl-root /path/to/gorilla --out /path/to/new-empty-dir
+```
+
+After that command has written the new `run.json`, later stops use `--resume` on the new directory, on this same tip. Re-running the same `--continue-from` command does not copy again when the new directory's `continue-from.json` matches this prior and this source, and it still does not write the frozen directory. If the new directory was not created and `.new-empty-dir.continue-from-tmp` is left beside it, the next run removes an incomplete copy and starts again, or moves a copy that already has a matching `continue-from.json` into place. The frozen directory is still the source of the copy.
 
 Score, against the same pin. Contacts no provider:
 
@@ -80,11 +103,13 @@ Why. On 69f33cdc, `run.json` advertised `read_timeout_seconds: 120`. Attempt 218
 
 Is 20 s long enough? The archived flights have 3,380 completed sends: 899 on c47b186c and 2,481 on 0bf829c6. Their slowest answer took 10.8 s, on a `memory_kv` prerequisite. None took more than 15 s. On 0bf829c6 the median was 1.84 s and the 99th percentile 3.25 s. So 20 s is about twice the slowest answer seen, and a try that reaches it is very likely queued, not working. Before the full fly, read the latency tail of the 20% run's `attempts.jsonl` (`completed.at` minus `sent_at`). If more than a few answers took over 15 s, raise this before flying, because the 20 s deadline would then cut real answers.
 
-The preliminary policy is unchanged: two retries after 10 s and 30 s, a 120 s socket timeout and a 900 s total deadline, then stop. The in-flight 20% run stays on 69f33cdc. It must be resumed from the 69f33cdc checkout, because a resume from this tip is refused on `source_sha256`.
+The preliminary policy is unchanged: two retries after 10 s and 30 s, a 120 s socket timeout and a 900 s total deadline, then stop. The in-flight 20% run stays on 69f33cdc. It must be resumed from the 69f33cdc checkout, because a resume from this tip is refused on `source_sha256`. `--continue-from` is the full fly only. It is not a way to move that 20% run onto this tip.
 
 ## Resume
 
-A resume refuses, with exit 2 before the key is read and with nothing written, unless `run.json` contacted a provider, is not complete, and matches on every identity field. The identity fields are the `full/plan.json` digest, the slot order, the case ids, the editors, `source_sha256`, the policy name and its deadlines, thinking off, the ceiling and the rate card. A different ceiling is refused, so raising the ceiling mid-run takes a new decision. It cannot be done by resuming.
+A resume refuses, with exit 2 before the key is read and with nothing written, unless `run.json` contacted a provider, is not complete, and matches on every identity field. The identity fields are the `full/plan.json` digest, the slot order, the case ids, the editors, `source_sha256`, the policy name and its deadlines, thinking off, the ceiling and the rate card. The arms, the study, the model, and `official_settlement` are checked too. A different ceiling is refused, so raising the ceiling mid-run takes a new decision. It cannot be done by resuming.
+
+`--continue-from` is the one exception, and only for `source_sha256`. It copies the stopped directory to the new `--out` and resumes that copy. The stopped directory is read, not written. The new `run.json` keeps the new code's `source_sha256` in `identity` and records the cutover in `continue_from`: `kind` `continue-from`, `prior_out`, `prior_source_sha256`, and `source_sha256`. That object is not an identity key, so a later `--resume` of the new directory matches this tip. `resume/session-<n>/prior_run.json` in the new directory is the copied `run.json`, still carrying the old hash. A `--resume` of the frozen directory still refuses the new hash.
 
 - A slot is done when it is finished (its sidecar says `finished`, plus one result line) or skipped (it has a `failures.jsonl` record). Done slots form a prefix of the slot order. Skipped slots are never sent again.
 - Every skip record must name failed attempts that are in `attempts.jsonl` for that slot. A record for a slot past the stop, a duplicate record, or a result line for a skipped slot is refused.
@@ -163,7 +188,7 @@ On the box that will run it, before the live command:
 - The Gorilla checkout is `6ea57973c7a6097fd7c5915698c54c17c5b1b6c8`.
 - `all-MiniLM-L6-v2` revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` is already built. `sentence_transformers`, `faiss` and `numpy` import. The live shell sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`.
 - `DEEPSEEK_API_KEY` is set in that shell and is not printed. No SerpAPI key is set.
-- The repository checkout is the packaged tip, and `git status` is clean. A resume refuses any other source tree. `source_sha256` is `e19490caab93fac8d8cc07e6756d12b6fe586f4aa7b95096481c6b4617378c71`. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27`.
+- The repository checkout is this tip, and `git status` is clean. A `--resume` refuses any other source tree. `--continue-from` accepts a different `source_sha256` and nothing else, and it leaves the prior directory untouched. `source_sha256` is `a5387c09a7ab68ce6b0b75474d5e725a4b3583d35018a4079b652aa967cfdbdd`. Editors are `s-rules-2026-11-27` and `x-rules-2026-11-27`.
 - The dry plan reports `slot_sha256` `8fff8cd902b3c523473cf38591a20d3719b0c028138728f46632867fc655047f`, `read_timeout_seconds` `[20.0, 60.0]`, and the gate file's `planning_upper_usd` `254.432685`.
 - `--out` is a new empty directory on storage that outlives the box. Do not reuse a pilot, validation or preliminary directory.
 - The 20% preliminary is finished or stopped for good. Its directory and its 69f33cdc checkout are untouched.
