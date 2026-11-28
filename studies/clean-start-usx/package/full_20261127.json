@@ -30,7 +30,7 @@
       20.0,
       60.0
     ],
-    "deadline_scope": "wall clock from the start of the try: DNS, connect, TLS, request write, response headers and the whole body. Keep-alive bytes do not extend it. At the deadline the socket is shut down and the try fails.",
+    "deadline_scope": "from the journaled start of the try, including the sent-line fsync, DNS, connect, TLS, request write, response headers and the whole body. A timer thread shuts the socket down when monotonic time reaches the budget, or sooner if civil time jumps ahead. Keep-alive bytes do not extend it, and a backward civil-time step cannot extend it either.",
     "read_timeout_seconds": [
       20.0,
       60.0
@@ -2294,7 +2294,7 @@
     "S": "s-rules-2026-11-27",
     "X": "x-rules-2026-11-27"
   },
-  "source_sha256": "ef5b9ad9f1ead3fd011c94f398fe9b49950a374210a51d71e94d20ebc89005c0",
+  "source_sha256": "e19490caab93fac8d8cc07e6756d12b6fe586f4aa7b95096481c6b4617378c71",
   "render_identity": {
     "formula": "sha256 of one line per render: case_id, state, arm, tools_sha256, separated by NUL and ended by a newline. tools_sha256 is sha256(json.dumps(tools, ensure_ascii=False, sort_keys=True)), the attempts.jsonl formula. state is initial, then held_out:<turn> after each held-out batch in the order the runner appends them. Arms are U, S, X, SX.",
     "catalogues_initial": 3238,

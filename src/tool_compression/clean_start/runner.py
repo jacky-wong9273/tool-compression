@@ -13,8 +13,8 @@ gets, and what happens after the last one. By default nothing is retried and a
 failure stops the run. The preliminary policy sends a transport failure (timeout,
 dropped or incomplete read, HTTP 429 or 5xx) again with the same body at most
 twice, after 10 s and 30 s, and then stops. The full-fly policy gives the first
-try 20 s and one retry 60 s, both wall-clock from the send, and then skips the
-slot and records it in ``failures.jsonl``. Each try is its own journalled
+try 20 s and one retry 60 s, both enforced by a timer armed when that try is
+journaled, and then skips the slot and records it in ``failures.jsonl``. Each try is its own journalled
 attempt, the ceiling is checked before each, and a failed one stays listed as
 possibly billed. Nothing else in the slot has changed by then.
 
@@ -40,6 +40,7 @@ the provider requires it when tools are sent.
 from __future__ import annotations
 
 from copy import deepcopy
+from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -93,10 +94,20 @@ RETRY_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
 # After the deadline the socket is shut down; the worker thread then returns at
 # once. This bounds how long the caller waits for it to exit, not the deadline.
 SEVER_GRACE_SECONDS = 0.5
+# How often a try's timer thread re-reads the clocks. Short enough that a
+# forward jump of civil time is acted on at the jump, not at the end of one
+# long monotonic sleep. ``time.sleep`` is relative, so a backward step of
+# CLOCK_REALTIME does not stretch a slice.
+DEADLINE_POLL_SECONDS = 0.02
+# Civil time this far ahead of monotonic time is a step or a resume, not
+# scheduling noise between the two clock reads.
+DEADLINE_WALL_JUMP_SECONDS = 0.25
 DEADLINE_SCOPE = (
-    "wall clock from the start of the try: DNS, connect, TLS, request write, "
-    "response headers and the whole body. Keep-alive bytes do not extend it. "
-    "At the deadline the socket is shut down and the try fails."
+    "from the journaled start of the try, including the sent-line fsync, DNS, "
+    "connect, TLS, request write, response headers and the whole body. A timer "
+    "thread shuts the socket down when monotonic time reaches the budget, or "
+    "sooner if civil time jumps ahead. Keep-alive bytes do not extend it, and a "
+    "backward civil-time step cannot extend it either."
 )
 
 
@@ -288,29 +299,157 @@ def read_provider_key() -> str:
 
 
 def _sever(connection, sock=None) -> None:
-    """Shut the socket down under a blocked reader, so its read returns now.
+    """Unblock a reader at once. Do not run an SSL close notify from this thread.
 
-    Closing a socket from another thread does not wake a thread blocked in
-    ``recv`` on Linux, and closing the buffered response can block on the lock
-    that reader holds. ``shutdown`` on the raw socket does neither. ``sock`` is
-    the socket captured at connect: ``http.client`` drops ``connection.sock``
-    once a ``Connection: close`` response has its headers. Before a socket
-    exists (DNS or connect still running) the connection is closed.
+    ``SSLSocket.shutdown`` and ``close`` can block on the close notify or on
+    the lock the reader holds. TCP shutdown on the raw fd returns and wakes a
+    blocked read. There is no ``os.shutdown``: a second socket object on the
+    same fd calls ``shutdown``, then ``detach`` so this thread does not close
+    the fd the reader still owns. ``sock`` is the socket captured at connect.
+    ``http.client`` drops ``connection.sock`` once a ``Connection: close``
+    response has its headers. With no fd yet (DNS or connect still running, or
+    a fake connection) the connection is closed so a test double unblocks.
     """
-    sock = getattr(connection, "sock", None) or sock
-    if sock is None:
+    if sock is None and connection is not None:
+        sock = getattr(connection, "sock", None)
+    if sock is not None:
+        shut = False
         try:
-            connection.close()
+            fd = sock.fileno()
         except Exception:
-            pass
+            fd = -1
+        if isinstance(fd, int) and fd >= 0:
+            try:
+                # A fresh socket object on the same fd issues TCP shutdown.
+                # SSLSocket.shutdown would block in the close notify. detach
+                # leaves the fd open for the reader, which wakes on the reset.
+                raw = socket.socket(fileno=fd)
+                try:
+                    socket.socket.shutdown(raw, socket.SHUT_RDWR)
+                finally:
+                    raw.detach()
+                shut = True
+            except OSError:
+                pass
+        if not shut:
+            try:
+                if isinstance(sock, socket.socket):
+                    socket.socket.shutdown(sock, socket.SHUT_RDWR)
+                elif hasattr(sock, "shutdown"):
+                    sock.shutdown(socket.SHUT_RDWR)
+                else:
+                    raise AttributeError
+                shut = True
+            except (OSError, AttributeError):
+                pass
+        if shut:
+            return
+    if connection is None:
         return
     try:
-        if isinstance(sock, socket.socket):
-            socket.socket.shutdown(sock, socket.SHUT_RDWR)
-        else:
-            sock.shutdown(socket.SHUT_RDWR)
-    except (OSError, AttributeError):
+        connection.close()
+    except Exception:
         pass
+
+
+class DeadlineTimer:
+    """One armed timer per try. It cancels the in-flight socket from its own thread.
+
+    The budget starts when the timer is constructed. It is spent when monotonic
+    time reaches it, or sooner when civil time (``time.time``) jumps ahead of
+    monotonic time by more than ``DEADLINE_WALL_JUMP_SECONDS``. A backward step
+    of the civil clock cannot extend the budget: monotonic time still fires.
+    Keep-alive bytes never reset it. The thread exists so the cut still happens
+    while the caller is blocked in the sent-line fsync or the reader is blocked
+    in ``recv``.
+    """
+
+    def __init__(self, seconds: float, *, monotonic=time.monotonic, wall=time.time):
+        self.seconds = float(seconds)
+        self._monotonic = monotonic
+        self._wall = wall
+        self._mono0 = monotonic()
+        self._wall0 = wall()
+        self.fired = threading.Event()
+        self._stop = threading.Event()
+        self._lock = threading.Lock()
+        self._connection = None
+        self._sock = None
+        self._thread = threading.Thread(target=self._run, name="request-deadline", daemon=True)
+        self._thread.start()
+
+    def elapsed(self) -> tuple[float, float]:
+        return (self._monotonic() - self._mono0, self._wall() - self._wall0)
+
+    def due(self) -> bool:
+        mono, wall = self.elapsed()
+        if mono >= self.seconds:
+            return True
+        return wall >= self.seconds and wall > mono + DEADLINE_WALL_JUMP_SECONDS
+
+    def remaining(self) -> float:
+        mono, wall = self.elapsed()
+        mono_left = self.seconds - mono
+        if wall > mono + DEADLINE_WALL_JUMP_SECONDS:
+            return min(mono_left, self.seconds - wall)
+        return mono_left
+
+    def _run(self) -> None:
+        try:
+            while not self._stop.is_set():
+                if self.due():
+                    self.cut()
+                    return
+                delay = self.remaining()
+                if delay <= 0:
+                    if not self._stop.is_set():
+                        self.cut()
+                    return
+                time.sleep(min(DEADLINE_POLL_SECONDS, delay))
+        except Exception:
+            if not self._stop.is_set():
+                self.cut()
+
+    def cut(self) -> None:
+        """The budget is spent. Shut the socket down if one is attached."""
+        with self._lock:
+            self.fired.set()
+            connection, sock = self._connection, self._sock
+        if connection is not None or sock is not None:
+            _sever(connection, sock)
+
+    def attach(self, connection, sock=None) -> None:
+        with self._lock:
+            self._connection = connection
+            if sock is None and connection is not None:
+                sock = getattr(connection, "sock", None)
+            if sock is not None:
+                self._sock = sock
+            fired = self.fired.is_set()
+            connection, sock = self._connection, self._sock
+        if fired and (connection is not None or sock is not None):
+            _sever(connection, sock)
+
+    def cancel(self) -> None:
+        """The try finished. Do not shut the socket down on the way out."""
+        self._stop.set()
+        if threading.current_thread() is not self._thread:
+            self._thread.join(SEVER_GRACE_SECONDS)
+
+
+_ATTEMPT_TIMER: ContextVar[DeadlineTimer | None] = ContextVar("attempt_deadline", default=None)
+
+
+def _deadline_due(*timers: DeadlineTimer | None) -> bool:
+    return any(timer is not None and (timer.fired.is_set() or timer.due()) for timer in timers)
+
+
+def _deadline_exceeded(deadline: float, elapsed: float) -> TotalDeadlineExceeded:
+    return TotalDeadlineExceeded(
+        f"no complete response within {deadline} seconds",
+        deadline_seconds=deadline,
+        elapsed_seconds=elapsed,
+    )
 
 
 def post_chat(
@@ -321,19 +460,21 @@ def post_chat(
     total_deadline: float = TOTAL_DEADLINE_SECONDS,
     connection_factory=None,
     monotonic=time.monotonic,
+    wall=time.time,
 ) -> dict:
-    """POST one chat completion. ``total_deadline`` is wall clock for the whole try.
+    """POST one chat completion. ``total_deadline`` bounds the whole try.
 
-    ``read_timeout`` is the socket timeout. It bounds each socket operation, not
-    the request: DeepSeek keeps a queued non-streaming request open by sending
-    blank lines, and every byte restarts that timer. On 69f33cdc that is how a
-    request advertised at 120 s failed with ``TimeoutError`` after 473 s: the
-    blank lines kept coming for about six minutes, then 120 s of silence. The
-    deadline here is measured from the start of the try over DNS, connect, TLS,
-    the request, the headers and the body. When it passes, the socket is shut
-    down, the worker is told not to send if it has not yet, and
-    ``TotalDeadlineExceeded`` carries the deadline and the elapsed time. The
-    request may already be billed. The caller journals it as possibly billed.
+    ``read_timeout`` is only the per-operation socket timeout. DeepSeek keeps a
+    queued non-streaming request open by sending blank lines, and every byte
+    restarts that socket timer. On 69f33cdc a request advertised at 120 s failed
+    with ``TimeoutError`` after 473 s: blank lines for about six minutes, then
+    120 s of silence. The try's budget is a separate timer thread, armed before
+    the body is encoded. It shuts the raw socket down when monotonic time
+    reaches the budget, or sooner if civil time jumps ahead. The caller may
+    already have armed the same kind of timer at ``sent_at``, before the
+    sent-line fsync; that one is in ``_ATTEMPT_TIMER`` and cuts this socket too.
+    A try cut here may already be billed. The caller journals it as possibly
+    billed, with no usage.
     """
     from urllib.parse import urlsplit
 
@@ -347,53 +488,80 @@ def post_chat(
                 url.hostname, timeout=per_operation, context=ssl.create_default_context()
             )
 
-    payload = json.dumps(body).encode("utf-8")
-    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    outer = _ATTEMPT_TIMER.get()
     began = monotonic()
-    connection = connection_factory()
-    outcome: dict = {}
+    own = DeadlineTimer(total_deadline, monotonic=monotonic, wall=wall)
     done = threading.Event()
-    abandoned = threading.Event()
+    outcome: dict = {}
+    worker: threading.Thread | None = None
+    try:
+        if _deadline_due(own, outer):
+            raise _deadline_exceeded(total_deadline, monotonic() - began)
+        payload = json.dumps(body).encode("utf-8")
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        if _deadline_due(own, outer):
+            raise _deadline_exceeded(total_deadline, monotonic() - began)
+        connection = connection_factory()
+        own.attach(connection)
+        if outer is not None:
+            outer.attach(connection)
 
-    def work():
-        try:
-            connect = getattr(connection, "connect", None)
-            if connect is not None and getattr(connection, "sock", None) is None:
-                connect()
-            outcome["sock"] = getattr(connection, "sock", None)
-            if abandoned.is_set():
-                raise TotalDeadlineExceeded("abandoned before the request was written")
-            connection.request("POST", url.path, body=payload, headers=headers)
-            response = connection.getresponse()
-            outcome["status"] = response.status
-            outcome["data"] = response.read()
-        except BaseException as exc:
-            outcome["error"] = exc
-        finally:
+        def work():
             try:
-                connection.close()
-            except Exception:
-                pass
-            done.set()
+                if _deadline_due(own, outer):
+                    raise TotalDeadlineExceeded("abandoned before the request was written")
+                connect = getattr(connection, "connect", None)
+                if connect is not None and getattr(connection, "sock", None) is None:
+                    connect()
+                sock = getattr(connection, "sock", None)
+                own.attach(connection, sock)
+                if outer is not None:
+                    outer.attach(connection, sock)
+                if _deadline_due(own, outer):
+                    raise TotalDeadlineExceeded("abandoned before the request was written")
+                connection.request("POST", url.path, body=payload, headers=headers)
+                response = connection.getresponse()
+                data = response.read()
+                if _deadline_due(own, outer):
+                    raise TotalDeadlineExceeded("abandoned while reading the response")
+                outcome["status"] = response.status
+                outcome["data"] = data
+            except BaseException as exc:
+                outcome["error"] = exc
+            finally:
+                try:
+                    connection.close()
+                except Exception:
+                    pass
+                done.set()
 
-    worker = threading.Thread(target=work, daemon=True)
-    worker.start()
-    remaining = total_deadline - (monotonic() - began)
-    if not done.wait(max(0.0, remaining)):
-        elapsed = monotonic() - began
-        abandoned.set()
-        _sever(connection, outcome.get("sock"))
-        worker.join(SEVER_GRACE_SECONDS)
-        raise TotalDeadlineExceeded(
-            f"no complete response within {total_deadline} seconds",
-            deadline_seconds=total_deadline,
-            elapsed_seconds=elapsed,
-        )
-    if "error" in outcome:
-        raise outcome["error"]
-    if outcome.get("status") != 200:
-        raise ProviderHTTPError(int(outcome.get("status") or 0), outcome.get("data", b"")[:500].decode("utf-8", "replace"))
-    return json.loads(outcome["data"].decode("utf-8"))
+        worker = threading.Thread(target=work, name="request-read", daemon=True)
+        worker.start()
+        while not done.is_set():
+            if _deadline_due(own, outer):
+                break
+            wait = own.remaining()
+            if outer is not None:
+                wait = min(wait, outer.remaining())
+            if wait <= 0:
+                break
+            done.wait(min(DEADLINE_POLL_SECONDS, max(0.0, wait)))
+        if not done.is_set() or _deadline_due(own, outer):
+            own.cut()
+            if outer is not None:
+                outer.cut()
+            if not done.is_set():
+                worker.join(SEVER_GRACE_SECONDS)
+            raise _deadline_exceeded(total_deadline, monotonic() - began)
+        if "error" in outcome:
+            raise outcome["error"]
+        if outcome.get("status") != 200:
+            raise ProviderHTTPError(
+                int(outcome.get("status") or 0), outcome.get("data", b"")[:500].decode("utf-8", "replace")
+            )
+        return json.loads(outcome["data"].decode("utf-8"))
+    finally:
+        own.cancel()
 
 
 def authorized_transport():
@@ -989,10 +1157,21 @@ def execute(
                 row["deadline_seconds"] = deadline
             if retry_of is not None:
                 row["retry_of"] = retry_of
-            _append_jsonl(attempts, row)
-            state["open_attempt"] = number
+            # The budget starts with the journaled send, before the sent-line
+            # fsync. A stall there is uninterruptible, so the timer cannot
+            # record the failure until the write returns, but it must not then
+            # open a fresh provider call on a budget that is already spent.
             began = monotonic()
+            timer = None
+            token = None
+            if deadline is not None:
+                timer = DeadlineTimer(deadline)
+                token = _ATTEMPT_TIMER.set(timer)
             try:
+                _append_jsonl(attempts, row)
+                state["open_attempt"] = number
+                if timer is not None and (timer.fired.is_set() or timer.due()):
+                    raise _deadline_exceeded(deadline, monotonic() - began)
                 payload = transport(body) if deadline is None else transport(body, deadline=deadline)
             except RunStopped:
                 raise
@@ -1042,7 +1221,12 @@ def execute(
                 tries += 1
                 retry_of = number
                 continue
-            break
+            else:
+                break
+            finally:
+                if timer is not None:
+                    timer.cancel()
+                    _ATTEMPT_TIMER.reset(token)
         try:
             message, parsed, at = _read_payload(payload, clock)
         except RunStopped as stopped:
